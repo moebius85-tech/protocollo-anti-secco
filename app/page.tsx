@@ -50,36 +50,32 @@ const dbAllenamento = {
 };
 
 const mapEsercizioToAnimazione: Record<string, string> = {
-  // SPINTA
-  "e1": "bench_press_flat",       // Panca piana bilanciere (laterale)
-  "e3": "bench_press_incline_db", // Panca inclinata manubri (laterale)
-  "e4": "machine_press",          // Chest press (laterale)
-  "e5": "flyes_flat_db",          // Croci manubri (frontale)
-  "e18": "shoulder_press_db",     // Lento manubri (frontale)
-  "e20": "lateral_raises_cables", // Alzate laterali cavi (frontale)
-  "e22": "bench_press_close",     // Panca stretta (laterale, gomiti stretti)
-  "e27": "tricep_pushdown",       // Push down cavi (laterale)
-  
-  // TIRATA
-  "e6": "pullups",                // Trazioni (frontale/schiena)
-  "e7": "barbell_row",            // Rematore bilanciere (laterale)
-  "e9": "seated_cable_row",       // Pulley basso (laterale)
-  "e10": "cable_pullover",        // Pullover cavi (laterale, braccia tese)
-  "e23": "barbell_curl",          // Curl bilanciere (laterale)
-  "e26": "cable_curl",            // Curl cavo basso (laterale)
-  
-  // GAMBE
-  "e11": "squat_barbell",         // Squat (laterale)
-  "e12": "hack_squat",            // Hack squat (laterale inclinato)
-  "e14": "leg_press",             // Leg press (laterale)
-  "e15": "leg_extension",         // Leg extension (seduto laterale)
-  "e13": "romanian_deadlift",     // Stacco rumeno (laterale)
-  "e16": "leg_curl_lying",        // Leg curl sdraiato (prono laterale)
-  "e17": "calf_raises"            // Polpacci (laterale)
+  "e1": "bench_press_flat",       
+  "e3": "bench_press_incline_db", 
+  "e4": "machine_press",          
+  "e5": "flyes_flat_db",          
+  "e18": "shoulder_press_db",     
+  "e20": "lateral_raises_cables", 
+  "e22": "bench_press_close",     
+  "e27": "tricep_pushdown",       
+  "e6": "pullups",                
+  "e7": "barbell_row",            
+  "e9": "seated_cable_row",       
+  "e10": "cable_pullover",        
+  "e23": "barbell_curl",          
+  "e26": "cable_curl",            
+  "e11": "squat_barbell",         
+  "e12": "hack_squat",            
+  "e14": "leg_press",             
+  "e15": "leg_extension",         
+  "e13": "romanian_deadlift",     
+  "e16": "leg_curl_lying",        
+  "e17": "calf_raises"            
 };
 
 // ==========================================
-// COMPONENTE STICKMAN ANIMATO (CSS FLIPBOOK SPECIFICO)
+// COMPONENTE STICKMAN ANIMATO 
+// BIOMECCANICA FEDELE 100% ESERCIZIO-SPECIFICA
 // ==========================================
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -102,7 +98,7 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
       <svg viewBox="0 0 50 50" className="w-14 h-14">
         
         {/* ================= SPINTA ================= */}
-        {type === "bench_press_flat" && (
+        {type === "bench_press_flat" && ( // Panca Piana Larga
           <>
             <line x1="5" y1="35" x2="45" y2="35" {...benchLine} />
             <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" />
@@ -110,7 +106,7 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
             <g className="frame-a">
               <circle cx="16" cy="32" r="3.5" {...head} />
               <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
-              <path d="M 23 33 L 26 26 L 23 20" {...body} /> {/* Gomiti giù */}
+              <path d="M 23 33 L 26 26 L 23 20" {...body} /> 
               <line x1="18" y1="20" x2="28" y2="20" {...gear} />
               <rect x="17" y="14" width="2" height="12" {...weightFill} />
               <rect x="27" y="14" width="2" height="12" {...weightFill} />
@@ -118,7 +114,7 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
             <g className="frame-b">
               <circle cx="16" cy="32" r="3.5" {...head} />
               <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
-              <path d="M 23 33 L 23 10" {...body} /> {/* Braccia su */}
+              <path d="M 23 33 L 23 10" {...body} /> 
               <line x1="18" y1="10" x2="28" y2="10" {...gear} />
               <rect x="17" y="4" width="2" height="12" {...weightFill} />
               <rect x="27" y="4" width="2" height="12" {...weightFill} />
@@ -126,45 +122,88 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "bench_press_incline_db" && (
+        {type === "bench_press_close" && ( // Panca Stretta (gomiti serrati in basso)
+          <>
+            <line x1="5" y1="35" x2="45" y2="35" {...benchLine} />
+            <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" />
+            <line x1="38" y1="35" x2="38" y2="45" {...benchLine} strokeWidth="2" />
+            <g className="frame-a">
+              <circle cx="16" cy="32" r="3.5" {...head} />
+              <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
+              {/* Gomiti stretti verso il corpo, mani più vicine */}
+              <path d="M 23 33 L 23 27 L 23 20" {...body} /> 
+              <line x1="20" y1="20" x2="26" y2="20" {...gear} />
+              <rect x="19" y="15" width="2" height="10" {...weightFill} />
+              <rect x="25" y="15" width="2" height="10" {...weightFill} />
+            </g>
+            <g className="frame-b">
+              <circle cx="16" cy="32" r="3.5" {...head} />
+              <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
+              <path d="M 23 33 L 23 10" {...body} /> 
+              <line x1="20" y1="10" x2="26" y2="10" {...gear} />
+              <rect x="19" y="5" width="2" height="10" {...weightFill} />
+              <rect x="25" y="5" width="2" height="10" {...weightFill} />
+            </g>
+          </>
+        )}
+
+        {type === "machine_press" && ( // Chest Press (Seduto, braccia orizzontali)
+          <>
+            <path d="M 10 15 L 10 45 M 5 45 L 20 45" {...benchLine} fill="none" />
+            <g className="frame-a">
+              <circle cx="16" cy="20" r="3.5" {...head} />
+              <path d="M 14 24 L 14 35 L 25 45" {...body} />
+              <path d="M 14 24 L 20 28 L 22 24" {...body} /> {/* Mani al petto */}
+              <line x1="22" y1="20" x2="22" y2="28" {...machine} strokeWidth="2" /> {/* Maniglie vicine */}
+            </g>
+            <g className="frame-b">
+              <circle cx="16" cy="20" r="3.5" {...head} />
+              <path d="M 14 24 L 14 35 L 25 45" {...body} />
+              <path d="M 14 24 L 35 24" {...body} /> {/* Braccia tese avanti */}
+              <line x1="35" y1="20" x2="35" y2="28" {...machine} strokeWidth="2" /> {/* Maniglie spinte */}
+            </g>
+          </>
+        )}
+
+        {type === "bench_press_incline_db" && ( // Inclinata Manubri
           <>
             <path d="M 10 45 L 20 45 L 30 20 L 35 20" {...benchLine} fill="none"/>
             <g className="frame-a">
               <circle cx="28" cy="18" r="3.5" {...head} />
               <path d="M 28 22 L 20 42 L 15 42 L 15 48" {...body} />
-              <path d="M 25 30 L 30 25 L 25 18" {...body} /> {/* Manubri bassi */}
+              <path d="M 25 30 L 30 25 L 25 18" {...body} /> 
               <rect x="22" y="15" width="6" height="4" {...weightFill} />
             </g>
             <g className="frame-b">
               <circle cx="28" cy="18" r="3.5" {...head} />
               <path d="M 28 22 L 20 42 L 15 42 L 15 48" {...body} />
-              <path d="M 25 30 L 20 12" {...body} /> {/* Manubri alti */}
+              <path d="M 25 30 L 20 12" {...body} /> 
               <rect x="17" y="10" width="6" height="4" {...weightFill} transform="rotate(-20 20 12)" />
             </g>
           </>
         )}
 
-        {type === "flyes_flat_db" && ( // Frontale
+        {type === "flyes_flat_db" && ( // Croci piana
           <>
              <line x1="20" y1="25" x2="30" y2="25" {...benchLine} strokeWidth="6" />
              <g className="frame-a">
                 <circle cx="25" cy="20" r="3.5" {...head} />
                 <path d="M 25 24 L 25 45" {...body} />
-                <path d="M 25 24 L 10 30 M 25 24 L 40 30" {...body} /> {/* Braccia aperte */}
+                <path d="M 25 24 L 10 30 M 25 24 L 40 30" {...body} /> 
                 <rect x="8" y="28" width="4" height="6" {...weightFill} />
                 <rect x="38" y="28" width="4" height="6" {...weightFill} />
              </g>
              <g className="frame-b">
                 <circle cx="25" cy="20" r="3.5" {...head} />
                 <path d="M 25 24 L 25 45" {...body} />
-                <path d="M 25 24 L 22 10 M 25 24 L 28 10" {...body} /> {/* Braccia chiuse */}
+                <path d="M 25 24 L 22 10 M 25 24 L 28 10" {...body} /> 
                 <rect x="20" y="6" width="4" height="6" {...weightFill} />
                 <rect x="26" y="6" width="4" height="6" {...weightFill} />
              </g>
           </>
         )}
 
-        {type === "shoulder_press_db" && ( // Frontale seduto
+        {type === "shoulder_press_db" && ( // Lento Manubri
           <>
             <line x1="15" y1="35" x2="35" y2="35" {...benchLine} />
             <g className="frame-a">
@@ -184,86 +223,166 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "lateral_raises_cables" && ( // Frontale cavi incrociati dal basso
+        {type === "lateral_raises_cables" && ( // Alzate Cavi
           <>
             <line x1="5" y1="45" x2="45" y2="45" {...machine} />
-            <circle cx="8" cy="45" r="2" fill="#555" /> {/* Puleggia L */}
-            <circle cx="42" cy="45" r="2" fill="#555" /> {/* Puleggia R */}
+            <circle cx="8" cy="45" r="2" fill="#555" /> 
+            <circle cx="42" cy="45" r="2" fill="#555" /> 
             <g className="frame-a">
               <circle cx="25" cy="15" r="3.5" {...head} />
               <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...body} />
-              <path d="M 25 21 L 22 35 M 25 21 L 28 35" {...body} /> {/* Braccia giù incrociate o dritte */}
+              <path d="M 25 21 L 22 35 M 25 21 L 28 35" {...body} /> 
               <line x1="8" y1="45" x2="28" y2="35" {...cable} />
               <line x1="42" y1="45" x2="22" y2="35" {...cable} />
             </g>
             <g className="frame-b">
               <circle cx="25" cy="15" r="3.5" {...head} />
               <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...body} />
-              <path d="M 25 21 L 10 21 M 25 21 L 40 21" {...body} /> {/* Braccia laterali */}
+              <path d="M 25 21 L 10 21 M 25 21 L 40 21" {...body} /> 
               <line x1="8" y1="45" x2="40" y2="21" {...cable} />
               <line x1="42" y1="45" x2="10" y2="21" {...cable} />
             </g>
           </>
         )}
 
-        {type === "tricep_pushdown" && ( // Laterale cavo alto
+        {type === "tricep_pushdown" && ( // Push Down Corda
           <>
             <line x1="35" y1="5" x2="35" y2="45" {...machine} />
-            <circle cx="33" cy="5" r="2" fill="#555" /> {/* Puleggia alta */}
+            <circle cx="33" cy="5" r="2" fill="#555" /> 
             <g className="frame-a">
               <circle cx="20" cy="15" r="3.5" {...head} />
               <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...body} />
-              <path d="M 20 21 L 25 26 L 30 20" {...body} /> {/* Avambraccio su */}
+              <path d="M 20 21 L 25 26 L 30 20" {...body} /> 
               <line x1="33" y1="5" x2="30" y2="20" {...cable} />
             </g>
             <g className="frame-b">
               <circle cx="20" cy="15" r="3.5" {...head} />
               <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...body} />
-              <path d="M 20 21 L 25 26 L 30 35" {...body} /> {/* Avambraccio giù (spinta) */}
+              <path d="M 20 21 L 25 26 L 30 35" {...body} /> 
               <line x1="33" y1="5" x2="30" y2="35" {...cable} />
             </g>
           </>
         )}
 
         {/* ================= TIRATA ================= */}
-        {type === "pullups" && ( // Frontale
+        {type === "pullups" && ( // Trazioni
           <>
             <line x1="5" y1="6" x2="45" y2="6" {...benchLine} strokeWidth="3" />
             <g className="frame-a">
               <circle cx="25" cy="22" r="3.5" {...head} />
               <path d="M 25 26 L 25 40 L 22 48 M 25 40 L 28 48" {...body} />
-              <path d="M 25 26 L 15 6 M 25 26 L 35 6" {...body} /> {/* Braccia tese */}
+              <path d="M 25 26 L 15 6 M 25 26 L 35 6" {...body} /> 
             </g>
             <g className="frame-b">
               <circle cx="25" cy="10" r="3.5" {...head} />
               <path d="M 25 14 L 25 30 L 22 35 M 25 30 L 28 35" {...body} />
-              <path d="M 25 14 L 15 20 L 15 6 M 25 14 L 35 20 L 35 6" {...body} /> {/* Mento sopra sbarra */}
+              <path d="M 25 14 L 15 20 L 15 6 M 25 14 L 35 20 L 35 6" {...body} /> 
             </g>
           </>
         )}
 
-        {type === "seated_cable_row" && ( // Laterale Pulley basso
+        {type === "barbell_row" && ( // Rematore Bilanciere (piegato in avanti)
+          <>
+            <g className="frame-a">
+              <circle cx="38" cy="18" r="3.5" {...head} />
+              <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> {/* Busto a 45 gradi */}
+              <path d="M 32 23 L 35 40" {...body} /> {/* Braccia penzoloni */}
+              <line x1="28" y1="40" x2="42" y2="40" {...gear} />
+              <circle cx="35" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
+            </g>
+            <g className="frame-b">
+              <circle cx="38" cy="18" r="3.5" {...head} />
+              <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} />
+              <path d="M 32 23 L 40 20 L 30 28" {...body} /> {/* Tirata al petto, gomito dietro */}
+              <line x1="23" y1="28" x2="37" y2="28" {...gear} />
+              <circle cx="30" cy="28" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
+            </g>
+          </>
+        )}
+
+        {type === "seated_cable_row" && ( // Pulley Seduto
           <>
              <line x1="10" y1="40" x2="30" y2="40" {...benchLine} />
              <line x1="40" y1="30" x2="40" y2="45" {...machine} />
-             <circle cx="38" cy="40" r="2" fill="#555" /> {/* Puleggia */}
+             <circle cx="38" cy="40" r="2" fill="#555" /> 
              <g className="frame-a">
                <circle cx="20" cy="20" r="3.5" {...head} />
-               <path d="M 20 24 L 20 38 L 35 38" {...body} /> {/* Seduto, gambe tese/piegate in avanti */}
-               <path d="M 20 24 L 35 35" {...body} /> {/* Braccia tese avanti */}
+               <path d="M 20 24 L 20 38 L 35 38" {...body} /> 
+               <path d="M 20 24 L 35 35" {...body} /> 
                <line x1="38" y1="40" x2="35" y2="35" {...cable} />
              </g>
              <g className="frame-b">
                <circle cx="18" cy="20" r="3.5" {...head} />
                <path d="M 18 24 L 20 38 L 35 38" {...body} /> 
-               <path d="M 18 24 L 14 30 L 28 35" {...body} /> {/* Tirata al petto */}
+               <path d="M 18 24 L 14 30 L 28 35" {...body} /> 
                <line x1="38" y1="40" x2="28" y2="35" {...cable} />
              </g>
           </>
         )}
 
+        {type === "cable_pullover" && ( // Pullover Cavi (in piedi, puleggia alta)
+          <>
+            <line x1="10" y1="5" x2="10" y2="45" {...machine} />
+            <circle cx="12" cy="5" r="2" fill="#555" /> 
+            <g className="frame-a">
+              <circle cx="35" cy="15" r="3.5" {...head} />
+              <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} />
+              <path d="M 35 21 L 20 10" {...body} /> {/* Braccia tese verso la puleggia */}
+              <line x1="12" y1="5" x2="20" y2="10" {...cable} />
+            </g>
+            <g className="frame-b">
+              <circle cx="35" cy="15" r="3.5" {...head} />
+              <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} />
+              <path d="M 35 21 L 35 38" {...body} /> {/* Braccia spinte dritte in basso */}
+              <line x1="12" y1="5" x2="35" y2="38" {...cable} />
+            </g>
+          </>
+        )}
+
+        {type === "barbell_curl" && ( // Curl Bilanciere (in piedi)
+          <>
+            <g className="frame-a">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} />
+              <path d="M 25 16 L 25 30 L 28 35" {...body} /> 
+              <line x1="20" y1="35" x2="36" y2="35" {...gear} />
+              <rect x="18" y="32" width="2" height="6" {...weightFill} />
+              <rect x="36" y="32" width="2" height="6" {...weightFill} />
+            </g>
+            <g className="frame-b">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} />
+              <path d="M 25 16 L 25 30 L 32 20" {...body} /> {/* Bilanciere chiuso su */}
+              <line x1="24" y1="20" x2="40" y2="20" {...gear} />
+              <rect x="22" y="17" width="2" height="6" {...weightFill} />
+              <rect x="40" y="17" width="2" height="6" {...weightFill} />
+            </g>
+          </>
+        )}
+
+        {type === "cable_curl" && ( // Curl ai Cavi (puleggia bassa)
+          <>
+            <line x1="10" y1="5" x2="10" y2="45" {...machine} />
+            <circle cx="12" cy="45" r="2" fill="#555" /> 
+            <g className="frame-a">
+              <circle cx="35" cy="10" r="3.5" {...head} />
+              <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} />
+              <path d="M 35 16 L 35 30 L 25 40" {...body} /> {/* Braccia verso il basso */}
+              <line x1="12" y1="45" x2="25" y2="40" {...cable} />
+              <line x1="22" y1="40" x2="28" y2="40" {...gear} strokeWidth="3" /> {/* Barra dritta */}
+            </g>
+            <g className="frame-b">
+              <circle cx="35" cy="10" r="3.5" {...head} />
+              <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} />
+              <path d="M 35 16 L 35 30 L 25 20" {...body} /> {/* Braccia chiuse su */}
+              <line x1="12" y1="45" x2="25" y2="20" {...cable} />
+              <line x1="22" y1="20" x2="28" y2="20" {...gear} strokeWidth="3" />
+            </g>
+          </>
+        )}
+
         {/* ================= GAMBE ================= */}
-        {type === "squat_barbell" && ( // Laterale
+        {type === "squat_barbell" && ( // Squat
           <>
             <g className="frame-a">
               <circle cx="25" cy="10" r="3.5" {...head} />
@@ -282,46 +401,105 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "leg_curl_lying" && ( // Prono Laterale (Leg Curl Sdraiato)
+        {type === "hack_squat" && ( // Hack Squat (Macchina inclinata)
           <>
-            <line x1="10" y1="35" x2="40" y2="35" {...benchLine} /> {/* Panca piana */}
-            <path d="M 40 35 L 45 45" {...machine} />
+            <line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /> {/* Rotaia diagonale */}
             <g className="frame-a">
-              <circle cx="15" cy="32" r="3.5" {...head} />
-              <path d="M 18 34 L 30 34 L 40 34 L 48 34" {...body} /> {/* Prono, gambe stese */}
-              <circle cx="48" cy="32" r="3" {...weightFill} /> {/* Rullo sui talloni */}
+              <circle cx="32" cy="10" r="3.5" {...head} />
+              <path d="M 30 14 L 23 23 L 23 45 M 23 23 L 28 45" {...body} /> {/* Schiena appoggiata, gambe dritte */}
             </g>
             <g className="frame-b">
-              <circle cx="15" cy="32" r="3.5" {...head} />
-              <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...body} /> {/* Prono, ginocchia flesse */}
-              <circle cx="36" cy="18" r="3" {...weightFill} /> {/* Rullo alzato */}
-              <path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /> {/* Leva che ruota */}
+              <circle cx="23" cy="22" r="3.5" {...head} />
+              <path d="M 21 26 L 14 35 L 23 35 L 23 45 M 14 35 L 28 45" {...body} /> {/* Accosciata sulla pedana */}
             </g>
           </>
         )}
 
-        {type === "leg_extension" && ( // Seduto Laterale (Leg Extension)
+        {type === "leg_press" && ( // Leg Press 45
           <>
-            <path d="M 15 20 L 15 35 L 25 35 L 25 45" {...benchLine} fill="none" /> {/* Sedile */}
+            <path d="M 10 30 L 20 45 L 35 45" {...benchLine} fill="none" /> {/* Sedile */}
+            <line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /> {/* Binario pressa */}
+            <g className="frame-a">
+              <circle cx="15" cy="25" r="3.5" {...head} />
+              <path d="M 15 28 L 20 45" {...body} /> {/* Schiena appoggiata */}
+              <path d="M 20 45 L 22 30 L 30 20" {...body} /> {/* Ginocchia al petto */}
+              <line x1="28" y1="15" x2="35" y2="22" {...gear} strokeWidth="3" /> {/* Piastra vicina */}
+            </g>
+            <g className="frame-b">
+              <circle cx="15" cy="25" r="3.5" {...head} />
+              <path d="M 15 28 L 20 45" {...body} />
+              <path d="M 20 45 L 32 30 L 42 10" {...body} /> {/* Gambe stese a 45 gradi */}
+              <line x1="39" y1="5" x2="46" y2="12" {...gear} strokeWidth="3" /> {/* Piastra allontanata */}
+            </g>
+          </>
+        )}
+
+        {type === "leg_extension" && ( // Leg Extension
+          <>
+            <path d="M 15 20 L 15 35 L 25 35 L 25 45" {...benchLine} fill="none" /> 
             <g className="frame-a">
               <circle cx="10" cy="15" r="3.5" {...head} />
-              <path d="M 12 18 L 12 33 L 25 33 L 25 45" {...body} /> {/* Seduto, gambe piegate a 90° */}
-              <circle cx="27" cy="45" r="3" {...weightFill} /> {/* Rullo sulle caviglie */}
+              <path d="M 12 18 L 12 33 L 25 33 L 25 45" {...body} /> 
+              <circle cx="27" cy="45" r="3" {...weightFill} /> 
             </g>
             <g className="frame-b">
               <circle cx="10" cy="15" r="3.5" {...head} />
-              <path d="M 12 18 L 12 33 L 25 33 L 40 33" {...body} /> {/* Seduto, gambe tese in avanti */}
-              <circle cx="40" cy="31" r="3" {...weightFill} /> {/* Rullo sollevato */}
+              <path d="M 12 18 L 12 33 L 25 33 L 40 33" {...body} /> 
+              <circle cx="40" cy="31" r="3" {...weightFill} /> 
               <path d="M 25 33 L 40 31" {...machine} strokeWidth="1" />
             </g>
           </>
         )}
-        
-        {/* Fallback animazione generica se non trovato */}
-        {!["bench_press_flat", "bench_press_incline_db", "flyes_flat_db", "shoulder_press_db", "lateral_raises_cables", "tricep_pushdown", "pullups", "seated_cable_row", "squat_barbell", "leg_curl_lying", "leg_extension"].includes(type) && (
-           <g className="frame-a">
-             <circle cx="25" cy="25" r="10" {...body} />
-           </g>
+
+        {type === "romanian_deadlift" && ( // Stacco Rumeno (Gambe tese/Hinge)
+          <>
+            <g className="frame-a">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> 
+              <path d="M 25 16 L 25 32" {...body} /> 
+              <line x1="15" y1="32" x2="35" y2="32" {...gear} />
+              <circle cx="25" cy="32" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
+            </g>
+            <g className="frame-b">
+              <circle cx="35" cy="20" r="3.5" {...head} />
+              <path d="M 35 20 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> {/* Bacino indietro, hinge netto */}
+              <path d="M 32 22 L 32 40" {...body} /> {/* Bilanciere scende sotto il ginocchio */}
+              <line x1="22" y1="40" x2="42" y2="40" {...gear} />
+              <circle cx="32" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
+            </g>
+          </>
+        )}
+
+        {type === "leg_curl_lying" && ( // Leg Curl Sdraiato
+          <>
+            <line x1="10" y1="35" x2="40" y2="35" {...benchLine} /> 
+            <path d="M 40 35 L 45 45" {...machine} />
+            <g className="frame-a">
+              <circle cx="15" cy="32" r="3.5" {...head} />
+              <path d="M 18 34 L 30 34 L 40 34 L 48 34" {...body} /> 
+              <circle cx="48" cy="32" r="3" {...weightFill} /> 
+            </g>
+            <g className="frame-b">
+              <circle cx="15" cy="32" r="3.5" {...head} />
+              <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...body} /> {/* Ginocchia flesse a 90° */}
+              <circle cx="36" cy="18" r="3" {...weightFill} /> 
+              <path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /> 
+            </g>
+          </>
+        )}
+
+        {type === "calf_raises" && ( // Polpacci in piedi su rialzo
+          <>
+            <rect x="20" y="45" width="10" height="5" fill="#555" /> {/* Scalino */}
+            <g className="frame-a">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 30 L 25 45" {...body} /> {/* Talloni giù */}
+            </g>
+            <g className="frame-b">
+              <circle cx="25" cy="6" r="3.5" {...head} />
+              <path d="M 25 10 L 25 26 L 27 40 L 22 45" {...body} /> {/* Estensione punte, corpo sollevato */}
+            </g>
+          </>
         )}
 
       </svg>
