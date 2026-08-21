@@ -8,16 +8,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO E VISUAL ASCII
+// 1. DATABASE ALLENAMENTO (Integrale E1-E27)
 // ==========================================
-const asciiVisuals: Record<string, string> = {
-  "e1": "🏋️‍♂️ [ -o- ]", "e3": "🏋️‍♂️ [ /o/ ]", "e4": "🤖 [ =o= ]", "e5": "🦅 [ \\o/ ]", 
-  "e18": "🏋️‍♂️ [ \\o/ ]", "e20": "🦅 [ ~o~ ]", "e22": "🏋️‍♂️ [ \\o| ]", "e27": "🧵 [ \\o| ]", 
-  "e6": "🦇 [ \\_o_/ ]", "e7": "🏋️‍♂️ [ /o\\ ]", "e9": "🛶 [ -o= ]", "e10": "🪁 [ \\o- ]", 
-  "e23": "🏋️‍♂️ [ \\o/ ]", "e26": "🧵 [ \\o/ ]", "e11": "🏋️‍♂️ [ 8|8 ]", "e12": "🤖 [ 8|8 ]", 
-  "e14": "💺 [ \\o_ ]", "e15": "🪑 [ -o_ ]", "e13": "🏋️‍♂️ [ /o\\ ]", "e16": "🛏️ [ -o_ ]", "e17": "🧍‍♂️ [ |o| ]"
-};
-
 const dbAllenamento = {
   Spinta: {
     focus: "SPINTA (Petto, Spalle, Tricipiti)",
@@ -56,6 +48,86 @@ const dbAllenamento = {
     ]
   }
 };
+
+// Mappatura Esercizi -> Categorie di Movimento per gli SVG
+const mapEsercizioToAnimazione: Record<string, string> = {
+  "e1": "push_h", "e3": "push_h", "e4": "push_h", "e5": "push_h", 
+  "e18": "push_v", "e20": "push_v", "e22": "push_h", "e27": "push_v", 
+  "e6": "pull_v", "e7": "pull_h", "e9": "pull_h", "e10": "pull_v", 
+  "e23": "curl", "e26": "curl", "e11": "squat", "e12": "squat", 
+  "e14": "squat", "e15": "curl", "e13": "hinge", "e16": "curl", "e17": "squat"
+};
+
+// ==========================================
+// COMPONENTE SVG "POSIZIONE A -> POSIZIONE B"
+// ==========================================
+const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
+  // Stili base (linee minimali, spessore tech)
+  const stileBase = { stroke: color, strokeWidth: "3", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  const stileBilanciere = { stroke: "#fff", strokeWidth: "4", fill: "none", strokeLinecap: "round" as const };
+
+  const renderSVG = (stato: "A" | "B") => {
+    switch(type) {
+      case "push_h": // Panca (Orizzontale)
+        return (
+          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
+            {/* Panca */} <line x1="5" y1="40" x2="45" y2="40" stroke="#333" strokeWidth="4" />
+            {/* Corpo */} <circle cx="25" cy="40" r="4" {...stileBase} fill={stato==="B"?color:"none"} />
+            {/* Braccia */} <path d={stato === "A" ? "M 25 36 L 25 15" : "M 25 36 L 15 25 L 25 15"} {...stileBase} />
+            {/* Bilanciere */} <line x1="10" y1="15" x2="40" y2="15" {...stileBilanciere} />
+          </svg>
+        );
+      case "push_v": // Lento Avanti (Verticale)
+        return (
+          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
+            {/* Corpo */} <line x1="25" y1="45" x2="25" y2="25" {...stileBase} /> <circle cx="25" cy="20" r="4" {...stileBase} fill={stato==="B"?color:"none"} />
+            {/* Braccia */} <path d={stato === "A" ? "M 25 25 L 15 25 L 15 10" : "M 25 25 L 25 5"} {...stileBase} />
+            {/* Bilanciere */} <line x1="5" y1={stato==="A"?"10":"5"} x2="45" y2={stato==="A"?"10":"5"} {...stileBilanciere} />
+          </svg>
+        );
+      case "pull_v": // Trazioni (Verticale in giù)
+        return (
+          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
+            {/* Sbarra */} <line x1="5" y1="5" x2="45" y2="5" {...stileBilanciere} />
+            {/* Corpo */} <circle cx="25" cy={stato==="A"?"30":"15"} r="4" {...stileBase} fill={stato==="B"?color:"none"} />
+            {/* Braccia */} <path d={stato === "A" ? "M 25 30 L 15 5" : "M 25 15 L 15 20 L 15 5"} {...stileBase} />
+            <line x1="25" y1={stato==="A"?"35":"20"} x2="25" y2="50" {...stileBase} />
+          </svg>
+        );
+      case "squat": // Squat
+        return (
+          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
+            {/* Bilanciere */} <line x1="5" y1={stato==="A"?"15":"30"} x2="45" y2={stato==="A"?"15":"30"} {...stileBilanciere} />
+            {/* Corpo */} <circle cx="25" cy={stato==="A"?"10":"25"} r="4" {...stileBase} fill={stato==="B"?color:"none"} />
+            {/* Schiena */} <line x1="25" y1={stato==="A"?"15":"30"} x2="25" y2={stato==="A"?"30":"40"} {...stileBase} />
+            {/* Gambe */} <path d={stato === "A" ? "M 25 30 L 25 45" : "M 25 40 L 15 40 L 25 45"} {...stileBase} />
+          </svg>
+        );
+      default: // Generico
+        return (
+          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
+            <circle cx="25" cy="25" r={stato==="A"?"10":"15"} {...stileBase} strokeDasharray={stato==="A"?"":"4"} />
+            <line x1="25" y1="25" x2="40" y2={stato==="A"?"25":"10"} {...stileBilanciere} />
+          </svg>
+        );
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2 bg-neutral-900 p-2 rounded-lg border border-neutral-800">
+      <div className="flex flex-col items-center">
+        {renderSVG("A")}
+        <span className="text-[7px] uppercase font-bold text-neutral-500 mt-1 tracking-widest">Start</span>
+      </div>
+      <div className="text-neutral-600 font-bold text-lg">➔</div>
+      <div className="flex flex-col items-center">
+        {renderSVG("B")}
+        <span className="text-[7px] uppercase font-bold text-neutral-500 mt-1 tracking-widest">End</span>
+      </div>
+    </div>
+  );
+};
+
 
 // ==========================================
 // 2. DATABASE ALIMENTAZIONE CON MACRO BASE
@@ -114,7 +186,6 @@ export default function Home() {
   const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
   
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
-  // Modifica per tracciare array di serie anzichè un singolo valore
   const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string[]>>({});
   const [storicoSessioni, setStoricoSessioni] = useState<Array<{ data: string, giorno: string, scheda: string, carichi: Record<string, string>, oraId: number }>>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
@@ -200,7 +271,6 @@ export default function Home() {
     return '0';
   };
 
-  // Funzione calcolo Set Dinamico (Fast vs Normale per ogni Fase)
   const getNumeroSet = (fase: string) => {
     if (fase.includes('Fase 1')) return fastWorkout ? 3 : 4;
     return fastWorkout ? 2 : 3;
@@ -217,7 +287,6 @@ export default function Home() {
   const salvaSessione = async () => {
     if (Object.keys(carichiAttuali).length === 0) return alert("Inserisci almeno un carico in un set!");
     
-    // Converte l'array di carichi in una stringa unita es: "80|80|75|70"
     const sessioneCarichiStr: Record<string, string> = {};
     Object.keys(carichiAttuali).forEach(k => {
       const pesiValidi = carichiAttuali[k].filter(v => v !== "");
@@ -355,7 +424,7 @@ export default function Home() {
                 return (
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
                     <div className="flex justify-between items-center mb-1">
-                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'text-emerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
+                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'textemerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
                       <button onClick={() => apriSwapAlimento(cat)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300">Swap</button>
                     </div>
                     <p className="font-semibold text-[13px] text-white leading-tight">{itemScelto.nome}</p>
@@ -367,7 +436,7 @@ export default function Home() {
           </section>
         </div>
 
-        {/* COLONNA 2: ALLENAMENTO FLESSIBILE CON TRACKING SET */}
+        {/* COLONNA 2: ALLENAMENTO FLESSIBILE CON TRACKING SET & SVG */}
         <section className="lg:col-span-5 bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
           <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
             <h2 className="text-lg font-bold text-white">Allenamento Modulabile</h2>
@@ -405,25 +474,32 @@ export default function Home() {
                   const nomeVis = eserciziModificati[es.id] || es.nome;
                   const ultimoCarico = getUltimoCarico(es.id);
                   const numeroSetTarget = getNumeroSet(es.fase);
-                  const visual = asciiVisuals[es.id] || "⚙️ [ -o- ]";
+                  
+                  // Identifica i colori in base alla fase dell'esercizio
+                  const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
+                  const animType = mapEsercizioToAnimazione[es.id] || "squat"; // Fallback
                   
                   return (
                     <div key={es.id} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 relative group overflow-hidden">
-                      <div className={`absolute top-0 left-0 w-1 h-full ${es.fase.includes('Fase 1') ? 'bg-orange-500' : es.fase.includes('Fase 2') ? 'bg-blue-500' : 'bg-red-500'}`}></div>
+                      <div className={`absolute top-0 left-0 w-1 h-full`} style={{backgroundColor: phaseColor}}></div>
                       <div className="pl-2">
                         <div className="flex justify-between items-start">
-                          <span className={`text-[10px] uppercase font-black tracking-widest ${es.fase.includes('Fase 1') ? 'text-orange-500' : es.fase.includes('Fase 2') ? 'text-blue-500' : 'text-red-500'}`}>{es.fase}</span>
+                          <span className="text-[10px] uppercase font-black tracking-widest" style={{color: phaseColor}}>{es.fase}</span>
                           <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-400">Swap</button>
                         </div>
                         
-                        <div className="flex items-center gap-3 mt-1">
-                          <span className="text-xl font-mono text-neutral-400 tracking-tighter" title="Esecuzione corretta">{visual}</span>
-                          <h3 className="font-bold text-sm text-white break-words">{nomeVis}</h3>
+                        <div className="flex items-center gap-4 mt-2">
+                          {/* COMPONENTE SVG INTEGRATO */}
+                          <SvgVisualizer type={animType} color={phaseColor} />
+                          
+                          <div className="flex-1">
+                            <h3 className="font-bold text-sm text-white break-words">{nomeVis}</h3>
+                            <p className="text-[11px] text-neutral-400 italic break-words mt-1">{es.dettaglio}</p>
+                          </div>
                         </div>
                         
-                        <div className="flex items-center gap-2 mt-2">
+                        <div className="mt-3 flex items-center gap-2">
                           <p className={`text-[10px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>{numeroSetTarget} Serie | {fastWorkout ? "Rec. Breve" : "Rec. Pieno"}</p>
-                          <p className="text-[10px] text-neutral-400 italic flex-1 break-words">{es.dettaglio}</p>
                         </div>
                         
                         {/* TRACCIAMENTO SET PER SET */}
