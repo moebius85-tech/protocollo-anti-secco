@@ -74,8 +74,7 @@ const mapEsercizioToAnimazione: Record<string, string> = {
 };
 
 // ==========================================
-// COMPONENTE STICKMAN ANIMATO 
-// BIOMECCANICA FEDELE 100% ESERCIZIO-SPECIFICA
+// COMPONENTE STICKMAN ANIMATO
 // ==========================================
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -130,7 +129,6 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
             <g className="frame-a">
               <circle cx="16" cy="32" r="3.5" {...head} />
               <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
-              {/* Gomiti stretti verso il corpo, mani più vicine */}
               <path d="M 23 33 L 23 27 L 23 20" {...body} /> 
               <line x1="20" y1="20" x2="26" y2="20" {...gear} />
               <rect x="19" y="15" width="2" height="10" {...weightFill} />
@@ -147,20 +145,20 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "machine_press" && ( // Chest Press (Seduto, braccia orizzontali)
+        {type === "machine_press" && ( // Chest Press
           <>
             <path d="M 10 15 L 10 45 M 5 45 L 20 45" {...benchLine} fill="none" />
             <g className="frame-a">
               <circle cx="16" cy="20" r="3.5" {...head} />
               <path d="M 14 24 L 14 35 L 25 45" {...body} />
-              <path d="M 14 24 L 20 28 L 22 24" {...body} /> {/* Mani al petto */}
-              <line x1="22" y1="20" x2="22" y2="28" {...machine} strokeWidth="2" /> {/* Maniglie vicine */}
+              <path d="M 14 24 L 20 28 L 22 24" {...body} />
+              <line x1="22" y1="20" x2="22" y2="28" {...machine} strokeWidth="2" /> 
             </g>
             <g className="frame-b">
               <circle cx="16" cy="20" r="3.5" {...head} />
               <path d="M 14 24 L 14 35 L 25 45" {...body} />
-              <path d="M 14 24 L 35 24" {...body} /> {/* Braccia tese avanti */}
-              <line x1="35" y1="20" x2="35" y2="28" {...machine} strokeWidth="2" /> {/* Maniglie spinte */}
+              <path d="M 14 24 L 35 24" {...body} /> 
+              <line x1="35" y1="20" x2="35" y2="28" {...machine} strokeWidth="2" /> 
             </g>
           </>
         )}
@@ -281,19 +279,19 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "barbell_row" && ( // Rematore Bilanciere (piegato in avanti)
+        {type === "barbell_row" && ( // Rematore Bilanciere
           <>
             <g className="frame-a">
               <circle cx="38" cy="18" r="3.5" {...head} />
-              <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> {/* Busto a 45 gradi */}
-              <path d="M 32 23 L 35 40" {...body} /> {/* Braccia penzoloni */}
+              <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> 
+              <path d="M 32 23 L 35 40" {...body} /> 
               <line x1="28" y1="40" x2="42" y2="40" {...gear} />
               <circle cx="35" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
             </g>
             <g className="frame-b">
               <circle cx="38" cy="18" r="3.5" {...head} />
               <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} />
-              <path d="M 32 23 L 40 20 L 30 28" {...body} /> {/* Tirata al petto, gomito dietro */}
+              <path d="M 32 23 L 40 20 L 30 28" {...body} /> 
               <line x1="23" y1="28" x2="37" y2="28" {...gear} />
               <circle cx="30" cy="28" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
             </g>
@@ -320,26 +318,26 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "cable_pullover" && ( // Pullover Cavi (in piedi, puleggia alta)
+        {type === "cable_pullover" && ( // Pullover Cavi
           <>
             <line x1="10" y1="5" x2="10" y2="45" {...machine} />
             <circle cx="12" cy="5" r="2" fill="#555" /> 
             <g className="frame-a">
               <circle cx="35" cy="15" r="3.5" {...head} />
               <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} />
-              <path d="M 35 21 L 20 10" {...body} /> {/* Braccia tese verso la puleggia */}
+              <path d="M 35 21 L 20 10" {...body} /> 
               <line x1="12" y1="5" x2="20" y2="10" {...cable} />
             </g>
             <g className="frame-b">
               <circle cx="35" cy="15" r="3.5" {...head} />
               <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} />
-              <path d="M 35 21 L 35 38" {...body} /> {/* Braccia spinte dritte in basso */}
+              <path d="M 35 21 L 35 38" {...body} /> 
               <line x1="12" y1="5" x2="35" y2="38" {...cable} />
             </g>
           </>
         )}
 
-        {type === "barbell_curl" && ( // Curl Bilanciere (in piedi)
+        {type === "barbell_curl" && ( // Curl Bilanciere 
           <>
             <g className="frame-a">
               <circle cx="25" cy="10" r="3.5" {...head} />
@@ -352,7 +350,7 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
             <g className="frame-b">
               <circle cx="25" cy="10" r="3.5" {...head} />
               <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} />
-              <path d="M 25 16 L 25 30 L 32 20" {...body} /> {/* Bilanciere chiuso su */}
+              <path d="M 25 16 L 25 30 L 32 20" {...body} /> 
               <line x1="24" y1="20" x2="40" y2="20" {...gear} />
               <rect x="22" y="17" width="2" height="6" {...weightFill} />
               <rect x="40" y="17" width="2" height="6" {...weightFill} />
@@ -360,21 +358,21 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "cable_curl" && ( // Curl ai Cavi (puleggia bassa)
+        {type === "cable_curl" && ( // Curl ai Cavi
           <>
             <line x1="10" y1="5" x2="10" y2="45" {...machine} />
             <circle cx="12" cy="45" r="2" fill="#555" /> 
             <g className="frame-a">
               <circle cx="35" cy="10" r="3.5" {...head} />
               <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} />
-              <path d="M 35 16 L 35 30 L 25 40" {...body} /> {/* Braccia verso il basso */}
+              <path d="M 35 16 L 35 30 L 25 40" {...body} /> 
               <line x1="12" y1="45" x2="25" y2="40" {...cable} />
-              <line x1="22" y1="40" x2="28" y2="40" {...gear} strokeWidth="3" /> {/* Barra dritta */}
+              <line x1="22" y1="40" x2="28" y2="40" {...gear} strokeWidth="3" /> 
             </g>
             <g className="frame-b">
               <circle cx="35" cy="10" r="3.5" {...head} />
               <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} />
-              <path d="M 35 16 L 35 30 L 25 20" {...body} /> {/* Braccia chiuse su */}
+              <path d="M 35 16 L 35 30 L 25 20" {...body} /> 
               <line x1="12" y1="45" x2="25" y2="20" {...cable} />
               <line x1="22" y1="20" x2="28" y2="20" {...gear} strokeWidth="3" />
             </g>
@@ -401,35 +399,35 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "hack_squat" && ( // Hack Squat (Macchina inclinata)
+        {type === "hack_squat" && ( // Hack Squat
           <>
-            <line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /> {/* Rotaia diagonale */}
+            <line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /> 
             <g className="frame-a">
               <circle cx="32" cy="10" r="3.5" {...head} />
-              <path d="M 30 14 L 23 23 L 23 45 M 23 23 L 28 45" {...body} /> {/* Schiena appoggiata, gambe dritte */}
+              <path d="M 30 14 L 23 23 L 23 45 M 23 23 L 28 45" {...body} /> 
             </g>
             <g className="frame-b">
               <circle cx="23" cy="22" r="3.5" {...head} />
-              <path d="M 21 26 L 14 35 L 23 35 L 23 45 M 14 35 L 28 45" {...body} /> {/* Accosciata sulla pedana */}
+              <path d="M 21 26 L 14 35 L 23 35 L 23 45 M 14 35 L 28 45" {...body} /> 
             </g>
           </>
         )}
 
         {type === "leg_press" && ( // Leg Press 45
           <>
-            <path d="M 10 30 L 20 45 L 35 45" {...benchLine} fill="none" /> {/* Sedile */}
-            <line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /> {/* Binario pressa */}
+            <path d="M 10 30 L 20 45 L 35 45" {...benchLine} fill="none" /> 
+            <line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /> 
             <g className="frame-a">
               <circle cx="15" cy="25" r="3.5" {...head} />
-              <path d="M 15 28 L 20 45" {...body} /> {/* Schiena appoggiata */}
-              <path d="M 20 45 L 22 30 L 30 20" {...body} /> {/* Ginocchia al petto */}
-              <line x1="28" y1="15" x2="35" y2="22" {...gear} strokeWidth="3" /> {/* Piastra vicina */}
+              <path d="M 15 28 L 20 45" {...body} /> 
+              <path d="M 20 45 L 22 30 L 30 20" {...body} /> 
+              <line x1="28" y1="15" x2="35" y2="22" {...gear} strokeWidth="3" /> 
             </g>
             <g className="frame-b">
               <circle cx="15" cy="25" r="3.5" {...head} />
               <path d="M 15 28 L 20 45" {...body} />
-              <path d="M 20 45 L 32 30 L 42 10" {...body} /> {/* Gambe stese a 45 gradi */}
-              <line x1="39" y1="5" x2="46" y2="12" {...gear} strokeWidth="3" /> {/* Piastra allontanata */}
+              <path d="M 20 45 L 32 30 L 42 10" {...body} /> 
+              <line x1="39" y1="5" x2="46" y2="12" {...gear} strokeWidth="3" /> 
             </g>
           </>
         )}
@@ -451,7 +449,7 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
           </>
         )}
 
-        {type === "romanian_deadlift" && ( // Stacco Rumeno (Gambe tese/Hinge)
+        {type === "romanian_deadlift" && ( // Stacco Rumeno
           <>
             <g className="frame-a">
               <circle cx="25" cy="10" r="3.5" {...head} />
@@ -462,8 +460,8 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
             </g>
             <g className="frame-b">
               <circle cx="35" cy="20" r="3.5" {...head} />
-              <path d="M 35 20 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> {/* Bacino indietro, hinge netto */}
-              <path d="M 32 22 L 32 40" {...body} /> {/* Bilanciere scende sotto il ginocchio */}
+              <path d="M 35 20 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> 
+              <path d="M 32 22 L 32 40" {...body} /> 
               <line x1="22" y1="40" x2="42" y2="40" {...gear} />
               <circle cx="32" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
             </g>
@@ -481,7 +479,7 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
             </g>
             <g className="frame-b">
               <circle cx="15" cy="32" r="3.5" {...head} />
-              <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...body} /> {/* Ginocchia flesse a 90° */}
+              <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...body} /> 
               <circle cx="36" cy="18" r="3" {...weightFill} /> 
               <path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /> 
             </g>
@@ -490,14 +488,14 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
 
         {type === "calf_raises" && ( // Polpacci in piedi su rialzo
           <>
-            <rect x="20" y="45" width="10" height="5" fill="#555" /> {/* Scalino */}
+            <rect x="20" y="45" width="10" height="5" fill="#555" /> 
             <g className="frame-a">
               <circle cx="25" cy="10" r="3.5" {...head} />
-              <path d="M 25 14 L 25 30 L 25 45" {...body} /> {/* Talloni giù */}
+              <path d="M 25 14 L 25 30 L 25 45" {...body} /> 
             </g>
             <g className="frame-b">
               <circle cx="25" cy="6" r="3.5" {...head} />
-              <path d="M 25 10 L 25 26 L 27 40 L 22 45" {...body} /> {/* Estensione punte, corpo sollevato */}
+              <path d="M 25 10 L 25 26 L 27 40 L 22 45" {...body} /> 
             </g>
           </>
         )}
@@ -560,7 +558,7 @@ export default function Home() {
     if (tipoTurno === 'diretto' && quandoTiAlleni === 'pausa') setQuandoTiAlleni('sera');
   }, [tipoTurno, quandoTiAlleni]);
 
-  const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"];
+  const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); 
   const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
   
@@ -838,6 +836,18 @@ export default function Home() {
                 </button>
               </div>
 
+              {/* SELEZIONE GIORNO DELLA SETTIMANA */}
+              <div className="mb-4">
+                <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">Giorno della settimana:</p>
+                <div className="flex flex-wrap gap-2">
+                  {giorniSettimana.map((gg) => (
+                    <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 min-w-[60px] ${giornoCalendario === gg ? 'bg-neutral-700 text-white border-b-2 border-white' : 'bg-neutral-950 text-neutral-500 border border-neutral-800'}`}>
+                      {gg}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="mb-4">
                 <div className="flex gap-2">
                   {['Spinta', 'Tirata', 'Gambe'].map((sch) => (
@@ -846,6 +856,13 @@ export default function Home() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* BADGE FOCUS MUSCOLARE */}
+              <div className="mb-3">
+                <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-[10px] font-bold text-orange-500 uppercase tracking-wider">
+                  Focus: {dbAllenamento[schedaAttiva].focus}
+                </span>
               </div>
 
               <div className="flex-1 overflow-y-auto pr-2 space-y-4" style={{ maxHeight: "50vh" }}>
@@ -857,6 +874,16 @@ export default function Home() {
                   const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
                   const animType = mapEsercizioToAnimazione[es.id] || "squat_barbell"; 
                   
+                  // TRASFORMAZIONE DINAMICA DEL TESTO DEI RECUPERI E SERIE
+                  let repMostrate = es.rep;
+                  if (fastWorkout) {
+                     repMostrate = repMostrate
+                       .replace("4-5 serie", "3 serie")
+                       .replace("3-4 serie", "2 serie")
+                       .replace("Rec: 2'", "Rec: 1.5'")
+                       .replace("Rec: 1.5'", "Rec: 45\"");
+                  }
+
                   return (
                     <div key={es.id} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 relative group overflow-hidden">
                       <div className={`absolute top-0 left-0 w-1 h-full`} style={{backgroundColor: phaseColor}}></div>
@@ -877,7 +904,9 @@ export default function Home() {
                         </div>
                         
                         <div className="mt-3 flex items-center gap-2">
-                          <p className={`text-[10px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>{numeroSetTarget} Serie | {fastWorkout ? "Rec. Breve" : "Rec. Pieno"}</p>
+                          <p className={`text-[10px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>
+                            {repMostrate}
+                          </p>
                         </div>
                         
                         <div className="mt-4 pt-3 border-t border-neutral-800">
