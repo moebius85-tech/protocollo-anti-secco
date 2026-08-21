@@ -105,44 +105,75 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
 };
 
 // ==========================================
-// 2. DATABASE ALIMENTAZIONE (Moltiplicato per Maggiore Varietà)
+// 2. DATABASE ALIMENTAZIONE CON MOTORE DI CALCOLO GRAMMI
 // ==========================================
+// Aggiunta la funzione 'dettaglioGrammi' ad ogni alimento. 
+// L'algoritmo sa esattamente quanti grammi di materia prima pesare per raggiungere i macro target.
+
 const dbAlimenti = {
   Pasto1: [
-    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: "35g", fat: "15g" },
-    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: "30g", fat: "10g" },
-    { nome: "Uova intere (x3) + Pane segale + Avocado", baseCarbo: 10, pro: "25g", fat: "22g" },
-    { nome: "Crema di riso + Isolate + Mandorle", baseCarbo: 15, pro: "35g", fat: "12g" },
-    { nome: "Yogurt Greco 0% + Muesli + Noci", baseCarbo: 12, pro: "25g", fat: "15g" },
-    { nome: "Fette Biscottate Integrali + Marmellata + Whey", baseCarbo: 16, pro: "30g", fat: "5g" },
-    { nome: "Toast integrale + Fesa di Tacchino + Olio", baseCarbo: 11, pro: "28g", fat: "12g" }
+    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, 
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro Arachidi` },
+    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: 30, fat: 10,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro Arachidi (sopra)` },
+    { nome: "Uova intere + Pane segale + Avocado", baseCarbo: 10, pro: 25, fat: 22,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova Intere • ${Math.round(f*6)}g Avocado` },
+    { nome: "Crema di riso + Isolate + Mandorle", baseCarbo: 15, pro: 35, fat: 12,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate • ${Math.round(f*2)}g Mandorle` },
+    { nome: "Yogurt Greco 0% + Muesli + Noci", baseCarbo: 12, pro: 25, fat: 15,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.4)}g Muesli • ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*1.5)}g Noci` },
+    { nome: "Fette Biscottate + Marmellata + Whey", baseCarbo: 16, pro: 30, fat: 5,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/7)} Fette Biscott. • Velo Marmellata • ${Math.round(p*1.2)}g Whey` },
+    { nome: "Toast integrale + Fesa Tacchino + Olio", baseCarbo: 11, pro: 28, fat: 12,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Toast • ${Math.round(p*4)}g Fesa • ${f}g Olio EVO` }
   ],
   Pasto2: [
-    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: "40g", fat: "12g" },
-    { nome: "Pasta di Semola + Carne Magra (Manzo)", baseCarbo: 20, pro: "45g", fat: "10g" },
-    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: "40g", fat: "20g" },
-    { nome: "Gnocchi di patate + Merluzzo + Olio EVO", baseCarbo: 18, pro: "35g", fat: "15g" },
-    { nome: "Quinoa + Tacchino + Crema di mandorle", baseCarbo: 15, pro: "40g", fat: "18g" },
-    { nome: "Cous Cous + Gamberetti + Zucchine", baseCarbo: 19, pro: "35g", fat: "8g" },
-    { nome: "Riso Venere + Tartare di Manzo + Limone", baseCarbo: 17, pro: "42g", fat: "14g" },
-    { nome: "Wrap integrale + Pollo sfilacciato + Avocado", baseCarbo: 14, pro: "38g", fat: "18g" }
+    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Petto Pollo • ${f}g Olio EVO` },
+    { nome: "Pasta di Semola + Carne Magra (Manzo)", baseCarbo: 20, pro: 45, fat: 10,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato Magro • ${f}g Olio EVO` },
+    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: 40, fat: 20,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone • Grassi dal pesce` },
+    { nome: "Gnocchi di patate + Merluzzo + Olio", baseCarbo: 18, pro: 35, fat: 15,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3)}g Gnocchi • ${Math.round(p*5)}g Merluzzo • ${f}g Olio EVO` },
+    { nome: "Quinoa + Tacchino + Crema mandorle", baseCarbo: 15, pro: 40, fat: 18,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Quinoa • ${Math.round(p*4)}g Tacchino • ${f}g Crema Mandorle` },
+    { nome: "Cous Cous + Gamberetti + Zucchine", baseCarbo: 19, pro: 35, fat: 8,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Cous Cous • ${Math.round(p*5)}g Gamberetti • ${f}g Olio EVO` },
+    { nome: "Riso Venere + Tartare Manzo + Limone", baseCarbo: 17, pro: 42, fat: 14,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Riso Venere • ${Math.round(p*4.5)}g Tartare • ${f}g Olio EVO` },
+    { nome: "Wrap integrale + Pollo + Avocado", baseCarbo: 14, pro: 38, fat: 18,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Piada Integrale • ${Math.round(p*4)}g Pollo • ${Math.round(f*6)}g Avocado` }
   ],
   Pasto3: [
-    { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: "20g", fat: "15g" },
-    { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: "25g", fat: "18g" },
-    { nome: "Caseine micellari + Noci", baseCarbo: 2, pro: "30g", fat: "15g" },
-    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: "16g", fat: "14g" },
-    { nome: "Patate Dolci + Salmone (Pasto completo)", baseCarbo: 16, pro: "40g", fat: "18g" },
-    { nome: "Skyr Naturale + Cioccolato Fondente 85%", baseCarbo: 6, pro: "22g", fat: "12g" }
+    { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: 20, fat: 15,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle` },
+    { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: 25, fat: 18,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*8)}g Fiocchi Latte Magri • ${f}g Burro Arachidi` },
+    { nome: "Caseine micellari + Noci", baseCarbo: 2, pro: 30, fat: 15,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*1.2)}g Caseine (Polvere) • ${Math.round(f*1.5)}g Noci Sgusciate` },
+    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: 16, fat: 14,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*3)}g Parmigiano 30 Mesi • ${Math.round(c*1.5)}g Fette Wasa` },
+    { nome: "Patate Dolci + Salmone (Pasto)", baseCarbo: 16, pro: 40, fat: 18,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone` },
+    { nome: "Skyr Naturale + Ciocc. Fondente 85%", baseCarbo: 6, pro: 22, fat: 12,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*9)}g Skyr • ${Math.round(f*2.2)}g Cioccolato Fondente 85%` }
   ],
   PostWorkout: [
-    { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: "35g", fat: "1g" },
-    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: "35g", fat: "1g" },
-    { nome: "Gallette di riso (x10) + Bresaola/Fesa", baseCarbo: 15, pro: "30g", fat: "3g" },
-    { nome: "Maltodestrine + EAA (Shaker Liquido)", baseCarbo: 14, pro: "15g", fat: "0g" },
-    { nome: "Riso Basmati + Merluzzo (Pasto Solido)", baseCarbo: 20, pro: "40g", fat: "2g" },
-    { nome: "Gnocchi + Albume pastorizzato cotto", baseCarbo: 18, pro: "35g", fat: "0g" },
-    { nome: "Sorbetto alla frutta + Whey Isolate", baseCarbo: 14, pro: "30g", fat: "0g" }
+    { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate` },
+    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate` },
+    { nome: "Gallette di riso + Bresaola", baseCarbo: 15, pro: 30, fat: 3,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola` },
+    { nome: "Maltodestrine + EAA (Shaker)", baseCarbo: 14, pro: 15, fat: 0,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c)}g Maltodestrine • ${p}g EAA (Aminoacidi)` },
+    { nome: "Riso Basmati + Merluzzo (Solido)", baseCarbo: 20, pro: 40, fat: 2,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*5)}g Merluzzo` },
+    { nome: "Gnocchi + Albume pastorizzato", baseCarbo: 18, pro: 35, fat: 0,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3)}g Gnocchi • ${Math.round(p*10)}g Albume (cotto)` },
+    { nome: "Sorbetto frutta + Whey Isolate", baseCarbo: 14, pro: 30, fat: 0,
+      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3.5)}g Sorbetto • ${Math.round(p*1.1)}g Isolate (a parte)` }
   ]
 };
 
@@ -188,7 +219,6 @@ export default function Home() {
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
 
-  // Algoritmo Nutrizionale
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
@@ -303,30 +333,23 @@ export default function Home() {
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
   const aggiornaBiometria = (campo: string, valore: string) => { setBiometria({ ...biometria, [campo]: valore }); };
 
-  // ==========================================
-  // NUOVO CERVELLO NUTRIZIONALE: Cross-Check Carichi + Corpo
-  // ==========================================
   const valutaCheckFisico = async () => {
     const { peso, petto, spalle, braccia, gambe, glutei } = biometria;
     if (peso && eta && altezza && petto && spalle && braccia && gambe && glutei) {
       
       let trendCarichi = "Neutro";
-      // Esempio logica base di stallo (simulata se lo storico è vuoto)
       if (storicoSessioni.length >= 2) trendCarichi = "Stallo Rilevato"; 
 
       let alertMsg = "";
       
-      // Condizione 1: Sale peso, ma salgono solo i glutei/addome e braccia basse.
       if (Number(peso) > 80 && Number(braccia) < 38 && Number(glutei) > 95) {
          setMoltiplicatoreCarbo(4);
          alertMsg = "⚠️ Composizione: Rilevato accumulo grasso addome/glutei. Carboidrati ridotti (4g/kg) per arginare l'adipe.";
       } 
-      // Condizione 2: Carichi in stallo, peso bloccato. Bisogna mangiare di più.
       else if (trendCarichi === "Stallo Rilevato" && Number(peso) < 78) {
          setMoltiplicatoreCarbo(6.5);
          alertMsg = "🔥 Prestazioni: I carichi non salgono. Attivato Surplus Aggressivo (6.5g/kg CHO) per sbloccare la forza muscolare.";
       } 
-      // Standard muscolare
       else {
          setMoltiplicatoreCarbo(5);
          alertMsg = "✅ Analisi completata. Parametri in asse. Protocollo ipertrofico standard mantenuto (5g/kg CHO).";
@@ -350,7 +373,7 @@ export default function Home() {
       ? `1️⃣ PRE-WORKOUT (30 min prima):\n• Pump Stim-Free: Citrullina 6g + Arginina 3g\n• Zero Caffeina per tutelare il sonno profondo.`
       : `1️⃣ PRE-WORKOUT (30 min prima):\n• Focus & Pump: Caffeina 200mg + Citrullina 6g + Beta-Alanina 3g.`;
 
-    const intraW = `2️⃣ INTRA-WORKOUT (Durante allenamento):\n• Borraccia da ${acquaIntra}ml\n• Ciclodestrine (HBCD): ${carbIntra}g\n• EAA (Essenziali): 15g\n• Creatina Monoidrato: 5g\n• Elettroliti (Sodio/Potassio)`;
+    const intraW = `2️⃣ INTRA-WORKOUT (Durante allenamento):\n• Borraccia da ${acquaIntra}ml\n• Ciclodestrine (HBCD): ${carbIntra}g\n• EAA (Essenziali): 15g\n• Creatina Monoidrato: 5g\n• Sale/Elettroliti: 1 pizzico`;
 
     const bloccoIntra = { 
       isIntra: true, 
@@ -455,7 +478,10 @@ export default function Home() {
                 }
                 const cat = blocco.idCategoria as keyof typeof dbAlimenti;
                 const isPW = cat === 'PostWorkout';
-                const itemScelto = dbAlimenti[cat]?.[pastiSelezionati[cat]] || {nome:"", baseCarbo:0, pro:"", fat:""};
+                const itemScelto = dbAlimenti[cat]?.[pastiSelezionati[cat]] || {nome:"", baseCarbo:0, pro:0, fat:0, dettaglioGrammi:()=>""};
+                
+                const macroCho = itemScelto.baseCarbo * moltiplicatoreCarbo;
+
                 return (
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
                     <div className="flex justify-between items-center mb-1">
@@ -463,10 +489,18 @@ export default function Home() {
                       <button onClick={() => apriSwapAlimento(cat)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Swap</button>
                     </div>
                     <p className="font-semibold text-[13px] text-white leading-tight mt-2">{itemScelto.nome}</p>
-                    <div className="mt-2 bg-neutral-900 p-1.5 rounded flex justify-between">
-                       <span className="text-[10px] text-neutral-400 font-mono">CHO: <strong className="text-orange-400">{itemScelto.baseCarbo * moltiplicatoreCarbo}g</strong></span>
-                       <span className="text-[10px] text-neutral-400 font-mono">PRO: <strong>{itemScelto.pro}</strong></span>
-                       <span className="text-[10px] text-neutral-400 font-mono">FAT: <strong>{itemScelto.fat}</strong></span>
+                    
+                    {/* SEZIONE GRAMMATURE DELLA SPESA */}
+                    <div className="mt-2 bg-neutral-900 p-2 rounded border border-neutral-800">
+                      <p className="text-[11px] text-neutral-300 font-mono leading-relaxed">
+                        {itemScelto.dettaglioGrammi(macroCho, itemScelto.pro, itemScelto.fat)}
+                      </p>
+                    </div>
+
+                    <div className="mt-2 flex justify-between px-1">
+                       <span className="text-[10px] text-neutral-400 font-mono">CHO: <strong className="text-orange-400">{macroCho}g</strong></span>
+                       <span className="text-[10px] text-neutral-400 font-mono">PRO: <strong>{itemScelto.pro}g</strong></span>
+                       <span className="text-[10px] text-neutral-400 font-mono">FAT: <strong>{itemScelto.fat}g</strong></span>
                     </div>
                   </div>
                 );
@@ -498,7 +532,6 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* SELEZIONE GIORNO DELLA SETTIMANA RESTAURATA */}
               <div className="mb-4">
                 <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">Giorno della settimana:</p>
                 <div className="flex flex-wrap gap-2">
@@ -520,7 +553,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* BADGE FOCUS MUSCOLARE RESTAURATO */}
               <div className="mb-3">
                 <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-[10px] font-bold text-orange-500 uppercase tracking-wider shadow-inner">
                   Focus: {dbAllenamento[schedaAttiva].focus}
@@ -536,7 +568,6 @@ export default function Home() {
                   const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
                   const animType = mapEsercizioToAnimazione[es.id] || "squat_barbell"; 
                   
-                  // TRASFORMAZIONE DINAMICA DEL TESTO DEI RECUPERI E SERIE
                   let repMostrate = es.rep;
                   if (fastWorkout) {
                      repMostrate = repMostrate
@@ -556,7 +587,6 @@ export default function Home() {
                         </div>
                         
                         <div className="flex items-center gap-4 mt-2">
-                          {/* COMPONENTE STICKMAN SVG INTEGRATO E ANIMATO */}
                           <SvgVisualizer type={animType} color={phaseColor} />
                           
                           <div className="flex-1">
@@ -743,12 +773,16 @@ export default function Home() {
             </div>
             <div className="space-y-3">
               {/* @ts-ignore */}
-              {dbAlimenti[categoriaDaCambiare].map((alt, i) => (
-                <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-emerald-500/50 group transition-all">
-                  <p className="font-bold text-sm text-white group-hover:text-emerald-400">{alt.nome}</p>
-                  <p className="text-[11px] text-neutral-500 mt-1 font-mono">CHO: {alt.baseCarbo * moltiplicatoreCarbo}g | PRO: {alt.pro} | FAT: {alt.fat}</p>
-                </button>
-              ))}
+              {dbAlimenti[categoriaDaCambiare].map((alt, i) => {
+                 const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
+                 return (
+                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-emerald-500/50 group transition-all">
+                    <p className="font-bold text-sm text-white group-hover:text-emerald-400">{alt.nome}</p>
+                    <p className="text-[11px] text-neutral-500 mt-1 font-mono">CHO: {macroCho}g | PRO: {alt.pro}g | FAT: {alt.fat}g</p>
+                    <p className="text-[10px] text-neutral-400 mt-2 p-1 bg-neutral-900 rounded">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
+                  </button>
+                 );
+              })}
             </div>
           </div>
         </div>
