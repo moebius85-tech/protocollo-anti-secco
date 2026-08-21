@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createClient } from "@supabase/supabase-js";
 
 // Configurazione Supabase
@@ -73,16 +73,16 @@ const dbAlimenti = {
 
 export default function Home() {
   // --- STATI: MULTI-UTENTE E CHECK ---
+  const [listaAtleti, setListaAtleti] = useState<string[]>(["Leonardo"]);
   const [utente, setUtente] = useState("Leonardo");
+  const [isNuovoUtente, setIsNuovoUtente] = useState(false);
+  const [nomeNuovoUtente, setNomeNuovoUtente] = useState("");
+  
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
   
   // --- STATI: LOGISTICA TURNI E TIMING ALLENAMENTO ---
   const [tipoTurno, setTipoTurno] = useState('spezzato');
-  const [inizio1, setInizio1] = useState('');
-  const [fine1, setFine1] = useState('');
-  const [inizio2, setInizio2] = useState('');
-  const [fine2, setFine2] = useState('');
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
 
   useEffect(() => {
@@ -93,8 +93,8 @@ export default function Home() {
 
   // --- STATI: ALLENAMENTO FLESSIBILE ---
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"];
-  const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); // Giorno effettivo
-  const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); // Tipo allenamento
+  const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); 
+  const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
   
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
   const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string>>({});
@@ -107,13 +107,28 @@ export default function Home() {
   // --- STATI: ALIMENTAZIONE & BIOMETRIA ---
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
-  const [feedbackIA, setFeedbackIA] = useState('Imposta i tuoi orari per generare la timeline alimentare.');
   const [pastiSelezionati, setPastiSelezionati] = useState({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
-  
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
 
-  // --- CARICAMENTO DATI UTENTE ---
+  // --- STATI: CHAT GEMINI IA ---
+  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, alternative, o consigli alimentari in base ai tuoi dati.' }]);
+  const [inputChat, setInputChat] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // --- CARICAMENTO ATLETI E DATI ---
+  useEffect(() => {
+    async function fetchAtleti() {
+      const { data } = await supabase.from("check_utente").select("nome_utente");
+      if (data) {
+        const unici = Array.from(new Set(data.map(d => d.nome_utente)));
+        if (unici.length > 0) setListaAtleti(unici);
+      }
+    }
+    fetchAtleti();
+  }, []);
+
   useEffect(() => {
     async function caricaDatiUtente() {
       const { data } = await supabase.from("check_utente").select("*").eq("nome_utente", utente).order("data", { ascending: false });
@@ -121,13 +136,54 @@ export default function Home() {
         setEta(data[0].eta || "");
         setAltezza(data[0].altezza || "");
         setBiometria(data[0].circonferenze || { peso: data[0].peso || '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
-        setFeedbackIA(`Profilo di ${utente} caricato con successo dal Database.`);
+      } else {
+        // Reset se utente nuovo
+        setEta(""); setAltezza(""); setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
       }
     }
-    caricaDatiUtente();
-  }, [utente]);
+    if (!isNuovoUtente) caricaDatiUtente();
+  }, [utente, isNuovoUtente]);
 
-  // --- HANDLERS: ALLENAMENTO ---
+  // Auto-scroll chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatLog]);
+
+  // --- HANDLER: INVIA MESSAGGIO GEMINI ---
+  const inviaMessaggioIA = async () => {
+    if (!inputChat.trim()) return;
+    const msg = inputChat;
+    setChatLog(prev => [...prev, { role: 'user', text: msg }]);
+    setInputChat("");
+    setIsTyping(true);
+
+    try {
+      // Passiamo anche il contesto attuale per risposte più precise
+      const contesto = `Utente: ${utente}, Peso: ${biometria.peso}kg, Scheda di oggi: ${schedaAttiva}`;
+      
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, context: contesto })
+      });
+      
+      const data = await response.json();
+      setChatLog(prev => [...prev, { role: 'ai', text: data.reply || "Errore nella risposta." }]);
+    } catch (error) {
+      setChatLog(prev => [...prev, { role: 'ai', text: "Errore di connessione con i server Gemini." }]);
+    }
+    setIsTyping(false);
+  };
+
+  // --- HANDLERS: ALLENAMENTO E CHECK ---
+  const salvaNuovoAtleta = () => {
+    if (nomeNuovoUtente.trim()) {
+      setListaAtleti(prev => [...prev, nomeNuovoUtente]);
+      setUtente(nomeNuovoUtente);
+      setIsNuovoUtente(false);
+    }
+  };
+
   const getUltimoCarico = (idEs: string) => {
     for (let i = storicoSessioni.length - 1; i >= 0; i--) {
       if (storicoSessioni[i].carichi[idEs]) return storicoSessioni[i].carichi[idEs];
@@ -136,17 +192,12 @@ export default function Home() {
   };
 
   const salvaSessione = async () => {
-    if (Object.keys(carichiAttuali).length === 0) {
-      setFeedbackIA("Non hai inserito nessun carico. La sessione non è stata salvata.");
-      return;
-    }
+    if (Object.keys(carichiAttuali).length === 0) return alert("Inserisci almeno un carico!");
     const nuovaSessione = { data: new Date().toLocaleDateString('it-IT'), oraId: Date.now(), giorno: giornoCalendario, scheda: schedaAttiva, carichi: { ...carichiAttuali } };
     setStoricoSessioni([...storicoSessioni, nuovaSessione]);
     setCarichiAttuali({}); 
-    
-    // Salvataggio su Supabase (Opzionale: crea tabella storico_allenamenti in futuro)
     await supabase.from("storico_allenamenti").insert([{ nome_utente: utente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: nuovaSessione.carichi, data: new Date() }]);
-    setFeedbackIA(`Sessione salvata nel cloud. I carichi registrati sono diventati i nuovi target da battere per ${utente}.`);
+    alert(`Sessione salvata nel cloud per ${utente}.`);
   };
 
   const apriSwapEsercizio = (es: any) => { setEsercizioDaCambiare({ id: es.id, nomeAttuale: eserciziModificati[es.id] || es.nome, alternative: es.alternative }); setModalEsercizio(true); };
@@ -157,14 +208,12 @@ export default function Home() {
 
   const valutaCheckFisico = async () => {
     const { peso, petto, spalle, braccia, gambe, glutei } = biometria;
-    if (peso && petto && spalle && braccia && gambe && glutei && eta && altezza) {
+    if (peso && eta && altezza) {
       setMoltiplicatoreCarbo(6);
-      setFeedbackIA(`Analisi completata. Volume globale in stallo rilevato. Ho aumentato l'introito a 6g/kg di carboidrati per forzare l'accumulo. Matrice aggiornata per ${utente}. Dati inviati al Cloud.`);
-      
-      // Salva check su Supabase
       await supabase.from("check_utente").insert([{ nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date() }]);
+      alert("Check fisico salvato correttamente!");
     } else {
-      setFeedbackIA("Compila TUTTI i campi del check corporeo, l'Età e l'Altezza per il salvataggio.");
+      alert("Compila almeno Peso, Età e Altezza.");
     }
   };
 
@@ -181,28 +230,42 @@ export default function Home() {
       <header className="mb-6 border-b border-orange-500/30 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-orange-500">
-            Protocollo Anti-Secco <span className="text-white">TEST</span>
+            Protocollo Anti-Secco <span className="text-white">PRO</span>
           </h1>
-          <p className="text-xs sm:text-sm text-neutral-400 font-medium tracking-wide">Multi-User Coaching & Tracking</p>
+          <p className="text-xs sm:text-sm text-neutral-400 font-medium tracking-wide">AI Coaching & Multi-User Tracking</p>
         </div>
-        <div className="flex flex-col w-full sm:w-auto">
-          <label className="text-[10px] text-orange-400 font-bold uppercase mb-1">Seleziona Atleta:</label>
-          <input 
-            type="text" 
-            value={utente} 
-            onChange={(e) => setUtente(e.target.value)}
-            className="bg-neutral-900 border border-neutral-700 text-white font-bold p-2 rounded focus:outline-none focus:border-orange-500 w-full"
-          />
+        
+        {/* SELETTORE ATLETI A TENDINA */}
+        <div className="flex flex-col w-full sm:w-64 border border-neutral-700 bg-neutral-900 p-2 rounded-lg">
+          <label className="text-[10px] text-orange-400 font-bold uppercase mb-1">Atleta Attivo:</label>
+          {isNuovoUtente ? (
+            <div className="flex gap-2">
+              <input type="text" placeholder="Nome atleta..." value={nomeNuovoUtente} onChange={(e) => setNomeNuovoUtente(e.target.value)} className="bg-neutral-950 text-white text-sm p-1.5 rounded outline-none w-full border border-neutral-600 focus:border-orange-500" />
+              <button onClick={salvaNuovoAtleta} className="bg-orange-600 text-white text-xs font-bold px-3 rounded">Ok</button>
+              <button onClick={() => setIsNuovoUtente(false)} className="bg-neutral-700 text-white text-xs font-bold px-2 rounded">X</button>
+            </div>
+          ) : (
+            <select 
+              value={utente} 
+              onChange={(e) => {
+                if(e.target.value === "NUOVO") setIsNuovoUtente(true);
+                else setUtente(e.target.value);
+              }}
+              className="bg-neutral-950 text-white text-sm font-bold p-1.5 rounded outline-none border border-neutral-800 cursor-pointer w-full"
+            >
+              {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
+              <option value="NUOVO" className="text-orange-500 font-bold">+ Aggiungi Nuovo Atleta</option>
+            </select>
+          )}
         </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* COLONNA 1: TURNI E TELEMETRIA */}
+        
+        {/* COLONNA 1: TELEMETRIA E CHAT IA */}
         <div className="lg:col-span-4 space-y-6">
           <section className="bg-neutral-900 border border-neutral-800 p-4 sm:p-5 rounded-xl shadow-lg">
-            <h2 className="text-base sm:text-lg font-bold text-white border-b border-neutral-700 pb-2 mb-3">Telemetria & Parametri ({utente})</h2>
-            
-            {/* Età e Altezza */}
+            <h2 className="text-base sm:text-lg font-bold text-white border-b border-neutral-700 pb-2 mb-3">Check Fisico ({utente})</h2>
             <div className="flex gap-2 mb-4">
               <div className="flex-1 bg-neutral-950 p-2 rounded-lg border border-neutral-800">
                 <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
@@ -213,7 +276,6 @@ export default function Home() {
                 <input type="number" value={altezza} onChange={(e) => setAltezza(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
               </div>
             </div>
-
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {['peso', 'petto', 'spalle', 'braccia', 'gambe', 'glutei'].map((campo) => (
                 <div key={campo} className="bg-neutral-950 p-2 rounded-lg border border-neutral-800">
@@ -223,46 +285,43 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <button onClick={valutaCheckFisico} className="w-full py-3 mt-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all">Salva & Analizza Check</button>
+            <button onClick={valutaCheckFisico} className="w-full py-2 mt-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] transition-all">Salva Check Cloud</button>
           </section>
 
-          <section className="bg-neutral-900 border border-neutral-800 p-4 sm:p-5 rounded-xl shadow-lg">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-neutral-700 pb-2 mb-4 gap-2">
-              <h2 className="text-base sm:text-lg font-bold text-white">Timeline Nutrizionale</h2>
-              <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${moltiplicatoreCarbo > 5 ? 'bg-orange-600 text-white animate-pulse' : 'bg-neutral-800 text-neutral-400'}`}>
-                {moltiplicatoreCarbo}g CHO/Kg
-              </span>
-            </div>
-            <div className="space-y-3">
-              {generaTimelineDieta().map((blocco, idx) => {
-                if (blocco.isIntra) {
-                  return (
-                    <div key={`intra-${idx}`} className="p-3 rounded-lg border bg-orange-950/20 border-orange-900/50 break-words">
-                      <span className="text-[10px] uppercase font-bold text-orange-500 mb-1 block">{blocco.titolo}</span>
-                      <p className="font-semibold text-sm text-white">{blocco.descrizione}</p>
-                    </div>
-                  );
-                }
-                const cat = blocco.idCategoria as keyof typeof dbAlimenti;
-                const isPW = cat === 'PostWorkout';
-                const itemScelto = dbAlimenti[cat][pastiSelezionati[cat]];
-                const carboCalcolati = itemScelto.baseCarbo * moltiplicatoreCarbo;
-
-                return (
-                  <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border break-words ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'text-emerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
-                      <button onClick={() => apriSwapAlimento(cat)} className="text-[10px] bg-neutral-800 px-2 py-1 rounded font-bold uppercase text-neutral-300">Swap</button>
-                    </div>
-                    <p className="font-semibold text-[13px] text-white leading-tight">{itemScelto.nome}</p>
-                    <p className="text-[11px] text-neutral-400 font-mono mt-1 flex flex-wrap gap-1">
-                      <span>CHO: <span className="text-orange-400 font-bold">{carboCalcolati}g</span></span>
-                      <span>| PRO: {itemScelto.pro}</span>
-                      <span>| FAT: {itemScelto.fat}</span>
-                    </p>
+          {/* SEZIONE CHAT GEMINI */}
+          <section className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-lg flex flex-col h-[400px]">
+            <h2 className="text-base font-bold text-white border-b border-neutral-700 pb-2 mb-2 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+              Coach IA (Gemini)
+            </h2>
+            
+            <div className="flex-1 overflow-y-auto space-y-3 p-2 bg-neutral-950 rounded-lg border border-neutral-800 mb-3">
+              {chatLog.map((msg, i) => (
+                <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  <span className={`text-[9px] uppercase font-bold mb-1 ${msg.role === 'user' ? 'text-neutral-500 pr-1' : 'text-orange-500 pl-1'}`}>
+                    {msg.role === 'user' ? utente : 'Coach IA'}
+                  </span>
+                  <div className={`p-2.5 rounded-xl text-xs leading-relaxed max-w-[90%] ${msg.role === 'user' ? 'bg-neutral-800 text-white rounded-br-sm' : 'bg-orange-950/40 border border-orange-900/50 text-neutral-200 rounded-bl-sm'}`}>
+                    {msg.text}
                   </div>
-                );
-              })}
+                </div>
+              ))}
+              {isTyping && <div className="text-[10px] text-orange-500 font-mono pl-2 animate-pulse">Gemini sta scrivendo...</div>}
+              <div ref={chatEndRef} />
+            </div>
+
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                value={inputChat} 
+                onChange={e => setInputChat(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()}
+                placeholder="Chiedi info su scheda, alternative..."
+                className="flex-1 bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-orange-500"
+              />
+              <button onClick={inviaMessaggioIA} disabled={isTyping} className="bg-orange-600 hover:bg-orange-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition-all disabled:opacity-50">
+                Invia
+              </button>
             </div>
           </section>
         </div>
@@ -272,13 +331,12 @@ export default function Home() {
           <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
             <h2 className="text-base sm:text-lg font-bold text-white">Gestione Workout</h2>
             <button onClick={() => setVistaStorico(!vistaStorico)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-md ${vistaStorico ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300'}`}>
-              {vistaStorico ? 'Torna al Workout' : 'Calendario'}
+              {vistaStorico ? 'Torna al Workout' : 'Storico'}
             </button>
           </div>
 
           {!vistaStorico ? (
             <>
-              {/* SELEZIONE GIORNO DELLA SETTIMANA */}
               <div className="mb-4">
                 <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">1. In che giorno ti stai allenando?</p>
                 <div className="flex flex-wrap gap-2">
@@ -288,7 +346,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* SELEZIONE TIPO SCHEDA */}
               <div className="mb-4">
                 <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">2. Scegli la scheda di oggi:</p>
                 <div className="flex gap-2">
@@ -306,8 +363,7 @@ export default function Home() {
                 </span>
               </div>
 
-              {/* LISTA ESERCIZI RESPONSIVE */}
-              <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-4" style={{ maxHeight: "60vh" }}>
+              <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 space-y-4" style={{ maxHeight: "55vh" }}>
                 {dbAllenamento[schedaAttiva].esercizi.map((es) => {
                   const nomeVis = eserciziModificati[es.id] || es.nome;
                   const ultimoCarico = getUltimoCarico(es.id);
@@ -326,7 +382,6 @@ export default function Home() {
                           <p className="text-[10px] sm:text-[11px] text-neutral-400 italic flex-1 break-words">{es.dettaglio}</p>
                         </div>
                         
-                        {/* INPUT TRACKING RESPONSIVE */}
                         <div className="mt-4 pt-3 border-t border-neutral-800 flex flex-col sm:flex-row gap-3 sm:gap-4">
                           <div className="w-full sm:w-1/2">
                             <label className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-1">Target</label>
@@ -350,7 +405,7 @@ export default function Home() {
               </div>
               
               <div className="mt-4 pt-4 border-t border-neutral-700">
-                <button onClick={salvaSessione} className="w-full py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold uppercase tracking-widest text-sm rounded-lg shadow-lg active:scale-95 transition-all">
+                <button onClick={salvaSessione} className="w-full py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold uppercase tracking-widest text-sm rounded-lg shadow-lg transition-all">
                   Concludi e Salva {schedaAttiva} ({giornoCalendario})
                 </button>
               </div>
@@ -396,25 +451,6 @@ export default function Home() {
               {esercizioDaCambiare.alternative.map((alt, i) => (
                 <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg group">
                   <p className="font-bold text-sm text-white group-hover:text-orange-400 break-words">{alt.nome}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {modalAlimento && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4 border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-lg text-white">Swap Pasto</h3>
-              <button onClick={() => setModalAlimento(false)} className="text-neutral-500 text-xl">&times;</button>
-            </div>
-            <div className="space-y-3">
-              {/* @ts-ignore */}
-              {dbAlimenti[categoriaDaCambiare].map((alt, i) => (
-                <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg group break-words">
-                  <p className="font-bold text-sm text-white group-hover:text-emerald-400">{alt.nome}</p>
                 </button>
               ))}
             </div>
