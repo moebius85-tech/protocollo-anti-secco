@@ -8,8 +8,16 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO (Integrale E1-E27)
+// 1. DATABASE ALLENAMENTO E VISUAL ASCII
 // ==========================================
+const asciiVisuals: Record<string, string> = {
+  "e1": "🏋️‍♂️ [ -o- ]", "e3": "🏋️‍♂️ [ /o/ ]", "e4": "🤖 [ =o= ]", "e5": "🦅 [ \\o/ ]", 
+  "e18": "🏋️‍♂️ [ \\o/ ]", "e20": "🦅 [ ~o~ ]", "e22": "🏋️‍♂️ [ \\o| ]", "e27": "🧵 [ \\o| ]", 
+  "e6": "🦇 [ \\_o_/ ]", "e7": "🏋️‍♂️ [ /o\\ ]", "e9": "🛶 [ -o= ]", "e10": "🪁 [ \\o- ]", 
+  "e23": "🏋️‍♂️ [ \\o/ ]", "e26": "🧵 [ \\o/ ]", "e11": "🏋️‍♂️ [ 8|8 ]", "e12": "🤖 [ 8|8 ]", 
+  "e14": "💺 [ \\o_ ]", "e15": "🪑 [ -o_ ]", "e13": "🏋️‍♂️ [ /o\\ ]", "e16": "🛏️ [ -o_ ]", "e17": "🧍‍♂️ [ |o| ]"
+};
+
 const dbAllenamento = {
   Spinta: {
     focus: "SPINTA (Petto, Spalle, Tricipiti)",
@@ -71,9 +79,6 @@ const dbAlimenti = {
   ]
 };
 
-// ==========================================
-// INFO MISURE PER TELEMETRIA FISICA
-// ==========================================
 const infoMisure = {
   peso: { label: "Peso", unit: "kg", desc: "Bilancia a digiuno, mattina post-bagno" },
   petto: { label: "Petto", unit: "cm", desc: "Circonferenza altezza capezzoli, respiro neutro" },
@@ -84,7 +89,6 @@ const infoMisure = {
 };
 
 export default function Home() {
-  // --- STATI: MULTI-UTENTE E CHECK ---
   const [listaAtleti, setListaAtleti] = useState<string[]>(["Leonardo"]);
   const [utente, setUtente] = useState("Leonardo");
   const [isNuovoUtente, setIsNuovoUtente] = useState(false);
@@ -93,49 +97,42 @@ export default function Home() {
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
   
-  // --- STATI: LOGISTICA TURNI E TIMING ALLENAMENTO ---
   const [tipoTurno, setTipoTurno] = useState('spezzato');
   const [inizio1, setInizio1] = useState('');
   const [fine1, setFine1] = useState('');
   const [inizio2, setInizio2] = useState('');
   const [fine2, setFine2] = useState('');
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
-  const [fastWorkout, setFastWorkout] = useState(false); // Toggle per comprimere il tempo
+  const [fastWorkout, setFastWorkout] = useState(false);
 
   useEffect(() => {
-    if (tipoTurno === 'diretto' && quandoTiAlleni === 'pausa') {
-      setQuandoTiAlleni('sera');
-    }
+    if (tipoTurno === 'diretto' && quandoTiAlleni === 'pausa') setQuandoTiAlleni('sera');
   }, [tipoTurno, quandoTiAlleni]);
 
-  // --- STATI: ALLENAMENTO FLESSIBILE ---
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"];
   const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); 
   const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
   
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
-  const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string>>({});
+  // Modifica per tracciare array di serie anzichè un singolo valore
+  const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string[]>>({});
   const [storicoSessioni, setStoricoSessioni] = useState<Array<{ data: string, giorno: string, scheda: string, carichi: Record<string, string>, oraId: number }>>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
 
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
 
-  // --- STATI: ALIMENTAZIONE & BIOMETRIA ---
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
   const [pastiSelezionati, setPastiSelezionati] = useState({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
-  
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
 
-  // --- STATI: CHAT GEMINI IA ---
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, alternative, o logiche di allenamento.' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // --- CARICAMENTO ATLETI E DATI ---
   useEffect(() => {
     async function fetchAtleti() {
       const { data } = await supabase.from("check_utente").select("nome_utente");
@@ -153,22 +150,13 @@ export default function Home() {
       if (data && data.length > 0) {
         setEta(data[0].eta || "");
         setAltezza(data[0].altezza || "");
-        
-        // Estrazione sicura sia del peso che delle circonferenze dallo storico
         const circ = data[0].circonferenze || {};
         setBiometria({ 
           peso: data[0].peso?.toString() || circ.peso?.toString() || '', 
-          petto: circ.petto || '', 
-          spalle: circ.spalle || '', 
-          braccia: circ.braccia || '', 
-          gambe: circ.gambe || '', 
-          glutei: circ.glutei || '' 
+          petto: circ.petto || '', spalle: circ.spalle || '', braccia: circ.braccia || '', 
+          gambe: circ.gambe || '', glutei: circ.glutei || '' 
         });
-        
-        // Ripristino eventuali logiche di carbo calcolati precedentemente
-        if (data[0].peso) {
-           setMoltiplicatoreCarbo(5); 
-        }
+        if (data[0].peso) setMoltiplicatoreCarbo(5); 
       } else {
         setEta(""); setAltezza(""); setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
       }
@@ -176,26 +164,17 @@ export default function Home() {
     if (!isNuovoUtente) caricaDatiUtente();
   }, [utente, isNuovoUtente]);
 
-  // Auto-scroll chat
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatLog]);
+  useEffect(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), [chatLog]);
 
-  // --- HANDLER: INVIA MESSAGGIO GEMINI ---
   const inviaMessaggioIA = async () => {
     if (!inputChat.trim()) return;
     const msg = inputChat;
     setChatLog(prev => [...prev, { role: 'user', text: msg }]);
     setInputChat("");
     setIsTyping(true);
-
     try {
       const contesto = `Utente: ${utente}, Peso: ${biometria.peso}kg, Scheda di oggi: ${schedaAttiva}, Turno: ${tipoTurno}, Allenamento: ${quandoTiAlleni}`;
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg, context: contesto })
-      });
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, context: contesto }) });
       const data = await response.json();
       setChatLog(prev => [...prev, { role: 'ai', text: data.reply || "Errore nella risposta." }]);
     } catch (error) {
@@ -204,14 +183,12 @@ export default function Home() {
     setIsTyping(false);
   };
 
-  // --- HANDLERS: ALLENAMENTO E CHECK ---
   const salvaNuovoAtleta = async () => {
     if (nomeNuovoUtente.trim()) {
       const nuovo = nomeNuovoUtente.trim();
       setListaAtleti(prev => [...prev, nuovo]);
       setUtente(nuovo);
       setIsNuovoUtente(false);
-      // Salva immediatamente nel DB per fissare l'atleta in memoria
       await supabase.from("check_utente").insert([{ nome_utente: nuovo, data: new Date() }]);
     }
   };
@@ -223,13 +200,35 @@ export default function Home() {
     return '0';
   };
 
+  // Funzione calcolo Set Dinamico (Fast vs Normale per ogni Fase)
+  const getNumeroSet = (fase: string) => {
+    if (fase.includes('Fase 1')) return fastWorkout ? 3 : 4;
+    return fastWorkout ? 2 : 3;
+  };
+
+  const updateCaricoSet = (idEs: string, indexSet: number, valore: string) => {
+    setCarichiAttuali(prev => {
+      const arrayCorrente = prev[idEs] ? [...prev[idEs]] : Array(5).fill("");
+      arrayCorrente[indexSet] = valore;
+      return { ...prev, [idEs]: arrayCorrente };
+    });
+  };
+
   const salvaSessione = async () => {
-    if (Object.keys(carichiAttuali).length === 0) return alert("Inserisci almeno un carico!");
-    const nuovaSessione = { data: new Date().toLocaleDateString('it-IT'), oraId: Date.now(), giorno: giornoCalendario, scheda: schedaAttiva, carichi: { ...carichiAttuali } };
+    if (Object.keys(carichiAttuali).length === 0) return alert("Inserisci almeno un carico in un set!");
+    
+    // Converte l'array di carichi in una stringa unita es: "80|80|75|70"
+    const sessioneCarichiStr: Record<string, string> = {};
+    Object.keys(carichiAttuali).forEach(k => {
+      const pesiValidi = carichiAttuali[k].filter(v => v !== "");
+      if(pesiValidi.length > 0) sessioneCarichiStr[k] = pesiValidi.join(" | ");
+    });
+
+    const nuovaSessione = { data: new Date().toLocaleDateString('it-IT'), oraId: Date.now(), giorno: giornoCalendario, scheda: schedaAttiva, carichi: sessioneCarichiStr };
     setStoricoSessioni([...storicoSessioni, nuovaSessione]);
     setCarichiAttuali({}); 
-    await supabase.from("storico_allenamenti").insert([{ nome_utente: utente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: nuovaSessione.carichi, data: new Date() }]);
-    alert(`Sessione salvata nel cloud per ${utente}. Ottimo lavoro.`);
+    await supabase.from("storico_allenamenti").insert([{ nome_utente: utente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: sessioneCarichiStr, data: new Date() }]);
+    alert(`Sessione salvata nel cloud per ${utente}. Monitoraggio fatica registrato.`);
   };
 
   const apriSwapEsercizio = (es: any) => { setEsercizioDaCambiare({ id: es.id, nomeAttuale: eserciziModificati[es.id] || es.nome, alternative: es.alternative }); setModalEsercizio(true); };
@@ -241,24 +240,18 @@ export default function Home() {
   const valutaCheckFisico = async () => {
     const { peso, petto, spalle, braccia, gambe, glutei } = biometria;
     if (peso && eta && altezza && petto && spalle && braccia && gambe && glutei) {
-      
-      // LOGICA ALGORITMO: Controllo se stiamo mettendo grasso o muscolo
-      // Nel Metodo Anti-Secco, se sale il peso ma le braccia/gambe sono piatte e salgono i glutei, stiamo sporcando.
       let alertMsg = "Analisi completata. Trend muscolare positivo confermato. Setup macronutrienti ottimale.";
-      
-      // Simulazione base dell'algoritmo di aggiustamento
       if (Number(peso) > 80 && Number(braccia) < 38) {
          setMoltiplicatoreCarbo(4);
-         alertMsg = "Attenzione: l'algoritmo rileva un aumento di peso senza incremento dei volumi target (Braccia/Petto). Carboidrati ridotti per arginare l'accumulo di grasso.";
+         alertMsg = "Attenzione: aumento di peso senza incremento volumi target (Braccia/Petto). Carboidrati ridotti (4g/kg) per arginare grasso.";
       } else {
          setMoltiplicatoreCarbo(6);
-         alertMsg = "Volume in stallo rilevato. L'algoritmo ha alzato i carboidrati a 6g/kg per forzare la crescita muscolare. Spingi in allenamento.";
+         alertMsg = "Volume in stallo. L'algoritmo ha alzato i carboidrati a 6g/kg per forzare la crescita muscolare.";
       }
-
       await supabase.from("check_utente").insert([{ nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date() }]);
       alert(alertMsg);
     } else {
-      alert("Compila TUTTI i campi del check corporeo per permettere all'algoritmo di ricalcolare i macros in sicurezza.");
+      alert("Compila TUTTI i campi fisici per calcolare i macros in sicurezza.");
     }
   };
 
@@ -269,11 +262,7 @@ export default function Home() {
     return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, { idCategoria: 'Pasto2', titoloUI: 'Pranzo' }, { idCategoria: 'Pasto3', titoloUI: 'Spuntino Pre-Turno/Pre-Workout' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' } ];
   };
 
-  // Funzione per calcolare i minuti stimati della sessione attiva
-  const calcolaTempoScheda = () => {
-    const baseMin = fastWorkout ? 45 : 75; 
-    return baseMin;
-  };
+  const calcolaTempoScheda = () => fastWorkout ? 45 : 75;
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 p-4 lg:p-6 font-sans overflow-x-hidden">
@@ -286,24 +275,16 @@ export default function Home() {
           <p className="text-sm text-neutral-400 font-medium tracking-wide">Tracking Carichi & Timing Nutrizionale</p>
         </div>
         
-        {/* SELETTORE ATLETI A TENDINA */}
         <div className="flex flex-col w-full sm:w-64 border border-neutral-700 bg-neutral-900 p-2 rounded-lg shadow-lg">
           <label className="text-[10px] text-orange-400 font-bold uppercase mb-1">Atleta Attivo (Caricamento DB):</label>
           {isNuovoUtente ? (
             <div className="flex gap-2">
-              <input type="text" placeholder="Nome atleta..." value={nomeNuovoUtente} onChange={(e) => setNomeNuovoUtente(e.target.value)} className="bg-neutral-950 text-white text-sm p-1.5 rounded outline-none w-full border border-neutral-600 focus:border-orange-500" />
+              <input type="text" placeholder="Nome..." value={nomeNuovoUtente} onChange={(e) => setNomeNuovoUtente(e.target.value)} className="bg-neutral-950 text-white text-sm p-1.5 rounded outline-none w-full border border-neutral-600 focus:border-orange-500" />
               <button onClick={salvaNuovoAtleta} className="bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold px-3 rounded transition-all">Salva</button>
               <button onClick={() => setIsNuovoUtente(false)} className="bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-bold px-2 rounded">X</button>
             </div>
           ) : (
-            <select 
-              value={utente} 
-              onChange={(e) => {
-                if(e.target.value === "NUOVO") setIsNuovoUtente(true);
-                else setUtente(e.target.value);
-              }}
-              className="bg-neutral-950 text-white text-sm font-bold p-1.5 rounded outline-none border border-neutral-800 cursor-pointer w-full focus:border-orange-500"
-            >
+            <select value={utente} onChange={(e) => { if(e.target.value === "NUOVO") setIsNuovoUtente(true); else setUtente(e.target.value); }} className="bg-neutral-950 text-white text-sm font-bold p-1.5 rounded outline-none border border-neutral-800 cursor-pointer w-full focus:border-orange-500">
               {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
               <option value="NUOVO" className="text-orange-500 font-bold">+ Aggiungi Nuovo Atleta</option>
             </select>
@@ -313,11 +294,8 @@ export default function Home() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* ========================================= */}
-        {/* COLONNA 1: TURNI & ALIMENTAZIONE (lg:col-span-4) */}
-        {/* ========================================= */}
+        {/* COLONNA 1: TURNI & ALIMENTAZIONE */}
         <div className="lg:col-span-4 space-y-6">
-          
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
               <h2 className="text-lg font-bold text-white">Gestione Tempo (Incastro Turni)</h2>
@@ -326,18 +304,14 @@ export default function Home() {
                 <option value="spezzato">Turno Spezzato</option>
               </select>
             </div>
-            
             <div className="space-y-4">
               <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
-                <span className="text-xs text-blue-400 uppercase font-bold mb-2 block">
-                  {tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}
-                </span>
+                <span className="text-xs text-blue-400 uppercase font-bold mb-2 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
                 <div className="flex space-x-2">
                   <input type="time" value={inizio1} onChange={(e) => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm border-b border-neutral-700 text-white p-1 outline-none focus:border-orange-500" />
                   <input type="time" value={fine1} onChange={(e) => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm border-b border-neutral-700 text-white p-1 outline-none focus:border-orange-500" />
                 </div>
               </div>
-              
               {tipoTurno === 'spezzato' && (
                 <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
                   <span className="text-xs text-blue-400 uppercase font-bold mb-2 block">Pomeriggio (Lavoro)</span>
@@ -347,15 +321,11 @@ export default function Home() {
                   </div>
                 </div>
               )}
-
-              {/* Quando ti alleni? */}
               <div className="mt-4 border-t border-neutral-700 pt-4">
                 <span className="text-xs text-neutral-400 uppercase font-bold mb-2 block">Collocazione Allenamento:</span>
                 <div className="flex space-x-2">
                   <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'mattina' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Mattina</button>
-                  {tipoTurno === 'spezzato' && (
-                    <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'pausa' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Pausa Lavoro</button>
-                  )}
+                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'pausa' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Pausa Lavoro</button>}
                   <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'sera' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Sera</button>
                 </div>
               </div>
@@ -369,7 +339,6 @@ export default function Home() {
                 {moltiplicatoreCarbo}g CHO/Kg (Macro Adattati)
               </span>
             </div>
-            
             <div className="space-y-3">
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
@@ -383,8 +352,6 @@ export default function Home() {
                 const cat = blocco.idCategoria as keyof typeof dbAlimenti;
                 const isPW = cat === 'PostWorkout';
                 const itemScelto = dbAlimenti[cat][pastiSelezionati[cat]];
-                const carboCalcolati = itemScelto.baseCarbo * moltiplicatoreCarbo;
-
                 return (
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
                     <div className="flex justify-between items-center mb-1">
@@ -392,7 +359,7 @@ export default function Home() {
                       <button onClick={() => apriSwapAlimento(cat)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300">Swap</button>
                     </div>
                     <p className="font-semibold text-[13px] text-white leading-tight">{itemScelto.nome}</p>
-                    <p className="text-[11px] text-neutral-400 font-mono mt-1">CHO: <span className="text-orange-400 font-bold">{carboCalcolati}g</span> | PRO: {itemScelto.pro} | FAT: {itemScelto.fat}</p>
+                    <p className="text-[11px] text-neutral-400 font-mono mt-1">CHO: <span className="text-orange-400 font-bold">{itemScelto.baseCarbo * moltiplicatoreCarbo}g</span> | PRO: {itemScelto.pro} | FAT: {itemScelto.fat}</p>
                   </div>
                 );
               })}
@@ -400,9 +367,7 @@ export default function Home() {
           </section>
         </div>
 
-        {/* ========================================= */}
-        {/* COLONNA 2: ALLENAMENTO FLESSIBILE (lg:col-span-5) */}
-        {/* ========================================= */}
+        {/* COLONNA 2: ALLENAMENTO FLESSIBILE CON TRACKING SET */}
         <section className="lg:col-span-5 bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
           <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
             <h2 className="text-lg font-bold text-white">Allenamento Modulabile</h2>
@@ -413,7 +378,6 @@ export default function Home() {
 
           {!vistaStorico ? (
             <>
-              {/* CALCOLATORE TEMPO E FAST WORKOUT */}
               <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800 mb-4 flex justify-between items-center">
                 <div>
                   <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Tempo Stimato Sessione</span>
@@ -421,25 +385,11 @@ export default function Home() {
                     ⏱️ ~{calcolaTempoScheda()} minuti <span className="text-[9px] text-neutral-400 font-normal">(Incluso recupero)</span>
                   </p>
                 </div>
-                <button 
-                  onClick={() => setFastWorkout(!fastWorkout)}
-                  className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-lg transition-all ${fastWorkout ? 'bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.5)]' : 'bg-neutral-800 text-neutral-400 border border-neutral-700'}`}
-                >
+                <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-lg transition-all ${fastWorkout ? 'bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.5)]' : 'bg-neutral-800 text-neutral-400 border border-neutral-700'}`}>
                   {fastWorkout ? '⚡ Fast Mode Attiva' : 'Taglia Tempi'}
                 </button>
               </div>
 
-              {/* SELEZIONE GIORNO DELLA SETTIMANA */}
-              <div className="mb-4">
-                <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">Giorno della settimana:</p>
-                <div className="flex flex-wrap gap-2">
-                  {giorniSettimana.map((gg) => (
-                    <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 min-w-[70px] ${giornoCalendario === gg ? 'bg-neutral-700 text-white border-b-2 border-white' : 'bg-neutral-950 text-neutral-500 border border-neutral-800'}`}>{gg}</button>
-                  ))}
-                </div>
-              </div>
-
-              {/* SELEZIONE TIPO SCHEDA */}
               <div className="mb-4">
                 <div className="flex gap-2">
                   {['Spinta', 'Tirata', 'Gambe'].map((sch) => (
@@ -450,19 +400,12 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mb-3">
-                <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-[10px] font-bold text-orange-500 uppercase tracking-wider">
-                  Focus: {dbAllenamento[schedaAttiva].focus}
-                </span>
-              </div>
-
               <div className="flex-1 overflow-y-auto pr-2 space-y-4" style={{ maxHeight: "50vh" }}>
                 {dbAllenamento[schedaAttiva].esercizi.map((es) => {
                   const nomeVis = eserciziModificati[es.id] || es.nome;
                   const ultimoCarico = getUltimoCarico(es.id);
-                  
-                  // Modulazione interattiva: Se 'Fast Workout' è attivo, taglia serie e recuperi
-                  const repMostrate = fastWorkout ? es.rep.replace("4-5 serie", "3 serie max").replace("3-4 serie", "2 serie intense").replace("Rec: 2'", "Rec: 1.5'").replace("Rec: 1.5'", "Rec: 45\"") : es.rep;
+                  const numeroSetTarget = getNumeroSet(es.fase);
+                  const visual = asciiVisuals[es.id] || "⚙️ [ -o- ]";
                   
                   return (
                     <div key={es.id} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 relative group overflow-hidden">
@@ -470,27 +413,39 @@ export default function Home() {
                       <div className="pl-2">
                         <div className="flex justify-between items-start">
                           <span className={`text-[10px] uppercase font-black tracking-widest ${es.fase.includes('Fase 1') ? 'text-orange-500' : es.fase.includes('Fase 2') ? 'text-blue-500' : 'text-red-500'}`}>{es.fase}</span>
-                          <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-400">Swap Esercizio</button>
-                        </div>
-                        <h3 className="font-bold text-base text-white mt-1 break-words">{nomeVis}</h3>
-                        <div className="flex items-center gap-2 mt-2">
-                          <p className={`text-[11px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>{repMostrate}</p>
-                          <p className="text-[11px] text-neutral-400 italic flex-1 break-words">{es.dettaglio}</p>
+                          <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-400">Swap</button>
                         </div>
                         
-                        <div className="mt-4 pt-3 border-t border-neutral-800 flex gap-4">
-                          <div className="w-1/2">
-                            <label className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-1">Ultima Sess. (kg)</label>
-                            <div className="bg-neutral-900 border border-neutral-800 p-2 rounded text-sm text-neutral-400 font-mono">{ultimoCarico}</div>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xl font-mono text-neutral-400 tracking-tighter" title="Esecuzione corretta">{visual}</span>
+                          <h3 className="font-bold text-sm text-white break-words">{nomeVis}</h3>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 mt-2">
+                          <p className={`text-[10px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>{numeroSetTarget} Serie | {fastWorkout ? "Rec. Breve" : "Rec. Pieno"}</p>
+                          <p className="text-[10px] text-neutral-400 italic flex-1 break-words">{es.dettaglio}</p>
+                        </div>
+                        
+                        {/* TRACCIAMENTO SET PER SET */}
+                        <div className="mt-4 pt-3 border-t border-neutral-800">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-[9px] uppercase font-bold text-neutral-500">Target Ultima: <span className="text-orange-400">{ultimoCarico ? `${ultimoCarico} kg` : '-'}</span></span>
+                            <span className="text-[9px] uppercase font-bold text-neutral-500">Curva di Fatica (kg)</span>
                           </div>
-                          <div className="w-1/2">
-                            <label className="text-[10px] uppercase tracking-wider font-bold text-orange-500 block mb-1">Kg Effettivi</label>
-                            <input 
-                              type="number" 
-                              value={carichiAttuali[es.id] || ''}
-                              onChange={(e) => setCarichiAttuali({...carichiAttuali, [es.id]: e.target.value})}
-                              className="w-full bg-neutral-900 border border-orange-500/50 p-2 rounded text-sm text-white font-bold outline-none focus:border-orange-500" 
-                            />
+                          
+                          <div className="flex gap-2">
+                            {Array.from({ length: numeroSetTarget }).map((_, i) => (
+                              <div key={i} className="flex-1">
+                                <label className="text-[8px] text-neutral-500 uppercase block text-center mb-1">Set {i+1}</label>
+                                <input 
+                                  type="number" 
+                                  value={carichiAttuali[es.id]?.[i] || ''}
+                                  onChange={(e) => updateCaricoSet(es.id, i, e.target.value)}
+                                  className="w-full bg-neutral-900 border border-orange-500/30 p-2 rounded text-xs text-center text-white font-bold outline-none focus:border-orange-500 transition-colors" 
+                                  placeholder="-"
+                                />
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -518,11 +473,11 @@ export default function Home() {
                         <span className="text-[10px] text-neutral-400 font-mono">{sess.data}</span>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      {Object.entries(sess.carichi).map(([idEs, peso]) => (
+                    <div className="space-y-2 text-xs">
+                      {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
                         <div key={idEs} className="bg-neutral-900 p-2 rounded flex justify-between items-center gap-2">
                           <span className="text-neutral-400 truncate flex-1">{eserciziModificati[idEs] || Object.values(dbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                          <span className="font-bold text-white whitespace-nowrap">{peso} kg</span>
+                          <span className="font-bold text-white whitespace-nowrap bg-neutral-950 px-2 py-1 rounded border border-neutral-800">{pesoStr} kg</span>
                         </div>
                       ))}
                     </div>
@@ -533,9 +488,7 @@ export default function Home() {
           )}
         </section>
 
-        {/* ========================================= */}
-        {/* COLONNA 3: TELEMETRIA E CHAT (lg:col-span-3)*/}
-        {/* ========================================= */}
+        {/* COLONNA 3: TELEMETRIA E CHAT */}
         <div className="lg:col-span-3 space-y-6 flex flex-col">
           
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
@@ -553,7 +506,6 @@ export default function Home() {
                     </div>
                 </div>
                 
-                {/* Loop dinamico delle misurazioni fisiche con unità di misura e istruzioni */}
                 {Object.keys(infoMisure).map((chiave) => {
                   const info = infoMisure[chiave as keyof typeof infoMisure];
                   return (
@@ -567,7 +519,6 @@ export default function Home() {
                         <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
                       </div>
                       
-                      {/* Tooltip istruzioni anatomiche visibile all'hover */}
                       <div className="absolute left-0 -bottom-8 bg-neutral-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 w-[150%] pointer-events-none shadow-xl border border-neutral-700">
                         {info.desc}
                       </div>
@@ -631,7 +582,7 @@ export default function Home() {
               {esercizioDaCambiare.alternative.map((alt, i) => (
                 <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-orange-500/50 group transition-all">
                   <p className="font-bold text-sm text-white group-hover:text-orange-400">{alt.nome}</p>
-                  <p className="text-[10px] text-neutral-500 mt-1 uppercase font-bold">{alt.note} - Rispetta asse e tensione biomeccanica</p>
+                  <p className="text-[10px] text-neutral-500 mt-1 uppercase font-bold">{alt.note} - Rispetta asse e tensione</p>
                 </button>
               ))}
             </div>
