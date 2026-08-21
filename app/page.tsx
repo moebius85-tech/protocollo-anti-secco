@@ -58,106 +58,174 @@ const mapEsercizioToAnimazione: Record<string, string> = {
 };
 
 // ==========================================
-// COMPONENTE STICKMAN SVG (POSIZIONE A -> B)
+// COMPONENTE STICKMAN ANIMATO (CSS FLIPBOOK)
 // ==========================================
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
-  const stick = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  const gear = { stroke: "#e5e5e5", strokeWidth: "2", fill: "none", strokeLinecap: "round" as const };
-  const weight = { fill: "#e5e5e5" };
-
-  const renderSVG = (stato: "A" | "B") => {
-    switch(type) {
-      case "push_h": // Panca
-        return (
-          <svg viewBox="0 0 50 50" className="w-12 h-12">
-            <line x1="5" y1="35" x2="45" y2="35" stroke="#333" strokeWidth="4" />
-            <circle cx="15" cy="32" r="4" {...stick} />
-            <path d="M 19 32 L 35 32 M 35 32 L 40 40 M 35 32 L 32 40" {...stick} />
-            <path d={stato === "A" ? "M 23 32 L 25 22 L 23 18" : "M 23 32 L 23 12"} {...stick} />
-            <line x1="15" y1={stato==="A"?"18":"12"} x2="35" y2={stato==="A"?"18":"12"} {...gear} />
-            <rect x="13" y={stato==="A"?"13":"7"} width="2" height="10" {...weight} />
-            <rect x="35" y={stato==="A"?"13":"7"} width="2" height="10" {...weight} />
-          </svg>
-        );
-      case "push_v": // Lento / Spinte
-        return (
-          <svg viewBox="0 0 50 50" className="w-12 h-12">
-            <circle cx="25" cy={stato==="A"?"18":"18"} r="4" {...stick} />
-            <path d="M 25 22 L 25 35 M 25 35 L 20 48 M 25 35 L 30 48" {...stick} />
-            <path d={stato === "A" ? "M 25 25 L 18 20 L 18 15 M 25 25 L 32 20 L 32 15" : "M 25 25 L 18 8 M 25 25 L 32 8"} {...stick} />
-            <line x1="10" y1={stato==="A"?"15":"8"} x2="40" y2={stato==="A"?"15":"8"} {...gear} />
-            <rect x="8" y={stato==="A"?"10":"3"} width="2" height="10" {...weight} />
-            <rect x="40" y={stato==="A"?"10":"3"} width="2" height="10" {...weight} />
-          </svg>
-        );
-      case "pull_v": // Trazioni
-        return (
-          <svg viewBox="0 0 50 50" className="w-12 h-12">
-            <line x1="5" y1="5" x2="45" y2="5" {...gear} />
-            <circle cx="25" cy={stato==="A"?"20":"12"} r="4" {...stick} />
-            <path d={stato==="A" ? "M 25 24 L 25 38 M 25 38 L 20 48 M 25 38 L 30 48" : "M 25 16 L 25 30 M 25 30 L 20 40 M 25 30 L 30 40"} {...stick} />
-            <path d={stato==="A" ? "M 25 26 L 15 5 M 25 26 L 35 5" : "M 25 18 L 15 10 L 15 5 M 25 18 L 35 10 L 35 5"} {...stick} />
-          </svg>
-        );
-      case "pull_h": // Rematore
-        return (
-          <svg viewBox="0 0 50 50" className="w-12 h-12">
-            <circle cx="35" cy={stato==="A"?"18":"22"} r="4" {...stick} />
-            <path d={stato==="A" ? "M 32 21 L 22 30 M 22 30 L 20 45 M 22 30 L 28 45" : "M 32 25 L 22 32 M 22 32 L 20 45 M 22 32 L 28 45"} {...stick} />
-            <path d={stato==="A" ? "M 28 25 L 25 38" : "M 28 29 L 32 25 L 25 32"} {...stick} />
-            <line x1="15" y1={stato==="A"?"38":"32"} x2="35" y2={stato==="A"?"38":"32"} {...gear} />
-            <rect x="13" y={stato==="A"?"33":"27"} width="2" height="10" {...weight} />
-            <rect x="35" y={stato==="A"?"33":"27"} width="2" height="10" {...weight} />
-          </svg>
-        );
-      case "curl": // Bicipiti
-        return (
-          <svg viewBox="0 0 50 50" className="w-12 h-12">
-            <circle cx="25" cy="12" r="4" {...stick} />
-            <path d="M 25 16 L 25 32 M 25 32 L 20 48 M 25 32 L 30 48" {...stick} />
-            <path d={stato==="A" ? "M 25 18 L 20 30" : "M 25 18 L 20 25 L 15 15"} {...stick} />
-            <line x1="10" y1={stato==="A"?"30":"15"} x2="30" y2={stato==="A"?"30":"15"} {...gear} />
-            <circle cx="10" cy={stato==="A"?"30":"15"} r="3" {...weight} />
-            <circle cx="30" cy={stato==="A"?"30":"15"} r="3" {...weight} />
-          </svg>
-        );
-      case "squat": // Squat
-        return (
-          <svg viewBox="0 0 50 50" className="w-12 h-12">
-            <circle cx="25" cy={stato==="A"?"15":"25"} r="4" {...stick} />
-            <path d={stato==="A" ? "M 25 19 L 25 32 M 25 32 L 20 45 M 25 32 L 30 45" : "M 25 29 L 25 38 M 25 38 L 15 38 L 20 45 M 25 38 L 35 38 L 30 45"} {...stick} />
-            <path d={stato==="A" ? "M 25 21 L 18 16 M 25 21 L 32 16" : "M 25 31 L 18 26 M 25 31 L 32 26"} {...stick} />
-            <line x1="10" y1={stato==="A"?"16":"26"} x2="40" y2={stato==="A"?"16":"26"} {...gear} />
-            <rect x="8" y={stato==="A"?"11":"21"} width="2" height="10" {...weight} />
-            <rect x="40" y={stato==="A"?"11":"21"} width="2" height="10" {...weight} />
-          </svg>
-        );
-      case "hinge": // Stacchi
-        return (
-          <svg viewBox="0 0 50 50" className="w-12 h-12">
-            <circle cx={stato==="A"?"25":"35"} cy={stato==="A"?"15":"25"} r="4" {...stick} />
-            <path d={stato==="A" ? "M 25 19 L 25 32 M 25 32 L 20 48 M 25 32 L 30 48" : "M 32 28 L 25 35 M 25 35 L 20 48 M 25 35 L 30 48"} {...stick} />
-            <path d={stato==="A" ? "M 25 21 L 25 35" : "M 30 30 L 25 40"} {...stick} />
-            <line x1="15" y1={stato==="A"?"35":"40"} x2="35" y2={stato==="A"?"35":"40"} {...gear} />
-            <circle cx="15" cy={stato==="A"?"35":"40"} r="4" {...weight} />
-            <circle cx="35" cy={stato==="A"?"35":"40"} r="4" {...weight} />
-          </svg>
-        );
-      default: return null;
-    }
-  };
+  // Stili biomeccanici
+  const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  const head = { stroke: color, strokeWidth: "2.5", fill: "none" };
+  const bench = { stroke: "#555", strokeWidth: "4", strokeLinecap: "round" as const };
+  const bar = { stroke: "#e5e5e5", strokeWidth: "2", strokeLinecap: "round" as const };
+  const plate = { fill: "#e5e5e5", rx: "1" };
 
   return (
-    <div className="flex items-center gap-1 bg-neutral-900/50 p-2 rounded-lg border border-neutral-800">
-      <div className="flex flex-col items-center">
-        {renderSVG("A")}
-        <span className="text-[7px] uppercase font-bold text-neutral-500 mt-1 tracking-widest">Start</span>
-      </div>
-      <div className="text-neutral-700 font-black text-sm">➔</div>
-      <div className="flex flex-col items-center">
-        {renderSVG("B")}
-        <span className="text-[7px] uppercase font-bold text-neutral-500 mt-1 tracking-widest">End</span>
-      </div>
+    <div className="relative w-16 h-16 bg-neutral-950/80 rounded-lg border border-neutral-800 flex items-center justify-center overflow-hidden shadow-inner">
+      <style>{`
+        @keyframes flipA { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
+        @keyframes flipB { 0%, 45% { opacity: 0; } 50%, 95% { opacity: 1; } 100% { opacity: 0; } }
+        .frame-a { animation: flipA 1.6s infinite; }
+        .frame-b { animation: flipB 1.6s infinite; }
+      `}</style>
+      
+      <svg viewBox="0 0 50 50" className="w-14 h-14">
+        {/* ================= PANCA (VISIONE LATERALE) ================= */}
+        {type === "push_h" && (
+          <>
+            {/* Panca fissa */}
+            <line x1="5" y1="35" x2="45" y2="35" {...bench} />
+            <line x1="12" y1="35" x2="12" y2="45" {...bench} strokeWidth="2" />
+            <line x1="38" y1="35" x2="38" y2="45" {...bench} strokeWidth="2" />
+            
+            <g className="frame-a">
+              <circle cx="16" cy="32" r="3.5" {...head} />
+              <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> {/* Corpo disteso, gambe piegate */}
+              <path d="M 23 33 L 26 26 L 23 20" {...body} /> {/* Braccia piegate in basso */}
+              <line x1="18" y1="20" x2="28" y2="20" {...bar} />
+              <rect x="17" y="14" width="2" height="12" {...plate} />
+              <rect x="27" y="14" width="2" height="12" {...plate} />
+            </g>
+            <g className="frame-b">
+              <circle cx="16" cy="32" r="3.5" {...head} />
+              <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
+              <path d="M 23 33 L 23 10" {...body} /> {/* Braccia stese in alto */}
+              <line x1="18" y1="10" x2="28" y2="10" {...bar} />
+              <rect x="17" y="4" width="2" height="12" {...plate} />
+              <rect x="27" y="4" width="2" height="12" {...plate} />
+            </g>
+          </>
+        )}
+
+        {/* ================= LENTO AVANTI (VISIONE FRONTALE) ================= */}
+        {type === "push_v" && (
+          <>
+            <g className="frame-a">
+              <circle cx="25" cy="15" r="3.5" {...head} />
+              <path d="M 25 19 L 25 40" {...body} /> {/* Busto dritto */}
+              <path d="M 25 21 L 16 26 L 16 18 M 25 21 L 34 26 L 34 18" {...body} /> {/* Gomiti bassi, mani alle spalle */}
+              <line x1="8" y1="18" x2="42" y2="18" {...bar} />
+              <rect x="8" y="12" width="3" height="12" {...plate} />
+              <rect x="39" y="12" width="3" height="12" {...plate} />
+            </g>
+            <g className="frame-b">
+              <circle cx="25" cy="15" r="3.5" {...head} />
+              <path d="M 25 19 L 25 40" {...body} />
+              <path d="M 25 21 L 18 6 M 25 21 L 32 6" {...body} /> {/* Braccia tese su */}
+              <line x1="10" y1="6" x2="40" y2="6" {...bar} />
+              <rect x="10" y="0" width="3" height="12" {...plate} />
+              <rect x="37" y="0" width="3" height="12" {...plate} />
+            </g>
+          </>
+        )}
+
+        {/* ================= TRAZIONI (VISIONE FRONTALE/SCHIENA) ================= */}
+        {type === "pull_v" && (
+          <>
+            <line x1="5" y1="6" x2="45" y2="6" {...bar} strokeWidth="3" /> {/* Sbarra fissa */}
+            <g className="frame-a">
+              <circle cx="25" cy="22" r="3.5" {...head} />
+              <path d="M 25 26 L 25 40 L 22 48 M 25 40 L 28 48" {...body} /> {/* Appeso */}
+              <path d="M 25 26 L 15 6 M 25 26 L 35 6" {...body} /> {/* Braccia completamente distese */}
+            </g>
+            <g className="frame-b">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 30 L 22 35 M 25 30 L 28 35" {...body} /> {/* Corpo tirato su, ginocchia piegate */}
+              <path d="M 25 14 L 15 20 L 15 6 M 25 14 L 35 20 L 35 6" {...body} /> {/* Gomiti piegati in basso */}
+            </g>
+          </>
+        )}
+
+        {/* ================= REMATORE (VISIONE LATERALE) ================= */}
+        {type === "pull_h" && (
+          <>
+            <g className="frame-a">
+              <circle cx="35" cy="16" r="3.5" {...head} />
+              <path d="M 33 19 L 20 28 L 20 48 M 20 28 L 25 48" {...body} /> {/* Schiena inclinata */}
+              <path d="M 30 20 L 25 38" {...body} /> {/* Braccia tese giù */}
+              <line x1="15" y1="38" x2="35" y2="38" {...bar} />
+              <circle cx="25" cy="38" r="6" {...plate} fill="none" stroke="#e5e5e5" strokeWidth="2" /> {/* Disco in prospettiva */}
+            </g>
+            <g className="frame-b">
+              <circle cx="35" cy="18" r="3.5" {...head} />
+              <path d="M 33 21 L 20 28 L 20 48 M 20 28 L 25 48" {...body} />
+              <path d="M 30 22 L 34 18 L 26 26" {...body} /> {/* Gomito tirato dietro la schiena */}
+              <line x1="16" y1="26" x2="36" y2="26" {...bar} />
+              <circle cx="26" cy="26" r="6" {...plate} fill="none" stroke="#e5e5e5" strokeWidth="2" />
+            </g>
+          </>
+        )}
+
+        {/* ================= SQUAT (VISIONE LATERALE) ================= */}
+        {type === "squat" && (
+          <>
+            <g className="frame-a">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> {/* In piedi */}
+              <path d="M 25 15 L 29 19 L 25 13" {...body} /> {/* Mani che tengono il bilanciere */}
+              <line x1="18" y1="13" x2="32" y2="13" {...bar} />
+              <rect x="17" y="4" width="2" height="18" {...plate} />
+              <rect x="31" y="4" width="2" height="18" {...plate} />
+            </g>
+            <g className="frame-b">
+              <circle cx="32" cy="24" r="3.5" {...head} />
+              <path d="M 32 28 L 20 38 L 26 48 M 20 38 L 16 48" {...body} /> {/* Accosciata, schiena inclinata, cosce parallele */}
+              <path d="M 32 29 L 36 33 L 32 27" {...body} />
+              <line x1="25" y1="27" x2="39" y2="27" {...bar} />
+              <rect x="24" y="18" width="2" height="18" {...plate} />
+              <rect x="38" y="18" width="2" height="18" {...plate} />
+            </g>
+          </>
+        )}
+
+        {/* ================= STACCHI/RUMENO (VISIONE LATERALE) ================= */}
+        {type === "hinge" && (
+          <>
+            <g className="frame-a">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> {/* In piedi */}
+              <path d="M 25 16 L 25 32" {...body} /> {/* Braccia tese giù */}
+              <line x1="15" y1="32" x2="35" y2="32" {...bar} />
+              <circle cx="25" cy="32" r="6" {...plate} fill="none" stroke="#e5e5e5" strokeWidth="2" />
+            </g>
+            <g className="frame-b">
+              <circle cx="38" cy="20" r="3.5" {...head} />
+              <path d="M 36 24 L 22 30 L 22 48 M 22 30 L 25 48" {...body} /> {/* Hinge: bacino indietro, schiena piatta */}
+              <path d="M 34 25 L 26 42" {...body} /> {/* Braccia perpendicolari a terra */}
+              <line x1="16" y1="42" x2="36" y2="42" {...bar} />
+              <circle cx="26" cy="42" r="6" {...plate} fill="none" stroke="#e5e5e5" strokeWidth="2" />
+            </g>
+          </>
+        )}
+
+        {/* ================= CURL BICIPITI (VISIONE LATERALE) ================= */}
+        {type === "curl" && (
+          <>
+            <g className="frame-a">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} />
+              <path d="M 25 16 L 25 30 L 28 36" {...body} /> {/* Braccio esteso in basso */}
+              <line x1="20" y1="36" x2="36" y2="36" {...bar} />
+              <circle cx="28" cy="36" r="4" {...plate} />
+            </g>
+            <g className="frame-b">
+              <circle cx="25" cy="10" r="3.5" {...head} />
+              <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} />
+              <path d="M 25 16 L 25 30 L 18 20" {...body} /> {/* Avambraccio chiuso verso la spalla */}
+              <line x1="10" y1="20" x2="26" y2="20" {...bar} />
+              <circle cx="18" cy="20" r="4" {...plate} />
+            </g>
+          </>
+        )}
+      </svg>
     </div>
   );
 };
@@ -362,7 +430,7 @@ export default function Home() {
     const bloccoIntra = { isIntra: true, titolo: "Intra-Workout", descrizione: "Ciclodestrine (40g) + EAA (10g) + Creatina (5g)" };
     if (quandoTiAlleni === 'mattina') return [ bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' }, { idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     if (quandoTiAlleni === 'pausa') return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Fine Pausa)' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
-    return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, { idCategoria: 'Pasto2', titoloUI: 'Pranzo' }, { idCategoria: 'Pasto3', titoloUI: 'Spuntino Pre-Turno/Pre-Workout' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' } ];
+    return [ { idCategoria: 'Pasto1', Colazione: 'Colazione' }, { idCategoria: 'Pasto2', titoloUI: 'Pranzo' }, { idCategoria: 'Pasto3', titoloUI: 'Spuntino Pre-Turno/Pre-Workout' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' } ];
   };
 
   const calcolaTempoScheda = () => fastWorkout ? 45 : 75;
@@ -454,7 +522,7 @@ export default function Home() {
                 }
                 const cat = blocco.idCategoria as keyof typeof dbAlimenti;
                 const isPW = cat === 'PostWorkout';
-                const itemScelto = dbAlimenti[cat][pastiSelezionati[cat]];
+                const itemScelto = dbAlimenti[cat]?.[pastiSelezionati[cat]] || {nome:"", baseCarbo:0, pro:"", fat:""};
                 return (
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
                     <div className="flex justify-between items-center mb-1">
@@ -522,7 +590,7 @@ export default function Home() {
                         </div>
                         
                         <div className="flex items-center gap-4 mt-2">
-                          {/* COMPONENTE STICKMAN SVG INTEGRATO */}
+                          {/* COMPONENTE STICKMAN SVG INTEGRATO E ANIMATO */}
                           <SvgVisualizer type={animType} color={phaseColor} />
                           
                           <div className="flex-1">
