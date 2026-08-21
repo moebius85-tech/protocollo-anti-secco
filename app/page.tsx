@@ -8,7 +8,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO (Saldato)
+// 1. DATABASE ALLENAMENTO E SVG (Saldato)
 // ==========================================
 const dbAllenamento = {
   Spinta: {
@@ -57,9 +57,6 @@ const mapEsercizioToAnimazione: Record<string, string> = {
   "e14": "leg_press", "e15": "leg_extension", "e13": "romanian_deadlift", "e16": "leg_curl_lying", "e17": "calf_raises"            
 };
 
-// ==========================================
-// COMPONENTE STICKMAN ANIMATO (Saldato)
-// ==========================================
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   const head = { stroke: color, strokeWidth: "2.5", fill: "none" };
@@ -216,14 +213,22 @@ export default function Home() {
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
 
+  // --- STATI NUTRIZIONE E SGARRO ---
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
   const [pastiSelezionati, setPastiSelezionati] = useState({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
+  const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string}>>({
+    Pasto1: { attivo: false, cho: '', pro: '', fat: '' },
+    Pasto2: { attivo: false, cho: '', pro: '', fat: '' },
+    Pasto3: { attivo: false, cho: '', pro: '', fat: '' },
+    PostWorkout: { attivo: false, cho: '', pro: '', fat: '' },
+  });
   
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
 
+  // --- STATI CHAT ---
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, logiche di allenamento, o mandami la foto di un integratore/scheda da analizzare.' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -266,20 +271,14 @@ export default function Home() {
   const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
     if (file.size > 4 * 1024 * 1024) {
       alert("Il file è troppo grande. Usa immagini o PDF sotto i 4MB.");
       return;
     }
-
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = (reader.result as string).split(',')[1];
-      setFileAllegato({
-        data: base64String,
-        mimeType: file.type,
-        nome: file.name
-      });
+      setFileAllegato({ data: base64String, mimeType: file.type, nome: file.name });
     };
     reader.readAsDataURL(file);
   };
@@ -297,11 +296,9 @@ export default function Home() {
     try {
       const contesto = `Utente: ${utente}, Peso: ${biometria.peso}kg, Scheda di oggi: ${schedaAttiva}, Turno: ${tipoTurno}, Allenamento: ${quandoTiAlleni}`;
       const payload: any = { message: msg, context: contesto };
-      
       if (fileDaInviare) {
         payload.file = { data: fileDaInviare.data, mimeType: fileDaInviare.mimeType };
       }
-
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
       setChatLog(prev => [...prev, { role: 'ai', text: data.reply || "Errore nella risposta." }]);
@@ -343,13 +340,11 @@ export default function Home() {
 
   const salvaSessione = async () => {
     if (Object.keys(carichiAttuali).length === 0) return alert("Inserisci almeno un carico in un set!");
-    
     const sessioneCarichiStr: Record<string, string> = {};
     Object.keys(carichiAttuali).forEach(k => {
       const pesiValidi = carichiAttuali[k].filter(v => v !== "");
       if(pesiValidi.length > 0) sessioneCarichiStr[k] = pesiValidi.join(" | ");
     });
-
     const nuovaSessione = { data: new Date().toLocaleDateString('it-IT'), oraId: Date.now(), giorno: giornoCalendario, scheda: schedaAttiva, carichi: sessioneCarichiStr };
     setStoricoSessioni([...storicoSessioni, nuovaSessione]);
     setCarichiAttuali({}); 
@@ -366,12 +361,9 @@ export default function Home() {
   const valutaCheckFisico = async () => {
     const { peso, petto, spalle, braccia, gambe, glutei } = biometria;
     if (peso && eta && altezza && petto && spalle && braccia && gambe && glutei) {
-      
       let trendCarichi = "Neutro";
       if (storicoSessioni.length >= 2) trendCarichi = "Stallo Rilevato"; 
-
       let alertMsg = "";
-      
       if (Number(peso) > 80 && Number(braccia) < 38 && Number(glutei) > 95) {
          setMoltiplicatoreCarbo(4);
          alertMsg = "⚠️ Composizione: Rilevato accumulo grasso addome/glutei. Carboidrati ridotti (4g/kg) per arginare l'adipe.";
@@ -384,14 +376,26 @@ export default function Home() {
          setMoltiplicatoreCarbo(5);
          alertMsg = "✅ Analisi completata. Parametri in asse. Protocollo ipertrofico standard mantenuto (5g/kg CHO).";
       }
-
       setMessaggioDieta(alertMsg);
-
       await supabase.from("check_utente").insert([{ nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date() }]);
       alert(alertMsg);
     } else {
       alert("Compila TUTTI i campi fisici per calcolare i macros in sicurezza.");
     }
+  };
+
+  const toggleCustomMeal = (cat: string) => {
+    setPastiCustom(prev => ({
+      ...prev,
+      [cat]: { ...prev[cat], attivo: !prev[cat].attivo }
+    }));
+  };
+
+  const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat', value: string) => {
+    setPastiCustom(prev => ({
+      ...prev,
+      [cat]: { ...prev[cat], [field]: value }
+    }));
   };
 
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
@@ -418,33 +422,87 @@ export default function Home() {
 
   const calcolaTempoScheda = () => fastWorkout ? 45 : 75;
 
-  // Calcolo Kcal Totali (BMR, TDEE, Intake)
+  // ==========================================
+  // MOTORE DI COMPENSAZIONE METABOLICA ATTIVA
+  // ==========================================
   const pesoNum = Number(biometria.peso) || 80;
   const altezzaNum = Number(altezza) || 175;
   const etaNum = Number(eta) || 41;
   const bmr = Math.round((10 * pesoNum) + (6.25 * altezzaNum) - (5 * etaNum) + 5);
-  const tdee = Math.round(bmr * 1.55); // Moltiplicatore 1.55
+  const tdee = Math.round(bmr * 1.55); 
 
-  const calcolaIntakeTotale = () => {
-    let choTot = 0; let proTot = 0; let fatTot = 0;
-    
-    // Intra-Workout Macros
-    choTot += Math.round(pesoNum * 0.5); // HBCD
-    proTot += 15; // EAA
-    
-    // Pasti
-    ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
-       const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat as keyof typeof pastiSelezionati]];
-       if(item) {
-          choTot += item.baseCarbo * moltiplicatoreCarbo;
-          proTot += item.pro;
-          fatTot += item.fat;
-       }
-    });
+  // 1. Calcolo del Target Giornaliero Standard (senza sgarri)
+  const intraCho = Math.round(pesoNum * 0.5);
+  const intraPro = 15;
+  const intraFat = 0;
+  
+  let targetCho = intraCho;
+  let targetPro = intraPro;
+  let targetFat = intraFat;
 
-    return Math.round((choTot * 4) + (proTot * 4) + (fatTot * 9));
-  };
-  const totalIntakeKcal = calcolaIntakeTotale();
+  const originalMeals: Record<string, any> = {};
+  ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+     const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat as keyof typeof pastiSelezionati]];
+     if(item) {
+       originalMeals[cat] = { cho: item.baseCarbo * moltiplicatoreCarbo, pro: item.pro, fat: item.fat };
+       targetCho += originalMeals[cat].cho;
+       targetPro += originalMeals[cat].pro;
+       targetFat += originalMeals[cat].fat;
+     }
+  });
+
+  // 2. Somma dei Pasti Custom (Sgarri)
+  let customCho = 0, customPro = 0, customFat = 0;
+  let sumNonCustomOrigCho = 0, sumNonCustomOrigPro = 0, sumNonCustomOrigFat = 0;
+
+  ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+     if(pastiCustom[cat].attivo) {
+        customCho += Number(pastiCustom[cat].cho) || 0;
+        customPro += Number(pastiCustom[cat].pro) || 0;
+        customFat += Number(pastiCustom[cat].fat) || 0;
+     } else if(originalMeals[cat]) {
+        sumNonCustomOrigCho += originalMeals[cat].cho;
+        sumNonCustomOrigPro += originalMeals[cat].pro;
+        sumNonCustomOrigFat += originalMeals[cat].fat;
+     }
+  });
+
+  // 3. Ricalcolo dei macro rimanenti da redistribuire
+  const remainingCho = Math.max(0, targetCho - customCho - intraCho);
+  const remainingPro = Math.max(0, targetPro - customPro - intraPro);
+  const remainingFat = Math.max(0, targetFat - customFat - intraFat);
+
+  // 4. Generazione dei Pasti Finali Compensati
+  const finalMeals: Record<string, any> = {};
+  ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+     if(pastiCustom[cat].attivo) {
+        finalMeals[cat] = {
+           cho: Number(pastiCustom[cat].cho) || 0,
+           pro: Number(pastiCustom[cat].pro) || 0,
+           fat: Number(pastiCustom[cat].fat) || 0
+        };
+     } else if(originalMeals[cat]) {
+        // La ridistribuzione è proporzionale al peso del pasto originale
+        finalMeals[cat] = {
+           cho: sumNonCustomOrigCho > 0 ? Math.round(remainingCho * (originalMeals[cat].cho / sumNonCustomOrigCho)) : 0,
+           pro: sumNonCustomOrigPro > 0 ? Math.round(remainingPro * (originalMeals[cat].pro / sumNonCustomOrigPro)) : 0,
+           fat: sumNonCustomOrigFat > 0 ? Math.round(remainingFat * (originalMeals[cat].fat / sumNonCustomOrigFat)) : 0
+        };
+     }
+  });
+
+  // 5. Calcolo Kcal effettive assunte (Intra + FinalMeals)
+  let actualCho = intraCho + customCho;
+  let actualPro = intraPro + customPro;
+  let actualFat = intraFat + customFat;
+  ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+     if(!pastiCustom[cat].attivo && finalMeals[cat]) {
+        actualCho += finalMeals[cat].cho;
+        actualPro += finalMeals[cat].pro;
+        actualFat += finalMeals[cat].fat;
+     }
+  });
+  const actualIntakeKcal = Math.round((actualCho * 4) + (actualPro * 4) + (actualFat * 9));
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 p-4 lg:p-6 font-sans overflow-x-hidden">
@@ -523,11 +581,10 @@ export default function Home() {
                   {moltiplicatoreCarbo}g CHO/Kg
                 </span>
               </div>
-              {/* DISPLAY CALORIE GLOBALI */}
               <div className="flex gap-2">
                 <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded shadow-inner" title="Metabolismo Basale Stimato">BMR: {bmr} Kcal</span>
                 <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded shadow-inner" title="Dispendio Totale (Lavoro + Gym)">TDEE: {tdee} Kcal</span>
-                <span className="text-[9px] bg-orange-950 border border-orange-900 text-orange-400 font-bold px-2 py-1 rounded flex-1 text-center shadow-inner" title="Calorie complessive del menu">INTAKE: {totalIntakeKcal} Kcal</span>
+                <span className="text-[9px] bg-orange-950 border border-orange-900 text-orange-400 font-bold px-2 py-1 rounded flex-1 text-center shadow-inner" title="Calorie complessive attuali">INTAKE: {actualIntakeKcal} Kcal</span>
               </div>
             </div>
             
@@ -536,7 +593,7 @@ export default function Home() {
             <div className="space-y-3">
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
-                  const intraKcal = Math.round((Math.round(pesoNum * 0.5) * 4) + (15 * 4));
+                  const intraKcal = Math.round((intraCho * 4) + (intraPro * 4));
                   return (
                     <div key={`intra-${idx}`} className="p-4 rounded-lg border bg-orange-950/20 border-orange-900/50">
                       <div className="flex justify-between items-start mb-2">
@@ -551,27 +608,50 @@ export default function Home() {
                 const isPW = cat === 'PostWorkout';
                 const itemScelto = dbAlimenti[cat]?.[pastiSelezionati[cat]] || {nome:"", baseCarbo:0, pro:0, fat:0, dettaglioGrammi:()=>""};
                 
-                const macroCho = itemScelto.baseCarbo * moltiplicatoreCarbo;
-                const pastoKcal = Math.round((macroCho * 4) + (itemScelto.pro * 4) + (itemScelto.fat * 9));
+                const finalCho = finalMeals[cat].cho;
+                const finalPro = finalMeals[cat].pro;
+                const finalFat = finalMeals[cat].fat;
+                const pastoKcal = Math.round((finalCho * 4) + (finalPro * 4) + (finalFat * 9));
+                const isCustom = pastiCustom[cat].attivo;
 
                 return (
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
                     <div className="flex justify-between items-center mb-1">
                       <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'text-emerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
-                      <button onClick={() => apriSwapAlimento(cat)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Swap</button>
+                      <div className="flex gap-2">
+                        <button onClick={() => toggleCustomMeal(cat)} className={`text-[9px] px-2 py-1 rounded font-bold uppercase transition-all ${isCustom ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'}`}>Custom</button>
+                        {!isCustom && <button onClick={() => apriSwapAlimento(cat)} className="text-[9px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Swap</button>}
+                      </div>
                     </div>
-                    <p className="font-semibold text-[13px] text-white leading-tight mt-2">{itemScelto.nome}</p>
                     
-                    <div className="mt-2 bg-neutral-900 p-2 rounded border border-neutral-800">
-                      <p className="text-[11px] text-neutral-300 font-mono leading-relaxed">
-                        {itemScelto.dettaglioGrammi(macroCho, itemScelto.pro, itemScelto.fat)}
-                      </p>
-                    </div>
+                    {isCustom ? (
+                       <div className="mt-2 bg-neutral-900 p-2 rounded border border-orange-500/50">
+                         <p className="text-[10px] text-orange-400 mb-2 uppercase font-bold">Pasto Fuori Piano / Sgarro</p>
+                         <div className="flex gap-2">
+                            <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase block">Carbo</span><input type="number" placeholder="g" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1 text-xs text-white rounded outline-none focus:border-orange-500" /></div>
+                            <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase block">Pro</span><input type="number" placeholder="g" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1 text-xs text-white rounded outline-none focus:border-orange-500" /></div>
+                            <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase block">Fat</span><input type="number" placeholder="g" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1 text-xs text-white rounded outline-none focus:border-orange-500" /></div>
+                         </div>
+                       </div>
+                    ) : (
+                       <>
+                         <p className="font-semibold text-[13px] text-white leading-tight mt-2">{itemScelto.nome}</p>
+                         <div className="mt-2 bg-neutral-900 p-2 rounded border border-neutral-800">
+                           {finalCho === 0 && finalPro === 0 ? (
+                              <p className="text-[11px] text-red-500 font-mono font-bold leading-relaxed">Pasto azzerato per compensazione sgarro.</p>
+                           ) : (
+                              <p className="text-[11px] text-neutral-300 font-mono leading-relaxed">
+                                {itemScelto.dettaglioGrammi(finalCho, finalPro, finalFat)}
+                              </p>
+                           )}
+                         </div>
+                       </>
+                    )}
 
                     <div className="mt-2 flex justify-between items-center px-1">
-                       <span className="text-[10px] text-neutral-400 font-mono">CHO: <strong className="text-orange-400">{macroCho}g</strong></span>
-                       <span className="text-[10px] text-neutral-400 font-mono">PRO: <strong>{itemScelto.pro}g</strong></span>
-                       <span className="text-[10px] text-neutral-400 font-mono">FAT: <strong>{itemScelto.fat}g</strong></span>
+                       <span className="text-[10px] text-neutral-400 font-mono">CHO: <strong className="text-orange-400">{finalCho}g</strong></span>
+                       <span className="text-[10px] text-neutral-400 font-mono">PRO: <strong>{finalPro}g</strong></span>
+                       <span className="text-[10px] text-neutral-400 font-mono">FAT: <strong>{finalFat}g</strong></span>
                        <span className={`text-[10px] font-black ${isPW ? 'text-emerald-500' : 'text-white'}`}>{pastoKcal} KCAL</span>
                     </div>
                   </div>
