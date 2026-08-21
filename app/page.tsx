@@ -107,9 +107,6 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
 // ==========================================
 // 2. DATABASE ALIMENTAZIONE CON MOTORE DI CALCOLO GRAMMI
 // ==========================================
-// Aggiunta la funzione 'dettaglioGrammi' ad ogni alimento. 
-// L'algoritmo sa esattamente quanti grammi di materia prima pesare per raggiungere i macro target.
-
 const dbAlimenti = {
   Pasto1: [
     { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, 
@@ -227,10 +224,12 @@ export default function Home() {
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
 
-  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, alternative, o logiche di allenamento.' }]);
+  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, logiche di allenamento, o mandami la foto di un integratore/scheda da analizzare.' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [fileAllegato, setFileAllegato] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function fetchAtleti() {
@@ -264,15 +263,47 @@ export default function Home() {
 
   useEffect(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), [chatLog]);
 
+  const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Limite 4MB per Vercel Serverless
+    if (file.size > 4 * 1024 * 1024) {
+      alert("Il file è troppo grande. Usa immagini o PDF sotto i 4MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = (reader.result as string).split(',')[1];
+      setFileAllegato({
+        data: base64String,
+        mimeType: file.type,
+        nome: file.name
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const inviaMessaggioIA = async () => {
-    if (!inputChat.trim()) return;
-    const msg = inputChat;
-    setChatLog(prev => [...prev, { role: 'user', text: msg }]);
+    if (!inputChat.trim() && !fileAllegato) return;
+    const msg = inputChat || "Analizza questo file allegato.";
+    setChatLog(prev => [...prev, { role: 'user', text: fileAllegato ? `📎 [File: ${fileAllegato.nome}] ${msg}` : msg }]);
     setInputChat("");
+    
+    const fileDaInviare = fileAllegato;
+    setFileAllegato(null);
     setIsTyping(true);
+    
     try {
       const contesto = `Utente: ${utente}, Peso: ${biometria.peso}kg, Scheda di oggi: ${schedaAttiva}, Turno: ${tipoTurno}, Allenamento: ${quandoTiAlleni}`;
-      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, context: contesto }) });
+      const payload: any = { message: msg, context: contesto };
+      
+      if (fileDaInviare) {
+        payload.file = { data: fileDaInviare.data, mimeType: fileDaInviare.mimeType };
+      }
+
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
       setChatLog(prev => [...prev, { role: 'ai', text: data.reply || "Errore nella risposta." }]);
     } catch (error) {
@@ -490,7 +521,6 @@ export default function Home() {
                     </div>
                     <p className="font-semibold text-[13px] text-white leading-tight mt-2">{itemScelto.nome}</p>
                     
-                    {/* SEZIONE GRAMMATURE DELLA SPESA */}
                     <div className="mt-2 bg-neutral-900 p-2 rounded border border-neutral-800">
                       <p className="text-[11px] text-neutral-300 font-mono leading-relaxed">
                         {itemScelto.dettaglioGrammi(macroCho, itemScelto.pro, itemScelto.fat)}
@@ -704,7 +734,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* SEZIONE CHAT GEMINI */}
+          {/* SEZIONE CHAT GEMINI CON UPLOAD FILE */}
           <section className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-lg flex-1 flex flex-col min-h-[350px]">
             <h2 className="text-base font-bold text-white border-b border-neutral-700 pb-2 mb-2 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
@@ -726,16 +756,34 @@ export default function Home() {
               <div ref={chatEndRef} />
             </div>
 
+            {/* Anteprima File */}
+            {fileAllegato && (
+              <div className="flex items-center gap-2 mb-2 p-2 bg-neutral-800 rounded-lg border border-neutral-700 w-fit">
+                <span className="text-xs text-orange-400 font-mono truncate max-w-[150px]">📎 {fileAllegato.nome}</span>
+                <button onClick={() => setFileAllegato(null)} className="text-red-500 hover:text-red-400 font-bold ml-2">X</button>
+              </div>
+            )}
+            
             <div className="flex gap-2">
+              <input 
+                type="file" 
+                accept="image/*,application/pdf"
+                className="hidden" 
+                ref={fileInputRef}
+                onChange={gestisciCaricamentoFile}
+              />
+              <button onClick={() => fileInputRef.current?.click()} className="bg-neutral-800 hover:bg-neutral-700 text-neutral-400 px-3 py-2 rounded-lg text-lg transition-all" title="Allega foto o PDF">
+                📎
+              </button>
               <input 
                 type="text" 
                 value={inputChat} 
                 onChange={e => setInputChat(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()}
-                placeholder="Chiedi supporto al Coach..."
+                placeholder="Chiedi supporto o allega file..."
                 className="flex-1 bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-orange-500"
               />
-              <button onClick={inviaMessaggioIA} disabled={isTyping} className="bg-orange-600 hover:bg-orange-500 text-white font-bold px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50">
+              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-orange-600 hover:bg-orange-500 text-white font-bold px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50">
                 Invia
               </button>
             </div>
@@ -771,7 +819,7 @@ export default function Home() {
               <h3 className="font-bold text-lg text-white">Sostituisci Pasto</h3>
               <button onClick={() => setModalAlimento(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
               {/* @ts-ignore */}
               {dbAlimenti[categoriaDaCambiare].map((alt, i) => {
                  const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
