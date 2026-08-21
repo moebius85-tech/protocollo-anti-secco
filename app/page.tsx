@@ -181,7 +181,7 @@ export default function Home() {
       <header className="mb-6 border-b border-orange-500/30 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-orange-500">
-            Protocollo Anti-Secco <span className="text-white">Pro</span>
+            Protocollo Anti-Secco <span className="text-white">TEST</span>
           </h1>
           <p className="text-xs sm:text-sm text-neutral-400 font-medium tracking-wide">Multi-User Coaching & Tracking</p>
         </div>
