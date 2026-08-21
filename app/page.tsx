@@ -105,36 +105,44 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
 };
 
 // ==========================================
-// 2. DATABASE ALIMENTAZIONE & INTEGRAZIONE (Espanso e Clinico)
+// 2. DATABASE ALIMENTAZIONE (Moltiplicato per Maggiore Varietà)
 // ==========================================
 const dbAlimenti = {
   Pasto1: [
     { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: "35g", fat: "15g" },
-    { nome: "Pancakes farina di avena + Albume + Mirtilli", baseCarbo: 14, pro: "30g", fat: "10g" },
-    { nome: "Uova intere (x3) + Pane di segale + Avocado", baseCarbo: 10, pro: "25g", fat: "22g" },
+    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: "30g", fat: "10g" },
+    { nome: "Uova intere (x3) + Pane segale + Avocado", baseCarbo: 10, pro: "25g", fat: "22g" },
     { nome: "Crema di riso + Isolate + Mandorle", baseCarbo: 15, pro: "35g", fat: "12g" },
-    { nome: "Yogurt Greco 0% + Muesli + Noci", baseCarbo: 12, pro: "25g", fat: "15g" }
+    { nome: "Yogurt Greco 0% + Muesli + Noci", baseCarbo: 12, pro: "25g", fat: "15g" },
+    { nome: "Fette Biscottate Integrali + Marmellata + Whey", baseCarbo: 16, pro: "30g", fat: "5g" },
+    { nome: "Toast integrale + Fesa di Tacchino + Olio", baseCarbo: 11, pro: "28g", fat: "12g" }
   ],
   Pasto2: [
     { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: "40g", fat: "12g" },
-    { nome: "Pasta di Semola + Carne Magra (Manzo) + Verdure", baseCarbo: 20, pro: "45g", fat: "10g" },
+    { nome: "Pasta di Semola + Carne Magra (Manzo)", baseCarbo: 20, pro: "45g", fat: "10g" },
     { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: "40g", fat: "20g" },
     { nome: "Gnocchi di patate + Merluzzo + Olio EVO", baseCarbo: 18, pro: "35g", fat: "15g" },
-    { nome: "Quinoa + Tacchino + Crema di mandorle", baseCarbo: 15, pro: "40g", fat: "18g" }
+    { nome: "Quinoa + Tacchino + Crema di mandorle", baseCarbo: 15, pro: "40g", fat: "18g" },
+    { nome: "Cous Cous + Gamberetti + Zucchine", baseCarbo: 19, pro: "35g", fat: "8g" },
+    { nome: "Riso Venere + Tartare di Manzo + Limone", baseCarbo: 17, pro: "42g", fat: "14g" },
+    { nome: "Wrap integrale + Pollo sfilacciato + Avocado", baseCarbo: 14, pro: "38g", fat: "18g" }
   ],
   Pasto3: [
-    { nome: "Yogurt Greco + Mandorle (Lento Rilascio)", baseCarbo: 5, pro: "20g", fat: "15g" },
+    { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: "20g", fat: "15g" },
     { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: "25g", fat: "18g" },
     { nome: "Caseine micellari + Noci", baseCarbo: 2, pro: "30g", fat: "15g" },
     { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: "16g", fat: "14g" },
-    { nome: "Patate Dolci + Salmone (Pasto completo)", baseCarbo: 16, pro: "40g", fat: "18g" }
+    { nome: "Patate Dolci + Salmone (Pasto completo)", baseCarbo: 16, pro: "40g", fat: "18g" },
+    { nome: "Skyr Naturale + Cioccolato Fondente 85%", baseCarbo: 6, pro: "22g", fat: "12g" }
   ],
   PostWorkout: [
     { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: "35g", fat: "1g" },
     { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: "35g", fat: "1g" },
     { nome: "Gallette di riso (x10) + Bresaola/Fesa", baseCarbo: 15, pro: "30g", fat: "3g" },
     { nome: "Maltodestrine + EAA (Shaker Liquido)", baseCarbo: 14, pro: "15g", fat: "0g" },
-    { nome: "Riso Basmati + Merluzzo (Pasto Solido)", baseCarbo: 20, pro: "40g", fat: "2g" }
+    { nome: "Riso Basmati + Merluzzo (Pasto Solido)", baseCarbo: 20, pro: "40g", fat: "2g" },
+    { nome: "Gnocchi + Albume pastorizzato cotto", baseCarbo: 18, pro: "35g", fat: "0g" },
+    { nome: "Sorbetto alla frutta + Whey Isolate", baseCarbo: 14, pro: "30g", fat: "0g" }
   ]
 };
 
@@ -180,9 +188,12 @@ export default function Home() {
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
 
+  // Algoritmo Nutrizionale
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
+  const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
   const [pastiSelezionati, setPastiSelezionati] = useState({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
+  
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
 
@@ -214,7 +225,6 @@ export default function Home() {
           petto: circ.petto || '', spalle: circ.spalle || '', braccia: circ.braccia || '', 
           gambe: circ.gambe || '', glutei: circ.glutei || '' 
         });
-        if (data[0].peso) setMoltiplicatoreCarbo(5); 
       } else {
         setEta(""); setAltezza(""); setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
       }
@@ -293,17 +303,37 @@ export default function Home() {
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
   const aggiornaBiometria = (campo: string, valore: string) => { setBiometria({ ...biometria, [campo]: valore }); };
 
+  // ==========================================
+  // NUOVO CERVELLO NUTRIZIONALE: Cross-Check Carichi + Corpo
+  // ==========================================
   const valutaCheckFisico = async () => {
     const { peso, petto, spalle, braccia, gambe, glutei } = biometria;
     if (peso && eta && altezza && petto && spalle && braccia && gambe && glutei) {
-      let alertMsg = "Analisi completata. Trend muscolare positivo confermato. Setup macronutrienti ottimale.";
-      if (Number(peso) > 80 && Number(braccia) < 38) {
+      
+      let trendCarichi = "Neutro";
+      // Esempio logica base di stallo (simulata se lo storico è vuoto)
+      if (storicoSessioni.length >= 2) trendCarichi = "Stallo Rilevato"; 
+
+      let alertMsg = "";
+      
+      // Condizione 1: Sale peso, ma salgono solo i glutei/addome e braccia basse.
+      if (Number(peso) > 80 && Number(braccia) < 38 && Number(glutei) > 95) {
          setMoltiplicatoreCarbo(4);
-         alertMsg = "Attenzione: aumento di peso senza incremento volumi target (Braccia/Petto). Carboidrati ridotti (4g/kg) per arginare grasso.";
-      } else {
-         setMoltiplicatoreCarbo(6);
-         alertMsg = "Volume in stallo. L'algoritmo ha alzato i carboidrati a 6g/kg per forzare la crescita muscolare.";
+         alertMsg = "⚠️ Composizione: Rilevato accumulo grasso addome/glutei. Carboidrati ridotti (4g/kg) per arginare l'adipe.";
+      } 
+      // Condizione 2: Carichi in stallo, peso bloccato. Bisogna mangiare di più.
+      else if (trendCarichi === "Stallo Rilevato" && Number(peso) < 78) {
+         setMoltiplicatoreCarbo(6.5);
+         alertMsg = "🔥 Prestazioni: I carichi non salgono. Attivato Surplus Aggressivo (6.5g/kg CHO) per sbloccare la forza muscolare.";
+      } 
+      // Standard muscolare
+      else {
+         setMoltiplicatoreCarbo(5);
+         alertMsg = "✅ Analisi completata. Parametri in asse. Protocollo ipertrofico standard mantenuto (5g/kg CHO).";
       }
+
+      setMessaggioDieta(alertMsg);
+
       await supabase.from("check_utente").insert([{ nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date() }]);
       alert(alertMsg);
     } else {
@@ -311,19 +341,16 @@ export default function Home() {
     }
   };
 
-  // ==========================================
-  // ALGORITMO INTEGRAZIONE (Dinamico per Turno e Peso)
-  // ==========================================
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
     const pesoCalcolato = Number(biometria.peso) || 80;
-    const carbIntra = Math.round(pesoCalcolato * 0.5); // 0.5g di HBCD per kg
-    const acquaIntra = Math.round(pesoCalcolato * 15); // ml acqua minima raccomandata
+    const carbIntra = Math.round(pesoCalcolato * 0.5); 
+    const acquaIntra = Math.round(pesoCalcolato * 15); 
 
     const preW = quandoTiAlleni === 'sera' 
       ? `1️⃣ PRE-WORKOUT (30 min prima):\n• Pump Stim-Free: Citrullina 6g + Arginina 3g\n• Zero Caffeina per tutelare il sonno profondo.`
       : `1️⃣ PRE-WORKOUT (30 min prima):\n• Focus & Pump: Caffeina 200mg + Citrullina 6g + Beta-Alanina 3g.`;
 
-    const intraW = `2️⃣ INTRA-WORKOUT (Durante l'allenamento):\n• Borraccia da ${acquaIntra}ml\n• Ciclodestrine (HBCD): ${carbIntra}g\n• EAA (Aminoacidi Essenziali): 15g\n• Creatina Monoidrato: 5g\n• Sale rosa / Elettroliti: 1 pizzico.`;
+    const intraW = `2️⃣ INTRA-WORKOUT (Durante allenamento):\n• Borraccia da ${acquaIntra}ml\n• Ciclodestrine (HBCD): ${carbIntra}g\n• EAA (Essenziali): 15g\n• Creatina Monoidrato: 5g\n• Elettroliti (Sodio/Potassio)`;
 
     const bloccoIntra = { 
       isIntra: true, 
@@ -407,19 +434,21 @@ export default function Home() {
           </section>
 
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
-            <div className="flex justify-between items-center border-b border-neutral-700 pb-2 mb-4">
+            <div className="flex justify-between items-center border-b border-neutral-700 pb-2 mb-2">
               <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-              <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${moltiplicatoreCarbo > 5 ? 'bg-orange-600 text-white animate-pulse' : 'bg-neutral-800 text-neutral-400'}`}>
-                {moltiplicatoreCarbo}g CHO/Kg (Macro Adattati)
+              <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${moltiplicatoreCarbo > 5 ? 'bg-orange-600 text-white animate-pulse' : moltiplicatoreCarbo < 5 ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>
+                {moltiplicatoreCarbo}g CHO/Kg (Adattati)
               </span>
             </div>
+            
+            <p className="text-[10px] text-neutral-400 mb-4 font-mono italic">{messaggioDieta}</p>
+
             <div className="space-y-3">
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
                   return (
                     <div key={`intra-${idx}`} className="p-4 rounded-lg border bg-orange-950/20 border-orange-900/50">
                       <span className="text-xs uppercase font-black text-orange-500 mb-2 block tracking-widest">{blocco.titolo}</span>
-                      {/* L'uso di whitespace-pre-wrap formatta correttamente il testo con gli a capo \n */}
                       <p className="font-medium text-xs text-neutral-200 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
                     </div>
                   );
