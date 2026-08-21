@@ -8,7 +8,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO 
+// 1. DATABASE ALLENAMENTO (Saldato)
 // ==========================================
 const dbAllenamento = {
   Spinta: {
@@ -50,31 +50,15 @@ const dbAllenamento = {
 };
 
 const mapEsercizioToAnimazione: Record<string, string> = {
-  "e1": "bench_press_flat",       
-  "e3": "bench_press_incline_db", 
-  "e4": "machine_press",          
-  "e5": "flyes_flat_db",          
-  "e18": "shoulder_press_db",     
-  "e20": "lateral_raises_cables", 
-  "e22": "bench_press_close",     
-  "e27": "tricep_pushdown",       
-  "e6": "pullups",                
-  "e7": "barbell_row",            
-  "e9": "seated_cable_row",       
-  "e10": "cable_pullover",        
-  "e23": "barbell_curl",          
-  "e26": "cable_curl",            
-  "e11": "squat_barbell",         
-  "e12": "hack_squat",            
-  "e14": "leg_press",             
-  "e15": "leg_extension",         
-  "e13": "romanian_deadlift",     
-  "e16": "leg_curl_lying",        
-  "e17": "calf_raises"            
+  "e1": "bench_press_flat", "e3": "bench_press_incline_db", "e4": "machine_press", "e5": "flyes_flat_db",          
+  "e18": "shoulder_press_db", "e20": "lateral_raises_cables", "e22": "bench_press_close", "e27": "tricep_pushdown",       
+  "e6": "pullups", "e7": "barbell_row", "e9": "seated_cable_row", "e10": "cable_pullover",        
+  "e23": "barbell_curl", "e26": "cable_curl", "e11": "squat_barbell", "e12": "hack_squat",            
+  "e14": "leg_press", "e15": "leg_extension", "e13": "romanian_deadlift", "e16": "leg_curl_lying", "e17": "calf_raises"            
 };
 
 // ==========================================
-// COMPONENTE STICKMAN ANIMATO
+// COMPONENTE STICKMAN ANIMATO (Saldato)
 // ==========================================
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -93,438 +77,64 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
         .frame-a { animation: flipA 1.6s infinite; }
         .frame-b { animation: flipB 1.6s infinite; }
       `}</style>
-      
       <svg viewBox="0 0 50 50" className="w-14 h-14">
-        
-        {/* ================= SPINTA ================= */}
-        {type === "bench_press_flat" && ( // Panca Piana Larga
-          <>
-            <line x1="5" y1="35" x2="45" y2="35" {...benchLine} />
-            <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" />
-            <line x1="38" y1="35" x2="38" y2="45" {...benchLine} strokeWidth="2" />
-            <g className="frame-a">
-              <circle cx="16" cy="32" r="3.5" {...head} />
-              <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
-              <path d="M 23 33 L 26 26 L 23 20" {...body} /> 
-              <line x1="18" y1="20" x2="28" y2="20" {...gear} />
-              <rect x="17" y="14" width="2" height="12" {...weightFill} />
-              <rect x="27" y="14" width="2" height="12" {...weightFill} />
-            </g>
-            <g className="frame-b">
-              <circle cx="16" cy="32" r="3.5" {...head} />
-              <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
-              <path d="M 23 33 L 23 10" {...body} /> 
-              <line x1="18" y1="10" x2="28" y2="10" {...gear} />
-              <rect x="17" y="4" width="2" height="12" {...weightFill} />
-              <rect x="27" y="4" width="2" height="12" {...weightFill} />
-            </g>
-          </>
-        )}
-
-        {type === "bench_press_close" && ( // Panca Stretta (gomiti serrati in basso)
-          <>
-            <line x1="5" y1="35" x2="45" y2="35" {...benchLine} />
-            <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" />
-            <line x1="38" y1="35" x2="38" y2="45" {...benchLine} strokeWidth="2" />
-            <g className="frame-a">
-              <circle cx="16" cy="32" r="3.5" {...head} />
-              <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
-              <path d="M 23 33 L 23 27 L 23 20" {...body} /> 
-              <line x1="20" y1="20" x2="26" y2="20" {...gear} />
-              <rect x="19" y="15" width="2" height="10" {...weightFill} />
-              <rect x="25" y="15" width="2" height="10" {...weightFill} />
-            </g>
-            <g className="frame-b">
-              <circle cx="16" cy="32" r="3.5" {...head} />
-              <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} />
-              <path d="M 23 33 L 23 10" {...body} /> 
-              <line x1="20" y1="10" x2="26" y2="10" {...gear} />
-              <rect x="19" y="5" width="2" height="10" {...weightFill} />
-              <rect x="25" y="5" width="2" height="10" {...weightFill} />
-            </g>
-          </>
-        )}
-
-        {type === "machine_press" && ( // Chest Press
-          <>
-            <path d="M 10 15 L 10 45 M 5 45 L 20 45" {...benchLine} fill="none" />
-            <g className="frame-a">
-              <circle cx="16" cy="20" r="3.5" {...head} />
-              <path d="M 14 24 L 14 35 L 25 45" {...body} />
-              <path d="M 14 24 L 20 28 L 22 24" {...body} />
-              <line x1="22" y1="20" x2="22" y2="28" {...machine} strokeWidth="2" /> 
-            </g>
-            <g className="frame-b">
-              <circle cx="16" cy="20" r="3.5" {...head} />
-              <path d="M 14 24 L 14 35 L 25 45" {...body} />
-              <path d="M 14 24 L 35 24" {...body} /> 
-              <line x1="35" y1="20" x2="35" y2="28" {...machine} strokeWidth="2" /> 
-            </g>
-          </>
-        )}
-
-        {type === "bench_press_incline_db" && ( // Inclinata Manubri
-          <>
-            <path d="M 10 45 L 20 45 L 30 20 L 35 20" {...benchLine} fill="none"/>
-            <g className="frame-a">
-              <circle cx="28" cy="18" r="3.5" {...head} />
-              <path d="M 28 22 L 20 42 L 15 42 L 15 48" {...body} />
-              <path d="M 25 30 L 30 25 L 25 18" {...body} /> 
-              <rect x="22" y="15" width="6" height="4" {...weightFill} />
-            </g>
-            <g className="frame-b">
-              <circle cx="28" cy="18" r="3.5" {...head} />
-              <path d="M 28 22 L 20 42 L 15 42 L 15 48" {...body} />
-              <path d="M 25 30 L 20 12" {...body} /> 
-              <rect x="17" y="10" width="6" height="4" {...weightFill} transform="rotate(-20 20 12)" />
-            </g>
-          </>
-        )}
-
-        {type === "flyes_flat_db" && ( // Croci piana
-          <>
-             <line x1="20" y1="25" x2="30" y2="25" {...benchLine} strokeWidth="6" />
-             <g className="frame-a">
-                <circle cx="25" cy="20" r="3.5" {...head} />
-                <path d="M 25 24 L 25 45" {...body} />
-                <path d="M 25 24 L 10 30 M 25 24 L 40 30" {...body} /> 
-                <rect x="8" y="28" width="4" height="6" {...weightFill} />
-                <rect x="38" y="28" width="4" height="6" {...weightFill} />
-             </g>
-             <g className="frame-b">
-                <circle cx="25" cy="20" r="3.5" {...head} />
-                <path d="M 25 24 L 25 45" {...body} />
-                <path d="M 25 24 L 22 10 M 25 24 L 28 10" {...body} /> 
-                <rect x="20" y="6" width="4" height="6" {...weightFill} />
-                <rect x="26" y="6" width="4" height="6" {...weightFill} />
-             </g>
-          </>
-        )}
-
-        {type === "shoulder_press_db" && ( // Lento Manubri
-          <>
-            <line x1="15" y1="35" x2="35" y2="35" {...benchLine} />
-            <g className="frame-a">
-              <circle cx="25" cy="15" r="3.5" {...head} />
-              <path d="M 25 19 L 25 35" {...body} /> 
-              <path d="M 25 21 L 16 26 L 16 18 M 25 21 L 34 26 L 34 18" {...body} />
-              <rect x="14" y="16" width="4" height="6" {...weightFill} />
-              <rect x="32" y="16" width="4" height="6" {...weightFill} />
-            </g>
-            <g className="frame-b">
-              <circle cx="25" cy="15" r="3.5" {...head} />
-              <path d="M 25 19 L 25 35" {...body} />
-              <path d="M 25 21 L 18 6 M 25 21 L 32 6" {...body} />
-              <rect x="16" y="2" width="4" height="6" {...weightFill} />
-              <rect x="30" y="2" width="4" height="6" {...weightFill} />
-            </g>
-          </>
-        )}
-
-        {type === "lateral_raises_cables" && ( // Alzate Cavi
-          <>
-            <line x1="5" y1="45" x2="45" y2="45" {...machine} />
-            <circle cx="8" cy="45" r="2" fill="#555" /> 
-            <circle cx="42" cy="45" r="2" fill="#555" /> 
-            <g className="frame-a">
-              <circle cx="25" cy="15" r="3.5" {...head} />
-              <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...body} />
-              <path d="M 25 21 L 22 35 M 25 21 L 28 35" {...body} /> 
-              <line x1="8" y1="45" x2="28" y2="35" {...cable} />
-              <line x1="42" y1="45" x2="22" y2="35" {...cable} />
-            </g>
-            <g className="frame-b">
-              <circle cx="25" cy="15" r="3.5" {...head} />
-              <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...body} />
-              <path d="M 25 21 L 10 21 M 25 21 L 40 21" {...body} /> 
-              <line x1="8" y1="45" x2="40" y2="21" {...cable} />
-              <line x1="42" y1="45" x2="10" y2="21" {...cable} />
-            </g>
-          </>
-        )}
-
-        {type === "tricep_pushdown" && ( // Push Down Corda
-          <>
-            <line x1="35" y1="5" x2="35" y2="45" {...machine} />
-            <circle cx="33" cy="5" r="2" fill="#555" /> 
-            <g className="frame-a">
-              <circle cx="20" cy="15" r="3.5" {...head} />
-              <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...body} />
-              <path d="M 20 21 L 25 26 L 30 20" {...body} /> 
-              <line x1="33" y1="5" x2="30" y2="20" {...cable} />
-            </g>
-            <g className="frame-b">
-              <circle cx="20" cy="15" r="3.5" {...head} />
-              <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...body} />
-              <path d="M 20 21 L 25 26 L 30 35" {...body} /> 
-              <line x1="33" y1="5" x2="30" y2="35" {...cable} />
-            </g>
-          </>
-        )}
-
-        {/* ================= TIRATA ================= */}
-        {type === "pullups" && ( // Trazioni
-          <>
-            <line x1="5" y1="6" x2="45" y2="6" {...benchLine} strokeWidth="3" />
-            <g className="frame-a">
-              <circle cx="25" cy="22" r="3.5" {...head} />
-              <path d="M 25 26 L 25 40 L 22 48 M 25 40 L 28 48" {...body} />
-              <path d="M 25 26 L 15 6 M 25 26 L 35 6" {...body} /> 
-            </g>
-            <g className="frame-b">
-              <circle cx="25" cy="10" r="3.5" {...head} />
-              <path d="M 25 14 L 25 30 L 22 35 M 25 30 L 28 35" {...body} />
-              <path d="M 25 14 L 15 20 L 15 6 M 25 14 L 35 20 L 35 6" {...body} /> 
-            </g>
-          </>
-        )}
-
-        {type === "barbell_row" && ( // Rematore Bilanciere
-          <>
-            <g className="frame-a">
-              <circle cx="38" cy="18" r="3.5" {...head} />
-              <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> 
-              <path d="M 32 23 L 35 40" {...body} /> 
-              <line x1="28" y1="40" x2="42" y2="40" {...gear} />
-              <circle cx="35" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
-            </g>
-            <g className="frame-b">
-              <circle cx="38" cy="18" r="3.5" {...head} />
-              <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} />
-              <path d="M 32 23 L 40 20 L 30 28" {...body} /> 
-              <line x1="23" y1="28" x2="37" y2="28" {...gear} />
-              <circle cx="30" cy="28" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
-            </g>
-          </>
-        )}
-
-        {type === "seated_cable_row" && ( // Pulley Seduto
-          <>
-             <line x1="10" y1="40" x2="30" y2="40" {...benchLine} />
-             <line x1="40" y1="30" x2="40" y2="45" {...machine} />
-             <circle cx="38" cy="40" r="2" fill="#555" /> 
-             <g className="frame-a">
-               <circle cx="20" cy="20" r="3.5" {...head} />
-               <path d="M 20 24 L 20 38 L 35 38" {...body} /> 
-               <path d="M 20 24 L 35 35" {...body} /> 
-               <line x1="38" y1="40" x2="35" y2="35" {...cable} />
-             </g>
-             <g className="frame-b">
-               <circle cx="18" cy="20" r="3.5" {...head} />
-               <path d="M 18 24 L 20 38 L 35 38" {...body} /> 
-               <path d="M 18 24 L 14 30 L 28 35" {...body} /> 
-               <line x1="38" y1="40" x2="28" y2="35" {...cable} />
-             </g>
-          </>
-        )}
-
-        {type === "cable_pullover" && ( // Pullover Cavi
-          <>
-            <line x1="10" y1="5" x2="10" y2="45" {...machine} />
-            <circle cx="12" cy="5" r="2" fill="#555" /> 
-            <g className="frame-a">
-              <circle cx="35" cy="15" r="3.5" {...head} />
-              <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} />
-              <path d="M 35 21 L 20 10" {...body} /> 
-              <line x1="12" y1="5" x2="20" y2="10" {...cable} />
-            </g>
-            <g className="frame-b">
-              <circle cx="35" cy="15" r="3.5" {...head} />
-              <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} />
-              <path d="M 35 21 L 35 38" {...body} /> 
-              <line x1="12" y1="5" x2="35" y2="38" {...cable} />
-            </g>
-          </>
-        )}
-
-        {type === "barbell_curl" && ( // Curl Bilanciere 
-          <>
-            <g className="frame-a">
-              <circle cx="25" cy="10" r="3.5" {...head} />
-              <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} />
-              <path d="M 25 16 L 25 30 L 28 35" {...body} /> 
-              <line x1="20" y1="35" x2="36" y2="35" {...gear} />
-              <rect x="18" y="32" width="2" height="6" {...weightFill} />
-              <rect x="36" y="32" width="2" height="6" {...weightFill} />
-            </g>
-            <g className="frame-b">
-              <circle cx="25" cy="10" r="3.5" {...head} />
-              <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} />
-              <path d="M 25 16 L 25 30 L 32 20" {...body} /> 
-              <line x1="24" y1="20" x2="40" y2="20" {...gear} />
-              <rect x="22" y="17" width="2" height="6" {...weightFill} />
-              <rect x="40" y="17" width="2" height="6" {...weightFill} />
-            </g>
-          </>
-        )}
-
-        {type === "cable_curl" && ( // Curl ai Cavi
-          <>
-            <line x1="10" y1="5" x2="10" y2="45" {...machine} />
-            <circle cx="12" cy="45" r="2" fill="#555" /> 
-            <g className="frame-a">
-              <circle cx="35" cy="10" r="3.5" {...head} />
-              <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} />
-              <path d="M 35 16 L 35 30 L 25 40" {...body} /> 
-              <line x1="12" y1="45" x2="25" y2="40" {...cable} />
-              <line x1="22" y1="40" x2="28" y2="40" {...gear} strokeWidth="3" /> 
-            </g>
-            <g className="frame-b">
-              <circle cx="35" cy="10" r="3.5" {...head} />
-              <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} />
-              <path d="M 35 16 L 35 30 L 25 20" {...body} /> 
-              <line x1="12" y1="45" x2="25" y2="20" {...cable} />
-              <line x1="22" y1="20" x2="28" y2="20" {...gear} strokeWidth="3" />
-            </g>
-          </>
-        )}
-
-        {/* ================= GAMBE ================= */}
-        {type === "squat_barbell" && ( // Squat
-          <>
-            <g className="frame-a">
-              <circle cx="25" cy="10" r="3.5" {...head} />
-              <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} />
-              <path d="M 25 15 L 29 19 L 25 13" {...body} />
-              <line x1="18" y1="13" x2="32" y2="13" {...gear} />
-              <circle cx="25" cy="13" r="5" {...weightFill} fill="none" stroke="#e5e5e5"/>
-            </g>
-            <g className="frame-b">
-              <circle cx="32" cy="24" r="3.5" {...head} />
-              <path d="M 32 28 L 20 38 L 26 48 M 20 38 L 16 48" {...body} />
-              <path d="M 32 29 L 36 33 L 32 27" {...body} />
-              <line x1="25" y1="27" x2="39" y2="27" {...gear} />
-              <circle cx="32" cy="27" r="5" {...weightFill} fill="none" stroke="#e5e5e5"/>
-            </g>
-          </>
-        )}
-
-        {type === "hack_squat" && ( // Hack Squat
-          <>
-            <line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /> 
-            <g className="frame-a">
-              <circle cx="32" cy="10" r="3.5" {...head} />
-              <path d="M 30 14 L 23 23 L 23 45 M 23 23 L 28 45" {...body} /> 
-            </g>
-            <g className="frame-b">
-              <circle cx="23" cy="22" r="3.5" {...head} />
-              <path d="M 21 26 L 14 35 L 23 35 L 23 45 M 14 35 L 28 45" {...body} /> 
-            </g>
-          </>
-        )}
-
-        {type === "leg_press" && ( // Leg Press 45
-          <>
-            <path d="M 10 30 L 20 45 L 35 45" {...benchLine} fill="none" /> 
-            <line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /> 
-            <g className="frame-a">
-              <circle cx="15" cy="25" r="3.5" {...head} />
-              <path d="M 15 28 L 20 45" {...body} /> 
-              <path d="M 20 45 L 22 30 L 30 20" {...body} /> 
-              <line x1="28" y1="15" x2="35" y2="22" {...gear} strokeWidth="3" /> 
-            </g>
-            <g className="frame-b">
-              <circle cx="15" cy="25" r="3.5" {...head} />
-              <path d="M 15 28 L 20 45" {...body} />
-              <path d="M 20 45 L 32 30 L 42 10" {...body} /> 
-              <line x1="39" y1="5" x2="46" y2="12" {...gear} strokeWidth="3" /> 
-            </g>
-          </>
-        )}
-
-        {type === "leg_extension" && ( // Leg Extension
-          <>
-            <path d="M 15 20 L 15 35 L 25 35 L 25 45" {...benchLine} fill="none" /> 
-            <g className="frame-a">
-              <circle cx="10" cy="15" r="3.5" {...head} />
-              <path d="M 12 18 L 12 33 L 25 33 L 25 45" {...body} /> 
-              <circle cx="27" cy="45" r="3" {...weightFill} /> 
-            </g>
-            <g className="frame-b">
-              <circle cx="10" cy="15" r="3.5" {...head} />
-              <path d="M 12 18 L 12 33 L 25 33 L 40 33" {...body} /> 
-              <circle cx="40" cy="31" r="3" {...weightFill} /> 
-              <path d="M 25 33 L 40 31" {...machine} strokeWidth="1" />
-            </g>
-          </>
-        )}
-
-        {type === "romanian_deadlift" && ( // Stacco Rumeno
-          <>
-            <g className="frame-a">
-              <circle cx="25" cy="10" r="3.5" {...head} />
-              <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> 
-              <path d="M 25 16 L 25 32" {...body} /> 
-              <line x1="15" y1="32" x2="35" y2="32" {...gear} />
-              <circle cx="25" cy="32" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
-            </g>
-            <g className="frame-b">
-              <circle cx="35" cy="20" r="3.5" {...head} />
-              <path d="M 35 20 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> 
-              <path d="M 32 22 L 32 40" {...body} /> 
-              <line x1="22" y1="40" x2="42" y2="40" {...gear} />
-              <circle cx="32" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" />
-            </g>
-          </>
-        )}
-
-        {type === "leg_curl_lying" && ( // Leg Curl Sdraiato
-          <>
-            <line x1="10" y1="35" x2="40" y2="35" {...benchLine} /> 
-            <path d="M 40 35 L 45 45" {...machine} />
-            <g className="frame-a">
-              <circle cx="15" cy="32" r="3.5" {...head} />
-              <path d="M 18 34 L 30 34 L 40 34 L 48 34" {...body} /> 
-              <circle cx="48" cy="32" r="3" {...weightFill} /> 
-            </g>
-            <g className="frame-b">
-              <circle cx="15" cy="32" r="3.5" {...head} />
-              <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...body} /> 
-              <circle cx="36" cy="18" r="3" {...weightFill} /> 
-              <path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /> 
-            </g>
-          </>
-        )}
-
-        {type === "calf_raises" && ( // Polpacci in piedi su rialzo
-          <>
-            <rect x="20" y="45" width="10" height="5" fill="#555" /> 
-            <g className="frame-a">
-              <circle cx="25" cy="10" r="3.5" {...head} />
-              <path d="M 25 14 L 25 30 L 25 45" {...body} /> 
-            </g>
-            <g className="frame-b">
-              <circle cx="25" cy="6" r="3.5" {...head} />
-              <path d="M 25 10 L 25 26 L 27 40 L 22 45" {...body} /> 
-            </g>
-          </>
-        )}
-
+        {type === "bench_press_flat" && ( <> <line x1="5" y1="35" x2="45" y2="35" {...benchLine} /> <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" /> <line x1="38" y1="35" x2="38" y2="45" {...benchLine} strokeWidth="2" /> <g className="frame-a"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 26 26 L 23 20" {...body} /> <line x1="18" y1="20" x2="28" y2="20" {...gear} /> <rect x="17" y="14" width="2" height="12" {...weightFill} /> <rect x="27" y="14" width="2" height="12" {...weightFill} /> </g> <g className="frame-b"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 23 10" {...body} /> <line x1="18" y1="10" x2="28" y2="10" {...gear} /> <rect x="17" y="4" width="2" height="12" {...weightFill} /> <rect x="27" y="4" width="2" height="12" {...weightFill} /> </g> </> )}
+        {type === "bench_press_close" && ( <> <line x1="5" y1="35" x2="45" y2="35" {...benchLine} /> <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" /> <line x1="38" y1="35" x2="38" y2="45" {...benchLine} strokeWidth="2" /> <g className="frame-a"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 23 27 L 23 20" {...body} /> <line x1="20" y1="20" x2="26" y2="20" {...gear} /> <rect x="19" y="15" width="2" height="10" {...weightFill} /> <rect x="25" y="15" width="2" height="10" {...weightFill} /> </g> <g className="frame-b"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 23 10" {...body} /> <line x1="20" y1="10" x2="26" y2="10" {...gear} /> <rect x="19" y="5" width="2" height="10" {...weightFill} /> <rect x="25" y="5" width="2" height="10" {...weightFill} /> </g> </> )}
+        {type === "machine_press" && ( <> <path d="M 10 15 L 10 45 M 5 45 L 20 45" {...benchLine} fill="none" /> <g className="frame-a"> <circle cx="16" cy="20" r="3.5" {...head} /> <path d="M 14 24 L 14 35 L 25 45" {...body} /> <path d="M 14 24 L 20 28 L 22 24" {...body} /> <line x1="22" y1="20" x2="22" y2="28" {...machine} strokeWidth="2" /> </g> <g className="frame-b"> <circle cx="16" cy="20" r="3.5" {...head} /> <path d="M 14 24 L 14 35 L 25 45" {...body} /> <path d="M 14 24 L 35 24" {...body} /> <line x1="35" y1="20" x2="35" y2="28" {...machine} strokeWidth="2" /> </g> </> )}
+        {type === "bench_press_incline_db" && ( <> <path d="M 10 45 L 20 45 L 30 20 L 35 20" {...benchLine} fill="none"/> <g className="frame-a"> <circle cx="28" cy="18" r="3.5" {...head} /> <path d="M 28 22 L 20 42 L 15 42 L 15 48" {...body} /> <path d="M 25 30 L 30 25 L 25 18" {...body} /> <rect x="22" y="15" width="6" height="4" {...weightFill} /> </g> <g className="frame-b"> <circle cx="28" cy="18" r="3.5" {...head} /> <path d="M 28 22 L 20 42 L 15 42 L 15 48" {...body} /> <path d="M 25 30 L 20 12" {...body} /> <rect x="17" y="10" width="6" height="4" {...weightFill} transform="rotate(-20 20 12)" /> </g> </> )}
+        {type === "flyes_flat_db" && ( <> <line x1="20" y1="25" x2="30" y2="25" {...benchLine} strokeWidth="6" /> <g className="frame-a"> <circle cx="25" cy="20" r="3.5" {...head} /> <path d="M 25 24 L 25 45" {...body} /> <path d="M 25 24 L 10 30 M 25 24 L 40 30" {...body} /> <rect x="8" y="28" width="4" height="6" {...weightFill} /> <rect x="38" y="28" width="4" height="6" {...weightFill} /> </g> <g className="frame-b"> <circle cx="25" cy="20" r="3.5" {...head} /> <path d="M 25 24 L 25 45" {...body} /> <path d="M 25 24 L 22 10 M 25 24 L 28 10" {...body} /> <rect x="20" y="6" width="4" height="6" {...weightFill} /> <rect x="26" y="6" width="4" height="6" {...weightFill} /> </g> </> )}
+        {type === "shoulder_press_db" && ( <> <line x1="15" y1="35" x2="35" y2="35" {...benchLine} /> <g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35" {...body} /> <path d="M 25 21 L 16 26 L 16 18 M 25 21 L 34 26 L 34 18" {...body} /> <rect x="14" y="16" width="4" height="6" {...weightFill} /> <rect x="32" y="16" width="4" height="6" {...weightFill} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35" {...body} /> <path d="M 25 21 L 18 6 M 25 21 L 32 6" {...body} /> <rect x="16" y="2" width="4" height="6" {...weightFill} /> <rect x="30" y="2" width="4" height="6" {...weightFill} /> </g> </> )}
+        {type === "lateral_raises_cables" && ( <> <line x1="5" y1="45" x2="45" y2="45" {...machine} /> <circle cx="8" cy="45" r="2" fill="#555" /> <circle cx="42" cy="45" r="2" fill="#555" /> <g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...body} /> <path d="M 25 21 L 22 35 M 25 21 L 28 35" {...body} /> <line x1="8" y1="45" x2="28" y2="35" {...cable} /> <line x1="42" y1="45" x2="22" y2="35" {...cable} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...body} /> <path d="M 25 21 L 10 21 M 25 21 L 40 21" {...body} /> <line x1="8" y1="45" x2="40" y2="21" {...cable} /> <line x1="42" y1="45" x2="10" y2="21" {...cable} /> </g> </> )}
+        {type === "tricep_pushdown" && ( <> <line x1="35" y1="5" x2="35" y2="45" {...machine} /> <circle cx="33" cy="5" r="2" fill="#555" /> <g className="frame-a"> <circle cx="20" cy="15" r="3.5" {...head} /> <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...body} /> <path d="M 20 21 L 25 26 L 30 20" {...body} /> <line x1="33" y1="5" x2="30" y2="20" {...cable} /> </g> <g className="frame-b"> <circle cx="20" cy="15" r="3.5" {...head} /> <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...body} /> <path d="M 20 21 L 25 26 L 30 35" {...body} /> <line x1="33" y1="5" x2="30" y2="35" {...cable} /> </g> </> )}
+        {type === "pullups" && ( <> <line x1="5" y1="6" x2="45" y2="6" {...benchLine} strokeWidth="3" /> <g className="frame-a"> <circle cx="25" cy="22" r="3.5" {...head} /> <path d="M 25 26 L 25 40 L 22 48 M 25 40 L 28 48" {...body} /> <path d="M 25 26 L 15 6 M 25 26 L 35 6" {...body} /> </g> <g className="frame-b"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 22 35 M 25 30 L 28 35" {...body} /> <path d="M 25 14 L 15 20 L 15 6 M 25 14 L 35 20 L 35 6" {...body} /> </g> </> )}
+        {type === "barbell_row" && ( <> <g className="frame-a"> <circle cx="38" cy="18" r="3.5" {...head} /> <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> <path d="M 32 23 L 35 40" {...body} /> <line x1="28" y1="40" x2="42" y2="40" {...gear} /> <circle cx="35" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> <g className="frame-b"> <circle cx="38" cy="18" r="3.5" {...head} /> <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> <path d="M 32 23 L 40 20 L 30 28" {...body} /> <line x1="23" y1="28" x2="37" y2="28" {...gear} /> <circle cx="30" cy="28" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> </> )}
+        {type === "seated_cable_row" && ( <> <line x1="10" y1="40" x2="30" y2="40" {...benchLine} /> <line x1="40" y1="30" x2="40" y2="45" {...machine} /> <circle cx="38" cy="40" r="2" fill="#555" /> <g className="frame-a"> <circle cx="20" cy="20" r="3.5" {...head} /> <path d="M 20 24 L 20 38 L 35 38" {...body} /> <path d="M 20 24 L 35 35" {...body} /> <line x1="38" y1="40" x2="35" y2="35" {...cable} /> </g> <g className="frame-b"> <circle cx="18" cy="20" r="3.5" {...head} /> <path d="M 18 24 L 20 38 L 35 38" {...body} /> <path d="M 18 24 L 14 30 L 28 35" {...body} /> <line x1="38" y1="40" x2="28" y2="35" {...cable} /> </g> </> )}
+        {type === "cable_pullover" && ( <> <line x1="10" y1="5" x2="10" y2="45" {...machine} /> <circle cx="12" cy="5" r="2" fill="#555" /> <g className="frame-a"> <circle cx="35" cy="15" r="3.5" {...head} /> <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} /> <path d="M 35 21 L 20 10" {...body} /> <line x1="12" y1="5" x2="20" y2="10" {...cable} /> </g> <g className="frame-b"> <circle cx="35" cy="15" r="3.5" {...head} /> <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} /> <path d="M 35 21 L 35 38" {...body} /> <line x1="12" y1="5" x2="35" y2="38" {...cable} /> </g> </> )}
+        {type === "barbell_curl" && ( <> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} /> <path d="M 25 16 L 25 30 L 28 35" {...body} /> <line x1="20" y1="35" x2="36" y2="35" {...gear} /> <rect x="18" y="32" width="2" height="6" {...weightFill} /> <rect x="36" y="32" width="2" height="6" {...weightFill} /> </g> <g className="frame-b"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} /> <path d="M 25 16 L 25 30 L 32 20" {...body} /> <line x1="24" y1="20" x2="40" y2="20" {...gear} /> <rect x="22" y="17" width="2" height="6" {...weightFill} /> <rect x="40" y="17" width="2" height="6" {...weightFill} /> </g> </> )}
+        {type === "cable_curl" && ( <> <line x1="10" y1="5" x2="10" y2="45" {...machine} /> <circle cx="12" cy="45" r="2" fill="#555" /> <g className="frame-a"> <circle cx="35" cy="10" r="3.5" {...head} /> <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} /> <path d="M 35 16 L 35 30 L 25 40" {...body} /> <line x1="12" y1="45" x2="25" y2="40" {...cable} /> <line x1="22" y1="40" x2="28" y2="40" {...gear} strokeWidth="3" /> </g> <g className="frame-b"> <circle cx="35" cy="10" r="3.5" {...head} /> <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} /> <path d="M 35 16 L 35 30 L 25 20" {...body} /> <line x1="12" y1="45" x2="25" y2="20" {...cable} /> <line x1="22" y1="20" x2="28" y2="20" {...gear} strokeWidth="3" /> </g> </> )}
+        {type === "squat_barbell" && ( <> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> <path d="M 25 15 L 29 19 L 25 13" {...body} /> <line x1="18" y1="13" x2="32" y2="13" {...gear} /> <circle cx="25" cy="13" r="5" {...weightFill} fill="none" stroke="#e5e5e5"/> </g> <g className="frame-b"> <circle cx="32" cy="24" r="3.5" {...head} /> <path d="M 32 28 L 20 38 L 26 48 M 20 38 L 16 48" {...body} /> <path d="M 32 29 L 36 33 L 32 27" {...body} /> <line x1="25" y1="27" x2="39" y2="27" {...gear} /> <circle cx="32" cy="27" r="5" {...weightFill} fill="none" stroke="#e5e5e5"/> </g> </> )}
+        {type === "hack_squat" && ( <> <line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /> <g className="frame-a"> <circle cx="32" cy="10" r="3.5" {...head} /> <path d="M 30 14 L 23 23 L 23 45 M 23 23 L 28 45" {...body} /> </g> <g className="frame-b"> <circle cx="23" cy="22" r="3.5" {...head} /> <path d="M 21 26 L 14 35 L 23 35 L 23 45 M 14 35 L 28 45" {...body} /> </g> </> )}
+        {type === "leg_press" && ( <> <path d="M 10 30 L 20 45 L 35 45" {...benchLine} fill="none" /> <line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /> <g className="frame-a"> <circle cx="15" cy="25" r="3.5" {...head} /> <path d="M 15 28 L 20 45" {...body} /> <path d="M 20 45 L 22 30 L 30 20" {...body} /> <line x1="28" y1="15" x2="35" y2="22" {...gear} strokeWidth="3" /> </g> <g className="frame-b"> <circle cx="15" cy="25" r="3.5" {...head} /> <path d="M 15 28 L 20 45" {...body} /> <path d="M 20 45 L 32 30 L 42 10" {...body} /> <line x1="39" y1="5" x2="46" y2="12" {...gear} strokeWidth="3" /> </g> </> )}
+        {type === "leg_extension" && ( <> <path d="M 15 20 L 15 35 L 25 35 L 25 45" {...benchLine} fill="none" /> <g className="frame-a"> <circle cx="10" cy="15" r="3.5" {...head} /> <path d="M 12 18 L 12 33 L 25 33 L 25 45" {...body} /> <circle cx="27" cy="45" r="3" {...weightFill} /> </g> <g className="frame-b"> <circle cx="10" cy="15" r="3.5" {...head} /> <path d="M 12 18 L 12 33 L 25 33 L 40 33" {...body} /> <circle cx="40" cy="31" r="3" {...weightFill} /> <path d="M 25 33 L 40 31" {...machine} strokeWidth="1" /> </g> </> )}
+        {type === "romanian_deadlift" && ( <> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> <path d="M 25 16 L 25 32" {...body} /> <line x1="15" y1="32" x2="35" y2="32" {...gear} /> <circle cx="25" cy="32" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> <g className="frame-b"> <circle cx="35" cy="20" r="3.5" {...head} /> <path d="M 35 20 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> <path d="M 32 22 L 32 40" {...body} /> <line x1="22" y1="40" x2="42" y2="40" {...gear} /> <circle cx="32" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> </> )}
+        {type === "leg_curl_lying" && ( <> <line x1="10" y1="35" x2="40" y2="35" {...benchLine} /> <path d="M 40 35 L 45 45" {...machine} /> <g className="frame-a"> <circle cx="15" cy="32" r="3.5" {...head} /> <path d="M 18 34 L 30 34 L 40 34 L 48 34" {...body} /> <circle cx="48" cy="32" r="3" {...weightFill} /> </g> <g className="frame-b"> <circle cx="15" cy="32" r="3.5" {...head} /> <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...body} /> <circle cx="36" cy="18" r="3" {...weightFill} /> <path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /> </g> </> )}
+        {type === "calf_raises" && ( <> <rect x="20" y="45" width="10" height="5" fill="#555" /> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 45" {...body} /> </g> <g className="frame-b"> <circle cx="25" cy="6" r="3.5" {...head} /> <path d="M 25 10 L 25 26 L 27 40 L 22 45" {...body} /> </g> </> )}
       </svg>
     </div>
   );
 };
 
-
 // ==========================================
-// 2. DATABASE ALIMENTAZIONE CON MACRO BASE
+// 2. DATABASE ALIMENTAZIONE & INTEGRAZIONE (Espanso e Clinico)
 // ==========================================
 const dbAlimenti = {
   Pasto1: [
-    { nome: "Avena + Whey + Burro Arachidi", baseCarbo: 12, pro: "35g", fat: "15g" },
-    { nome: "Pancakes farina avena + Albume", baseCarbo: 14, pro: "30g", fat: "10g" }
+    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: "35g", fat: "15g" },
+    { nome: "Pancakes farina di avena + Albume + Mirtilli", baseCarbo: 14, pro: "30g", fat: "10g" },
+    { nome: "Uova intere (x3) + Pane di segale + Avocado", baseCarbo: 10, pro: "25g", fat: "22g" },
+    { nome: "Crema di riso + Isolate + Mandorle", baseCarbo: 15, pro: "35g", fat: "12g" },
+    { nome: "Yogurt Greco 0% + Muesli + Noci", baseCarbo: 12, pro: "25g", fat: "15g" }
   ],
   Pasto2: [
     { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: "40g", fat: "12g" },
-    { nome: "Pasta di Semola + Carne Magra", baseCarbo: 20, pro: "45g", fat: "10g" }
+    { nome: "Pasta di Semola + Carne Magra (Manzo) + Verdure", baseCarbo: 20, pro: "45g", fat: "10g" },
+    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: "40g", fat: "20g" },
+    { nome: "Gnocchi di patate + Merluzzo + Olio EVO", baseCarbo: 18, pro: "35g", fat: "15g" },
+    { nome: "Quinoa + Tacchino + Crema di mandorle", baseCarbo: 15, pro: "40g", fat: "18g" }
   ],
   Pasto3: [
-    { nome: "Patate Dolci + Salmone", baseCarbo: 16, pro: "40g", fat: "18g" },
-    { nome: "Riso + Uova intere + Verdure", baseCarbo: 16, pro: "25g", fat: "18g" }
+    { nome: "Yogurt Greco + Mandorle (Lento Rilascio)", baseCarbo: 5, pro: "20g", fat: "15g" },
+    { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: "25g", fat: "18g" },
+    { nome: "Caseine micellari + Noci", baseCarbo: 2, pro: "30g", fat: "15g" },
+    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: "16g", fat: "14g" },
+    { nome: "Patate Dolci + Salmone (Pasto completo)", baseCarbo: 16, pro: "40g", fat: "18g" }
   ],
   PostWorkout: [
     { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: "35g", fat: "1g" },
-    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: "35g", fat: "1g" }
+    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: "35g", fat: "1g" },
+    { nome: "Gallette di riso (x10) + Bresaola/Fesa", baseCarbo: 15, pro: "30g", fat: "3g" },
+    { nome: "Maltodestrine + EAA (Shaker Liquido)", baseCarbo: 14, pro: "15g", fat: "0g" },
+    { nome: "Riso Basmati + Merluzzo (Pasto Solido)", baseCarbo: 20, pro: "40g", fat: "2g" }
   ]
 };
 
@@ -701,8 +311,26 @@ export default function Home() {
     }
   };
 
+  // ==========================================
+  // ALGORITMO INTEGRAZIONE (Dinamico per Turno e Peso)
+  // ==========================================
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
-    const bloccoIntra = { isIntra: true, titolo: "Intra-Workout", descrizione: "Ciclodestrine (40g) + EAA (10g) + Creatina (5g)" };
+    const pesoCalcolato = Number(biometria.peso) || 80;
+    const carbIntra = Math.round(pesoCalcolato * 0.5); // 0.5g di HBCD per kg
+    const acquaIntra = Math.round(pesoCalcolato * 15); // ml acqua minima raccomandata
+
+    const preW = quandoTiAlleni === 'sera' 
+      ? `1️⃣ PRE-WORKOUT (30 min prima):\n• Pump Stim-Free: Citrullina 6g + Arginina 3g\n• Zero Caffeina per tutelare il sonno profondo.`
+      : `1️⃣ PRE-WORKOUT (30 min prima):\n• Focus & Pump: Caffeina 200mg + Citrullina 6g + Beta-Alanina 3g.`;
+
+    const intraW = `2️⃣ INTRA-WORKOUT (Durante l'allenamento):\n• Borraccia da ${acquaIntra}ml\n• Ciclodestrine (HBCD): ${carbIntra}g\n• EAA (Aminoacidi Essenziali): 15g\n• Creatina Monoidrato: 5g\n• Sale rosa / Elettroliti: 1 pizzico.`;
+
+    const bloccoIntra = { 
+      isIntra: true, 
+      titolo: "STACK INTEGRAZIONE (Peri-Workout)", 
+      descrizione: `${preW}\n\n${intraW}` 
+    };
+
     if (quandoTiAlleni === 'mattina') return [ bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' }, { idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     if (quandoTiAlleni === 'pausa') return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Fine Pausa)' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, { idCategoria: 'Pasto2', titoloUI: 'Pranzo' }, { idCategoria: 'Pasto3', titoloUI: 'Spuntino Pre-Turno/Pre-Workout' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' } ];
@@ -789,9 +417,10 @@ export default function Home() {
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
                   return (
-                    <div key={`intra-${idx}`} className="p-3 rounded-lg border bg-orange-950/20 border-orange-900/50">
-                      <span className="text-[10px] uppercase font-bold text-orange-500 mb-1 block">{blocco.titolo}</span>
-                      <p className="font-semibold text-sm text-white">{blocco.descrizione}</p>
+                    <div key={`intra-${idx}`} className="p-4 rounded-lg border bg-orange-950/20 border-orange-900/50">
+                      <span className="text-xs uppercase font-black text-orange-500 mb-2 block tracking-widest">{blocco.titolo}</span>
+                      {/* L'uso di whitespace-pre-wrap formatta correttamente il testo con gli a capo \n */}
+                      <p className="font-medium text-xs text-neutral-200 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
                     </div>
                   );
                 }
@@ -802,10 +431,14 @@ export default function Home() {
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
                     <div className="flex justify-between items-center mb-1">
                       <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'text-emerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
-                      <button onClick={() => apriSwapAlimento(cat)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300">Swap</button>
+                      <button onClick={() => apriSwapAlimento(cat)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Swap</button>
                     </div>
-                    <p className="font-semibold text-[13px] text-white leading-tight">{itemScelto.nome}</p>
-                    <p className="text-[11px] text-neutral-400 font-mono mt-1">CHO: <span className="text-orange-400 font-bold">{itemScelto.baseCarbo * moltiplicatoreCarbo}g</span> | PRO: {itemScelto.pro} | FAT: {itemScelto.fat}</p>
+                    <p className="font-semibold text-[13px] text-white leading-tight mt-2">{itemScelto.nome}</p>
+                    <div className="mt-2 bg-neutral-900 p-1.5 rounded flex justify-between">
+                       <span className="text-[10px] text-neutral-400 font-mono">CHO: <strong className="text-orange-400">{itemScelto.baseCarbo * moltiplicatoreCarbo}g</strong></span>
+                       <span className="text-[10px] text-neutral-400 font-mono">PRO: <strong>{itemScelto.pro}</strong></span>
+                       <span className="text-[10px] text-neutral-400 font-mono">FAT: <strong>{itemScelto.fat}</strong></span>
+                    </div>
                   </div>
                 );
               })}
@@ -836,12 +469,12 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* SELEZIONE GIORNO DELLA SETTIMANA */}
+              {/* SELEZIONE GIORNO DELLA SETTIMANA RESTAURATA */}
               <div className="mb-4">
                 <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">Giorno della settimana:</p>
                 <div className="flex flex-wrap gap-2">
                   {giorniSettimana.map((gg) => (
-                    <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 min-w-[60px] ${giornoCalendario === gg ? 'bg-neutral-700 text-white border-b-2 border-white' : 'bg-neutral-950 text-neutral-500 border border-neutral-800'}`}>
+                    <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 min-w-[60px] ${giornoCalendario === gg ? 'bg-neutral-700 text-white border-b-2 border-white' : 'bg-neutral-950 text-neutral-500 border border-neutral-800 hover:bg-neutral-900 transition-all'}`}>
                       {gg}
                     </button>
                   ))}
@@ -858,9 +491,9 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* BADGE FOCUS MUSCOLARE */}
+              {/* BADGE FOCUS MUSCOLARE RESTAURATO */}
               <div className="mb-3">
-                <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-[10px] font-bold text-orange-500 uppercase tracking-wider">
+                <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-[10px] font-bold text-orange-500 uppercase tracking-wider shadow-inner">
                   Focus: {dbAllenamento[schedaAttiva].focus}
                 </span>
               </div>
