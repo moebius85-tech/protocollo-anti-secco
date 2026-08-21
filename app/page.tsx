@@ -8,7 +8,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO (Integrale E1-E27)
+// 1. DATABASE ALLENAMENTO 
 // ==========================================
 const dbAllenamento = {
   Spinta: {
@@ -49,7 +49,6 @@ const dbAllenamento = {
   }
 };
 
-// Mappatura Esercizi -> Categorie di Movimento per gli SVG
 const mapEsercizioToAnimazione: Record<string, string> = {
   "e1": "push_h", "e3": "push_h", "e4": "push_h", "e5": "push_h", 
   "e18": "push_v", "e20": "push_v", "e22": "push_h", "e27": "push_v", 
@@ -59,67 +58,102 @@ const mapEsercizioToAnimazione: Record<string, string> = {
 };
 
 // ==========================================
-// COMPONENTE SVG "POSIZIONE A -> POSIZIONE B"
+// COMPONENTE STICKMAN SVG (POSIZIONE A -> B)
 // ==========================================
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
-  // Stili base (linee minimali, spessore tech)
-  const stileBase = { stroke: color, strokeWidth: "3", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  const stileBilanciere = { stroke: "#fff", strokeWidth: "4", fill: "none", strokeLinecap: "round" as const };
+  const stick = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  const gear = { stroke: "#e5e5e5", strokeWidth: "2", fill: "none", strokeLinecap: "round" as const };
+  const weight = { fill: "#e5e5e5" };
 
   const renderSVG = (stato: "A" | "B") => {
     switch(type) {
-      case "push_h": // Panca (Orizzontale)
+      case "push_h": // Panca
         return (
-          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
-            {/* Panca */} <line x1="5" y1="40" x2="45" y2="40" stroke="#333" strokeWidth="4" />
-            {/* Corpo */} <circle cx="25" cy="40" r="4" {...stileBase} fill={stato==="B"?color:"none"} />
-            {/* Braccia */} <path d={stato === "A" ? "M 25 36 L 25 15" : "M 25 36 L 15 25 L 25 15"} {...stileBase} />
-            {/* Bilanciere */} <line x1="10" y1="15" x2="40" y2="15" {...stileBilanciere} />
+          <svg viewBox="0 0 50 50" className="w-12 h-12">
+            <line x1="5" y1="35" x2="45" y2="35" stroke="#333" strokeWidth="4" />
+            <circle cx="15" cy="32" r="4" {...stick} />
+            <path d="M 19 32 L 35 32 M 35 32 L 40 40 M 35 32 L 32 40" {...stick} />
+            <path d={stato === "A" ? "M 23 32 L 25 22 L 23 18" : "M 23 32 L 23 12"} {...stick} />
+            <line x1="15" y1={stato==="A"?"18":"12"} x2="35" y2={stato==="A"?"18":"12"} {...gear} />
+            <rect x="13" y={stato==="A"?"13":"7"} width="2" height="10" {...weight} />
+            <rect x="35" y={stato==="A"?"13":"7"} width="2" height="10" {...weight} />
           </svg>
         );
-      case "push_v": // Lento Avanti (Verticale)
+      case "push_v": // Lento / Spinte
         return (
-          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
-            {/* Corpo */} <line x1="25" y1="45" x2="25" y2="25" {...stileBase} /> <circle cx="25" cy="20" r="4" {...stileBase} fill={stato==="B"?color:"none"} />
-            {/* Braccia */} <path d={stato === "A" ? "M 25 25 L 15 25 L 15 10" : "M 25 25 L 25 5"} {...stileBase} />
-            {/* Bilanciere */} <line x1="5" y1={stato==="A"?"10":"5"} x2="45" y2={stato==="A"?"10":"5"} {...stileBilanciere} />
+          <svg viewBox="0 0 50 50" className="w-12 h-12">
+            <circle cx="25" cy={stato==="A"?"18":"18"} r="4" {...stick} />
+            <path d="M 25 22 L 25 35 M 25 35 L 20 48 M 25 35 L 30 48" {...stick} />
+            <path d={stato === "A" ? "M 25 25 L 18 20 L 18 15 M 25 25 L 32 20 L 32 15" : "M 25 25 L 18 8 M 25 25 L 32 8"} {...stick} />
+            <line x1="10" y1={stato==="A"?"15":"8"} x2="40" y2={stato==="A"?"15":"8"} {...gear} />
+            <rect x="8" y={stato==="A"?"10":"3"} width="2" height="10" {...weight} />
+            <rect x="40" y={stato==="A"?"10":"3"} width="2" height="10" {...weight} />
           </svg>
         );
-      case "pull_v": // Trazioni (Verticale in giù)
+      case "pull_v": // Trazioni
         return (
-          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
-            {/* Sbarra */} <line x1="5" y1="5" x2="45" y2="5" {...stileBilanciere} />
-            {/* Corpo */} <circle cx="25" cy={stato==="A"?"30":"15"} r="4" {...stileBase} fill={stato==="B"?color:"none"} />
-            {/* Braccia */} <path d={stato === "A" ? "M 25 30 L 15 5" : "M 25 15 L 15 20 L 15 5"} {...stileBase} />
-            <line x1="25" y1={stato==="A"?"35":"20"} x2="25" y2="50" {...stileBase} />
+          <svg viewBox="0 0 50 50" className="w-12 h-12">
+            <line x1="5" y1="5" x2="45" y2="5" {...gear} />
+            <circle cx="25" cy={stato==="A"?"20":"12"} r="4" {...stick} />
+            <path d={stato==="A" ? "M 25 24 L 25 38 M 25 38 L 20 48 M 25 38 L 30 48" : "M 25 16 L 25 30 M 25 30 L 20 40 M 25 30 L 30 40"} {...stick} />
+            <path d={stato==="A" ? "M 25 26 L 15 5 M 25 26 L 35 5" : "M 25 18 L 15 10 L 15 5 M 25 18 L 35 10 L 35 5"} {...stick} />
+          </svg>
+        );
+      case "pull_h": // Rematore
+        return (
+          <svg viewBox="0 0 50 50" className="w-12 h-12">
+            <circle cx="35" cy={stato==="A"?"18":"22"} r="4" {...stick} />
+            <path d={stato==="A" ? "M 32 21 L 22 30 M 22 30 L 20 45 M 22 30 L 28 45" : "M 32 25 L 22 32 M 22 32 L 20 45 M 22 32 L 28 45"} {...stick} />
+            <path d={stato==="A" ? "M 28 25 L 25 38" : "M 28 29 L 32 25 L 25 32"} {...stick} />
+            <line x1="15" y1={stato==="A"?"38":"32"} x2="35" y2={stato==="A"?"38":"32"} {...gear} />
+            <rect x="13" y={stato==="A"?"33":"27"} width="2" height="10" {...weight} />
+            <rect x="35" y={stato==="A"?"33":"27"} width="2" height="10" {...weight} />
+          </svg>
+        );
+      case "curl": // Bicipiti
+        return (
+          <svg viewBox="0 0 50 50" className="w-12 h-12">
+            <circle cx="25" cy="12" r="4" {...stick} />
+            <path d="M 25 16 L 25 32 M 25 32 L 20 48 M 25 32 L 30 48" {...stick} />
+            <path d={stato==="A" ? "M 25 18 L 20 30" : "M 25 18 L 20 25 L 15 15"} {...stick} />
+            <line x1="10" y1={stato==="A"?"30":"15"} x2="30" y2={stato==="A"?"30":"15"} {...gear} />
+            <circle cx="10" cy={stato==="A"?"30":"15"} r="3" {...weight} />
+            <circle cx="30" cy={stato==="A"?"30":"15"} r="3" {...weight} />
           </svg>
         );
       case "squat": // Squat
         return (
-          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
-            {/* Bilanciere */} <line x1="5" y1={stato==="A"?"15":"30"} x2="45" y2={stato==="A"?"15":"30"} {...stileBilanciere} />
-            {/* Corpo */} <circle cx="25" cy={stato==="A"?"10":"25"} r="4" {...stileBase} fill={stato==="B"?color:"none"} />
-            {/* Schiena */} <line x1="25" y1={stato==="A"?"15":"30"} x2="25" y2={stato==="A"?"30":"40"} {...stileBase} />
-            {/* Gambe */} <path d={stato === "A" ? "M 25 30 L 25 45" : "M 25 40 L 15 40 L 25 45"} {...stileBase} />
+          <svg viewBox="0 0 50 50" className="w-12 h-12">
+            <circle cx="25" cy={stato==="A"?"15":"25"} r="4" {...stick} />
+            <path d={stato==="A" ? "M 25 19 L 25 32 M 25 32 L 20 45 M 25 32 L 30 45" : "M 25 29 L 25 38 M 25 38 L 15 38 L 20 45 M 25 38 L 35 38 L 30 45"} {...stick} />
+            <path d={stato==="A" ? "M 25 21 L 18 16 M 25 21 L 32 16" : "M 25 31 L 18 26 M 25 31 L 32 26"} {...stick} />
+            <line x1="10" y1={stato==="A"?"16":"26"} x2="40" y2={stato==="A"?"16":"26"} {...gear} />
+            <rect x="8" y={stato==="A"?"11":"21"} width="2" height="10" {...weight} />
+            <rect x="40" y={stato==="A"?"11":"21"} width="2" height="10" {...weight} />
           </svg>
         );
-      default: // Generico
+      case "hinge": // Stacchi
         return (
-          <svg viewBox="0 0 50 50" className="w-10 h-10 opacity-80">
-            <circle cx="25" cy="25" r={stato==="A"?"10":"15"} {...stileBase} strokeDasharray={stato==="A"?"":"4"} />
-            <line x1="25" y1="25" x2="40" y2={stato==="A"?"25":"10"} {...stileBilanciere} />
+          <svg viewBox="0 0 50 50" className="w-12 h-12">
+            <circle cx={stato==="A"?"25":"35"} cy={stato==="A"?"15":"25"} r="4" {...stick} />
+            <path d={stato==="A" ? "M 25 19 L 25 32 M 25 32 L 20 48 M 25 32 L 30 48" : "M 32 28 L 25 35 M 25 35 L 20 48 M 25 35 L 30 48"} {...stick} />
+            <path d={stato==="A" ? "M 25 21 L 25 35" : "M 30 30 L 25 40"} {...stick} />
+            <line x1="15" y1={stato==="A"?"35":"40"} x2="35" y2={stato==="A"?"35":"40"} {...gear} />
+            <circle cx="15" cy={stato==="A"?"35":"40"} r="4" {...weight} />
+            <circle cx="35" cy={stato==="A"?"35":"40"} r="4" {...weight} />
           </svg>
         );
+      default: return null;
     }
   };
 
   return (
-    <div className="flex items-center gap-2 bg-neutral-900 p-2 rounded-lg border border-neutral-800">
+    <div className="flex items-center gap-1 bg-neutral-900/50 p-2 rounded-lg border border-neutral-800">
       <div className="flex flex-col items-center">
         {renderSVG("A")}
         <span className="text-[7px] uppercase font-bold text-neutral-500 mt-1 tracking-widest">Start</span>
       </div>
-      <div className="text-neutral-600 font-bold text-lg">➔</div>
+      <div className="text-neutral-700 font-black text-sm">➔</div>
       <div className="flex flex-col items-center">
         {renderSVG("B")}
         <span className="text-[7px] uppercase font-bold text-neutral-500 mt-1 tracking-widest">End</span>
@@ -424,7 +458,7 @@ export default function Home() {
                 return (
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
                     <div className="flex justify-between items-center mb-1">
-                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'textemerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
+                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'text-emerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
                       <button onClick={() => apriSwapAlimento(cat)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300">Swap</button>
                     </div>
                     <p className="font-semibold text-[13px] text-white leading-tight">{itemScelto.nome}</p>
@@ -475,9 +509,8 @@ export default function Home() {
                   const ultimoCarico = getUltimoCarico(es.id);
                   const numeroSetTarget = getNumeroSet(es.fase);
                   
-                  // Identifica i colori in base alla fase dell'esercizio
                   const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
-                  const animType = mapEsercizioToAnimazione[es.id] || "squat"; // Fallback
+                  const animType = mapEsercizioToAnimazione[es.id] || "squat"; 
                   
                   return (
                     <div key={es.id} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 relative group overflow-hidden">
@@ -489,7 +522,7 @@ export default function Home() {
                         </div>
                         
                         <div className="flex items-center gap-4 mt-2">
-                          {/* COMPONENTE SVG INTEGRATO */}
+                          {/* COMPONENTE STICKMAN SVG INTEGRATO */}
                           <SvgVisualizer type={animType} color={phaseColor} />
                           
                           <div className="flex-1">
@@ -502,7 +535,6 @@ export default function Home() {
                           <p className={`text-[10px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>{numeroSetTarget} Serie | {fastWorkout ? "Rec. Breve" : "Rec. Pieno"}</p>
                         </div>
                         
-                        {/* TRACCIAMENTO SET PER SET */}
                         <div className="mt-4 pt-3 border-t border-neutral-800">
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-[9px] uppercase font-bold text-neutral-500">Target Ultima: <span className="text-orange-400">{ultimoCarico ? `${ultimoCarico} kg` : '-'}</span></span>
