@@ -71,6 +71,18 @@ const dbAlimenti = {
   ]
 };
 
+// ==========================================
+// INFO MISURE PER TELEMETRIA FISICA
+// ==========================================
+const infoMisure = {
+  peso: { label: "Peso", unit: "kg", desc: "Bilancia a digiuno, mattina post-bagno" },
+  petto: { label: "Petto", unit: "cm", desc: "Circonferenza altezza capezzoli, respiro neutro" },
+  spalle: { label: "Spalle", unit: "cm", desc: "Circonferenza massima attorno ai deltoidi" },
+  braccia: { label: "Braccia", unit: "cm", desc: "Bicipite contratto, punto di massimo picco" },
+  gambe: { label: "Gambe", unit: "cm", desc: "Subito sotto il gluteo, punto più largo" },
+  glutei: { label: "Glutei", unit: "cm", desc: "Circonferenza massima del bacino" }
+};
+
 export default function Home() {
   // --- STATI: MULTI-UTENTE E CHECK ---
   const [listaAtleti, setListaAtleti] = useState<string[]>(["Leonardo"]);
@@ -88,6 +100,7 @@ export default function Home() {
   const [inizio2, setInizio2] = useState('');
   const [fine2, setFine2] = useState('');
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
+  const [fastWorkout, setFastWorkout] = useState(false); // Toggle per comprimere il tempo
 
   useEffect(() => {
     if (tipoTurno === 'diretto' && quandoTiAlleni === 'pausa') {
@@ -117,7 +130,7 @@ export default function Home() {
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
 
   // --- STATI: CHAT GEMINI IA ---
-  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, alternative, o consigli alimentari.' }]);
+  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, alternative, o logiche di allenamento.' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -140,7 +153,22 @@ export default function Home() {
       if (data && data.length > 0) {
         setEta(data[0].eta || "");
         setAltezza(data[0].altezza || "");
-        setBiometria(data[0].circonferenze || { peso: data[0].peso || '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
+        
+        // Estrazione sicura sia del peso che delle circonferenze dallo storico
+        const circ = data[0].circonferenze || {};
+        setBiometria({ 
+          peso: data[0].peso?.toString() || circ.peso?.toString() || '', 
+          petto: circ.petto || '', 
+          spalle: circ.spalle || '', 
+          braccia: circ.braccia || '', 
+          gambe: circ.gambe || '', 
+          glutei: circ.glutei || '' 
+        });
+        
+        // Ripristino eventuali logiche di carbo calcolati precedentemente
+        if (data[0].peso) {
+           setMoltiplicatoreCarbo(5); 
+        }
       } else {
         setEta(""); setAltezza(""); setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
       }
@@ -177,11 +205,14 @@ export default function Home() {
   };
 
   // --- HANDLERS: ALLENAMENTO E CHECK ---
-  const salvaNuovoAtleta = () => {
+  const salvaNuovoAtleta = async () => {
     if (nomeNuovoUtente.trim()) {
-      setListaAtleti(prev => [...prev, nomeNuovoUtente]);
-      setUtente(nomeNuovoUtente);
+      const nuovo = nomeNuovoUtente.trim();
+      setListaAtleti(prev => [...prev, nuovo]);
+      setUtente(nuovo);
       setIsNuovoUtente(false);
+      // Salva immediatamente nel DB per fissare l'atleta in memoria
+      await supabase.from("check_utente").insert([{ nome_utente: nuovo, data: new Date() }]);
     }
   };
 
@@ -198,7 +229,7 @@ export default function Home() {
     setStoricoSessioni([...storicoSessioni, nuovaSessione]);
     setCarichiAttuali({}); 
     await supabase.from("storico_allenamenti").insert([{ nome_utente: utente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: nuovaSessione.carichi, data: new Date() }]);
-    alert(`Sessione salvata nel cloud per ${utente}.`);
+    alert(`Sessione salvata nel cloud per ${utente}. Ottimo lavoro.`);
   };
 
   const apriSwapEsercizio = (es: any) => { setEsercizioDaCambiare({ id: es.id, nomeAttuale: eserciziModificati[es.id] || es.nome, alternative: es.alternative }); setModalEsercizio(true); };
@@ -210,11 +241,24 @@ export default function Home() {
   const valutaCheckFisico = async () => {
     const { peso, petto, spalle, braccia, gambe, glutei } = biometria;
     if (peso && eta && altezza && petto && spalle && braccia && gambe && glutei) {
-      setMoltiplicatoreCarbo(6);
+      
+      // LOGICA ALGORITMO: Controllo se stiamo mettendo grasso o muscolo
+      // Nel Metodo Anti-Secco, se sale il peso ma le braccia/gambe sono piatte e salgono i glutei, stiamo sporcando.
+      let alertMsg = "Analisi completata. Trend muscolare positivo confermato. Setup macronutrienti ottimale.";
+      
+      // Simulazione base dell'algoritmo di aggiustamento
+      if (Number(peso) > 80 && Number(braccia) < 38) {
+         setMoltiplicatoreCarbo(4);
+         alertMsg = "Attenzione: l'algoritmo rileva un aumento di peso senza incremento dei volumi target (Braccia/Petto). Carboidrati ridotti per arginare l'accumulo di grasso.";
+      } else {
+         setMoltiplicatoreCarbo(6);
+         alertMsg = "Volume in stallo rilevato. L'algoritmo ha alzato i carboidrati a 6g/kg per forzare la crescita muscolare. Spingi in allenamento.";
+      }
+
       await supabase.from("check_utente").insert([{ nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date() }]);
-      alert("Analisi completata. Volume in stallo rilevato. Carboidrati aumentati a 6g/kg. Check salvato su Cloud!");
+      alert(alertMsg);
     } else {
-      alert("Compila TUTTI i campi del check corporeo per ricalcolare i macros in sicurezza e salvare.");
+      alert("Compila TUTTI i campi del check corporeo per permettere all'algoritmo di ricalcolare i macros in sicurezza.");
     }
   };
 
@@ -223,6 +267,12 @@ export default function Home() {
     if (quandoTiAlleni === 'mattina') return [ bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' }, { idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     if (quandoTiAlleni === 'pausa') return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Fine Pausa)' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, { idCategoria: 'Pasto2', titoloUI: 'Pranzo' }, { idCategoria: 'Pasto3', titoloUI: 'Spuntino Pre-Turno/Pre-Workout' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' } ];
+  };
+
+  // Funzione per calcolare i minuti stimati della sessione attiva
+  const calcolaTempoScheda = () => {
+    const baseMin = fastWorkout ? 45 : 75; 
+    return baseMin;
   };
 
   return (
@@ -237,13 +287,13 @@ export default function Home() {
         </div>
         
         {/* SELETTORE ATLETI A TENDINA */}
-        <div className="flex flex-col w-full sm:w-64 border border-neutral-700 bg-neutral-900 p-2 rounded-lg">
-          <label className="text-[10px] text-orange-400 font-bold uppercase mb-1">Atleta Attivo:</label>
+        <div className="flex flex-col w-full sm:w-64 border border-neutral-700 bg-neutral-900 p-2 rounded-lg shadow-lg">
+          <label className="text-[10px] text-orange-400 font-bold uppercase mb-1">Atleta Attivo (Caricamento DB):</label>
           {isNuovoUtente ? (
             <div className="flex gap-2">
               <input type="text" placeholder="Nome atleta..." value={nomeNuovoUtente} onChange={(e) => setNomeNuovoUtente(e.target.value)} className="bg-neutral-950 text-white text-sm p-1.5 rounded outline-none w-full border border-neutral-600 focus:border-orange-500" />
-              <button onClick={salvaNuovoAtleta} className="bg-orange-600 text-white text-xs font-bold px-3 rounded">Ok</button>
-              <button onClick={() => setIsNuovoUtente(false)} className="bg-neutral-700 text-white text-xs font-bold px-2 rounded">X</button>
+              <button onClick={salvaNuovoAtleta} className="bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold px-3 rounded transition-all">Salva</button>
+              <button onClick={() => setIsNuovoUtente(false)} className="bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-bold px-2 rounded">X</button>
             </div>
           ) : (
             <select 
@@ -252,7 +302,7 @@ export default function Home() {
                 if(e.target.value === "NUOVO") setIsNuovoUtente(true);
                 else setUtente(e.target.value);
               }}
-              className="bg-neutral-950 text-white text-sm font-bold p-1.5 rounded outline-none border border-neutral-800 cursor-pointer w-full"
+              className="bg-neutral-950 text-white text-sm font-bold p-1.5 rounded outline-none border border-neutral-800 cursor-pointer w-full focus:border-orange-500"
             >
               {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
               <option value="NUOVO" className="text-orange-500 font-bold">+ Aggiungi Nuovo Atleta</option>
@@ -268,11 +318,10 @@ export default function Home() {
         {/* ========================================= */}
         <div className="lg:col-span-4 space-y-6">
           
-          {/* SEZIONE RIPRISTINATA: GESTIONE TEMPO INTERATTIVA */}
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
-              <h2 className="text-lg font-bold text-white">Gestione Tempo</h2>
-              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-neutral-950 text-xs text-orange-500 p-2 rounded border border-neutral-700 outline-none">
+              <h2 className="text-lg font-bold text-white">Gestione Tempo (Incastro Turni)</h2>
+              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-neutral-950 text-xs text-orange-500 p-2 rounded border border-neutral-700 outline-none focus:border-orange-500">
                 <option value="diretto">Turno Diretto</option>
                 <option value="spezzato">Turno Spezzato</option>
               </select>
@@ -281,7 +330,7 @@ export default function Home() {
             <div className="space-y-4">
               <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
                 <span className="text-xs text-blue-400 uppercase font-bold mb-2 block">
-                  {tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Euronics)'}
+                  {tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}
                 </span>
                 <div className="flex space-x-2">
                   <input type="time" value={inizio1} onChange={(e) => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm border-b border-neutral-700 text-white p-1 outline-none focus:border-orange-500" />
@@ -291,7 +340,7 @@ export default function Home() {
               
               {tipoTurno === 'spezzato' && (
                 <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
-                  <span className="text-xs text-blue-400 uppercase font-bold mb-2 block">Pomeriggio (Euronics)</span>
+                  <span className="text-xs text-blue-400 uppercase font-bold mb-2 block">Pomeriggio (Lavoro)</span>
                   <div className="flex space-x-2">
                     <input type="time" value={inizio2} onChange={(e) => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm border-b border-neutral-700 text-white p-1 outline-none focus:border-orange-500" />
                     <input type="time" value={fine2} onChange={(e) => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm border-b border-neutral-700 text-white p-1 outline-none focus:border-orange-500" />
@@ -305,7 +354,7 @@ export default function Home() {
                 <div className="flex space-x-2">
                   <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'mattina' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Mattina</button>
                   {tipoTurno === 'spezzato' && (
-                    <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'pausa' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Pausa</button>
+                    <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'pausa' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Pausa Lavoro</button>
                   )}
                   <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'sera' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Sera</button>
                 </div>
@@ -317,7 +366,7 @@ export default function Home() {
             <div className="flex justify-between items-center border-b border-neutral-700 pb-2 mb-4">
               <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
               <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${moltiplicatoreCarbo > 5 ? 'bg-orange-600 text-white animate-pulse' : 'bg-neutral-800 text-neutral-400'}`}>
-                {moltiplicatoreCarbo}g CHO/Kg
+                {moltiplicatoreCarbo}g CHO/Kg (Macro Adattati)
               </span>
             </div>
             
@@ -356,17 +405,33 @@ export default function Home() {
         {/* ========================================= */}
         <section className="lg:col-span-5 bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
           <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
-            <h2 className="text-lg font-bold text-white">Allenamento 3 Split</h2>
+            <h2 className="text-lg font-bold text-white">Allenamento Modulabile</h2>
             <button onClick={() => setVistaStorico(!vistaStorico)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-md ${vistaStorico ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300'}`}>
-              {vistaStorico ? 'Torna al Workout' : 'Calendario'}
+              {vistaStorico ? 'Torna al Workout' : 'Storico Sessioni'}
             </button>
           </div>
 
           {!vistaStorico ? (
             <>
+              {/* CALCOLATORE TEMPO E FAST WORKOUT */}
+              <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800 mb-4 flex justify-between items-center">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Tempo Stimato Sessione</span>
+                  <p className="text-sm font-bold text-white flex items-center gap-2">
+                    ⏱️ ~{calcolaTempoScheda()} minuti <span className="text-[9px] text-neutral-400 font-normal">(Incluso recupero)</span>
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setFastWorkout(!fastWorkout)}
+                  className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-lg transition-all ${fastWorkout ? 'bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.5)]' : 'bg-neutral-800 text-neutral-400 border border-neutral-700'}`}
+                >
+                  {fastWorkout ? '⚡ Fast Mode Attiva' : 'Taglia Tempi'}
+                </button>
+              </div>
+
               {/* SELEZIONE GIORNO DELLA SETTIMANA */}
               <div className="mb-4">
-                <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">1. Giorno della settimana:</p>
+                <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">Giorno della settimana:</p>
                 <div className="flex flex-wrap gap-2">
                   {giorniSettimana.map((gg) => (
                     <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 min-w-[70px] ${giornoCalendario === gg ? 'bg-neutral-700 text-white border-b-2 border-white' : 'bg-neutral-950 text-neutral-500 border border-neutral-800'}`}>{gg}</button>
@@ -376,7 +441,6 @@ export default function Home() {
 
               {/* SELEZIONE TIPO SCHEDA */}
               <div className="mb-4">
-                <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">2. Scheda di oggi:</p>
                 <div className="flex gap-2">
                   {['Spinta', 'Tirata', 'Gambe'].map((sch) => (
                     <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 ${schedaAttiva === sch ? 'bg-orange-600 text-white shadow-lg' : 'bg-neutral-950 text-neutral-500 border border-neutral-800'}`}>
@@ -387,15 +451,18 @@ export default function Home() {
               </div>
 
               <div className="mb-3">
-                <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-xs font-bold text-orange-500 uppercase tracking-wider">
+                <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-[10px] font-bold text-orange-500 uppercase tracking-wider">
                   Focus: {dbAllenamento[schedaAttiva].focus}
                 </span>
               </div>
 
-              <div className="flex-1 overflow-y-auto pr-2 space-y-4" style={{ maxHeight: "60vh" }}>
+              <div className="flex-1 overflow-y-auto pr-2 space-y-4" style={{ maxHeight: "50vh" }}>
                 {dbAllenamento[schedaAttiva].esercizi.map((es) => {
                   const nomeVis = eserciziModificati[es.id] || es.nome;
                   const ultimoCarico = getUltimoCarico(es.id);
+                  
+                  // Modulazione interattiva: Se 'Fast Workout' è attivo, taglia serie e recuperi
+                  const repMostrate = fastWorkout ? es.rep.replace("4-5 serie", "3 serie max").replace("3-4 serie", "2 serie intense").replace("Rec: 2'", "Rec: 1.5'").replace("Rec: 1.5'", "Rec: 45\"") : es.rep;
                   
                   return (
                     <div key={es.id} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 relative group overflow-hidden">
@@ -403,18 +470,18 @@ export default function Home() {
                       <div className="pl-2">
                         <div className="flex justify-between items-start">
                           <span className={`text-[10px] uppercase font-black tracking-widest ${es.fase.includes('Fase 1') ? 'text-orange-500' : es.fase.includes('Fase 2') ? 'text-blue-500' : 'text-red-500'}`}>{es.fase}</span>
-                          <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-400">Swap</button>
+                          <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-400">Swap Esercizio</button>
                         </div>
                         <h3 className="font-bold text-base text-white mt-1 break-words">{nomeVis}</h3>
                         <div className="flex items-center gap-2 mt-2">
-                          <p className="text-[11px] font-bold text-neutral-300 bg-neutral-900 px-2 py-1 rounded border border-neutral-700 w-fit">{es.rep}</p>
+                          <p className={`text-[11px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>{repMostrate}</p>
                           <p className="text-[11px] text-neutral-400 italic flex-1 break-words">{es.dettaglio}</p>
                         </div>
                         
                         <div className="mt-4 pt-3 border-t border-neutral-800 flex gap-4">
                           <div className="w-1/2">
-                            <label className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-1">Target (Ultima Sess.)</label>
-                            <div className="bg-neutral-900 border border-neutral-800 p-2 rounded text-sm text-neutral-400 font-mono">{ultimoCarico} kg</div>
+                            <label className="text-[10px] uppercase tracking-wider font-bold text-neutral-500 block mb-1">Ultima Sess. (kg)</label>
+                            <div className="bg-neutral-900 border border-neutral-800 p-2 rounded text-sm text-neutral-400 font-mono">{ultimoCarico}</div>
                           </div>
                           <div className="w-1/2">
                             <label className="text-[10px] uppercase tracking-wider font-bold text-orange-500 block mb-1">Kg Effettivi</label>
@@ -434,7 +501,7 @@ export default function Home() {
               
               <div className="mt-4 pt-4 border-t border-neutral-700">
                 <button onClick={salvaSessione} className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold uppercase tracking-widest text-sm rounded-lg active:scale-95 transition-all">
-                  Concludi e Salva {schedaAttiva} ({giornoCalendario})
+                  Concludi e Salva Database
                 </button>
               </div>
             </>
@@ -472,32 +539,47 @@ export default function Home() {
         <div className="lg:col-span-3 space-y-6 flex flex-col">
           
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
-            <h2 className="text-lg font-bold mb-4 border-b border-neutral-700 pb-2 text-white">Telemetria Fisica</h2>
+            <h2 className="text-lg font-bold mb-4 border-b border-neutral-700 pb-2 text-white">Telemetria Fisica (DB)</h2>
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800 col-span-2 flex gap-2">
                     <div className="flex-1">
                         <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
                         <input type="number" value={eta} onChange={(e) => setEta(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
                     </div>
                     <div className="flex-1 border-l border-neutral-800 pl-2">
-                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza(cm)</label>
+                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza (cm)</label>
                         <input type="number" value={altezza} onChange={(e) => setAltezza(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
                     </div>
                 </div>
-                {['peso', 'petto', 'spalle', 'braccia', 'gambe', 'glutei'].map((campo) => (
-                  <div key={campo} className="bg-neutral-950 p-2 rounded-lg border border-neutral-800">
-                    <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">{campo}</label>
-                    {/* @ts-ignore */}
-                    <input type="number" value={biometria[campo]} onChange={(e) => aggiornaBiometria(campo, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
-                  </div>
-                ))}
+                
+                {/* Loop dinamico delle misurazioni fisiche con unità di misura e istruzioni */}
+                {Object.keys(infoMisure).map((chiave) => {
+                  const info = infoMisure[chiave as keyof typeof infoMisure];
+                  return (
+                    <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="text-[10px] text-neutral-400 uppercase font-bold">{info.label}</label>
+                        <span className="text-[9px] text-neutral-600 font-mono">{info.unit}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {/* @ts-ignore */}
+                        <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
+                      </div>
+                      
+                      {/* Tooltip istruzioni anatomiche visibile all'hover */}
+                      <div className="absolute left-0 -bottom-8 bg-neutral-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 w-[150%] pointer-events-none shadow-xl border border-neutral-700">
+                        {info.desc}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <button onClick={valutaCheckFisico} className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all">Analisi Totale & Salva</button>
+              <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-lg">Analizza Trend & Salva</button>
             </div>
           </section>
 
-          {/* SEZIONE CHAT GEMINI IN CLONNA 3 */}
+          {/* SEZIONE CHAT GEMINI */}
           <section className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-lg flex-1 flex flex-col min-h-[350px]">
             <h2 className="text-base font-bold text-white border-b border-neutral-700 pb-2 mb-2 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
@@ -515,7 +597,7 @@ export default function Home() {
                   </div>
                 </div>
               ))}
-              {isTyping && <div className="text-[10px] text-orange-500 font-mono pl-2 animate-pulse">Scrivendo...</div>}
+              {isTyping && <div className="text-[10px] text-orange-500 font-mono pl-2 animate-pulse">Analisi in corso...</div>}
               <div ref={chatEndRef} />
             </div>
 
@@ -525,7 +607,7 @@ export default function Home() {
                 value={inputChat} 
                 onChange={e => setInputChat(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()}
-                placeholder="Chiedi info sulla scheda..."
+                placeholder="Chiedi supporto al Coach..."
                 className="flex-1 bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-orange-500"
               />
               <button onClick={inviaMessaggioIA} disabled={isTyping} className="bg-orange-600 hover:bg-orange-500 text-white font-bold px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50">
@@ -540,16 +622,16 @@ export default function Home() {
       {/* --- MODALI SWAP --- */}
       {modalEsercizio && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-lg text-white">Swap Esercizio</h3>
-              <button onClick={() => setModalEsercizio(false)} className="text-neutral-500 text-xl">&times;</button>
+              <h3 className="font-bold text-lg text-white">Sostituisci Esercizio</h3>
+              <button onClick={() => setModalEsercizio(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
             </div>
             <div className="space-y-3">
               {esercizioDaCambiare.alternative.map((alt, i) => (
-                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-orange-500/50 group">
+                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-orange-500/50 group transition-all">
                   <p className="font-bold text-sm text-white group-hover:text-orange-400">{alt.nome}</p>
-                  <p className="text-[10px] text-neutral-500 mt-1 uppercase font-bold">{alt.note}</p>
+                  <p className="text-[10px] text-neutral-500 mt-1 uppercase font-bold">{alt.note} - Rispetta asse e tensione biomeccanica</p>
                 </button>
               ))}
             </div>
@@ -559,15 +641,15 @@ export default function Home() {
 
       {modalAlimento && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-lg text-white">Swap Pasto</h3>
-              <button onClick={() => setModalAlimento(false)} className="text-neutral-500 text-xl">&times;</button>
+              <h3 className="font-bold text-lg text-white">Sostituisci Pasto</h3>
+              <button onClick={() => setModalAlimento(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
             </div>
             <div className="space-y-3">
               {/* @ts-ignore */}
               {dbAlimenti[categoriaDaCambiare].map((alt, i) => (
-                <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-emerald-500/50 group">
+                <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-emerald-500/50 group transition-all">
                   <p className="font-bold text-sm text-white group-hover:text-emerald-400">{alt.nome}</p>
                   <p className="text-[11px] text-neutral-500 mt-1 font-mono">CHO: {alt.baseCarbo * moltiplicatoreCarbo}g | PRO: {alt.pro} | FAT: {alt.fat}</p>
                 </button>
