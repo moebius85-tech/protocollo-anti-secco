@@ -267,7 +267,6 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    // Limite 4MB per Vercel Serverless
     if (file.size > 4 * 1024 * 1024) {
       alert("Il file è troppo grande. Usa immagini o PDF sotto i 4MB.");
       return;
@@ -419,6 +418,34 @@ export default function Home() {
 
   const calcolaTempoScheda = () => fastWorkout ? 45 : 75;
 
+  // Calcolo Kcal Totali (BMR, TDEE, Intake)
+  const pesoNum = Number(biometria.peso) || 80;
+  const altezzaNum = Number(altezza) || 175;
+  const etaNum = Number(eta) || 41;
+  const bmr = Math.round((10 * pesoNum) + (6.25 * altezzaNum) - (5 * etaNum) + 5);
+  const tdee = Math.round(bmr * 1.55); // Moltiplicatore 1.55
+
+  const calcolaIntakeTotale = () => {
+    let choTot = 0; let proTot = 0; let fatTot = 0;
+    
+    // Intra-Workout Macros
+    choTot += Math.round(pesoNum * 0.5); // HBCD
+    proTot += 15; // EAA
+    
+    // Pasti
+    ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+       const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat as keyof typeof pastiSelezionati]];
+       if(item) {
+          choTot += item.baseCarbo * moltiplicatoreCarbo;
+          proTot += item.pro;
+          fatTot += item.fat;
+       }
+    });
+
+    return Math.round((choTot * 4) + (proTot * 4) + (fatTot * 9));
+  };
+  const totalIntakeKcal = calcolaIntakeTotale();
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 p-4 lg:p-6 font-sans overflow-x-hidden">
       
@@ -488,11 +515,20 @@ export default function Home() {
           </section>
 
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
-            <div className="flex justify-between items-center border-b border-neutral-700 pb-2 mb-2">
-              <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-              <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${moltiplicatoreCarbo > 5 ? 'bg-orange-600 text-white animate-pulse' : moltiplicatoreCarbo < 5 ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>
-                {moltiplicatoreCarbo}g CHO/Kg (Adattati)
-              </span>
+            
+            <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
+                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${moltiplicatoreCarbo > 5 ? 'bg-orange-600 text-white animate-pulse' : moltiplicatoreCarbo < 5 ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>
+                  {moltiplicatoreCarbo}g CHO/Kg
+                </span>
+              </div>
+              {/* DISPLAY CALORIE GLOBALI */}
+              <div className="flex gap-2">
+                <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded shadow-inner" title="Metabolismo Basale Stimato">BMR: {bmr} Kcal</span>
+                <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded shadow-inner" title="Dispendio Totale (Lavoro + Gym)">TDEE: {tdee} Kcal</span>
+                <span className="text-[9px] bg-orange-950 border border-orange-900 text-orange-400 font-bold px-2 py-1 rounded flex-1 text-center shadow-inner" title="Calorie complessive del menu">INTAKE: {totalIntakeKcal} Kcal</span>
+              </div>
             </div>
             
             <p className="text-[10px] text-neutral-400 mb-4 font-mono italic">{messaggioDieta}</p>
@@ -500,9 +536,13 @@ export default function Home() {
             <div className="space-y-3">
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
+                  const intraKcal = Math.round((Math.round(pesoNum * 0.5) * 4) + (15 * 4));
                   return (
                     <div key={`intra-${idx}`} className="p-4 rounded-lg border bg-orange-950/20 border-orange-900/50">
-                      <span className="text-xs uppercase font-black text-orange-500 mb-2 block tracking-widest">{blocco.titolo}</span>
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-xs uppercase font-black text-orange-500 block tracking-widest">{blocco.titolo}</span>
+                        <span className="text-[10px] font-bold text-orange-400 bg-orange-900/30 px-1.5 py-0.5 rounded">{intraKcal} KCAL</span>
+                      </div>
                       <p className="font-medium text-xs text-neutral-200 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
                     </div>
                   );
@@ -512,6 +552,7 @@ export default function Home() {
                 const itemScelto = dbAlimenti[cat]?.[pastiSelezionati[cat]] || {nome:"", baseCarbo:0, pro:0, fat:0, dettaglioGrammi:()=>""};
                 
                 const macroCho = itemScelto.baseCarbo * moltiplicatoreCarbo;
+                const pastoKcal = Math.round((macroCho * 4) + (itemScelto.pro * 4) + (itemScelto.fat * 9));
 
                 return (
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
@@ -527,10 +568,11 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="mt-2 flex justify-between px-1">
+                    <div className="mt-2 flex justify-between items-center px-1">
                        <span className="text-[10px] text-neutral-400 font-mono">CHO: <strong className="text-orange-400">{macroCho}g</strong></span>
                        <span className="text-[10px] text-neutral-400 font-mono">PRO: <strong>{itemScelto.pro}g</strong></span>
                        <span className="text-[10px] text-neutral-400 font-mono">FAT: <strong>{itemScelto.fat}g</strong></span>
+                       <span className={`text-[10px] font-black ${isPW ? 'text-emerald-500' : 'text-white'}`}>{pastoKcal} KCAL</span>
                     </div>
                   </div>
                 );
@@ -823,11 +865,15 @@ export default function Home() {
               {/* @ts-ignore */}
               {dbAlimenti[categoriaDaCambiare].map((alt, i) => {
                  const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
+                 const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
                  return (
                   <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-emerald-500/50 group transition-all">
-                    <p className="font-bold text-sm text-white group-hover:text-emerald-400">{alt.nome}</p>
+                    <div className="flex justify-between items-start">
+                      <p className="font-bold text-sm text-white group-hover:text-emerald-400">{alt.nome}</p>
+                      <span className="text-[10px] bg-neutral-800 text-white px-1.5 py-0.5 rounded font-bold ml-2">{swapKcal} Kcal</span>
+                    </div>
                     <p className="text-[11px] text-neutral-500 mt-1 font-mono">CHO: {macroCho}g | PRO: {alt.pro}g | FAT: {alt.fat}g</p>
-                    <p className="text-[10px] text-neutral-400 mt-2 p-1 bg-neutral-900 rounded">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
+                    <p className="text-[10px] text-neutral-400 mt-2 p-1.5 bg-neutral-900 border border-neutral-800 rounded">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
                   </button>
                  );
               })}
