@@ -185,7 +185,7 @@ export default function Home() {
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
 
-  // --- STATI NUTRIZIONE E SGARRO ---
+  // --- STATI NUTRIZIONE E SGARRO CON "NOME" INCLUSO ---
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
@@ -306,7 +306,7 @@ export default function Home() {
       
       let responseText = data.reply || "Errore nella risposta.";
 
-      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([^\]]+)\]/i;
+      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([^\]]+)\]/i;
       const match = responseText.match(magicRegex);
       
       if(match) {
@@ -314,7 +314,13 @@ export default function Home() {
           responseText = responseText.replace(fullString, '').trim();
           setPastiCustom(prev => ({
               ...prev,
-              [pastoTarget]: { attivo: true, cho, pro, fat, nome: nomeCibo.trim() }
+              [pastoTarget]: { 
+                attivo: true, 
+                cho: Math.round(parseFloat(cho.replace(',','.'))).toString(), 
+                pro: Math.round(parseFloat(pro.replace(',','.'))).toString(), 
+                fat: Math.round(parseFloat(fat.replace(',','.'))).toString(), 
+                nome: nomeCibo.trim() 
+              }
           }));
           responseText += `\n\n✨ **Magia eseguita!** Ho calcolato i macro e li ho inseriti nello sgarro del ${pastoTarget} come "${nomeCibo.trim()}". Dieta ricalcolata al volo!`;
       }
@@ -331,21 +337,21 @@ export default function Home() {
     if(!nomeCibo.trim()) return alert("Inserisci prima il nome o i grammi del pasto sgarro (es. '300g Pizza Margherita').");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
     try {
-      const payload = { message: `L'utente ha inserito questo pasto: "${nomeCibo}". Calcola i macro esatti. Restituisci SOLO ED ESCLUSIVAMENTE la stringa magica [MAGIC_MACRO | ${cat} | CHO | PRO | FAT | ${nomeCibo}] senza nessun altro testo intorno.` };
+      const payload = { message: `L'utente ha inserito: "${nomeCibo}". Calcola i macronutrienti. ARROTONDA i grammi all'intero (NO decimali). Devi rispondere SOLO con questa esatta stringa: [MAGIC_MACRO | ${cat} | grammi_cho | grammi_pro | grammi_fat | ${nomeCibo}]` };
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
       
-      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([^\]]+)\]/i;
+      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([^\]]+)\]/i;
       const match = data.reply.match(magicRegex);
       
       if(match) {
         const [_, pastoTarget, cho, pro, fat, nome] = match;
-        updateCustomMeal(cat, 'cho', cho);
-        updateCustomMeal(cat, 'pro', pro);
-        updateCustomMeal(cat, 'fat', fat);
+        updateCustomMeal(cat, 'cho', Math.round(parseFloat(cho.replace(',','.'))).toString());
+        updateCustomMeal(cat, 'pro', Math.round(parseFloat(pro.replace(',','.'))).toString());
+        updateCustomMeal(cat, 'fat', Math.round(parseFloat(fat.replace(',','.'))).toString());
         updateCustomMeal(cat, 'nome', nome.trim());
       } else {
-        alert("Il Coach non ha riconosciuto il cibo. Prova ad essere più specifico (es. '200g Pollo e 100g Riso').");
+        alert("Il Coach non ha riconosciuto il formato. Risposta IA: " + data.reply);
       }
     } catch(e) {
       alert("Errore di rete.");
