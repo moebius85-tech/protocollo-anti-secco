@@ -8,7 +8,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO E SVG (Saldato)
+// 1. DATABASE ALLENAMENTO (Saldato)
 // ==========================================
 const dbAllenamento = {
   Spinta: {
@@ -102,72 +102,44 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
 };
 
 // ==========================================
-// 2. DATABASE ALIMENTAZIONE CON MOTORE DI CALCOLO GRAMMI
+// 2. DATABASE ALIMENTAZIONE
 // ==========================================
 const dbAlimenti = {
   Pasto1: [
-    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, 
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro Arachidi` },
-    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: 30, fat: 10,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro Arachidi (sopra)` },
-    { nome: "Uova intere + Pane segale + Avocado", baseCarbo: 10, pro: 25, fat: 22,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova Intere • ${Math.round(f*6)}g Avocado` },
-    { nome: "Crema di riso + Isolate + Mandorle", baseCarbo: 15, pro: 35, fat: 12,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate • ${Math.round(f*2)}g Mandorle` },
-    { nome: "Yogurt Greco 0% + Muesli + Noci", baseCarbo: 12, pro: 25, fat: 15,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.4)}g Muesli • ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*1.5)}g Noci` },
-    { nome: "Fette Biscottate + Marmellata + Whey", baseCarbo: 16, pro: 30, fat: 5,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/7)} Fette Biscott. • Velo Marmellata • ${Math.round(p*1.2)}g Whey` },
-    { nome: "Toast integrale + Fesa Tacchino + Olio", baseCarbo: 11, pro: 28, fat: 12,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Toast • ${Math.round(p*4)}g Fesa • ${f}g Olio EVO` }
+    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro Arachidi` },
+    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: 30, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro Arachidi (sopra)` },
+    { nome: "Uova intere + Pane segale + Avocado", baseCarbo: 10, pro: 25, fat: 22, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova Intere • ${Math.round(f*6)}g Avocado` },
+    { nome: "Crema di riso + Isolate + Mandorle", baseCarbo: 15, pro: 35, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate • ${Math.round(f*2)}g Mandorle` },
+    { nome: "Yogurt Greco 0% + Muesli + Noci", baseCarbo: 12, pro: 25, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.4)}g Muesli • ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*1.5)}g Noci` },
+    { nome: "Fette Biscottate + Marmellata + Whey", baseCarbo: 16, pro: 30, fat: 5, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/7)} Fette Biscott. • Velo Marmellata • ${Math.round(p*1.2)}g Whey` },
+    { nome: "Toast integrale + Fesa Tacchino + Olio", baseCarbo: 11, pro: 28, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Toast • ${Math.round(p*4)}g Fesa • ${f}g Olio EVO` }
   ],
   Pasto2: [
-    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Petto Pollo • ${f}g Olio EVO` },
-    { nome: "Pasta di Semola + Carne Magra (Manzo)", baseCarbo: 20, pro: 45, fat: 10,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato Magro • ${f}g Olio EVO` },
-    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: 40, fat: 20,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone • Grassi dal pesce` },
-    { nome: "Gnocchi di patate + Merluzzo + Olio", baseCarbo: 18, pro: 35, fat: 15,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3)}g Gnocchi • ${Math.round(p*5)}g Merluzzo • ${f}g Olio EVO` },
-    { nome: "Quinoa + Tacchino + Crema mandorle", baseCarbo: 15, pro: 40, fat: 18,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Quinoa • ${Math.round(p*4)}g Tacchino • ${f}g Crema Mandorle` },
-    { nome: "Cous Cous + Gamberetti + Zucchine", baseCarbo: 19, pro: 35, fat: 8,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Cous Cous • ${Math.round(p*5)}g Gamberetti • ${f}g Olio EVO` },
-    { nome: "Riso Venere + Tartare Manzo + Limone", baseCarbo: 17, pro: 42, fat: 14,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Riso Venere • ${Math.round(p*4.5)}g Tartare • ${f}g Olio EVO` },
-    { nome: "Wrap integrale + Pollo + Avocado", baseCarbo: 14, pro: 38, fat: 18,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Piada Integrale • ${Math.round(p*4)}g Pollo • ${Math.round(f*6)}g Avocado` }
+    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Petto Pollo • ${f}g Olio EVO` },
+    { nome: "Pasta di Semola + Carne Magra (Manzo)", baseCarbo: 20, pro: 45, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato Magro • ${f}g Olio EVO` },
+    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: 40, fat: 20, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone • Grassi dal pesce` },
+    { nome: "Gnocchi di patate + Merluzzo + Olio", baseCarbo: 18, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3)}g Gnocchi • ${Math.round(p*5)}g Merluzzo • ${f}g Olio EVO` },
+    { nome: "Quinoa + Tacchino + Crema mandorle", baseCarbo: 15, pro: 40, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Quinoa • ${Math.round(p*4)}g Tacchino • ${f}g Crema Mandorle` },
+    { nome: "Cous Cous + Gamberetti + Zucchine", baseCarbo: 19, pro: 35, fat: 8, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Cous Cous • ${Math.round(p*5)}g Gamberetti • ${f}g Olio EVO` },
+    { nome: "Riso Venere + Tartare Manzo + Limone", baseCarbo: 17, pro: 42, fat: 14, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Riso Venere • ${Math.round(p*4.5)}g Tartare • ${f}g Olio EVO` },
+    { nome: "Wrap integrale + Pollo + Avocado", baseCarbo: 14, pro: 38, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Piada Integrale • ${Math.round(p*4)}g Pollo • ${Math.round(f*6)}g Avocado` }
   ],
   Pasto3: [
-    { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: 20, fat: 15,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle` },
-    { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: 25, fat: 18,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*8)}g Fiocchi Latte Magri • ${f}g Burro Arachidi` },
-    { nome: "Caseine micellari + Noci", baseCarbo: 2, pro: 30, fat: 15,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*1.2)}g Caseine (Polvere) • ${Math.round(f*1.5)}g Noci Sgusciate` },
-    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: 16, fat: 14,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*3)}g Parmigiano 30 Mesi • ${Math.round(c*1.5)}g Fette Wasa` },
-    { nome: "Patate Dolci + Salmone (Pasto)", baseCarbo: 16, pro: 40, fat: 18,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone` },
-    { nome: "Skyr Naturale + Ciocc. Fondente 85%", baseCarbo: 6, pro: 22, fat: 12,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*9)}g Skyr • ${Math.round(f*2.2)}g Cioccolato Fondente 85%` }
+    { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: 20, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle` },
+    { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: 25, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*8)}g Fiocchi Latte Magri • ${f}g Burro Arachidi` },
+    { nome: "Caseine micellari + Noci", baseCarbo: 2, pro: 30, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*1.2)}g Caseine (Polvere) • ${Math.round(f*1.5)}g Noci Sgusciate` },
+    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: 16, fat: 14, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*3)}g Parmigiano 30 Mesi • ${Math.round(c*1.5)}g Fette Wasa` },
+    { nome: "Patate Dolci + Salmone (Pasto)", baseCarbo: 16, pro: 40, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone` },
+    { nome: "Skyr Naturale + Ciocc. Fondente 85%", baseCarbo: 6, pro: 22, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*9)}g Skyr • ${Math.round(f*2.2)}g Cioccolato Fondente 85%` }
   ],
   PostWorkout: [
-    { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate` },
-    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate` },
-    { nome: "Gallette di riso + Bresaola", baseCarbo: 15, pro: 30, fat: 3,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola` },
-    { nome: "Maltodestrine + EAA (Shaker)", baseCarbo: 14, pro: 15, fat: 0,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c)}g Maltodestrine • ${p}g EAA (Aminoacidi)` },
-    { nome: "Riso Basmati + Merluzzo (Solido)", baseCarbo: 20, pro: 40, fat: 2,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*5)}g Merluzzo` },
-    { nome: "Gnocchi + Albume pastorizzato", baseCarbo: 18, pro: 35, fat: 0,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3)}g Gnocchi • ${Math.round(p*10)}g Albume (cotto)` },
-    { nome: "Sorbetto frutta + Whey Isolate", baseCarbo: 14, pro: 30, fat: 0,
-      dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3.5)}g Sorbetto • ${Math.round(p*1.1)}g Isolate (a parte)` }
+    { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate` },
+    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate` },
+    { nome: "Gallette di riso + Bresaola", baseCarbo: 15, pro: 30, fat: 3, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola` },
+    { nome: "Maltodestrine + EAA (Shaker)", baseCarbo: 14, pro: 15, fat: 0, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c)}g Maltodestrine • ${p}g EAA (Aminoacidi)` },
+    { nome: "Riso Basmati + Merluzzo (Solido)", baseCarbo: 20, pro: 40, fat: 2, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*5)}g Merluzzo` },
+    { nome: "Gnocchi + Albume pastorizzato", baseCarbo: 18, pro: 35, fat: 0, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3)}g Gnocchi • ${Math.round(p*10)}g Albume (cotto)` },
+    { nome: "Sorbetto frutta + Whey Isolate", baseCarbo: 14, pro: 30, fat: 0, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3.5)}g Sorbetto • ${Math.round(p*1.1)}g Isolate (a parte)` }
   ]
 };
 
@@ -236,6 +208,10 @@ export default function Home() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // --- STATI STORICO TELEMETRIA ---
+  const [modalStoricoMisure, setModalStoricoMisure] = useState(false);
+  const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
+
   useEffect(() => {
     async function fetchAtleti() {
       const { data } = await supabase.from("check_utente").select("nome_utente");
@@ -247,22 +223,31 @@ export default function Home() {
     fetchAtleti();
   }, []);
 
-  useEffect(() => {
-    async function caricaDatiUtente() {
-      const { data } = await supabase.from("check_utente").select("*").eq("nome_utente", utente).order("data", { ascending: false });
-      if (data && data.length > 0) {
-        setEta(data[0].eta || "");
-        setAltezza(data[0].altezza || "");
-        const circ = data[0].circonferenze || {};
+  async function caricaDatiUtente() {
+    const { data } = await supabase.from("check_utente").select("*").eq("nome_utente", utente).order("data", { ascending: false });
+    if (data) {
+      // Filtriamo solo i record che contengono effettivamente misurazioni
+      const validRecords = data.filter(d => d.peso || (d.circonferenze && d.circonferenze.petto));
+      setStoricoMisure(validRecords);
+
+      const validRec = validRecords[0];
+      if (validRec) {
+        setEta(validRec.eta || "");
+        setAltezza(validRec.altezza || "");
+        const circ = validRec.circonferenze || {};
         setBiometria({ 
-          peso: data[0].peso?.toString() || circ.peso?.toString() || '', 
+          peso: validRec.peso?.toString() || circ.peso?.toString() || '', 
           petto: circ.petto || '', spalle: circ.spalle || '', braccia: circ.braccia || '', 
           gambe: circ.gambe || '', glutei: circ.glutei || '' 
         });
+        if (validRec.peso) setMoltiplicatoreCarbo(5); 
       } else {
         setEta(""); setAltezza(""); setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
       }
     }
+  }
+
+  useEffect(() => {
     if (!isNuovoUtente) caricaDatiUtente();
   }, [utente, isNuovoUtente]);
 
@@ -314,7 +299,15 @@ export default function Home() {
       setListaAtleti(prev => [...prev, nuovo]);
       setUtente(nuovo);
       setIsNuovoUtente(false);
+      // Hack per registrare subito il nome, ma i campi veri e propri si salveranno solo al primo check fisico
       await supabase.from("check_utente").insert([{ nome_utente: nuovo, data: new Date() }]);
+    }
+  };
+
+  const eliminaMisurazione = async (id: string) => {
+    if(confirm("Vuoi eliminare definitivamente questa misurazione dallo storico?")) {
+      await supabase.from("check_utente").delete().eq("id", id);
+      caricaDatiUtente(); // Ricarica tutto e aggiorna i campi di input
     }
   };
 
@@ -379,6 +372,7 @@ export default function Home() {
       setMessaggioDieta(alertMsg);
       await supabase.from("check_utente").insert([{ nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date() }]);
       alert(alertMsg);
+      caricaDatiUtente(); // Aggiorna lo storico
     } else {
       alert("Compila TUTTI i campi fisici per calcolare i macros in sicurezza.");
     }
@@ -431,7 +425,6 @@ export default function Home() {
   const bmr = Math.round((10 * pesoNum) + (6.25 * altezzaNum) - (5 * etaNum) + 5);
   const tdee = Math.round(bmr * 1.55); 
 
-  // 1. Calcolo del Target Giornaliero Standard (senza sgarri)
   const intraCho = Math.round(pesoNum * 0.5);
   const intraPro = 15;
   const intraFat = 0;
@@ -451,7 +444,6 @@ export default function Home() {
      }
   });
 
-  // 2. Somma dei Pasti Custom (Sgarri)
   let customCho = 0, customPro = 0, customFat = 0;
   let sumNonCustomOrigCho = 0, sumNonCustomOrigPro = 0, sumNonCustomOrigFat = 0;
 
@@ -467,12 +459,10 @@ export default function Home() {
      }
   });
 
-  // 3. Ricalcolo dei macro rimanenti da redistribuire
   const remainingCho = Math.max(0, targetCho - customCho - intraCho);
   const remainingPro = Math.max(0, targetPro - customPro - intraPro);
   const remainingFat = Math.max(0, targetFat - customFat - intraFat);
 
-  // 4. Generazione dei Pasti Finali Compensati
   const finalMeals: Record<string, any> = {};
   ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
      if(pastiCustom[cat].attivo) {
@@ -482,7 +472,6 @@ export default function Home() {
            fat: Number(pastiCustom[cat].fat) || 0
         };
      } else if(originalMeals[cat]) {
-        // La ridistribuzione è proporzionale al peso del pasto originale
         finalMeals[cat] = {
            cho: sumNonCustomOrigCho > 0 ? Math.round(remainingCho * (originalMeals[cat].cho / sumNonCustomOrigCho)) : 0,
            pro: sumNonCustomOrigPro > 0 ? Math.round(remainingPro * (originalMeals[cat].pro / sumNonCustomOrigPro)) : 0,
@@ -491,7 +480,6 @@ export default function Home() {
      }
   });
 
-  // 5. Calcolo Kcal effettive assunte (Intra + FinalMeals)
   let actualCho = intraCho + customCho;
   let actualPro = intraPro + customPro;
   let actualFat = intraFat + customFat;
@@ -532,10 +520,50 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* --- GRIGLIA INTELLIGENTE RESPONSIVE --- */}
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
         
-        {/* COLONNA 1: TURNI E ALIMENTAZIONE */}
-        <div className="lg:col-span-4 space-y-6">
+        {/* COLONNA COACH IA (Mobile: Sotto Atleta, Desktop: Destra) */}
+        <div className="order-1 lg:order-3 lg:col-span-3 space-y-6">
+          <section className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-lg flex flex-col h-[500px]">
+            <h2 className="text-base font-bold text-white border-b border-neutral-700 pb-2 mb-2 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+              Coach IA (Gemini)
+            </h2>
+            
+            <div className="flex-1 overflow-y-auto space-y-3 p-2 bg-neutral-950 rounded-lg border border-neutral-800 mb-3">
+              {chatLog.map((msg, i) => (
+                <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  <span className={`text-[9px] uppercase font-bold mb-1 ${msg.role === 'user' ? 'text-neutral-500 pr-1' : 'text-orange-500 pl-1'}`}>
+                    {msg.role === 'user' ? utente : 'Coach IA'}
+                  </span>
+                  <div className={`p-2.5 rounded-xl text-xs leading-relaxed max-w-[90%] ${msg.role === 'user' ? 'bg-neutral-800 text-white rounded-br-sm' : 'bg-orange-950/40 border border-orange-900/50 text-neutral-200 rounded-bl-sm'}`}>
+                    {msg.text}
+                  </div>
+                </div>
+              ))}
+              {isTyping && <div className="text-[10px] text-orange-500 font-mono pl-2 animate-pulse">Analisi in corso...</div>}
+              <div ref={chatEndRef} />
+            </div>
+
+            {fileAllegato && (
+              <div className="flex items-center gap-2 mb-2 p-2 bg-neutral-800 rounded-lg border border-neutral-700 w-fit">
+                <span className="text-xs text-orange-400 font-mono truncate max-w-[150px]">📎 {fileAllegato.nome}</span>
+                <button onClick={() => setFileAllegato(null)} className="text-red-500 hover:text-red-400 font-bold ml-2">X</button>
+              </div>
+            )}
+            
+            <div className="flex gap-2">
+              <input type="file" accept="image/*,application/pdf" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
+              <button onClick={() => fileInputRef.current?.click()} className="bg-neutral-800 hover:bg-neutral-700 text-neutral-400 px-3 py-2 rounded-lg text-lg transition-all" title="Allega foto o PDF">📎</button>
+              <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi supporto o allega file..." className="flex-1 bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-orange-500" />
+              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-orange-600 hover:bg-orange-500 text-white font-bold px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50">Invia</button>
+            </div>
+          </section>
+        </div>
+
+        {/* COLONNA SINISTRA (Mobile: Sotto Coach, Desktop: Sinistra) */}
+        <div className="order-2 lg:order-1 lg:col-span-4 space-y-6">
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
               <h2 className="text-lg font-bold text-white">Gestione Tempo (Incastro Turni)</h2>
@@ -573,7 +601,47 @@ export default function Home() {
           </section>
 
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
-            
+            <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
+              <h2 className="text-lg font-bold text-white">Telemetria Fisica (DB)</h2>
+              <button onClick={() => setModalStoricoMisure(true)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Storico Misure</button>
+            </div>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800 col-span-2 flex gap-2">
+                    <div className="flex-1">
+                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
+                        <input type="number" value={eta} onChange={(e) => setEta(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
+                    </div>
+                    <div className="flex-1 border-l border-neutral-800 pl-2">
+                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza (cm)</label>
+                        <input type="number" value={altezza} onChange={(e) => setAltezza(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
+                    </div>
+                </div>
+                
+                {Object.keys(infoMisure).map((chiave) => {
+                  const info = infoMisure[chiave as keyof typeof infoMisure];
+                  return (
+                    <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="text-[10px] text-neutral-400 uppercase font-bold">{info.label}</label>
+                        <span className="text-[9px] text-neutral-600 font-mono">{info.unit}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {/* @ts-ignore */}
+                        <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
+                      </div>
+                      <div className="absolute left-0 -bottom-8 bg-neutral-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 w-[150%] pointer-events-none shadow-xl border border-neutral-700">
+                        {info.desc}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-lg">Analizza Trend & Salva</button>
+            </div>
+          </section>
+
+          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
             <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
@@ -661,8 +729,8 @@ export default function Home() {
           </section>
         </div>
 
-        {/* COLONNA 2: ALLENAMENTO FLESSIBILE CON TRACKING SET & SVG */}
-        <section className="lg:col-span-5 bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
+        {/* COLONNA CENTRALE (Mobile: In fondo, Desktop: Centro) */}
+        <section className="order-3 lg:order-2 lg:col-span-5 bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
           <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
             <h2 className="text-lg font-bold text-white">Allenamento Modulabile</h2>
             <button onClick={() => setVistaStorico(!vistaStorico)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-md ${vistaStorico ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300'}`}>
@@ -814,104 +882,6 @@ export default function Home() {
           )}
         </section>
 
-        {/* COLONNA 3: TELEMETRIA E CHAT */}
-        <div className="lg:col-span-3 space-y-6 flex flex-col">
-          
-          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
-            <h2 className="text-lg font-bold mb-4 border-b border-neutral-700 pb-2 text-white">Telemetria Fisica (DB)</h2>
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800 col-span-2 flex gap-2">
-                    <div className="flex-1">
-                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
-                        <input type="number" value={eta} onChange={(e) => setEta(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
-                    </div>
-                    <div className="flex-1 border-l border-neutral-800 pl-2">
-                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza (cm)</label>
-                        <input type="number" value={altezza} onChange={(e) => setAltezza(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
-                    </div>
-                </div>
-                
-                {Object.keys(infoMisure).map((chiave) => {
-                  const info = infoMisure[chiave as keyof typeof infoMisure];
-                  return (
-                    <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] text-neutral-400 uppercase font-bold">{info.label}</label>
-                        <span className="text-[9px] text-neutral-600 font-mono">{info.unit}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {/* @ts-ignore */}
-                        <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
-                      </div>
-                      
-                      <div className="absolute left-0 -bottom-8 bg-neutral-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 w-[150%] pointer-events-none shadow-xl border border-neutral-700">
-                        {info.desc}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-lg">Analizza Trend & Salva</button>
-            </div>
-          </section>
-
-          {/* SEZIONE CHAT GEMINI CON UPLOAD FILE */}
-          <section className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-lg flex-1 flex flex-col min-h-[350px]">
-            <h2 className="text-base font-bold text-white border-b border-neutral-700 pb-2 mb-2 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-              Coach IA (Gemini)
-            </h2>
-            
-            <div className="flex-1 overflow-y-auto space-y-3 p-2 bg-neutral-950 rounded-lg border border-neutral-800 mb-3">
-              {chatLog.map((msg, i) => (
-                <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                  <span className={`text-[9px] uppercase font-bold mb-1 ${msg.role === 'user' ? 'text-neutral-500 pr-1' : 'text-orange-500 pl-1'}`}>
-                    {msg.role === 'user' ? utente : 'Coach IA'}
-                  </span>
-                  <div className={`p-2.5 rounded-xl text-xs leading-relaxed max-w-[90%] ${msg.role === 'user' ? 'bg-neutral-800 text-white rounded-br-sm' : 'bg-orange-950/40 border border-orange-900/50 text-neutral-200 rounded-bl-sm'}`}>
-                    {msg.text}
-                  </div>
-                </div>
-              ))}
-              {isTyping && <div className="text-[10px] text-orange-500 font-mono pl-2 animate-pulse">Analisi in corso...</div>}
-              <div ref={chatEndRef} />
-            </div>
-
-            {/* Anteprima File */}
-            {fileAllegato && (
-              <div className="flex items-center gap-2 mb-2 p-2 bg-neutral-800 rounded-lg border border-neutral-700 w-fit">
-                <span className="text-xs text-orange-400 font-mono truncate max-w-[150px]">📎 {fileAllegato.nome}</span>
-                <button onClick={() => setFileAllegato(null)} className="text-red-500 hover:text-red-400 font-bold ml-2">X</button>
-              </div>
-            )}
-            
-            <div className="flex gap-2">
-              <input 
-                type="file" 
-                accept="image/*,application/pdf"
-                className="hidden" 
-                ref={fileInputRef}
-                onChange={gestisciCaricamentoFile}
-              />
-              <button onClick={() => fileInputRef.current?.click()} className="bg-neutral-800 hover:bg-neutral-700 text-neutral-400 px-3 py-2 rounded-lg text-lg transition-all" title="Allega foto o PDF">
-                📎
-              </button>
-              <input 
-                type="text" 
-                value={inputChat} 
-                onChange={e => setInputChat(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()}
-                placeholder="Chiedi supporto o allega file..."
-                className="flex-1 bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-orange-500"
-              />
-              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-orange-600 hover:bg-orange-500 text-white font-bold px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50">
-                Invia
-              </button>
-            </div>
-          </section>
-
-        </div>
       </div>
 
       {/* --- MODALI SWAP --- */}
@@ -961,6 +931,34 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* --- MODALE STORICO MISURE --- */}
+      {modalStoricoMisure && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex justify-between items-center mb-4 border-b border-neutral-800 pb-2">
+              <h3 className="font-bold text-lg text-white">Storico Misurazioni ({utente})</h3>
+              <button onClick={() => setModalStoricoMisure(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
+            </div>
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+              {storicoMisure.length === 0 ? (
+                <p className="text-sm text-neutral-400 italic">Nessuna misurazione salvata in precedenza.</p>
+              ) : (
+                storicoMisure.map((mis, i) => (
+                  <div key={mis.id || i} className="flex justify-between items-center bg-neutral-950 border border-neutral-800 p-3 rounded-lg">
+                    <div>
+                      <p className="text-xs font-bold text-orange-400">{new Date(mis.data).toLocaleDateString('it-IT')} - {new Date(mis.data).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</p>
+                      <p className="text-[10px] text-neutral-400 mt-1">Peso: <strong className="text-white">{mis.peso}kg</strong> | Braccia: {mis.circonferenze?.braccia || '-'}cm | Gambe: {mis.circonferenze?.gambe || '-'}cm</p>
+                    </div>
+                    <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-500 hover:text-red-400 font-bold p-2 transition-all">🗑️</button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }
