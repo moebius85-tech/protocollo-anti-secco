@@ -8,43 +8,43 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO & SVG (Saldato)
+// 1. DATABASE ALLENAMENTO (Espanso con Alternative Biomeccaniche)
 // ==========================================
 const dbAllenamento = {
   Spinta: {
     focus: "SPINTA (Petto, Spalle, Tricipiti)",
     esercizi: [
-      { id: "e1", nome: "Panca piana bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Scapole strette, petto in fuori. Scendi a sfiorare e spingi.", alternative: [{ nome: "Chest Press Pesante", note: "Spinta Pura" }] },
-      { id: "e3", nome: "Panca inclinata manubri", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Colpisci la parte alta per lo spessore.", alternative: [{ nome: "Spinte Panca Inclinata", note: "Lento" }] },
-      { id: "e4", nome: "Chest press / Multipower", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Esercizio guidato: senti il petto in ogni centimetro.", alternative: [{ nome: "Pectoral Machine", note: "Tensione" }] },
-      { id: "e5", nome: "Croci ai manubri", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Allunga al massimo, poi chiudi strizzando. Gonfia di sangue.", alternative: [{ nome: "Croci Cavi", note: "Allungamento" }] },
-      { id: "e18", nome: "Lento avanti manubri", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Spinta sopra la testa. Parto orecchie, spingo su.", alternative: [{ nome: "Military Press", note: "Bilanciere" }] },
-      { id: "e20", nome: "Alzate laterali ai cavi", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45\"", dettaglio: "Tensione costante sul deltoide laterale.", alternative: [{ nome: "Alzate manubri", note: "No slanci" }] },
-      { id: "e22", nome: "Panca stretta bilanciere", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2'", dettaglio: "Gomiti vicini al corpo. Il muscolo che fa il braccio grosso.", alternative: [{ nome: "French Press", note: "Gomiti fermi" }] },
-      { id: "e27", nome: "Push down cavi corda", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45\"", dettaglio: "Spingo giù aprendo la corda alla fine e strizzando.", alternative: [{ nome: "Estensioni singole", note: "Pump" }] }
+      { id: "e1", nome: "Panca piana bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Scapole strette, petto in fuori. Scendi a sfiorare e spingi.", alternative: [{ nome: "Chest Press Convergente", note: "Stesso asse di spinta, focus contrazione" }, { nome: "Panca piana manubri", note: "Maggiore ROM e stretch profondo" }] },
+      { id: "e3", nome: "Panca inclinata manubri", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Colpisci la parte alta per lo spessore.", alternative: [{ nome: "Panca inclinata bilanciere", note: "Focus forza bruta fasci clavicolari" }, { nome: "Chest Press Inclinata", note: "Tensione costante e sicurezza" }] },
+      { id: "e4", nome: "Chest press / Multipower", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Esercizio guidato: senti il petto in ogni centimetro.", alternative: [{ nome: "Pectoral Machine", note: "Puro isolamento sternale" }, { nome: "Croci ai cavi seduto panca", note: "Isolamento con picco di tensione" }] },
+      { id: "e5", nome: "Croci ai manubri", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Allunga al massimo, poi chiudi strizzando. Gonfia di sangue.", alternative: [{ nome: "Croci panca piana ai cavi", note: "Nessun punto morto nella tensione" }, { nome: "Pec Deck (Fly Machine)", note: "Massimo pump controllato" }] },
+      { id: "e18", nome: "Lento avanti manubri", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Spinta sopra la testa. Parto orecchie, spingo su.", alternative: [{ nome: "Military Press bilanciere", note: "Sovraccarico massimo globale" }, { nome: "Shoulder Press Macchina", note: "Isolamento e spinta guidata" }] },
+      { id: "e20", nome: "Alzate laterali ai cavi", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45\"", dettaglio: "Tensione costante sul deltoide laterale.", alternative: [{ nome: "Alzate laterali manubri", note: "Classico focus deltoide mediale" }, { nome: "Alzate laterali macchina", note: "Elimina slanci e compensazioni" }] },
+      { id: "e22", nome: "Panca stretta bilanciere", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2'", dettaglio: "Gomiti vicini al corpo. Il muscolo che fa il braccio grosso.", alternative: [{ nome: "French Press bilanciere EZ", note: "Stretch massimo capo lungo" }, { nome: "Dips parallele (strette)", note: "Spinta a catena cinetica chiusa" }] },
+      { id: "e27", nome: "Push down cavi corda", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45\"", dettaglio: "Spingo giù aprendo la corda alla fine e strizzando.", alternative: [{ nome: "Push down sbarra dritta", note: "Carico maggiore, meno flessibilità polso" }, { nome: "Estensioni dietro nuca cavo basso", note: "Forte enfasi sul capo lungo" }] }
     ]
   },
   Tirata: {
     focus: "TIRATA (Schiena, Bicipiti)",
     esercizi: [
-      { id: "e6", nome: "Trazioni", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Braccia distese, tiro portando i gomiti in basso.", alternative: [{ nome: "Lat Machine Larga", note: "Pesante" }] },
-      { id: "e7", nome: "Rematore bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Busto inclinato, schiena dritta, tira all'ombelico.", alternative: [{ nome: "Rematore T-Bar", note: "Presa Neutra" }] },
-      { id: "e9", nome: "Row machine / Pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Tiro portando i gomiti dietro. Senti la schiena chiudersi.", alternative: [{ nome: "Pulldown tese", note: "Isolamento" }] },
-      { id: "e10", nome: "Pullover ai cavi", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Allungo in alto al massimo, poi spingo giù. Tanto sangue.", alternative: [{ nome: "Pullover Manubrio", note: "Panca" }] },
-      { id: "e23", nome: "Curl bilanciere EZ", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2'", dettaglio: "Gomiti fermi al fianco, salgo contraendo, scendo controllato.", alternative: [{ nome: "Curl Inclinata", note: "Allungamento" }] },
-      { id: "e26", nome: "Curl ai cavi con barra", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45\"", dettaglio: "Tensione costante dal cavo, salgo e strizzo.", alternative: [{ nome: "Curl Concentrato", note: "Strizzare" }] }
+      { id: "e6", nome: "Trazioni", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Braccia distese, tiro portando i gomiti in basso.", alternative: [{ nome: "Lat Machine Presa Prona Larga", note: "Ottima per modulare i carichi sub-massimali" }, { nome: "Lat Machine Triangolo", note: "Focus maggiore sul gran dorsale centrale" }] },
+      { id: "e7", nome: "Rematore bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Busto inclinato, schiena dritta, tira all'ombelico.", alternative: [{ nome: "Rematore Manubrio Singolo", note: "Lavoro unilaterale e asimmetrie" }, { nome: "Rematore T-Bar", note: "Stabilità core, tirata esplosiva" }] },
+      { id: "e9", nome: "Row machine / Pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Tiro portando i gomiti dietro. Senti la schiena chiudersi.", alternative: [{ nome: "Rematore Macchina Seduto (Chest Supported)", note: "Zero carico lombare" }, { nome: "Seal Row panca", note: "Puro isolamento dorso" }] },
+      { id: "e10", nome: "Pullover ai cavi", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Allungo in alto al massimo, poi spingo giù. Tanto sangue.", alternative: [{ nome: "Lat Machine Braccia Tese", note: "Ottimo arco di movimento e tensione" }, { nome: "Pullover Manubrio Panca", note: "Stretch estremo gabbia toracica" }] },
+      { id: "e23", nome: "Curl bilanciere EZ", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2'", dettaglio: "Gomiti fermi al fianco, salgo contraendo, scendo controllato.", alternative: [{ nome: "Curl Manubri Alternato", note: "Lavoro unilaterale fisiologico" }, { nome: "Curl Cavo Basso (Sbarra)", note: "Tensione muscolare senza punti morti" }] },
+      { id: "e26", nome: "Curl ai cavi con barra", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45\"", dettaglio: "Tensione costante dal cavo, salgo e strizzo.", alternative: [{ nome: "Curl Panca Inclinata Manubri", note: "Focus capo lungo con stretch" }, { nome: "Spider Curl panca 45°", note: "Isolamento picco e bicipite corto" }] }
     ]
   },
   Gambe: {
     focus: "GAMBE E POLPACCI",
     esercizi: [
-      { id: "e11", nome: "Squat bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Sotto il parallelo, spingo dai talloni. Costruisce stazza.", alternative: [{ nome: "Hack Squat Pesante", note: "Macchina" }] },
-      { id: "e12", nome: "Hack squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Macchina guidata per caricare in sicurezza. Tutto sui quad.", alternative: [{ nome: "Pressa 45 Pesante", note: "Piedi bassi" }] },
-      { id: "e14", nome: "Leg press 45°", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Scendo ginocchia al petto. Nessun blocco articolare.", alternative: [{ nome: "Affondi manubri", note: "Stabilità" }] },
-      { id: "e15", nome: "Leg extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Distendo e strizzo in alto un secondo, scendo controllato.", alternative: [{ nome: "Sissy Squat", note: "Corpo libero" }] },
-      { id: "e13", nome: "Stacco rumeno", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Schiena dritta, spingo bacino indietro, risalgo contraendo glutei.", alternative: [{ nome: "Stacco Tese", note: "Focus allungamento" }] },
-      { id: "e16", nome: "Leg curl sdraiato", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Porto il tallone al gluteo strizzando, scendo lento.", alternative: [{ nome: "Leg curl seduto", note: "Tensione" }] },
-      { id: "e17", nome: "Polpacci", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45\"", dettaglio: "Arco completo in punta, fermo in alto, scendo sotto allungando.", alternative: [{ nome: "Calf Seduto", note: "Focus Soleo" }] }
+      { id: "e11", nome: "Squat bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Sotto il parallelo, spingo dai talloni. Costruisce stazza.", alternative: [{ nome: "Front Squat", note: "Focus estremo quadricipite, schiena dritta" }, { nome: "Hack Squat Libero", note: "Maggiore sovraccarico senza stress lombare estremo" }] },
+      { id: "e12", nome: "Hack squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Macchina guidata per caricare in sicurezza. Tutto sui quad.", alternative: [{ nome: "Leg Press 45° (Piedi bassi e stretti)", note: "Isolamento pressa quadricipite" }, { nome: "Belt Squat", note: "Carico diretto sulle anche, 0 colonna" }] },
+      { id: "e14", nome: "Leg press 45°", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Scendo ginocchia al petto. Nessun blocco articolare.", alternative: [{ nome: "Affondi Camminati (Manubri)", note: "Core, equilibrio e femorali coinvolti" }, { nome: "Bulgarian Split Squat", note: "Lavoro unilaterale devastante" }] },
+      { id: "e15", nome: "Leg extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Distendo e strizzo in alto un secondo, scendo controllato.", alternative: [{ nome: "Sissy Squat", note: "Esercizio bodyweight stretch estremo" }, { nome: "Step-up alto controllato", note: "Lavoro concentrico mirato" }] },
+      { id: "e13", nome: "Stacco rumeno", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Schiena dritta, spingo bacino indietro, risalgo contraendo glutei.", alternative: [{ nome: "Stacco a Gambe Tese", note: "Focus puro stretch ischiocrurali" }, { nome: "Good Morning Bilanciere", note: "Costruzione catena cinetica posteriore profonda" }] },
+      { id: "e16", nome: "Leg curl sdraiato", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Porto il tallone al gluteo strizzando, scendo lento.", alternative: [{ nome: "Leg Curl Seduto", note: "Maggiore isolamento fisiologico bicipite femorale" }, { nome: "Glute Ham Raise", note: "Esercizio a catena chiusa durissimo" }] },
+      { id: "e17", nome: "Polpacci", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45\"", dettaglio: "Arco completo in punta, fermo in alto, scendo sotto allungando.", alternative: [{ nome: "Calf Press (sulla Leg Press)", note: "Ottimo sovraccarico in sicurezza" }, { nome: "Calf Seduto Macchina", note: "Sposta il focus sul muscolo Soleo" }] }
     ]
   }
 };
@@ -57,6 +57,7 @@ const mapEsercizioToAnimazione: Record<string, string> = {
   "e14": "leg_press", "e15": "leg_extension", "e13": "romanian_deadlift", "e16": "leg_curl_lying", "e17": "calf_raises"            
 };
 
+// SVG Stickman
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   const head = { stroke: color, strokeWidth: "2.5", fill: "none" };
@@ -67,7 +68,7 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const cable = { stroke: "#888", strokeWidth: "1", strokeDasharray: "2 2" };
 
   return (
-    <div className="relative w-16 h-16 bg-neutral-950/80 rounded-lg border border-neutral-800 flex items-center justify-center overflow-hidden shadow-inner">
+    <div className="relative w-16 h-16 bg-neutral-950/80 rounded-lg border border-neutral-800 flex items-center justify-center overflow-hidden shadow-inner shrink-0">
       <style>{`
         @keyframes flipA { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
         @keyframes flipB { 0%, 45% { opacity: 0; } 50%, 95% { opacity: 1; } 100% { opacity: 0; } }
@@ -97,6 +98,99 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
         {type === "leg_curl_lying" && ( <> <line x1="10" y1="35" x2="40" y2="35" {...benchLine} /> <path d="M 40 35 L 45 45" {...machine} /> <g className="frame-a"> <circle cx="15" cy="32" r="3.5" {...head} /> <path d="M 18 34 L 30 34 L 40 34 L 48 34" {...body} /> <circle cx="48" cy="32" r="3" {...weightFill} /> </g> <g className="frame-b"> <circle cx="15" cy="32" r="3.5" {...head} /> <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...body} /> <circle cx="36" cy="18" r="3" {...weightFill} /> <path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /> </g> </> )}
         {type === "calf_raises" && ( <> <rect x="20" y="45" width="10" height="5" fill="#555" /> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 45" {...body} /> </g> <g className="frame-b"> <circle cx="25" cy="6" r="3.5" {...head} /> <path d="M 25 10 L 25 26 L 27 40 L 22 45" {...body} /> </g> </> )}
       </svg>
+    </div>
+  );
+};
+
+// ==========================================
+// COMPONENTI GRAFICI SVG LINE CHART & VITRUVIAN
+// ==========================================
+const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
+  if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti per il grafico.</p>;
+  if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato ({data[0]}). Esegui un'altra sessione per tracciare la curva.</p>;
+
+  const maxVal = Math.max(...data);
+  const minVal = Math.min(...data);
+  const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
+  
+  const width = 300;
+  const height = 100;
+  const padding = 20;
+
+  const points = data.map((val, i) => {
+    const x = padding + (i / (data.length - 1)) * (width - padding * 2);
+    const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
+    return `${x},${y}`;
+  }).join(" ");
+
+  return (
+    <div className="bg-neutral-900 border border-neutral-800 rounded p-3 mt-2">
+       <span className="text-[10px] text-orange-400 font-bold uppercase block mb-2">{label} - Trend Storico</span>
+       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]">
+          <polyline points={points} fill="none" stroke="#f97316" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          {data.map((val, i) => {
+            const x = padding + (i / (data.length - 1)) * (width - padding * 2);
+            const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
+            return (
+              <g key={i}>
+                <circle cx={x} cy={y} r="3" fill="#fff" />
+                <text x={x} y={y - 8} fill="#a3a3a3" fontSize="8" textAnchor="middle" fontWeight="bold">{val}</text>
+              </g>
+            );
+          })}
+       </svg>
+    </div>
+  );
+};
+
+const SvgVitruvianHUD = ({ biometria, storico }: { biometria: any, storico: any[] }) => {
+  const getDeltas = (key: string) => {
+     if(storico.length < 2) return null;
+     const current = Number(biometria[key]);
+     const prevCirc = typeof storico[1].circonferenze === 'string' ? JSON.parse(storico[1].circonferenze) : (storico[1].circonferenze || {});
+     const prev = Number(key === 'peso' ? storico[1].peso : prevCirc[key]);
+     if(!current || !prev) return null;
+     const diff = current - prev;
+     return { val: diff > 0 ? `+${diff}` : `${diff}`, color: diff > 0 ? '#22c55e' : (diff < 0 ? '#ef4444' : '#a3a3a3') };
+  };
+
+  return (
+    <div className="relative w-full h-[300px] bg-neutral-950 rounded-xl border border-neutral-800 flex items-center justify-center mt-4 overflow-hidden">
+       {/* Background Grid */}
+       <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
+       
+       <svg viewBox="0 0 200 300" className="h-full w-auto z-10 opacity-80">
+          {/* Wireframe Body */}
+          <path d="M100 20 C110 20 115 25 115 35 C115 45 105 50 100 50 C95 50 85 45 85 35 C85 25 90 20 100 20 Z" fill="none" stroke="#3b82f6" strokeWidth="2"/>
+          <path d="M100 50 L100 80 M75 80 L125 80 M60 140 L75 80 M140 140 L125 80 M75 140 L125 140 M100 80 L100 140 M75 140 L75 280 M125 140 L125 280 M100 140 L100 170 L75 140 M100 140 L100 170 L125 140" fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4 2"/>
+          
+          {/* Nodes */}
+          <circle cx="100" cy="90" r="4" fill="#f97316" /> {/* Petto */}
+          <circle cx="70" cy="85" r="4" fill="#f97316" /> {/* Spalle SX */}
+          <circle cx="130" cy="85" r="4" fill="#f97316" /> {/* Spalle DX */}
+          <circle cx="65" cy="115" r="4" fill="#f97316" /> {/* Braccio SX */}
+          <circle cx="135" cy="115" r="4" fill="#f97316" /> {/* Braccio DX */}
+          <circle cx="85" cy="200" r="4" fill="#f97316" /> {/* Gamba SX */}
+          <circle cx="115" cy="200" r="4" fill="#f97316" /> {/* Gamba DX */}
+          <circle cx="100" cy="150" r="4" fill="#f97316" /> {/* Glutei */}
+       </svg>
+
+       {/* Labels & Deltas */}
+       <div className="absolute top-10 right-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">
+          Spalle: {biometria.spalle}cm {getDeltas('spalle') && <span style={{color: getDeltas('spalle')?.color}}>({getDeltas('spalle')?.val})</span>}
+       </div>
+       <div className="absolute top-24 left-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">
+          Braccia: {biometria.braccia}cm {getDeltas('braccia') && <span style={{color: getDeltas('braccia')?.color}}>({getDeltas('braccia')?.val})</span>}
+       </div>
+       <div className="absolute top-36 right-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">
+          Petto: {biometria.petto}cm {getDeltas('petto') && <span style={{color: getDeltas('petto')?.color}}>({getDeltas('petto')?.val})</span>}
+       </div>
+       <div className="absolute bottom-32 right-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">
+          Glutei: {biometria.glutei}cm {getDeltas('glutei') && <span style={{color: getDeltas('glutei')?.color}}>({getDeltas('glutei')?.val})</span>}
+       </div>
+       <div className="absolute bottom-12 left-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">
+          Gambe: {biometria.gambe}cm {getDeltas('gambe') && <span style={{color: getDeltas('gambe')?.color}}>({getDeltas('gambe')?.val})</span>}
+       </div>
     </div>
   );
 };
@@ -209,9 +303,12 @@ export default function Home() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // --- STATI STORICO TELEMETRIA ---
+  // --- STATI STORICO TELEMETRIA & CARICHI ---
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
   const [vistaStoricoMisure, setVistaStoricoMisure] = useState(false);
+  const [vistaGraficiCorpo, setVistaGraficiCorpo] = useState(false);
+  const [vistaGraficiCarichi, setVistaGraficiCarichi] = useState(false);
+  const [esercizioGraficoSelezionato, setEsercizioGraficoSelezionato] = useState<string>("e1");
 
   useEffect(() => {
     async function fetchAtleti() {
@@ -248,6 +345,18 @@ export default function Home() {
       } else {
         setEta(""); setAltezza(""); setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
       }
+    }
+
+    const resSess = await supabase.from("storico_allenamenti").select("*").eq("nome_utente", utente).order("data", { ascending: true });
+    if (resSess.data) {
+      const mapSess = resSess.data.map(d => ({
+        data: new Date(d.data).toLocaleDateString('it-IT'),
+        giorno: d.giornata.split(" - ")[0],
+        scheda: d.giornata.split(" - ")[1],
+        carichi: typeof d.dettagli_esercizi === 'string' ? JSON.parse(d.dettagli_esercizi) : d.dettagli_esercizi,
+        oraId: new Date(d.data).getTime()
+      }));
+      setStoricoSessioni(mapSess);
     }
   }
 
@@ -306,7 +415,6 @@ export default function Home() {
       
       let responseText = data.reply || "Errore nella risposta.";
 
-      // REGEX POTENZIATA per ignorare testo aggiuntivo e le lettere 'g' o 'gr'
       const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i;
       const match = responseText.match(magicRegex);
       
@@ -333,7 +441,6 @@ export default function Home() {
     setIsTyping(false);
   };
 
-  // BACCHETTA MAGICA DENTRO L'INPUT DEL PASTO CUSTOM
   const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
     if(!nomeCibo.trim()) return alert("Inserisci prima il nome o i grammi del pasto sgarro (es. '300g Pizza Margherita').");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
@@ -342,7 +449,6 @@ export default function Home() {
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
       
-      // REGEX POTENZIATA
       const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i;
       const match = data.reply.match(magicRegex);
       
@@ -558,6 +664,18 @@ export default function Home() {
   });
   const actualIntakeKcal = Math.round((actualCho * 4) + (actualPro * 4) + (actualFat * 9));
 
+  // --- LOGICA GRAFICO CARICHI ESERCIZIO ---
+  const getDataGraficoEsercizio = () => {
+    const dataPoints: number[] = [];
+    storicoSessioni.forEach(sess => {
+      if (sess.carichi[esercizioGraficoSelezionato]) {
+        const loads = sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number);
+        dataPoints.push(Math.max(...loads)); // Prendiamo il massimale di quella sessione
+      }
+    });
+    return dataPoints;
+  };
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 p-4 lg:p-6 font-sans overflow-x-hidden">
       
@@ -595,9 +713,14 @@ export default function Home() {
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg order-1 flex flex-col">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
               <h2 className="text-lg font-bold text-white">Telemetria Fisica</h2>
-              <button onClick={() => setVistaStoricoMisure(!vistaStoricoMisure)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-md transition-all ${vistaStoricoMisure ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
-                {vistaStoricoMisure ? 'Torna al Check' : 'Storico Misure'}
-              </button>
+              <div className="flex gap-1">
+                 <button onClick={() => {setVistaStoricoMisure(!vistaStoricoMisure); setVistaGraficiCorpo(false);}} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaStoricoMisure && !vistaGraficiCorpo ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
+                   {vistaStoricoMisure && !vistaGraficiCorpo ? 'Torna' : 'Storico'}
+                 </button>
+                 <button onClick={() => {setVistaGraficiCorpo(!vistaGraficiCorpo); setVistaStoricoMisure(true);}} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaGraficiCorpo ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
+                   📊 Body Scan
+                 </button>
+              </div>
             </div>
 
             {!vistaStoricoMisure ? (
@@ -634,6 +757,13 @@ export default function Home() {
                    })}
                  </div>
                  <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-lg">Analizza Trend & Salva</button>
+               </div>
+            ) : vistaGraficiCorpo ? (
+               <div className="flex-1 overflow-y-auto pr-1" style={{ maxHeight: "350px" }}>
+                 <SvgVitruvianHUD biometria={biometria} storico={storicoMisure} />
+                 {storicoMisure.length > 1 && (
+                    <SvgLineChart data={storicoMisure.map(m => Number(m.peso)).reverse()} label="Peso (kg)" />
+                 )}
                </div>
             ) : (
                <div className="flex-1 overflow-y-auto space-y-3 pr-1" style={{ maxHeight: "350px" }}>
@@ -787,7 +917,6 @@ export default function Home() {
                     <div className="flex justify-between items-center mb-1">
                       <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'text-emerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
                       
-                      {/* BOTTONI SWAP, CUSTOM, CESTINO */}
                       <div className="flex gap-2">
                         {!isCustom ? (
                           <>
@@ -804,7 +933,6 @@ export default function Home() {
                        <div className="mt-2 bg-neutral-900 p-2 rounded border border-orange-500/50">
                          <p className="text-[10px] text-orange-400 mb-2 uppercase font-bold">Pasto Fuori Piano / Sgarro</p>
                          
-                         {/* CAMPO NOME CON BACCHETTA MAGICA */}
                          <div className="flex gap-2 mb-2">
                             <input type="text" placeholder="Es. 35g Plumcake confezionato" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1.5 text-xs text-white rounded outline-none focus:border-orange-500" />
                             <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className="bg-orange-600 hover:bg-orange-500 text-white px-3 rounded text-xs font-bold transition-all whitespace-nowrap disabled:opacity-50">
@@ -852,9 +980,14 @@ export default function Home() {
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col order-5 lg:order-1">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
               <h2 className="text-lg font-bold text-white">Allenamento Modulabile</h2>
-              <button onClick={() => setVistaStorico(!vistaStorico)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-md ${vistaStorico ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300'}`}>
-                {vistaStorico ? 'Torna al Workout' : 'Storico Sessioni'}
-              </button>
+              <div className="flex gap-1">
+                <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaStorico && !vistaGraficiCarichi ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
+                  {vistaStorico && !vistaGraficiCarichi ? 'Torna al Workout' : 'Storico'}
+                </button>
+                <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaGraficiCarichi ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
+                  📈 Grafici Forza
+                </button>
+              </div>
             </div>
 
             {!vistaStorico ? (
@@ -973,10 +1106,22 @@ export default function Home() {
                   </button>
                 </div>
               </>
+            ) : vistaGraficiCarichi ? (
+              <div className="flex-1 overflow-y-auto space-y-4">
+                 <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800">
+                   <label className="text-[10px] text-neutral-400 font-bold uppercase block mb-2">Seleziona Esercizio per Analisi:</label>
+                   <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className="w-full bg-neutral-900 text-white text-xs p-2 rounded border border-neutral-700 outline-none focus:border-blue-500 mb-4">
+                     {Object.values(dbAllenamento).flatMap(g => g.esercizi).map(es => (
+                        <option key={es.id} value={es.id}>{eserciziModificati[es.id] || es.nome}</option>
+                     ))}
+                   </select>
+                   <SvgLineChart data={getDataGraficoEsercizio()} label={Object.values(dbAllenamento).flatMap(g => g.esercizi).find(e => e.id === esercizioGraficoSelezionato)?.nome || "Esercizio"} />
+                 </div>
+              </div>
             ) : (
               <div className="flex-1 overflow-y-auto space-y-4">
                 {storicoSessioni.length === 0 ? (
-                  <div className="text-center p-10 text-neutral-500 border border-dashed border-neutral-800 rounded-xl">Nessuna sessione.</div>
+                  <div className="text-center p-10 text-neutral-500 border border-dashed border-neutral-800 rounded-xl">Nessuna sessione salvata.</div>
                 ) : (
                   [...storicoSessioni].reverse().map((sess) => (
                     <div key={sess.oraId} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800">
@@ -1016,7 +1161,7 @@ export default function Home() {
               {esercizioDaCambiare.alternative.map((alt, i) => (
                 <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-orange-500/50 group transition-all">
                   <p className="font-bold text-sm text-white group-hover:text-orange-400">{alt.nome}</p>
-                  <p className="text-[10px] text-neutral-500 mt-1 uppercase font-bold">{alt.note} - Rispetta asse e tensione</p>
+                  <p className="text-[10px] text-neutral-500 mt-1 uppercase font-bold">{alt.note}</p>
                 </button>
               ))}
             </div>
