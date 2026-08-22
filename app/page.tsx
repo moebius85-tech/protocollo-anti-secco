@@ -14,37 +14,37 @@ const baseDbAllenamento = {
   Spinta: {
     focus: "SPINTA (Petto, Spalle, Tricipiti)",
     esercizi: [
-      { id: "e1", nome: "Panca piana bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Scapole strette, petto in fuori. Scendi a sfiorare e spingi.", alternative: [{ nome: "Chest Press Convergente", note: "Stesso asse di spinta, focus contrazione" }, { nome: "Panca piana manubri", note: "Maggiore ROM e stretch profondo" }] },
-      { id: "e3", nome: "Panca inclinata manubri", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Colpisci la parte alta per lo spessore.", alternative: [{ nome: "Panca inclinata bilanciere", note: "Focus forza bruta fasci clavicolari" }, { nome: "Chest Press Inclinata", note: "Tensione costante e sicurezza" }] },
-      { id: "e4", nome: "Chest press / Multipower", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Esercizio guidato: senti il petto in ogni centimetro.", alternative: [{ nome: "Pectoral Machine", note: "Puro isolamento sternale" }, { nome: "Croci ai cavi seduto panca", note: "Isolamento con picco di tensione" }] },
-      { id: "e5", nome: "Croci ai manubri", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Allunga al massimo, poi chiudi strizzando. Gonfia di sangue.", alternative: [{ nome: "Croci panca piana ai cavi", note: "Nessun punto morto nella tensione" }, { nome: "Pec Deck (Fly Machine)", note: "Massimo pump controllato" }] },
-      { id: "e18", nome: "Lento avanti manubri", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Spinta sopra la testa. Parto orecchie, spingo su.", alternative: [{ nome: "Military Press bilanciere", note: "Sovraccarico massimo globale" }, { nome: "Shoulder Press Macchina", note: "Isolamento e spinta guidata" }] },
-      { id: "e20", nome: "Alzate laterali ai cavi", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45\"", dettaglio: "Tensione costante sul deltoide laterale.", alternative: [{ nome: "Alzate laterali manubri", note: "Classico focus deltoide mediale" }, { nome: "Alzate laterali macchina", note: "Elimina slanci e compensazioni" }] },
-      { id: "e22", nome: "Panca stretta bilanciere", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2'", dettaglio: "Gomiti vicini al corpo. Il muscolo che fa il braccio grosso.", alternative: [{ nome: "French Press bilanciere EZ", note: "Stretch massimo capo lungo" }, { nome: "Dips parallele (strette)", note: "Spinta a catena cinetica chiusa" }] },
-      { id: "e27", nome: "Push down cavi corda", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45\"", dettaglio: "Spingo giù aprendo la corda alla fine e strizzando.", alternative: [{ nome: "Push down sbarra dritta", note: "Carico maggiore, meno flessibilità polso" }, { nome: "Estensioni dietro nuca cavo basso", note: "Forte enfasi sul capo lungo" }] }
+      { id: "e1", nome: "Panca piana bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "Scapole strette, petto in fuori. Scendi a sfiorare e spingi.", alternative: [{ nome: "Chest Press Convergente", note: "Stesso asse di spinta, focus contrazione" }, { nome: "Panca piana manubri", note: "Maggiore ROM e stretch profondo" }] },
+      { id: "e3", nome: "Panca inclinata manubri", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "Colpisci la parte alta per lo spessore.", alternative: [{ nome: "Panca inclinata bilanciere", note: "Focus forza bruta fasci clavicolari" }, { nome: "Chest Press Inclinata", note: "Tensione costante e sicurezza" }] },
+      { id: "e4", nome: "Chest press / Multipower", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "Esercizio guidato: senti il petto in ogni centimetro.", alternative: [{ nome: "Pectoral Machine", note: "Puro isolamento sternale" }, { nome: "Croci ai cavi seduto panca", note: "Isolamento con picco di tensione" }] },
+      { id: "e5", nome: "Croci ai manubri", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "Allunga al massimo, poi chiudi strizzando. Gonfia di sangue.", alternative: [{ nome: "Croci panca piana ai cavi", note: "Nessun punto morto nella tensione" }, { nome: "Pec Deck (Fly Machine)", note: "Massimo pump controllato" }] },
+      { id: "e18", nome: "Lento avanti manubri", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "Spinta sopra la testa. Parto orecchie, spingo su.", alternative: [{ nome: "Military Press bilanciere", note: "Sovraccarico massimo globale" }, { nome: "Shoulder Press Macchina", note: "Isolamento e spinta guidata" }] },
+      { id: "e20", nome: "Alzate laterali ai cavi", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "Tensione costante sul deltoide laterale.", alternative: [{ nome: "Alzate laterali manubri", note: "Classico focus deltoide mediale" }, { nome: "Alzate laterali macchina", note: "Elimina slanci e compensazioni" }] },
+      { id: "e22", nome: "Panca stretta bilanciere", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "Gomiti vicini al corpo. Il muscolo che fa il braccio grosso.", alternative: [{ nome: "French Press bilanciere EZ", note: "Stretch massimo capo lungo" }, { nome: "Dips parallele (strette)", note: "Spinta a catena cinetica chiusa" }] },
+      { id: "e27", nome: "Push down cavi corda", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "Spingo giù aprendo la corda alla fine e strizzando.", alternative: [{ nome: "Push down sbarra dritta", note: "Carico maggiore, meno flessibilità polso" }, { nome: "Estensioni dietro nuca cavo basso", note: "Forte enfasi sul capo lungo" }] }
     ]
   },
   Tirata: {
     focus: "TIRATA (Schiena, Bicipiti)",
     esercizi: [
-      { id: "e6", nome: "Trazioni", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Braccia distese, tiro portando i gomiti in basso.", alternative: [{ nome: "Lat Machine Presa Prona Larga", note: "Ottima per modulare i carichi sub-massimali" }, { nome: "Lat Machine Triangolo", note: "Focus maggiore sul gran dorsale centrale" }] },
-      { id: "e7", nome: "Rematore bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Busto inclinato, schiena dritta, tira all'ombelico.", alternative: [{ nome: "Rematore Manubrio Singolo", note: "Lavoro unilaterale e asimmetrie" }, { nome: "Rematore T-Bar", note: "Stabilità core, tirata esplosiva" }] },
-      { id: "e9", nome: "Row machine / Pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Tiro portando i gomiti dietro. Senti la schiena chiudersi.", alternative: [{ nome: "Rematore Macchina Seduto (Chest Supported)", note: "Zero carico lombare" }, { nome: "Seal Row panca", note: "Puro isolamento dorso" }] },
-      { id: "e10", nome: "Pullover ai cavi", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Allungo in alto al massimo, poi spingo giù. Tanto sangue.", alternative: [{ nome: "Lat Machine Braccia Tese", note: "Ottimo arco di movimento e tensione" }, { nome: "Pullover Manubrio Panca", note: "Stretch estremo gabbia toracica" }] },
-      { id: "e23", nome: "Curl bilanciere EZ", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2'", dettaglio: "Gomiti fermi al fianco, salgo contraendo, scendo controllato.", alternative: [{ nome: "Curl Manubri Alternato", note: "Lavoro unilaterale fisiologico" }, { nome: "Curl Cavo Basso (Sbarra)", note: "Tensione muscolare senza punti morti" }] },
-      { id: "e26", nome: "Curl ai cavi con barra", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45\"", dettaglio: "Tensione costante dal cavo, salgo e strizzo.", alternative: [{ nome: "Curl Panca Inclinata Manubri", note: "Focus capo lungo con stretch" }, { nome: "Spider Curl panca 45°", note: "Isolamento picco e bicipite corto" }] }
+      { id: "e6", nome: "Trazioni", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "Braccia distese, tiro portando i gomiti in basso.", alternative: [{ nome: "Lat Machine Presa Prona Larga", note: "Ottima per modulare i carichi sub-massimali" }, { nome: "Lat Machine Triangolo", note: "Focus maggiore sul gran dorsale centrale" }] },
+      { id: "e7", nome: "Rematore bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "Busto inclinato, schiena dritta, tira all'ombelico.", alternative: [{ nome: "Rematore Manubrio Singolo", note: "Lavoro unilaterale e asimmetrie" }, { nome: "Rematore T-Bar", note: "Stabilità core, tirata esplosiva" }] },
+      { id: "e9", nome: "Row machine / Pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "Tiro portando i gomiti dietro. Senti la schiena chiudersi.", alternative: [{ nome: "Rematore Macchina Seduto (Chest Supported)", note: "Zero carico lombare" }, { nome: "Seal Row panca", note: "Puro isolamento dorso" }] },
+      { id: "e10", nome: "Pullover ai cavi", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "Allungo in alto al massimo, poi spingo giù. Tanto sangue.", alternative: [{ nome: "Lat Machine Braccia Tese", note: "Ottimo arco di movimento e tensione" }, { nome: "Pullover Manubrio Panca", note: "Stretch estremo gabbia toracica" }] },
+      { id: "e23", nome: "Curl bilanciere EZ", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "Gomiti fermi al fianco, salgo contraendo, scendo controllato.", alternative: [{ nome: "Curl Manubri Alternato", note: "Lavoro unilaterale fisiologico" }, { nome: "Curl Cavo Basso (Sbarra)", note: "Tensione muscolare senza punti morti" }] },
+      { id: "e26", nome: "Curl ai cavi con barra", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "Tensione costante dal cavo, salgo e strizzo.", alternative: [{ nome: "Curl Panca Inclinata Manubri", note: "Focus capo lungo con stretch" }, { nome: "Spider Curl panca 45°", note: "Isolamento picco e bicipite corto" }] }
     ]
   },
   Gambe: {
     focus: "GAMBE E POLPACCI",
     esercizi: [
-      { id: "e11", nome: "Squat bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Sotto il parallelo, spingo dai talloni. Costruisce stazza.", alternative: [{ nome: "Front Squat", note: "Focus estremo quadricipite, schiena dritta" }, { nome: "Hack Squat Libero", note: "Maggiore sovraccarico senza stress lombare estremo" }] },
-      { id: "e12", nome: "Hack squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2'", dettaglio: "Macchina guidata per caricare in sicurezza. Tutto sui quad.", alternative: [{ nome: "Leg Press 45° (Piedi bassi e stretti)", note: "Isolamento pressa quadricipite" }, { nome: "Belt Squat", note: "Carico diretto sulle anche, 0 colonna" }] },
-      { id: "e14", nome: "Leg press 45°", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Scendo ginocchia al petto. Nessun blocco articolare.", alternative: [{ nome: "Affondi Camminati (Manubri)", note: "Core, equilibrio e femorali coinvolti" }, { nome: "Bulgarian Split Squat", note: "Lavoro unilaterale devastante" }] },
-      { id: "e15", nome: "Leg extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Distendo e strizzo in alto un secondo, scendo controllato.", alternative: [{ nome: "Sissy Squat", note: "Esercizio bodyweight stretch estremo" }, { nome: "Step-up alto controllato", note: "Lavoro concentrico mirato" }] },
-      { id: "e13", nome: "Stacco rumeno", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5'", dettaglio: "Schiena dritta, spingo bacino indietro, risalgo contraendo glutei.", alternative: [{ nome: "Stacco a Gambe Tese", note: "Focus puro stretch ischiocrurali" }, { nome: "Good Morning Bilanciere", note: "Costruzione catena cinetica posteriore profonda" }] },
-      { id: "e16", nome: "Leg curl sdraiato", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45\"", dettaglio: "Porto il tallone al gluteo strizzando, scendo lento.", alternative: [{ nome: "Leg Curl Seduto", note: "Maggiore isolamento fisiologico bicipite femorale" }, { nome: "Glute Ham Raise", note: "Esercizio a catena chiusa durissimo" }] },
-      { id: "e17", nome: "Polpacci", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45\"", dettaglio: "Arco completo in punta, fermo in alto, scendo sotto allungando.", alternative: [{ nome: "Calf Press (sulla Leg Press)", note: "Ottimo sovraccarico in sicurezza" }, { nome: "Calf Seduto Macchina", note: "Sposta il focus sul muscolo Soleo" }] }
+      { id: "e11", nome: "Squat bilanciere", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "Sotto il parallelo, spingo dai talloni. Costruisce stazza.", alternative: [{ nome: "Front Squat", note: "Focus estremo quadricipite, schiena dritta" }, { nome: "Hack Squat Libero", note: "Maggiore sovraccarico senza stress lombare estremo" }] },
+      { id: "e12", nome: "Hack squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "Macchina guidata per caricare in sicurezza. Tutto sui quad.", alternative: [{ nome: "Leg Press 45° (Piedi bassi e stretti)", note: "Isolamento pressa quadricipite" }, { nome: "Belt Squat", note: "Carico diretto sulle anche, 0 colonna" }] },
+      { id: "e14", nome: "Leg press 45°", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "Scendo ginocchia al petto. Nessun blocco articolare.", alternative: [{ nome: "Affondi Camminati (Manubri)", note: "Core, equilibrio e femorali coinvolti" }, { nome: "Bulgarian Split Squat", note: "Lavoro unilaterale devastante" }] },
+      { id: "e15", nome: "Leg extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "Distendo e strizzo in alto un secondo, scendo controllato.", alternative: [{ nome: "Sissy Squat", note: "Esercizio bodyweight stretch estremo" }, { nome: "Step-up alto controllato", note: "Lavoro concentrico mirato" }] },
+      { id: "e13", nome: "Stacco rumeno", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "Schiena dritta, spingo bacino indietro, risalgo contraendo glutei.", alternative: [{ nome: "Stacco a Gambe Tese", note: "Focus puro stretch ischiocrurali" }, { nome: "Good Morning Bilanciere", note: "Costruzione catena cinetica posteriore profonda" }] },
+      { id: "e16", nome: "Leg curl sdraiato", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "Porto il tallone al gluteo strizzando, scendo lento.", alternative: [{ nome: "Leg Curl Seduto", note: "Maggiore isolamento fisiologico bicipite femorale" }, { nome: "Glute Ham Raise", note: "Esercizio a catena chiusa durissimo" }] },
+      { id: "e17", nome: "Polpacci", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "Arco completo in punta, fermo in alto, scendo sotto allungando.", alternative: [{ nome: "Calf Press (sulla Leg Press)", note: "Ottimo sovraccarico in sicurezza" }, { nome: "Calf Seduto Macchina", note: "Sposta il focus sul muscolo Soleo" }] }
     ]
   }
 };
@@ -87,8 +87,8 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
 };
 
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
-  if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti.</p>;
-  if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato ({data[0]}). Esegui un'altra sessione.</p>;
+  if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti per il grafico.</p>;
+  if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato ({data[0]}). Esegui un&apos;altra sessione per tracciare la curva.</p>;
   const maxVal = Math.max(...data);
   const minVal = Math.min(...data);
   const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
@@ -112,7 +112,7 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   );
 };
 
-const SvgVitruvianHUD = ({ biometria, storico }: { biometria: any, storico: any[] }) => {
+const SvgVitruvianHUD = ({ biometria, storico }: { biometria: Record<string, string>, storico: any[] }) => {
   const getDeltas = (key: string) => {
      if(storico.length < 2) return null;
      const current = Number(biometria[key]);
@@ -143,7 +143,7 @@ const SvgVitruvianHUD = ({ biometria, storico }: { biometria: any, storico: any[
 };
 
 // ==========================================
-// 2. DATABASE ALIMENTAZIONE COMPLETO
+// DATABASE ALIMENTAZIONE COMPLETO
 // ==========================================
 const dbAlimenti = {
   Pasto1: [
@@ -202,7 +202,7 @@ export default function Home() {
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
   const [stileVita, setStileVita] = useState("Attivo (es. Vendita al dettaglio, in piedi)");
-  const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
+  const [biometria, setBiometria] = useState<Record<string, string>>({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
   
   // Turni
   const [tipoTurno, setTipoTurno] = useState('spezzato');
@@ -227,7 +227,7 @@ export default function Home() {
   const [fastWorkout, setFastWorkout] = useState(false);
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
   const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string[]>>({});
-  const [storicoSessioni, setStoricoSessioni] = useState<Array<{ data: string, giorno: string, scheda: string, carichi: Record<string, string>, oraId: number }>>([]);
+  const [storicoSessioni, setStoricoSessioni] = useState<any[]>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
@@ -235,8 +235,8 @@ export default function Home() {
   // Nutrizione
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
-  const [pastiSelezionati, setPastiSelezionati] = useState({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
-  const [pastiCustom, setPastiCustom] = useState<Record<string, any>>({
+  const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
+  const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({
     Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
     Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
   });
@@ -333,7 +333,7 @@ export default function Home() {
         plan[sch].esercizi.forEach((ex: any) => {
            if (isShred) {
               ex.rep = ex.rep.replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie");
-              ex.rep = ex.rep.replace("Rec: 1.5'", "Rec: 2'").replace('Rec: 45"', "Rec: 1'");
+              ex.rep = ex.rep.replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
            } else if (isOver40 && isHeavyJob) {
               ex.rep = ex.rep.replace("4-5 serie", "3-4 serie"); 
            }
@@ -411,7 +411,13 @@ export default function Home() {
       const match = responseText.match(magicRegex);
       
       if(match) {
-          const [fullString, pastoTarget, cho, pro, fat, nomeCibo] = match;
+          const fullString = match[0];
+          const pastoTarget = match[1];
+          const cho = match[2];
+          const pro = match[3];
+          const fat = match[4];
+          const nomeCibo = match[5];
+          
           responseText = responseText.replace(fullString, '').trim();
           setPastiCustom(prev => ({
               ...prev,
@@ -434,7 +440,11 @@ export default function Home() {
       const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i;
       const match = data.reply.match(magicRegex);
       if(match) {
-        const [_, pastoTarget, cho, pro, fat, nome] = match;
+        const pastoTarget = match[1];
+        const cho = match[2];
+        const pro = match[3];
+        const fat = match[4];
+        const nome = match[5];
         updateCustomMeal(cat, 'cho', Math.round(parseFloat(cho.replace(',','.'))).toString());
         updateCustomMeal(cat, 'pro', Math.round(parseFloat(pro.replace(',','.'))).toString());
         updateCustomMeal(cat, 'fat', Math.round(parseFloat(fat.replace(',','.'))).toString());
@@ -507,7 +517,7 @@ export default function Home() {
   let targetCho = intraCho, targetPro = intraPro, targetFat = intraFat;
   const originalMeals: Record<string, any> = {};
   ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
-     const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat as keyof typeof pastiSelezionati]];
+     const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]];
      if(item) {
        const modPro = protocolloAttivo === 'Shred' ? item.pro * 1.2 : item.pro;
        originalMeals[cat] = { cho: item.baseCarbo * moltiplicatoreCarbo, pro: Math.round(modPro), fat: item.fat };
@@ -636,7 +646,7 @@ export default function Home() {
                      <option value="Ricomposizione">Obiettivo: Mantenimento</option>
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded">
-                     <label className="text-[10px] text-orange-400 block mb-1">📸 Foto Obiettivo Fisico (Opzionale)</label>
+                     <p className="text-[10px] text-neutral-500 mb-2">Se carichi la foto del fisico a cui punti, l&apos;IA farà una stima della massa grassa e calcolerà i tempi di raggiungimento.</p>
                      <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoFileWizard} />
                    </div>
                    <button onClick={analizzaObiettivoWizard} disabled={loadingWizard} className="w-full bg-blue-600 text-white p-2 rounded font-bold uppercase disabled:opacity-50">{loadingWizard ? 'Analisi in corso...' : 'Calcola Profilo IA'}</button>
@@ -664,7 +674,7 @@ export default function Home() {
       
       <header className="mb-6 border-b border-neutral-800 pb-4 flex justify-between items-center">
         <div>
-          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-neutral-500 hover:text-white mb-2 block transition-all">⬅️ Torna alla Home</button>
+          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-neutral-500 hover:text-white mb-2 block transition-all">Torna alla Home</button>
           <h1 className="text-xl sm:text-2xl font-black tracking-tighter uppercase text-orange-500">
             PROTOCOLLO <span className="text-white">{protocolloAttivo}</span>
           </h1>
@@ -698,8 +708,7 @@ export default function Home() {
                    {Object.keys(infoMisure).map((chiave) => (
                        <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
                          <label className="text-[10px] text-neutral-400 uppercase font-bold">{infoMisure[chiave as keyof typeof infoMisure].label}</label>
-                         {/* @ts-ignore */}
-                         <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
+                         <input type="number" value={biometria[chiave as keyof typeof biometria]} onChange={(e) => setBiometria({...biometria, [chiave]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
                        </div>
                    ))}
                  </div>
@@ -904,7 +913,7 @@ export default function Home() {
                 <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800 mb-4 flex justify-between items-center">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Tempo Stimato</span>
-                    <p className="text-sm font-bold text-white flex items-center gap-2">⏱️ ~{calcolaTempoScheda()}' <span className="text-[9px] text-neutral-400 font-normal">(Recuperi inclusi)</span></p>
+                    <p className="text-sm font-bold text-white flex items-center gap-2">⏱️ ~{calcolaTempoScheda()} min <span className="text-[9px] text-neutral-400 font-normal">(Recuperi inclusi)</span></p>
                   </div>
                   <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-lg ${fastWorkout ? 'bg-red-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>
                     {fastWorkout ? '⚡ Fast Mode' : 'Taglia Tempi'}
@@ -927,7 +936,7 @@ export default function Home() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto pr-2 space-y-4">
-                  {/* @ts-ignore */}
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {dbDinamico[schedaAttiva].esercizi.map((es: any) => {
                     const nomeVis = eserciziModificati[es.id] || es.nome;
                     const ultimoCarico = getUltimoCarico(es.id);
@@ -935,7 +944,7 @@ export default function Home() {
                     const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
                     const animType = mapEsercizioToAnimazione[es.id] || "squat_barbell"; 
                     let repMostrate = es.rep;
-                    if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2'", "Rec: 1.5'").replace("Rec: 1.5'", "Rec: 45\"");
+                    if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
 
                     return (
                       <div key={es.id} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 relative overflow-hidden">
