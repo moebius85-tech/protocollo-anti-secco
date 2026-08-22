@@ -8,7 +8,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO (Espanso con Alternative Biomeccaniche)
+// 1. DATABASE ALLENAMENTO & SVG
 // ==========================================
 const dbAllenamento = {
   Spinta: {
@@ -57,7 +57,6 @@ const mapEsercizioToAnimazione: Record<string, string> = {
   "e14": "leg_press", "e15": "leg_extension", "e13": "romanian_deadlift", "e16": "leg_curl_lying", "e17": "calf_raises"            
 };
 
-// SVG Stickman
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   const head = { stroke: color, strokeWidth: "2.5", fill: "none" };
@@ -156,26 +155,22 @@ const SvgVitruvianHUD = ({ biometria, storico }: { biometria: any, storico: any[
 
   return (
     <div className="relative w-full h-[300px] bg-neutral-950 rounded-xl border border-neutral-800 flex items-center justify-center mt-4 overflow-hidden">
-       {/* Background Grid */}
        <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
        
        <svg viewBox="0 0 200 300" className="h-full w-auto z-10 opacity-80">
-          {/* Wireframe Body */}
           <path d="M100 20 C110 20 115 25 115 35 C115 45 105 50 100 50 C95 50 85 45 85 35 C85 25 90 20 100 20 Z" fill="none" stroke="#3b82f6" strokeWidth="2"/>
           <path d="M100 50 L100 80 M75 80 L125 80 M60 140 L75 80 M140 140 L125 80 M75 140 L125 140 M100 80 L100 140 M75 140 L75 280 M125 140 L125 280 M100 140 L100 170 L75 140 M100 140 L100 170 L125 140" fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4 2"/>
           
-          {/* Nodes */}
-          <circle cx="100" cy="90" r="4" fill="#f97316" /> {/* Petto */}
-          <circle cx="70" cy="85" r="4" fill="#f97316" /> {/* Spalle SX */}
-          <circle cx="130" cy="85" r="4" fill="#f97316" /> {/* Spalle DX */}
-          <circle cx="65" cy="115" r="4" fill="#f97316" /> {/* Braccio SX */}
-          <circle cx="135" cy="115" r="4" fill="#f97316" /> {/* Braccio DX */}
-          <circle cx="85" cy="200" r="4" fill="#f97316" /> {/* Gamba SX */}
-          <circle cx="115" cy="200" r="4" fill="#f97316" /> {/* Gamba DX */}
-          <circle cx="100" cy="150" r="4" fill="#f97316" /> {/* Glutei */}
+          <circle cx="100" cy="90" r="4" fill="#f97316" /> 
+          <circle cx="70" cy="85" r="4" fill="#f97316" /> 
+          <circle cx="130" cy="85" r="4" fill="#f97316" /> 
+          <circle cx="65" cy="115" r="4" fill="#f97316" /> 
+          <circle cx="135" cy="115" r="4" fill="#f97316" /> 
+          <circle cx="85" cy="200" r="4" fill="#f97316" /> 
+          <circle cx="115" cy="200" r="4" fill="#f97316" /> 
+          <circle cx="100" cy="150" r="4" fill="#f97316" /> 
        </svg>
 
-       {/* Labels & Deltas */}
        <div className="absolute top-10 right-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">
           Spalle: {biometria.spalle}cm {getDeltas('spalle') && <span style={{color: getDeltas('spalle')?.color}}>({getDeltas('spalle')?.val})</span>}
        </div>
@@ -249,8 +244,7 @@ const infoMisure = {
 export default function Home() {
   const [listaAtleti, setListaAtleti] = useState<string[]>(["Leonardo"]);
   const [utente, setUtente] = useState("Leonardo");
-  const [isNuovoUtente, setIsNuovoUtente] = useState(false);
-  const [nomeNuovoUtente, setNomeNuovoUtente] = useState("");
+  const [protocolloAttivo, setProtocolloAttivo] = useState("Massa");
   
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
@@ -310,11 +304,25 @@ export default function Home() {
   const [vistaGraficiCarichi, setVistaGraficiCarichi] = useState(false);
   const [esercizioGraficoSelezionato, setEsercizioGraficoSelezionato] = useState<string>("e1");
 
+  // --- STATI WIZARD NUOVO ATLETA ---
+  const [modalWizard, setModalWizard] = useState(false);
+  const [stepWizard, setStepWizard] = useState(1);
+  const [datiWizard, setDatiWizard] = useState({
+    nome: '', eta: '', altezza: '', peso: '',
+    stileVita: 'Attivo (es. Vendita al dettaglio, in piedi)',
+    obiettivo: 'Massa',
+  });
+  const [fotoWizard, setFotoWizard] = useState<{data: string, mimeType: string, nome: string} | null>(null);
+  const [rispostaWizard, setRispostaWizard] = useState("");
+  const [loadingWizard, setLoadingWizard] = useState(false);
+  const fileWizardRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     async function fetchAtleti() {
       const { data } = await supabase.from("check_utente").select("nome_utente");
       if (data) {
         const unici = Array.from(new Set(data.map(d => d.nome_utente)));
+        if (unici.length > 0 && !unici.includes("Leonardo")) unici.unshift("Leonardo");
         if (unici.length > 0) setListaAtleti(unici);
       }
     }
@@ -341,9 +349,13 @@ export default function Home() {
           petto: circ.petto || '', spalle: circ.spalle || '', braccia: circ.braccia || '', 
           gambe: circ.gambe || '', glutei: circ.glutei || '' 
         });
-        if (validRec.peso) setMoltiplicatoreCarbo(5); 
+        
+        // Setup base se esiste un profilo salvato nel wizard
+        if(circ.profilo?.obiettivo === 'Shred') { setProtocolloAttivo('Shred'); setMoltiplicatoreCarbo(2.5); }
+        else if(circ.profilo?.obiettivo === 'Ricomposizione') { setProtocolloAttivo('Ricomposizione'); setMoltiplicatoreCarbo(4); }
+        else { setProtocolloAttivo('Massa'); setMoltiplicatoreCarbo(5); }
       } else {
-        setEta(""); setAltezza(""); setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
+        setEta(utente === "Leonardo" ? 41 : ""); setAltezza(""); setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
       }
     }
 
@@ -361,8 +373,16 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (!isNuovoUtente) caricaDatiUtente();
-  }, [utente, isNuovoUtente]);
+    caricaDatiUtente();
+  }, [utente]);
+
+  // Modifica Protocollo Globale
+  const cambiaProtocollo = (val: string) => {
+    setProtocolloAttivo(val);
+    if(val === 'Massa') setMoltiplicatoreCarbo(5);
+    if(val === 'Shred') setMoltiplicatoreCarbo(2.5);
+    if(val === 'Ricomposizione') setMoltiplicatoreCarbo(4);
+  };
 
   useEffect(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), [chatLog]);
 
@@ -377,6 +397,21 @@ export default function Home() {
     reader.onloadend = () => {
       const base64String = (reader.result as string).split(',')[1];
       setFileAllegato({ data: base64String, mimeType: file.type, nome: file.name });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const gestisciCaricamentoFileWizard = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 4 * 1024 * 1024) {
+      alert("Il file è troppo grande.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = (reader.result as string).split(',')[1];
+      setFotoWizard({ data: base64String, mimeType: file.type, nome: file.name });
     };
     reader.readAsDataURL(file);
   };
@@ -467,16 +502,67 @@ export default function Home() {
     setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
   };
 
-  const salvaNuovoAtleta = async () => {
-    if (nomeNuovoUtente.trim()) {
-      const nuovo = nomeNuovoUtente.trim();
-      setListaAtleti(prev => [...prev, nuovo]);
-      setUtente(nuovo);
-      setIsNuovoUtente(false);
-      const { error } = await supabase.from("check_utente").insert([{ nome_utente: nuovo, data: new Date().toISOString() }]);
-      if (error) alert("Errore connessione database.");
+  // ==========================================
+  // WIZARD NUOVO ATLETA E PROFILAZIONE IA
+  // ==========================================
+  const analizzaObiettivoWizard = async () => {
+    setLoadingWizard(true);
+    try {
+      const contesto = `
+        Sei un Coach IA esperto in fisiologia e composizione corporea. Analizza questo nuovo atleta:
+        Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg.
+        Stile di Vita/Lavoro: ${datiWizard.stileVita}.
+        Obiettivo: ${datiWizard.obiettivo}.
+        Se è presente una foto, stima la massa grassa e il potenziale genetico. Fornisci un verdetto motivazionale realistico indicando le SETTIMANE stimate per raggiungere un risultato tangibile. Usa un tono professionale ma amichevole.
+      `;
+      const payload: any = { message: "Analizza il mio profilo.", context: contesto };
+      if (fotoWizard) {
+        payload.file = { data: fotoWizard.data, mimeType: fotoWizard.mimeType };
+      }
+      
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const data = await response.json();
+      setRispostaWizard(data.reply);
+      setStepWizard(3);
+    } catch (e) {
+      setRispostaWizard("Errore di rete durante l'analisi. Riprova.");
+      setStepWizard(3);
+    }
+    setLoadingWizard(false);
+  };
+
+  const salvaProfiloWizard = async () => {
+    if (!datiWizard.nome.trim()) return;
+    
+    // Inseriamo il profilo nel DB
+    const payload = {
+      nome_utente: datiWizard.nome,
+      eta: Number(datiWizard.eta) || null,
+      altezza: Number(datiWizard.altezza) || null,
+      peso: Number(datiWizard.peso) || null,
+      circonferenze: {
+        profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo }
+      },
+      data: new Date().toISOString()
+    };
+
+    const { error } = await supabase.from("check_utente").insert([payload]);
+    if (!error) {
+      setListaAtleti(prev => {
+        const nuovaLista = [...prev];
+        if(!nuovaLista.includes(datiWizard.nome)) nuovaLista.push(datiWizard.nome);
+        return nuovaLista;
+      });
+      setUtente(datiWizard.nome);
+      setModalWizard(false);
+      setStepWizard(1);
+      setRispostaWizard("");
+      setFotoWizard(null);
+    } else {
+      alert("Errore salvataggio: " + error.message);
     }
   };
+
 
   const eliminaMisurazione = async (id: string) => {
     if(confirm("Vuoi eliminare definitivamente questa misurazione dallo storico?")) {
@@ -531,21 +617,35 @@ export default function Home() {
       let trendCarichi = "Neutro";
       if (storicoSessioni.length >= 2) trendCarichi = "Stallo Rilevato"; 
       let alertMsg = "";
-      if (Number(peso) > 80 && Number(braccia) < 38 && Number(glutei) > 95) {
-         setMoltiplicatoreCarbo(4);
-         alertMsg = "⚠️ Composizione: Rilevato accumulo grasso addome/glutei. Carboidrati ridotti (4g/kg).";
-      } 
-      else if (trendCarichi === "Stallo Rilevato" && Number(peso) < 78) {
-         setMoltiplicatoreCarbo(6.5);
-         alertMsg = "🔥 Prestazioni: Carichi bloccati. Surplus Aggressivo (6.5g/kg CHO) per sbloccare la forza.";
-      } 
-      else {
-         setMoltiplicatoreCarbo(5);
-         alertMsg = "✅ Parametri in asse. Protocollo ipertrofico standard mantenuto (5g/kg CHO).";
+      
+      // Controllo basato sul protocollo attivo
+      if (protocolloAttivo === 'Massa') {
+        if (Number(peso) > 80 && Number(braccia) < 38 && Number(glutei) > 95) {
+           setMoltiplicatoreCarbo(4);
+           alertMsg = "⚠️ Composizione: Rilevato accumulo grasso. Modulo i carbo a 4g/kg per non sporcare la massa.";
+        } else if (trendCarichi === "Stallo Rilevato") {
+           setMoltiplicatoreCarbo(6.5);
+           alertMsg = "🔥 Prestazioni: Carichi bloccati. Surplus Aggressivo (6.5g/kg CHO) attivato per sbloccare la forza.";
+        } else {
+           setMoltiplicatoreCarbo(5);
+           alertMsg = "✅ Parametri in asse. Protocollo Ipertrofico standard mantenuto (5g/kg CHO).";
+        }
+      } else if (protocolloAttivo === 'Shred') {
+        setMoltiplicatoreCarbo(2.5);
+        alertMsg = "🔪 Fase Definizone attiva. Carbo mantenuti bassi (2.5g/kg) per massimizzare l'ossidazione lipidica.";
+      } else {
+        setMoltiplicatoreCarbo(4);
+        alertMsg = "⚖️ Fase Ricomposizione attiva. Calorie in pari per consolidare i risultati.";
       }
+
       setMessaggioDieta(alertMsg);
 
-      const payload = { nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date().toISOString() };
+      const payload = { 
+        nome_utente: utente, 
+        eta: Number(eta), altezza: Number(altezza), peso: Number(peso), 
+        circonferenze: { ...biometria, profilo: { obiettivo: protocolloAttivo } }, 
+        data: new Date().toISOString() 
+      };
       const { error } = await supabase.from("check_utente").insert([payload]);
       
       if (error) {
@@ -573,7 +673,7 @@ export default function Home() {
 
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
     const pesoCalcolato = Number(biometria.peso) || 80;
-    const carbIntra = Math.round(pesoCalcolato * 0.5); 
+    const carbIntra = protocolloAttivo === 'Shred' ? Math.round(pesoCalcolato * 0.3) : Math.round(pesoCalcolato * 0.5); 
     const acquaIntra = Math.round(pesoCalcolato * 15); 
 
     const preW = quandoTiAlleni === 'sera' 
@@ -599,9 +699,14 @@ export default function Home() {
   const altezzaNum = Number(altezza) || 175;
   const etaNum = Number(eta) || 41;
   const bmr = Math.round((10 * pesoNum) + (6.25 * altezzaNum) - (5 * etaNum) + 5);
-  const tdee = Math.round(bmr * 1.55); 
+  
+  // Riadattamento TDEE base al protocollo
+  let tdeeMultiplier = 1.55;
+  if(protocolloAttivo === 'Shred') tdeeMultiplier = 1.35; // Deficit imposto
+  if(protocolloAttivo === 'Ricomposizione') tdeeMultiplier = 1.45;
+  const tdee = Math.round(bmr * tdeeMultiplier); 
 
-  const intraCho = Math.round(pesoNum * 0.5);
+  const intraCho = protocolloAttivo === 'Shred' ? Math.round(pesoNum * 0.3) : Math.round(pesoNum * 0.5);
   const intraPro = 15;
   const intraFat = 0;
   
@@ -613,7 +718,9 @@ export default function Home() {
   ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
      const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat as keyof typeof pastiSelezionati]];
      if(item) {
-       originalMeals[cat] = { cho: item.baseCarbo * moltiplicatoreCarbo, pro: item.pro, fat: item.fat };
+       // Aumento proteine in Shred per preservare massa
+       const modPro = protocolloAttivo === 'Shred' ? item.pro * 1.2 : item.pro;
+       originalMeals[cat] = { cho: item.baseCarbo * moltiplicatoreCarbo, pro: Math.round(modPro), fat: item.fat };
        targetCho += originalMeals[cat].cho;
        targetPro += originalMeals[cat].pro;
        targetFat += originalMeals[cat].fat;
@@ -670,7 +777,7 @@ export default function Home() {
     storicoSessioni.forEach(sess => {
       if (sess.carichi[esercizioGraficoSelezionato]) {
         const loads = sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number);
-        dataPoints.push(Math.max(...loads)); // Prendiamo il massimale di quella sessione
+        dataPoints.push(Math.max(...loads)); 
       }
     });
     return dataPoints;
@@ -679,28 +786,28 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 p-4 lg:p-6 font-sans overflow-x-hidden">
       
-      <header className="mb-6 border-b border-orange-500/30 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tighter uppercase text-orange-500">
-            Protocollo Anti-Secco <span className="text-white">Pro</span>
-          </h1>
+      <header className="mb-6 border-b border-neutral-800 pb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        
+        {/* TITOLO / SELETTORE PROTOCOLLO GLOBALE */}
+        <div className="flex flex-col">
+          <select 
+            value={protocolloAttivo} 
+            onChange={(e) => cambiaProtocollo(e.target.value)} 
+            className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-orange-500 bg-transparent outline-none cursor-pointer appearance-none border-none focus:ring-0"
+          >
+            <option value="Massa" className="bg-neutral-900 text-white">PROTOCOLLO ANTI-SECCO (Massa)</option>
+            <option value="Shred" className="bg-neutral-900 text-white">PROTOCOLLO SHRED (Definizione)</option>
+            <option value="Ricomposizione" className="bg-neutral-900 text-white">PROTOCOLLO RICOMP (Mantenimento)</option>
+          </select>
           <p className="text-sm text-neutral-400 font-medium tracking-wide">Tracking Carichi & Timing Nutrizionale</p>
         </div>
         
-        <div className="flex flex-col w-full sm:w-64 border border-neutral-700 bg-neutral-900 p-2 rounded-lg shadow-lg">
+        <div className="flex flex-col w-full lg:w-64 border border-neutral-700 bg-neutral-900 p-2 rounded-lg shadow-lg">
           <label className="text-[10px] text-orange-400 font-bold uppercase mb-1">Atleta Attivo (Caricamento DB):</label>
-          {isNuovoUtente ? (
-            <div className="flex gap-2">
-              <input type="text" placeholder="Nome..." value={nomeNuovoUtente} onChange={(e) => setNomeNuovoUtente(e.target.value)} className="bg-neutral-950 text-white text-sm p-1.5 rounded outline-none w-full border border-neutral-600 focus:border-orange-500" />
-              <button onClick={salvaNuovoAtleta} className="bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold px-3 rounded transition-all">Salva</button>
-              <button onClick={() => setIsNuovoUtente(false)} className="bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-bold px-2 rounded">X</button>
-            </div>
-          ) : (
-            <select value={utente} onChange={(e) => { if(e.target.value === "NUOVO") setIsNuovoUtente(true); else setUtente(e.target.value); }} className="bg-neutral-950 text-white text-sm font-bold p-1.5 rounded outline-none border border-neutral-800 cursor-pointer w-full focus:border-orange-500">
-              {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
-              <option value="NUOVO" className="text-orange-500 font-bold">+ Aggiungi Nuovo Atleta</option>
-            </select>
-          )}
+          <select value={utente} onChange={(e) => { if(e.target.value === "NUOVO") setModalWizard(true); else setUtente(e.target.value); }} className="bg-neutral-950 text-white text-sm font-bold p-1.5 rounded outline-none border border-neutral-800 cursor-pointer w-full focus:border-orange-500">
+            {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
+            <option value="NUOVO" className="text-orange-500 font-bold">+ Aggiungi Nuovo Atleta</option>
+          </select>
         </div>
       </header>
 
@@ -875,7 +982,7 @@ export default function Home() {
             <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${moltiplicatoreCarbo > 5 ? 'bg-orange-600 text-white animate-pulse' : moltiplicatoreCarbo < 5 ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>
+                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white`}>
                   {moltiplicatoreCarbo}g CHO/Kg
                 </span>
               </div>
@@ -1169,33 +1276,102 @@ export default function Home() {
         </div>
       )}
 
-      {modalAlimento && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center mb-4 border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-lg text-white">Sostituisci Pasto</h3>
-              <button onClick={() => setModalAlimento(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
+      {/* --- WIZARD NUOVO ATLETA / PROFILAZIONE IA --- */}
+      {modalWizard && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-neutral-800 flex justify-between items-center bg-neutral-950">
+              <h3 className="font-black text-xl text-orange-500 uppercase tracking-tighter">Profilazione Metabolica</h3>
+              <button onClick={() => setModalWizard(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
             </div>
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-              {/* @ts-ignore */}
-              {dbAlimenti[categoriaDaCambiare].map((alt, i) => {
-                 const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
-                 const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
-                 return (
-                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-neutral-950 border border-neutral-800 rounded-lg hover:border-emerald-500/50 group transition-all">
-                    <div className="flex justify-between items-start">
-                      <p className="font-bold text-sm text-white group-hover:text-emerald-400">{alt.nome}</p>
-                      <span className="text-[10px] bg-neutral-800 text-white px-1.5 py-0.5 rounded font-bold ml-2">{swapKcal} Kcal</span>
+            
+            <div className="p-6 flex-1 overflow-y-auto">
+              
+              {/* STEP 1: Dati Fisici */}
+              {stepWizard === 1 && (
+                <div className="space-y-4 animate-fade-in">
+                  <p className="text-xs text-neutral-400 uppercase font-bold mb-4">Step 1: Parametri Base</p>
+                  <div>
+                    <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Nome Atleta</label>
+                    <input type="text" value={datiWizard.nome} onChange={e => setDatiWizard({...datiWizard, nome: e.target.value})} className="w-full bg-neutral-950 text-white p-2 rounded border border-neutral-700 outline-none focus:border-orange-500" placeholder="Es. Marco" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
+                      <input type="number" value={datiWizard.eta} onChange={e => setDatiWizard({...datiWizard, eta: e.target.value})} className="w-full bg-neutral-950 text-white p-2 rounded border border-neutral-700 outline-none focus:border-orange-500" />
                     </div>
-                    <p className="text-[11px] text-neutral-500 mt-1 font-mono">CHO: {macroCho}g | PRO: {alt.pro}g | FAT: {alt.fat}g</p>
-                    <p className="text-[10px] text-neutral-400 mt-2 p-1.5 bg-neutral-900 border border-neutral-800 rounded">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
+                    <div>
+                      <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza (cm)</label>
+                      <input type="number" value={datiWizard.altezza} onChange={e => setDatiWizard({...datiWizard, altezza: e.target.value})} className="w-full bg-neutral-950 text-white p-2 rounded border border-neutral-700 outline-none focus:border-orange-500" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Peso (kg)</label>
+                      <input type="number" value={datiWizard.peso} onChange={e => setDatiWizard({...datiWizard, peso: e.target.value})} className="w-full bg-neutral-950 text-white p-2 rounded border border-neutral-700 outline-none focus:border-orange-500" />
+                    </div>
+                  </div>
+                  <button onClick={() => { if(datiWizard.nome && datiWizard.peso) setStepWizard(2); else alert("Inserisci Nome e Peso."); }} className="w-full mt-4 bg-orange-600 hover:bg-orange-500 text-white font-bold p-3 rounded-lg uppercase text-xs transition-all">Avanti ➔</button>
+                </div>
+              )}
+
+              {/* STEP 2: Lifestyle & Obiettivo */}
+              {stepWizard === 2 && (
+                <div className="space-y-5 animate-fade-in">
+                  <p className="text-xs text-neutral-400 uppercase font-bold mb-4">Step 2: Stile di Vita e Obiettivo</p>
+                  
+                  <div>
+                    <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Attività Quotidiana Lavorativa (NEAT)</label>
+                    <select value={datiWizard.stileVita} onChange={e => setDatiWizard({...datiWizard, stileVita: e.target.value})} className="w-full bg-neutral-950 text-white p-2 rounded border border-neutral-700 outline-none focus:border-orange-500 text-xs">
+                      <option value="Sedentario (Lavoro alla scrivania)">Sedentario (Lavoro alla scrivania)</option>
+                      <option value="Attivo (es. Vendita al dettaglio, in piedi)">Attivo (es. Vendita al dettaglio / In piedi)</option>
+                      <option value="Molto Attivo (Lavoro fisico pesante)">Molto Attivo (Lavoro fisico pesante)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Fase Metabolica Desiderata</label>
+                    <select value={datiWizard.obiettivo} onChange={e => setDatiWizard({...datiWizard, obiettivo: e.target.value})} className="w-full bg-neutral-950 text-white p-2 rounded border border-neutral-700 outline-none focus:border-orange-500 text-xs">
+                      <option value="Massa">Massa Costruttiva (Surplus + Sovraccarico)</option>
+                      <option value="Shred">Definizione / Shred (Deficit Aggressivo)</option>
+                      <option value="Ricomposizione">Ricomposizione (Normocalorica)</option>
+                    </select>
+                  </div>
+
+                  <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800">
+                    <label className="text-[10px] text-orange-400 uppercase font-bold block mb-2">📸 Carica il Fisico Obiettivo (Opzionale)</label>
+                    <p className="text-[10px] text-neutral-500 mb-2">Se carichi la foto del fisico a cui punti, l'IA farà una stima della massa grassa e calcolerà i tempi di raggiungimento.</p>
+                    <input type="file" accept="image/*" className="hidden" ref={fileWizardRef} onChange={gestisciCaricamentoFileWizard} />
+                    <button onClick={() => fileWizardRef.current?.click()} className="w-full border border-dashed border-neutral-600 hover:border-orange-500 text-neutral-400 p-2 rounded text-xs transition-all">
+                       {fotoWizard ? `✅ ${fotoWizard.nome}` : '📎 Scegli Immagine...'}
+                    </button>
+                  </div>
+
+                  <div className="flex gap-2 mt-4">
+                    <button onClick={() => setStepWizard(1)} className="bg-neutral-800 text-white font-bold p-3 rounded-lg uppercase text-xs w-1/3">Indietro</button>
+                    <button onClick={analizzaObiettivoWizard} disabled={loadingWizard} className="bg-blue-600 hover:bg-blue-500 text-white font-bold p-3 rounded-lg uppercase text-xs w-2/3 flex justify-center items-center gap-2 disabled:opacity-50">
+                      {loadingWizard ? <span className="animate-pulse">Analisi in corso...</span> : 'Genera Profilo 🚀'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: Verdetto IA e Salvataggio */}
+              {stepWizard === 3 && (
+                <div className="space-y-4 animate-fade-in">
+                  <p className="text-xs text-orange-400 uppercase font-bold">Responso Coach IA</p>
+                  <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 text-xs text-neutral-300 leading-relaxed max-h-48 overflow-y-auto whitespace-pre-wrap">
+                    {rispostaWizard}
+                  </div>
+                  <button onClick={salvaProfiloWizard} className="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold p-3 rounded-lg uppercase tracking-widest text-xs transition-all">
+                    Accetta Protocollo e Inizia
                   </button>
-                 );
-              })}
+                </div>
+              )}
+
             </div>
           </div>
         </div>
       )}
+
     </main>
   );
 }
