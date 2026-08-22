@@ -290,8 +290,8 @@ export default function Home() {
       SEI IL COACH IA DEL PROTOCOLLO ANTI-SECCO PRO. Utente: ${utente}, Peso: ${biometria.peso}kg, Giorno: ${giornoCalendario}.
       REGOLA D'ORO PER I PASTI FUORI PIANO: Se l'utente ti dice cosa ha mangiato o manda una foto di un cibo, tu devi stimare i macronutrienti totali in grammi.
       IMPORTANTE: Se l'utente non ha specificato in quale pasto l'ha mangiato (es. "a colazione", "Pasto1", "a cena"), DEVI CHIEDERGLI in quale pasto inserire lo sgarro prima di lanciare il comando.
-      Se sai il pasto, INSERISCI ALLA FINE DELLA TUA RISPOSTA questo esatto comando:
-      [MAGIC_MACRO | PASTO_TARGET | CHO | PRO | FAT | NOME_CIBO]
+      Se sai il pasto, INSERISCI ALLA FINE DELLA TUA RISPOSTA questo esatto comando. ATTENZIONE, INSERISCI SOLO NUMERI SENZA LA LETTERA 'g':
+      [MAGIC_MACRO | PASTO_TARGET | numero_cho | numero_pro | numero_fat | NOME_CIBO]
       
       Regole per PASTO_TARGET: usa "Pasto1", "Pasto2", "Pasto3" o "PostWorkout".
       `;
@@ -306,7 +306,8 @@ export default function Home() {
       
       let responseText = data.reply || "Errore nella risposta.";
 
-      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([^\]]+)\]/i;
+      // REGEX POTENZIATA per ignorare testo aggiuntivo e le lettere 'g' o 'gr'
+      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i;
       const match = responseText.match(magicRegex);
       
       if(match) {
@@ -337,11 +338,12 @@ export default function Home() {
     if(!nomeCibo.trim()) return alert("Inserisci prima il nome o i grammi del pasto sgarro (es. '300g Pizza Margherita').");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
     try {
-      const payload = { message: `L'utente ha inserito: "${nomeCibo}". Calcola i macronutrienti. ARROTONDA i grammi all'intero (NO decimali). Devi rispondere SOLO con questa esatta stringa: [MAGIC_MACRO | ${cat} | grammi_cho | grammi_pro | grammi_fat | ${nomeCibo}]` };
+      const payload = { message: `L'utente ha inserito: "${nomeCibo}". Calcola i macronutrienti. Restituisci SOLO ED ESCLUSIVAMENTE la stringa magica (SOLO NUMERI INTERI, SENZA LA LETTERA 'g', NESSUN ALTRO TESTO): [MAGIC_MACRO | ${cat} | numero_cho | numero_pro | numero_fat | ${nomeCibo}]` };
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
       
-      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([^\]]+)\]/i;
+      // REGEX POTENZIATA
+      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i;
       const match = data.reply.match(magicRegex);
       
       if(match) {
@@ -804,7 +806,7 @@ export default function Home() {
                          
                          {/* CAMPO NOME CON BACCHETTA MAGICA */}
                          <div className="flex gap-2 mb-2">
-                            <input type="text" placeholder="Es. 300g Pizza Margherita" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1.5 text-xs text-white rounded outline-none focus:border-orange-500" />
+                            <input type="text" placeholder="Es. 35g Plumcake confezionato" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1.5 text-xs text-white rounded outline-none focus:border-orange-500" />
                             <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className="bg-orange-600 hover:bg-orange-500 text-white px-3 rounded text-xs font-bold transition-all whitespace-nowrap disabled:opacity-50">
                               {isCalculatingMacro[cat] ? '...' : '🪄 Calcola'}
                             </button>
