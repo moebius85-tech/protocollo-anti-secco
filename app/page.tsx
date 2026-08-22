@@ -185,7 +185,7 @@ export default function Home() {
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
 
-  // --- STATI NUTRIZIONE E SGARRO CON "NOME" INCLUSO ---
+  // --- STATI NUTRIZIONE E SGARRO ---
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
@@ -199,6 +199,7 @@ export default function Home() {
   
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
+  const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
 
   // --- STATI CHAT E IA ---
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Mandami la foto di un pasto o scrivimi cosa hai mangiato per stimare i macro e inserirli in automatico nel tuo piano!' }]);
@@ -285,16 +286,14 @@ export default function Home() {
     setIsTyping(true);
     
     try {
-      // INIEZIONE DEL COMANDO MAGIC_MACRO NEL CONTESTO DELL'IA
       const contestoMagico = `
-      SEI IL COACH IA DEL PROTOCOLLO ANTI-SECCO PRO. Utente: ${utente}, Peso: ${biometria.peso}kg.
-      REGOLA D'ORO PER I PASTI FUORI PIANO: Se l'utente ti dice cosa ha mangiato (es. "Ho mangiato una pizza a pranzo" o manda una foto di un cibo) e ti chiede di calcolarlo/inserirlo, tu devi stimare i macronutrienti totali in grammi.
-      Inoltre, DEVI INSERIRE ALLA FINE DELLA TUA RISPOSTA questo esatto comando di sistema testuale per aggiornare l'app:
+      SEI IL COACH IA DEL PROTOCOLLO ANTI-SECCO PRO. Utente: ${utente}, Peso: ${biometria.peso}kg, Giorno: ${giornoCalendario}.
+      REGOLA D'ORO PER I PASTI FUORI PIANO: Se l'utente ti dice cosa ha mangiato o manda una foto di un cibo, tu devi stimare i macronutrienti totali in grammi.
+      IMPORTANTE: Se l'utente non ha specificato in quale pasto l'ha mangiato (es. "a colazione", "Pasto1", "a cena"), DEVI CHIEDERGLI in quale pasto inserire lo sgarro prima di lanciare il comando.
+      Se sai il pasto, INSERISCI ALLA FINE DELLA TUA RISPOSTA questo esatto comando:
       [MAGIC_MACRO | PASTO_TARGET | CHO | PRO | FAT | NOME_CIBO]
       
-      Regole per PASTO_TARGET: usa "Pasto1" se è colazione, "Pasto2" se è pranzo, "Pasto3" se è cena/spuntino serale.
-      Esempio di comando esatto alla fine del testo:
-      [MAGIC_MACRO | Pasto2 | 110 | 35 | 25 | Pizza Margherita 300g]
+      Regole per PASTO_TARGET: usa "Pasto1", "Pasto2", "Pasto3" o "PostWorkout".
       `;
       
       const payload: any = { message: msg, context: contestoMagico };
@@ -307,24 +306,17 @@ export default function Home() {
       
       let responseText = data.reply || "Errore nella risposta.";
 
-      // ESTRAZIONE DEL COMANDO MAGICO CON REGEX
-      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([^\]]+)\]/i;
+      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([^\]]+)\]/i;
       const match = responseText.match(magicRegex);
       
       if(match) {
           const [fullString, pastoTarget, cho, pro, fat, nomeCibo] = match;
-          
-          // Rimuovo la stringa bruttina di sistema dalla risposta visibile
           responseText = responseText.replace(fullString, '').trim();
-          
-          // AGGIORNO LO STATO DELL'APP AUTOMATICAMENTE
           setPastiCustom(prev => ({
               ...prev,
               [pastoTarget]: { attivo: true, cho, pro, fat, nome: nomeCibo.trim() }
           }));
-          
-          // Aggiungo un feedback visivo figo
-          responseText += `\n\n✨ **Magia eseguita!** Ho calcolato i macro e li ho inseriti in automatico nello sgarro del ${pastoTarget} come "${nomeCibo.trim()}". L'algoritmo ha appena ricalcolato il resto della giornata per farti rientrare nelle calorie!`;
+          responseText += `\n\n✨ **Magia eseguita!** Ho calcolato i macro e li ho inseriti nello sgarro del ${pastoTarget} come "${nomeCibo.trim()}". Dieta ricalcolata al volo!`;
       }
 
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
@@ -332,6 +324,33 @@ export default function Home() {
       setChatLog(prev => [...prev, { role: 'ai', text: "Errore di connessione con i server Gemini." }]);
     }
     setIsTyping(false);
+  };
+
+  // BACCHETTA MAGICA DENTRO L'INPUT DEL PASTO CUSTOM
+  const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
+    if(!nomeCibo.trim()) return alert("Inserisci prima il nome o i grammi del pasto sgarro (es. '300g Pizza Margherita').");
+    setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
+    try {
+      const payload = { message: `L'utente ha inserito questo pasto: "${nomeCibo}". Calcola i macro esatti. Restituisci SOLO ED ESCLUSIVAMENTE la stringa magica [MAGIC_MACRO | ${cat} | CHO | PRO | FAT | ${nomeCibo}] senza nessun altro testo intorno.` };
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const data = await response.json();
+      
+      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([^\]]+)\]/i;
+      const match = data.reply.match(magicRegex);
+      
+      if(match) {
+        const [_, pastoTarget, cho, pro, fat, nome] = match;
+        updateCustomMeal(cat, 'cho', cho);
+        updateCustomMeal(cat, 'pro', pro);
+        updateCustomMeal(cat, 'fat', fat);
+        updateCustomMeal(cat, 'nome', nome.trim());
+      } else {
+        alert("Il Coach non ha riconosciuto il cibo. Prova ad essere più specifico (es. '200g Pollo e 100g Riso').");
+      }
+    } catch(e) {
+      alert("Errore di rete.");
+    }
+    setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
   };
 
   const salvaNuovoAtleta = async () => {
@@ -427,7 +446,11 @@ export default function Home() {
   };
 
   const toggleCustomMeal = (cat: string) => {
-    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: !prev[cat].attivo } }));
+    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true } }));
+  };
+
+  const resetCustomMeal = (cat: string) => {
+    setPastiCustom(prev => ({ ...prev, [cat]: { attivo: false, cho: '', pro: '', fat: '', nome: '' } }));
   };
 
   const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat'|'nome', value: string) => {
@@ -755,9 +778,17 @@ export default function Home() {
                   <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-neutral-950 border-neutral-800'}`}>
                     <div className="flex justify-between items-center mb-1">
                       <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'text-emerald-500' : 'text-blue-400'}`}>{blocco.titoloUI}</span>
+                      
+                      {/* BOTTONI SWAP, CUSTOM, CESTINO */}
                       <div className="flex gap-2">
-                        <button onClick={() => toggleCustomMeal(cat)} className={`text-[9px] px-2 py-1 rounded font-bold uppercase transition-all ${isCustom ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'}`}>Custom</button>
-                        {!isCustom && <button onClick={() => apriSwapAlimento(cat)} className="text-[9px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Swap</button>}
+                        {!isCustom ? (
+                          <>
+                            <button onClick={() => toggleCustomMeal(cat)} className="text-[9px] bg-neutral-800 hover:bg-neutral-700 text-neutral-400 px-2 py-1 rounded font-bold uppercase transition-all">Custom</button>
+                            <button onClick={() => apriSwapAlimento(cat)} className="text-[9px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Swap</button>
+                          </>
+                        ) : (
+                           <button onClick={() => resetCustomMeal(cat)} className="text-[9px] bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded font-bold uppercase transition-all">🗑️ Rimuovi</button>
+                        )}
                       </div>
                     </div>
                     
@@ -765,9 +796,12 @@ export default function Home() {
                        <div className="mt-2 bg-neutral-900 p-2 rounded border border-orange-500/50">
                          <p className="text-[10px] text-orange-400 mb-2 uppercase font-bold">Pasto Fuori Piano / Sgarro</p>
                          
-                         {/* CAMPO NOME CIBO INIETTATO DALL'IA O MANUALE */}
-                         <div className="mb-2">
-                            <input type="text" placeholder="Nome pasto (es. Pizza Margherita)" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1.5 text-xs text-white rounded outline-none focus:border-orange-500" />
+                         {/* CAMPO NOME CON BACCHETTA MAGICA */}
+                         <div className="flex gap-2 mb-2">
+                            <input type="text" placeholder="Es. 300g Pizza Margherita" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1.5 text-xs text-white rounded outline-none focus:border-orange-500" />
+                            <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className="bg-orange-600 hover:bg-orange-500 text-white px-3 rounded text-xs font-bold transition-all whitespace-nowrap disabled:opacity-50">
+                              {isCalculatingMacro[cat] ? '...' : '🪄 Calcola'}
+                            </button>
                          </div>
 
                          <div className="flex gap-2">
