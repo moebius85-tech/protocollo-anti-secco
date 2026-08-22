@@ -185,7 +185,6 @@ export default function Home() {
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
 
-  // --- STATI NUTRIZIONE E SGARRO ---
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
@@ -200,7 +199,6 @@ export default function Home() {
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
 
-  // --- STATI CHAT ---
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, logiche di allenamento, o mandami la foto di un integratore/scheda da analizzare.' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -210,6 +208,7 @@ export default function Home() {
 
   // --- STATI STORICO TELEMETRIA ---
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
+  const [vistaStoricoMisure, setVistaStoricoMisure] = useState(false);
 
   useEffect(() => {
     async function fetchAtleti() {
@@ -516,69 +515,82 @@ export default function Home() {
         </div>
       </header>
 
-      {/* --- GRIGLIA INTELLIGENTE RESPONSIVE CON 3 COLONNE DESKTOP --- */}
+      {/* --- GRIGLIA INTELLIGENTE RESPONSIVE --- */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
         
         {/* COLONNA SINISTRA (Telemetria -> Coach IA) */}
         <div className="flex flex-col gap-6 lg:col-span-3 order-1 lg:order-1">
           
-          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg order-1">
-            <h2 className="text-lg font-bold mb-4 border-b border-neutral-700 pb-2 text-white">Telemetria Fisica (DB)</h2>
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800 col-span-2 flex gap-2">
-                    <div className="flex-1">
-                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
-                        <input type="number" value={eta} onChange={(e) => setEta(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
-                    </div>
-                    <div className="flex-1 border-l border-neutral-800 pl-2">
-                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza (cm)</label>
-                        <input type="number" value={altezza} onChange={(e) => setAltezza(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
-                    </div>
-                </div>
-                
-                {Object.keys(infoMisure).map((chiave) => {
-                  const info = infoMisure[chiave as keyof typeof infoMisure];
-                  return (
-                    <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] text-neutral-400 uppercase font-bold">{info.label}</label>
-                        <span className="text-[9px] text-neutral-600 font-mono">{info.unit}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {/* @ts-ignore */}
-                        <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
-                      </div>
-                      
-                      <div className="absolute left-0 -bottom-8 bg-neutral-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 w-[150%] pointer-events-none shadow-xl border border-neutral-700">
-                        {info.desc}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-lg">Analizza Trend & Salva</button>
+          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg order-1 flex flex-col">
+            <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
+              <h2 className="text-lg font-bold text-white">Telemetria Fisica</h2>
+              <button onClick={() => setVistaStoricoMisure(!vistaStoricoMisure)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-md transition-all ${vistaStoricoMisure ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
+                {vistaStoricoMisure ? 'Torna al Check' : 'Storico Misure'}
+              </button>
             </div>
 
-            {/* STORICO MISURE INTEGRATO INLINE */}
-            <div className="mt-5 pt-4 border-t border-neutral-700">
-               <h3 className="text-[10px] text-neutral-400 uppercase font-bold mb-3 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>Storico Misurazioni Salvate</h3>
-               <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
-                  {storicoMisure.length === 0 ? (
-                    <p className="text-[10px] text-neutral-500 italic">Nessun dato salvato.</p>
-                  ) : (
-                    storicoMisure.map(mis => (
-                       <div key={mis.id} className="flex justify-between items-center bg-neutral-950 p-2 rounded border border-neutral-800">
-                          <div>
-                             <p className="text-[9px] font-bold text-orange-400">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
-                             <p className="text-[9px] text-neutral-400 font-mono mt-0.5">Peso: <strong className="text-white">{mis.peso}kg</strong> | Braccia: {typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze).braccia : mis.circonferenze?.braccia || '-'}cm</p>
-                          </div>
-                          <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-500 hover:bg-red-500 hover:text-white transition-all rounded p-1" title="Elimina Misurazione">🗑️</button>
+            {!vistaStoricoMisure ? (
+               <div className="space-y-3">
+                 <div className="grid grid-cols-2 gap-3">
+                   <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800 col-span-2 flex gap-2">
+                       <div className="flex-1">
+                           <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
+                           <input type="number" value={eta} onChange={(e) => setEta(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
                        </div>
-                    ))
-                  )}
+                       <div className="flex-1 border-l border-neutral-800 pl-2">
+                           <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza (cm)</label>
+                           <input type="number" value={altezza} onChange={(e) => setAltezza(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
+                       </div>
+                   </div>
+                   
+                   {Object.keys(infoMisure).map((chiave) => {
+                     const info = infoMisure[chiave as keyof typeof infoMisure];
+                     return (
+                       <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
+                         <div className="flex justify-between items-center mb-1">
+                           <label className="text-[10px] text-neutral-400 uppercase font-bold">{info.label}</label>
+                           <span className="text-[9px] text-neutral-600 font-mono">{info.unit}</span>
+                         </div>
+                         <div className="flex items-center gap-1">
+                           {/* @ts-ignore */}
+                           <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
+                         </div>
+                         <div className="absolute left-0 -bottom-8 bg-neutral-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 w-[150%] pointer-events-none shadow-xl border border-neutral-700">
+                           {info.desc}
+                         </div>
+                       </div>
+                     );
+                   })}
+                 </div>
+                 <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-lg">Analizza Trend & Salva</button>
                </div>
-            </div>
+            ) : (
+               <div className="flex-1 overflow-y-auto space-y-3 pr-1" style={{ maxHeight: "350px" }}>
+                 {storicoMisure.length === 0 ? (
+                    <p className="text-[10px] text-neutral-500 italic text-center p-4">Nessun dato salvato nello storico.</p>
+                 ) : (
+                    storicoMisure.map(mis => {
+                       const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
+                       return (
+                         <div key={mis.id} className="bg-neutral-950 p-3 rounded-lg border border-neutral-800 flex flex-col gap-2">
+                            <div className="flex justify-between items-center border-b border-neutral-800 pb-2">
+                               <p className="text-[11px] font-bold text-orange-400">{new Date(mis.data).toLocaleDateString('it-IT')} - {new Date(mis.data).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</p>
+                               <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-500 hover:bg-red-500 hover:text-white transition-all rounded p-1 text-[10px] font-bold uppercase" title="Elimina Misurazione">🗑️ Elimina</button>
+                            </div>
+                            <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] text-neutral-300 font-mono">
+                               <p>Peso: <strong className="text-white">{mis.peso || '-'} kg</strong></p>
+                               <p>Petto: <strong className="text-white">{circ.petto || '-'} cm</strong></p>
+                               <p>Spalle: <strong className="text-white">{circ.spalle || '-'} cm</strong></p>
+                               <p>Braccia: <strong className="text-white">{circ.braccia || '-'} cm</strong></p>
+                               <p>Gambe: <strong className="text-white">{circ.gambe || '-'} cm</strong></p>
+                               <p>Glutei: <strong className="text-white">{circ.glutei || '-'} cm</strong></p>
+                            </div>
+                         </div>
+                       );
+                    })
+                 )}
+               </div>
+            )}
           </section>
 
           <section className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-lg flex flex-col h-[400px] order-2">
@@ -951,7 +963,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
     </main>
   );
 }
