@@ -8,7 +8,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO (Saldato)
+// 1. DATABASE ALLENAMENTO & SVG (Saldato)
 // ==========================================
 const dbAllenamento = {
   Spinta: {
@@ -102,7 +102,7 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
 };
 
 // ==========================================
-// 2. DATABASE ALIMENTAZIONE
+// 2. DATABASE ALIMENTAZIONE CON MOTORE DI CALCOLO GRAMMI
 // ==========================================
 const dbAlimenti = {
   Pasto1: [
@@ -209,7 +209,6 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // --- STATI STORICO TELEMETRIA ---
-  const [modalStoricoMisure, setModalStoricoMisure] = useState(false);
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
 
   useEffect(() => {
@@ -224,17 +223,20 @@ export default function Home() {
   }, []);
 
   async function caricaDatiUtente() {
-    const { data } = await supabase.from("check_utente").select("*").eq("nome_utente", utente).order("data", { ascending: false });
+    const { data, error } = await supabase.from("check_utente").select("*").eq("nome_utente", utente).order("data", { ascending: false });
+    if (error) {
+      console.error("Errore recupero storico:", error);
+      return;
+    }
     if (data) {
-      // Filtriamo solo i record che contengono effettivamente misurazioni
-      const validRecords = data.filter(d => d.peso || (d.circonferenze && d.circonferenze.petto));
+      const validRecords = data.filter(d => d.peso || (d.circonferenze && typeof d.circonferenze === 'object' && Object.keys(d.circonferenze).length > 0));
       setStoricoMisure(validRecords);
 
       const validRec = validRecords[0];
       if (validRec) {
         setEta(validRec.eta || "");
         setAltezza(validRec.altezza || "");
-        const circ = validRec.circonferenze || {};
+        const circ = typeof validRec.circonferenze === 'string' ? JSON.parse(validRec.circonferenze) : (validRec.circonferenze || {});
         setBiometria({ 
           peso: validRec.peso?.toString() || circ.peso?.toString() || '', 
           petto: circ.petto || '', spalle: circ.spalle || '', braccia: circ.braccia || '', 
@@ -299,15 +301,15 @@ export default function Home() {
       setListaAtleti(prev => [...prev, nuovo]);
       setUtente(nuovo);
       setIsNuovoUtente(false);
-      // Hack per registrare subito il nome, ma i campi veri e propri si salveranno solo al primo check fisico
-      await supabase.from("check_utente").insert([{ nome_utente: nuovo, data: new Date() }]);
+      const { error } = await supabase.from("check_utente").insert([{ nome_utente: nuovo, data: new Date().toISOString() }]);
+      if (error) alert("Errore connessione database.");
     }
   };
 
   const eliminaMisurazione = async (id: string) => {
     if(confirm("Vuoi eliminare definitivamente questa misurazione dallo storico?")) {
       await supabase.from("check_utente").delete().eq("id", id);
-      caricaDatiUtente(); // Ricarica tutto e aggiorna i campi di input
+      caricaDatiUtente();
     }
   };
 
@@ -341,7 +343,7 @@ export default function Home() {
     const nuovaSessione = { data: new Date().toLocaleDateString('it-IT'), oraId: Date.now(), giorno: giornoCalendario, scheda: schedaAttiva, carichi: sessioneCarichiStr };
     setStoricoSessioni([...storicoSessioni, nuovaSessione]);
     setCarichiAttuali({}); 
-    await supabase.from("storico_allenamenti").insert([{ nome_utente: utente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: sessioneCarichiStr, data: new Date() }]);
+    await supabase.from("storico_allenamenti").insert([{ nome_utente: utente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: sessioneCarichiStr, data: new Date().toISOString() }]);
     alert(`Sessione salvata nel cloud per ${utente}. Monitoraggio fatica registrato.`);
   };
 
@@ -359,37 +361,38 @@ export default function Home() {
       let alertMsg = "";
       if (Number(peso) > 80 && Number(braccia) < 38 && Number(glutei) > 95) {
          setMoltiplicatoreCarbo(4);
-         alertMsg = "⚠️ Composizione: Rilevato accumulo grasso addome/glutei. Carboidrati ridotti (4g/kg) per arginare l'adipe.";
+         alertMsg = "⚠️ Composizione: Rilevato accumulo grasso addome/glutei. Carboidrati ridotti (4g/kg).";
       } 
       else if (trendCarichi === "Stallo Rilevato" && Number(peso) < 78) {
          setMoltiplicatoreCarbo(6.5);
-         alertMsg = "🔥 Prestazioni: I carichi non salgono. Attivato Surplus Aggressivo (6.5g/kg CHO) per sbloccare la forza muscolare.";
+         alertMsg = "🔥 Prestazioni: Carichi bloccati. Surplus Aggressivo (6.5g/kg CHO) per sbloccare la forza.";
       } 
       else {
          setMoltiplicatoreCarbo(5);
-         alertMsg = "✅ Analisi completata. Parametri in asse. Protocollo ipertrofico standard mantenuto (5g/kg CHO).";
+         alertMsg = "✅ Parametri in asse. Protocollo ipertrofico standard mantenuto (5g/kg CHO).";
       }
       setMessaggioDieta(alertMsg);
-      await supabase.from("check_utente").insert([{ nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date() }]);
-      alert(alertMsg);
-      caricaDatiUtente(); // Aggiorna lo storico
+
+      const payload = { nome_utente: utente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: biometria, data: new Date().toISOString() };
+      const { error } = await supabase.from("check_utente").insert([payload]);
+      
+      if (error) {
+        alert("Errore di salvataggio Database: controlla le impostazioni Supabase.\nDettaglio: " + error.message);
+      } else {
+        alert(alertMsg);
+        caricaDatiUtente(); 
+      }
     } else {
-      alert("Compila TUTTI i campi fisici per calcolare i macros in sicurezza.");
+      alert("Compila TUTTI i campi fisici per salvare e analizzare il trend.");
     }
   };
 
   const toggleCustomMeal = (cat: string) => {
-    setPastiCustom(prev => ({
-      ...prev,
-      [cat]: { ...prev[cat], attivo: !prev[cat].attivo }
-    }));
+    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: !prev[cat].attivo } }));
   };
 
   const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat', value: string) => {
-    setPastiCustom(prev => ({
-      ...prev,
-      [cat]: { ...prev[cat], [field]: value }
-    }));
+    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], [field]: value } }));
   };
 
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
@@ -416,9 +419,6 @@ export default function Home() {
 
   const calcolaTempoScheda = () => fastWorkout ? 45 : 75;
 
-  // ==========================================
-  // MOTORE DI COMPENSAZIONE METABOLICA ATTIVA
-  // ==========================================
   const pesoNum = Number(biometria.peso) || 80;
   const altezzaNum = Number(altezza) || 175;
   const etaNum = Number(eta) || 41;
@@ -466,11 +466,7 @@ export default function Home() {
   const finalMeals: Record<string, any> = {};
   ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
      if(pastiCustom[cat].attivo) {
-        finalMeals[cat] = {
-           cho: Number(pastiCustom[cat].cho) || 0,
-           pro: Number(pastiCustom[cat].pro) || 0,
-           fat: Number(pastiCustom[cat].fat) || 0
-        };
+        finalMeals[cat] = { cho: Number(pastiCustom[cat].cho) || 0, pro: Number(pastiCustom[cat].pro) || 0, fat: Number(pastiCustom[cat].fat) || 0 };
      } else if(originalMeals[cat]) {
         finalMeals[cat] = {
            cho: sumNonCustomOrigCho > 0 ? Math.round(remainingCho * (originalMeals[cat].cho / sumNonCustomOrigCho)) : 0,
@@ -520,12 +516,72 @@ export default function Home() {
         </div>
       </header>
 
-      {/* --- GRIGLIA INTELLIGENTE RESPONSIVE --- */}
+      {/* --- GRIGLIA INTELLIGENTE RESPONSIVE CON 3 COLONNE DESKTOP --- */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
         
-        {/* COLONNA COACH IA (Mobile: Sotto Atleta, Desktop: Destra) */}
-        <div className="order-1 lg:order-3 lg:col-span-3 space-y-6">
-          <section className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-lg flex flex-col h-[500px]">
+        {/* COLONNA SINISTRA (Telemetria -> Coach IA) */}
+        <div className="flex flex-col gap-6 lg:col-span-3 order-1 lg:order-1">
+          
+          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg order-1">
+            <h2 className="text-lg font-bold mb-4 border-b border-neutral-700 pb-2 text-white">Telemetria Fisica (DB)</h2>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800 col-span-2 flex gap-2">
+                    <div className="flex-1">
+                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
+                        <input type="number" value={eta} onChange={(e) => setEta(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
+                    </div>
+                    <div className="flex-1 border-l border-neutral-800 pl-2">
+                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza (cm)</label>
+                        <input type="number" value={altezza} onChange={(e) => setAltezza(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
+                    </div>
+                </div>
+                
+                {Object.keys(infoMisure).map((chiave) => {
+                  const info = infoMisure[chiave as keyof typeof infoMisure];
+                  return (
+                    <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="text-[10px] text-neutral-400 uppercase font-bold">{info.label}</label>
+                        <span className="text-[9px] text-neutral-600 font-mono">{info.unit}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {/* @ts-ignore */}
+                        <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
+                      </div>
+                      
+                      <div className="absolute left-0 -bottom-8 bg-neutral-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 w-[150%] pointer-events-none shadow-xl border border-neutral-700">
+                        {info.desc}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-lg">Analizza Trend & Salva</button>
+            </div>
+
+            {/* STORICO MISURE INTEGRATO INLINE */}
+            <div className="mt-5 pt-4 border-t border-neutral-700">
+               <h3 className="text-[10px] text-neutral-400 uppercase font-bold mb-3 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>Storico Misurazioni Salvate</h3>
+               <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
+                  {storicoMisure.length === 0 ? (
+                    <p className="text-[10px] text-neutral-500 italic">Nessun dato salvato.</p>
+                  ) : (
+                    storicoMisure.map(mis => (
+                       <div key={mis.id} className="flex justify-between items-center bg-neutral-950 p-2 rounded border border-neutral-800">
+                          <div>
+                             <p className="text-[9px] font-bold text-orange-400">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
+                             <p className="text-[9px] text-neutral-400 font-mono mt-0.5">Peso: <strong className="text-white">{mis.peso}kg</strong> | Braccia: {typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze).braccia : mis.circonferenze?.braccia || '-'}cm</p>
+                          </div>
+                          <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-500 hover:bg-red-500 hover:text-white transition-all rounded p-1" title="Elimina Misurazione">🗑️</button>
+                       </div>
+                    ))
+                  )}
+               </div>
+            </div>
+          </section>
+
+          <section className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl shadow-lg flex flex-col h-[400px] order-2">
             <h2 className="text-base font-bold text-white border-b border-neutral-700 pb-2 mb-2 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
               Coach IA (Gemini)
@@ -560,11 +616,13 @@ export default function Home() {
               <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-orange-600 hover:bg-orange-500 text-white font-bold px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50">Invia</button>
             </div>
           </section>
+
         </div>
 
-        {/* COLONNA SINISTRA (Mobile: Sotto Coach, Desktop: Sinistra) */}
-        <div className="order-2 lg:order-1 lg:col-span-4 space-y-6">
-          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
+        {/* COLONNA CENTRALE (Gestione Tempo -> Timeline Nutrizionale) */}
+        <div className="flex flex-col gap-6 lg:col-span-4 order-2 lg:order-2">
+          
+          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg order-3 lg:order-1">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
               <h2 className="text-lg font-bold text-white">Gestione Tempo (Incastro Turni)</h2>
               <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-neutral-950 text-xs text-orange-500 p-2 rounded border border-neutral-700 outline-none focus:border-orange-500">
@@ -600,48 +658,7 @@ export default function Home() {
             </div>
           </section>
 
-          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
-            <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
-              <h2 className="text-lg font-bold text-white">Telemetria Fisica (DB)</h2>
-              <button onClick={() => setModalStoricoMisure(true)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Storico Misure</button>
-            </div>
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-neutral-950 p-2 rounded-lg border border-neutral-800 col-span-2 flex gap-2">
-                    <div className="flex-1">
-                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Età</label>
-                        <input type="number" value={eta} onChange={(e) => setEta(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
-                    </div>
-                    <div className="flex-1 border-l border-neutral-800 pl-2">
-                        <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-1">Altezza (cm)</label>
-                        <input type="number" value={altezza} onChange={(e) => setAltezza(Number(e.target.value))} className="w-full bg-transparent text-sm font-bold text-white outline-none" />
-                    </div>
-                </div>
-                
-                {Object.keys(infoMisure).map((chiave) => {
-                  const info = infoMisure[chiave as keyof typeof infoMisure];
-                  return (
-                    <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-[10px] text-neutral-400 uppercase font-bold">{info.label}</label>
-                        <span className="text-[9px] text-neutral-600 font-mono">{info.unit}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {/* @ts-ignore */}
-                        <input type="number" value={biometria[chiave]} onChange={(e) => aggiornaBiometria(chiave, e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
-                      </div>
-                      <div className="absolute left-0 -bottom-8 bg-neutral-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 w-[150%] pointer-events-none shadow-xl border border-neutral-700">
-                        {info.desc}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] active:scale-95 transition-all shadow-lg">Analizza Trend & Salva</button>
-            </div>
-          </section>
-
-          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg">
+          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg order-4 lg:order-2">
             <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
@@ -650,8 +667,8 @@ export default function Home() {
                 </span>
               </div>
               <div className="flex gap-2">
-                <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded shadow-inner" title="Metabolismo Basale Stimato">BMR: {bmr} Kcal</span>
-                <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded shadow-inner" title="Dispendio Totale (Lavoro + Gym)">TDEE: {tdee} Kcal</span>
+                <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded shadow-inner" title="Metabolismo Basale">BMR: {bmr} Kcal</span>
+                <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded shadow-inner" title="Dispendio Totale">TDEE: {tdee} Kcal</span>
                 <span className="text-[9px] bg-orange-950 border border-orange-900 text-orange-400 font-bold px-2 py-1 rounded flex-1 text-center shadow-inner" title="Calorie complessive attuali">INTAKE: {actualIntakeKcal} Kcal</span>
               </div>
             </div>
@@ -727,160 +744,163 @@ export default function Home() {
               })}
             </div>
           </section>
+
         </div>
 
-        {/* COLONNA CENTRALE (Mobile: In fondo, Desktop: Centro) */}
-        <section className="order-3 lg:order-2 lg:col-span-5 bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
-          <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
-            <h2 className="text-lg font-bold text-white">Allenamento Modulabile</h2>
-            <button onClick={() => setVistaStorico(!vistaStorico)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-md ${vistaStorico ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300'}`}>
-              {vistaStorico ? 'Torna al Workout' : 'Storico Sessioni'}
-            </button>
-          </div>
-
-          {!vistaStorico ? (
-            <>
-              <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800 mb-4 flex justify-between items-center">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Tempo Stimato Sessione</span>
-                  <p className="text-sm font-bold text-white flex items-center gap-2">
-                    ⏱️ ~{calcolaTempoScheda()} minuti <span className="text-[9px] text-neutral-400 font-normal">(Incluso recupero)</span>
-                  </p>
-                </div>
-                <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-lg transition-all ${fastWorkout ? 'bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.5)]' : 'bg-neutral-800 text-neutral-400 border border-neutral-700'}`}>
-                  {fastWorkout ? '⚡ Fast Mode Attiva' : 'Taglia Tempi'}
-                </button>
-              </div>
-
-              <div className="mb-4">
-                <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">Giorno della settimana:</p>
-                <div className="flex flex-wrap gap-2">
-                  {giorniSettimana.map((gg) => (
-                    <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 min-w-[60px] ${giornoCalendario === gg ? 'bg-neutral-700 text-white border-b-2 border-white' : 'bg-neutral-950 text-neutral-500 border border-neutral-800 hover:bg-neutral-900 transition-all'}`}>
-                      {gg}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <div className="flex gap-2">
-                  {['Spinta', 'Tirata', 'Gambe'].map((sch) => (
-                    <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 ${schedaAttiva === sch ? 'bg-orange-600 text-white shadow-lg' : 'bg-neutral-950 text-neutral-500 border border-neutral-800'}`}>
-                      {sch.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-[10px] font-bold text-orange-500 uppercase tracking-wider shadow-inner">
-                  Focus: {dbAllenamento[schedaAttiva].focus}
-                </span>
-              </div>
-
-              <div className="flex-1 overflow-y-auto pr-2 space-y-4" style={{ maxHeight: "50vh" }}>
-                {dbAllenamento[schedaAttiva].esercizi.map((es) => {
-                  const nomeVis = eserciziModificati[es.id] || es.nome;
-                  const ultimoCarico = getUltimoCarico(es.id);
-                  const numeroSetTarget = getNumeroSet(es.fase);
-                  
-                  const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
-                  const animType = mapEsercizioToAnimazione[es.id] || "squat_barbell"; 
-                  
-                  let repMostrate = es.rep;
-                  if (fastWorkout) {
-                     repMostrate = repMostrate
-                       .replace("4-5 serie", "3 serie")
-                       .replace("3-4 serie", "2 serie")
-                       .replace("Rec: 2'", "Rec: 1.5'")
-                       .replace("Rec: 1.5'", "Rec: 45\"");
-                  }
-
-                  return (
-                    <div key={es.id} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 relative group overflow-hidden">
-                      <div className={`absolute top-0 left-0 w-1 h-full`} style={{backgroundColor: phaseColor}}></div>
-                      <div className="pl-2">
-                        <div className="flex justify-between items-start">
-                          <span className="text-[10px] uppercase font-black tracking-widest" style={{color: phaseColor}}>{es.fase}</span>
-                          <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-400">Swap</button>
-                        </div>
-                        
-                        <div className="flex items-center gap-4 mt-2">
-                          <SvgVisualizer type={animType} color={phaseColor} />
-                          
-                          <div className="flex-1">
-                            <h3 className="font-bold text-sm text-white break-words">{nomeVis}</h3>
-                            <p className="text-[11px] text-neutral-400 italic break-words mt-1">{es.dettaglio}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-3 flex items-center gap-2">
-                          <p className={`text-[10px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>
-                            {repMostrate}
-                          </p>
-                        </div>
-                        
-                        <div className="mt-4 pt-3 border-t border-neutral-800">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-[9px] uppercase font-bold text-neutral-500">Target Ultima: <span className="text-orange-400">{ultimoCarico ? `${ultimoCarico} kg` : '-'}</span></span>
-                            <span className="text-[9px] uppercase font-bold text-neutral-500">Curva di Fatica (kg)</span>
-                          </div>
-                          
-                          <div className="flex gap-2">
-                            {Array.from({ length: numeroSetTarget }).map((_, i) => (
-                              <div key={i} className="flex-1">
-                                <label className="text-[8px] text-neutral-500 uppercase block text-center mb-1">Set {i+1}</label>
-                                <input 
-                                  type="number" 
-                                  value={carichiAttuali[es.id]?.[i] || ''}
-                                  onChange={(e) => updateCaricoSet(es.id, i, e.target.value)}
-                                  className="w-full bg-neutral-900 border border-orange-500/30 p-2 rounded text-xs text-center text-white font-bold outline-none focus:border-orange-500 transition-colors" 
-                                  placeholder="-"
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              
-              <div className="mt-4 pt-4 border-t border-neutral-700">
-                <button onClick={salvaSessione} className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold uppercase tracking-widest text-sm rounded-lg active:scale-95 transition-all">
-                  Concludi e Salva Database
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="flex-1 overflow-y-auto space-y-4">
-              {storicoSessioni.length === 0 ? (
-                <div className="text-center p-10 text-neutral-500 border border-dashed border-neutral-800 rounded-xl">Nessuna sessione.</div>
-              ) : (
-                [...storicoSessioni].reverse().map((sess) => (
-                  <div key={sess.oraId} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800">
-                    <div className="flex justify-between items-center mb-3 border-b border-neutral-800 pb-2">
-                      <div>
-                        <span className="font-bold text-orange-500 block">{sess.giorno} - Scheda {sess.scheda}</span>
-                        <span className="text-[10px] text-neutral-400 font-mono">{sess.data}</span>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-xs">
-                      {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
-                        <div key={idEs} className="bg-neutral-900 p-2 rounded flex justify-between items-center gap-2">
-                          <span className="text-neutral-400 truncate flex-1">{eserciziModificati[idEs] || Object.values(dbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                          <span className="font-bold text-white whitespace-nowrap bg-neutral-950 px-2 py-1 rounded border border-neutral-800">{pesoStr} kg</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
+        {/* COLONNA DESTRA (Allenamento Modulabile) */}
+        <div className="flex flex-col gap-6 lg:col-span-5 order-3 lg:order-3">
+          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col order-5 lg:order-1">
+            <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
+              <h2 className="text-lg font-bold text-white">Allenamento Modulabile</h2>
+              <button onClick={() => setVistaStorico(!vistaStorico)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-md ${vistaStorico ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300'}`}>
+                {vistaStorico ? 'Torna al Workout' : 'Storico Sessioni'}
+              </button>
             </div>
-          )}
-        </section>
+
+            {!vistaStorico ? (
+              <>
+                <div className="bg-neutral-950 p-3 rounded-lg border border-neutral-800 mb-4 flex justify-between items-center">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Tempo Stimato Sessione</span>
+                    <p className="text-sm font-bold text-white flex items-center gap-2">
+                      ⏱️ ~{calcolaTempoScheda()} minuti <span className="text-[9px] text-neutral-400 font-normal">(Incluso recupero)</span>
+                    </p>
+                  </div>
+                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-lg transition-all ${fastWorkout ? 'bg-red-600 text-white shadow-[0_0_10px_rgba(220,38,38,0.5)]' : 'bg-neutral-800 text-neutral-400 border border-neutral-700'}`}>
+                    {fastWorkout ? '⚡ Fast Mode Attiva' : 'Taglia Tempi'}
+                  </button>
+                </div>
+
+                <div className="mb-4">
+                  <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">Giorno della settimana:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {giorniSettimana.map((gg) => (
+                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 min-w-[60px] ${giornoCalendario === gg ? 'bg-neutral-700 text-white border-b-2 border-white' : 'bg-neutral-950 text-neutral-500 border border-neutral-800 hover:bg-neutral-900 transition-all'}`}>
+                        {gg}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex gap-2">
+                    {['Spinta', 'Tirata', 'Gambe'].map((sch) => (
+                      <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 ${schedaAttiva === sch ? 'bg-orange-600 text-white shadow-lg' : 'bg-neutral-950 text-neutral-500 border border-neutral-800'}`}>
+                        {sch.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <span className="inline-block px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-lg text-[10px] font-bold text-orange-500 uppercase tracking-wider shadow-inner">
+                    Focus: {dbAllenamento[schedaAttiva].focus}
+                  </span>
+                </div>
+
+                <div className="flex-1 overflow-y-auto pr-2 space-y-4" style={{ maxHeight: "50vh" }}>
+                  {dbAllenamento[schedaAttiva].esercizi.map((es) => {
+                    const nomeVis = eserciziModificati[es.id] || es.nome;
+                    const ultimoCarico = getUltimoCarico(es.id);
+                    const numeroSetTarget = getNumeroSet(es.fase);
+                    
+                    const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
+                    const animType = mapEsercizioToAnimazione[es.id] || "squat_barbell"; 
+                    
+                    let repMostrate = es.rep;
+                    if (fastWorkout) {
+                       repMostrate = repMostrate
+                         .replace("4-5 serie", "3 serie")
+                         .replace("3-4 serie", "2 serie")
+                         .replace("Rec: 2'", "Rec: 1.5'")
+                         .replace("Rec: 1.5'", "Rec: 45\"");
+                    }
+
+                    return (
+                      <div key={es.id} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 relative group overflow-hidden">
+                        <div className={`absolute top-0 left-0 w-1 h-full`} style={{backgroundColor: phaseColor}}></div>
+                        <div className="pl-2">
+                          <div className="flex justify-between items-start">
+                            <span className="text-[10px] uppercase font-black tracking-widest" style={{color: phaseColor}}>{es.fase}</span>
+                            <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-400">Swap</button>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 mt-2">
+                            <SvgVisualizer type={animType} color={phaseColor} />
+                            
+                            <div className="flex-1">
+                              <h3 className="font-bold text-sm text-white break-words">{nomeVis}</h3>
+                              <p className="text-[11px] text-neutral-400 italic break-words mt-1">{es.dettaglio}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-3 flex items-center gap-2">
+                            <p className={`text-[10px] font-bold px-2 py-1 rounded border w-fit ${fastWorkout ? 'bg-red-950 text-red-400 border-red-900' : 'bg-neutral-900 text-neutral-300 border-neutral-700'}`}>
+                              {repMostrate}
+                            </p>
+                          </div>
+                          
+                          <div className="mt-4 pt-3 border-t border-neutral-800">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-[9px] uppercase font-bold text-neutral-500">Target Ultima: <span className="text-orange-400">{ultimoCarico ? `${ultimoCarico} kg` : '-'}</span></span>
+                              <span className="text-[9px] uppercase font-bold text-neutral-500">Curva di Fatica (kg)</span>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              {Array.from({ length: numeroSetTarget }).map((_, i) => (
+                                <div key={i} className="flex-1">
+                                  <label className="text-[8px] text-neutral-500 uppercase block text-center mb-1">Set {i+1}</label>
+                                  <input 
+                                    type="number" 
+                                    value={carichiAttuali[es.id]?.[i] || ''}
+                                    onChange={(e) => updateCaricoSet(es.id, i, e.target.value)}
+                                    className="w-full bg-neutral-900 border border-orange-500/30 p-2 rounded text-xs text-center text-white font-bold outline-none focus:border-orange-500 transition-colors" 
+                                    placeholder="-"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-neutral-700">
+                  <button onClick={salvaSessione} className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold uppercase tracking-widest text-sm rounded-lg active:scale-95 transition-all">
+                    Concludi e Salva Database
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 overflow-y-auto space-y-4">
+                {storicoSessioni.length === 0 ? (
+                  <div className="text-center p-10 text-neutral-500 border border-dashed border-neutral-800 rounded-xl">Nessuna sessione.</div>
+                ) : (
+                  [...storicoSessioni].reverse().map((sess) => (
+                    <div key={sess.oraId} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800">
+                      <div className="flex justify-between items-center mb-3 border-b border-neutral-800 pb-2">
+                        <div>
+                          <span className="font-bold text-orange-500 block">{sess.giorno} - Scheda {sess.scheda}</span>
+                          <span className="text-[10px] text-neutral-400 font-mono">{sess.data}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2 text-xs">
+                        {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
+                          <div key={idEs} className="bg-neutral-900 p-2 rounded flex justify-between items-center gap-2">
+                            <span className="text-neutral-400 truncate flex-1">{eserciziModificati[idEs] || Object.values(dbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
+                            <span className="font-bold text-white whitespace-nowrap bg-neutral-950 px-2 py-1 rounded border border-neutral-800">{pesoStr} kg</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </section>
+        </div>
 
       </div>
 
@@ -927,33 +947,6 @@ export default function Home() {
                   </button>
                  );
               })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* --- MODALE STORICO MISURE --- */}
-      {modalStoricoMisure && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center mb-4 border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-lg text-white">Storico Misurazioni ({utente})</h3>
-              <button onClick={() => setModalStoricoMisure(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
-            </div>
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-              {storicoMisure.length === 0 ? (
-                <p className="text-sm text-neutral-400 italic">Nessuna misurazione salvata in precedenza.</p>
-              ) : (
-                storicoMisure.map((mis, i) => (
-                  <div key={mis.id || i} className="flex justify-between items-center bg-neutral-950 border border-neutral-800 p-3 rounded-lg">
-                    <div>
-                      <p className="text-xs font-bold text-orange-400">{new Date(mis.data).toLocaleDateString('it-IT')} - {new Date(mis.data).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</p>
-                      <p className="text-[10px] text-neutral-400 mt-1">Peso: <strong className="text-white">{mis.peso}kg</strong> | Braccia: {mis.circonferenze?.braccia || '-'}cm | Gambe: {mis.circonferenze?.gambe || '-'}cm</p>
-                    </div>
-                    <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-500 hover:text-red-400 font-bold p-2 transition-all">🗑️</button>
-                  </div>
-                ))
-              )}
             </div>
           </div>
         </div>
