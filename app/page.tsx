@@ -80,7 +80,6 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
       <svg viewBox="0 0 50 50" className="w-14 h-14">
         {type === "bench_press_flat" && ( <> <line x1="5" y1="35" x2="45" y2="35" {...benchLine} /> <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" /> <line x1="38" y1="35" x2="38" y2="45" {...benchLine} strokeWidth="2" /> <g className="frame-a"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 26 26 L 23 20" {...body} /> <line x1="18" y1="20" x2="28" y2="20" {...gear} /> <rect x="17" y="14" width="2" height="12" {...weightFill} /> <rect x="27" y="14" width="2" height="12" {...weightFill} /> </g> <g className="frame-b"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 23 10" {...body} /> <line x1="18" y1="10" x2="28" y2="10" {...gear} /> <rect x="17" y="4" width="2" height="12" {...weightFill} /> <rect x="27" y="4" width="2" height="12" {...weightFill} /> </g> </> )}
         {type === "squat_barbell" && ( <> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> <path d="M 25 15 L 29 19 L 25 13" {...body} /> <line x1="18" y1="13" x2="32" y2="13" {...gear} /> <circle cx="25" cy="13" r="5" {...weightFill} fill="none" stroke="#e5e5e5"/> </g> <g className="frame-b"> <circle cx="32" cy="24" r="3.5" {...head} /> <path d="M 32 28 L 20 38 L 26 48 M 20 38 L 16 48" {...body} /> <path d="M 32 29 L 36 33 L 32 27" {...body} /> <line x1="25" y1="27" x2="39" y2="27" {...gear} /> <circle cx="32" cy="27" r="5" {...weightFill} fill="none" stroke="#e5e5e5"/> </g> </> )}
-        {/* Rendering standard ridotto visivamente per chiarezza, ripristina gli altri case se necessari all'app finale, ma il core SVG funzionerà sempre in fallback */}
         {type !== "bench_press_flat" && type !== "squat_barbell" && ( <> <g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35 L 20 45 M 25 35 L 30 45" {...body} /> <path d="M 25 21 L 15 25 M 25 21 L 35 25" {...body} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35 L 20 45 M 25 35 L 30 45" {...body} /> <path d="M 25 21 L 15 15 M 25 21 L 35 15" {...body} /> </g> </> )}
       </svg>
     </div>
@@ -144,7 +143,7 @@ const SvgVitruvianHUD = ({ biometria, storico }: { biometria: any, storico: any[
 };
 
 // ==========================================
-// DATABASE ALIMENTAZIONE
+// 2. DATABASE ALIMENTAZIONE COMPLETO
 // ==========================================
 const dbAlimenti = {
   Pasto1: [
@@ -228,7 +227,7 @@ export default function Home() {
   const [fastWorkout, setFastWorkout] = useState(false);
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
   const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string[]>>({});
-  const [storicoSessioni, setStoricoSessioni] = useState<any[]>([]);
+  const [storicoSessioni, setStoricoSessioni] = useState<Array<{ data: string, giorno: string, scheda: string, carichi: Record<string, string>, oraId: number }>>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
@@ -611,6 +610,7 @@ export default function Home() {
           <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <div className="bg-neutral-900 border border-neutral-700 rounded-xl w-full max-w-lg shadow-2xl p-6">
                <h3 className="font-black text-xl text-orange-500 uppercase mb-4 border-b border-neutral-800 pb-2">Nuova Profilazione</h3>
+               
                {stepWizard === 1 && (
                  <div className="space-y-4">
                    <input type="text" placeholder="Nome Atleta" value={datiWizard.nome} onChange={e=>setDatiWizard({...datiWizard, nome: e.target.value})} className="w-full bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
@@ -622,6 +622,7 @@ export default function Home() {
                    <button onClick={()=>setStepWizard(2)} className="w-full bg-orange-600 text-white p-2 rounded font-bold uppercase">Avanti</button>
                  </div>
                )}
+
                {stepWizard === 2 && (
                  <div className="space-y-4">
                    <select value={datiWizard.stileVita} onChange={e=>setDatiWizard({...datiWizard, stileVita: e.target.value})} className="w-full bg-neutral-950 text-white p-2 border border-neutral-700 rounded text-xs">
@@ -632,6 +633,7 @@ export default function Home() {
                    <select value={datiWizard.obiettivo} onChange={e=>setDatiWizard({...datiWizard, obiettivo: e.target.value})} className="w-full bg-neutral-950 text-white p-2 border border-neutral-700 rounded text-xs">
                      <option value="Massa">Obiettivo: Massa / Ipertrofia</option>
                      <option value="Shred">Obiettivo: Dimagrimento (Shred)</option>
+                     <option value="Ricomposizione">Obiettivo: Mantenimento</option>
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded">
                      <label className="text-[10px] text-orange-400 block mb-1">📸 Foto Obiettivo Fisico (Opzionale)</label>
@@ -640,6 +642,7 @@ export default function Home() {
                    <button onClick={analizzaObiettivoWizard} disabled={loadingWizard} className="w-full bg-blue-600 text-white p-2 rounded font-bold uppercase disabled:opacity-50">{loadingWizard ? 'Analisi in corso...' : 'Calcola Profilo IA'}</button>
                  </div>
                )}
+
                {stepWizard === 3 && (
                  <div className="space-y-4">
                    <div className="bg-neutral-950 p-4 border border-neutral-800 rounded text-xs text-neutral-300">{rispostaWizard}</div>
@@ -883,7 +886,7 @@ export default function Home() {
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
         <div className="flex flex-col gap-6 lg:col-span-5">
-          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
+          <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col h-[85vh]">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
               <h2 className="text-lg font-bold text-white">Allenamento {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
               <div className="flex gap-1">
@@ -923,7 +926,7 @@ export default function Home() {
                   ))}
                 </div>
 
-                <div className="flex-1 overflow-y-auto pr-2 space-y-4 max-h-[50vh]">
+                <div className="flex-1 overflow-y-auto pr-2 space-y-4">
                   {/* @ts-ignore */}
                   {dbDinamico[schedaAttiva].esercizi.map((es: any) => {
                     const nomeVis = eserciziModificati[es.id] || es.nome;
@@ -965,7 +968,7 @@ export default function Home() {
                     );
                   })}
                 </div>
-                <button onClick={salvaSessione} className="w-full mt-4 py-3 bg-orange-600 text-white font-bold uppercase tracking-widest text-sm rounded-lg shadow-lg">Salva Database</button>
+                <button onClick={salvaSessione} className="w-full mt-4 py-3 bg-orange-600 text-white font-bold uppercase tracking-widest text-sm rounded-lg shadow-lg shrink-0">Salva Database</button>
               </>
             ) : vistaGraficiCarichi ? (
               <div className="flex-1 overflow-y-auto space-y-4">
@@ -979,7 +982,7 @@ export default function Home() {
               </div>
             ) : (
               <div className="flex-1 overflow-y-auto space-y-4">
-                {storicoSessioni.length === 0 ? <div className="text-center p-10 text-neutral-500 border border-dashed border-neutral-800 rounded-xl">Nessuna sessione.</div> : (
+                {storicoSessioni.length === 0 ? <div className="text-center p-10 text-neutral-500 border border-dashed border-neutral-800 rounded-xl">Nessuna sessione salvata.</div> : (
                   [...storicoSessioni].reverse().map((sess) => (
                     <div key={sess.oraId} className="bg-neutral-950 p-4 rounded-xl border border-neutral-800">
                       <span className="font-bold text-orange-500 block">{sess.giorno} - Scheda {sess.scheda}</span>
