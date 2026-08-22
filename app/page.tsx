@@ -185,21 +185,23 @@ export default function Home() {
   const [modalEsercizio, setModalEsercizio] = useState(false);
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
 
+  // --- STATI NUTRIZIONE E SGARRO CON "NOME" INCLUSO ---
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
   const [biometria, setBiometria] = useState({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
   const [pastiSelezionati, setPastiSelezionati] = useState({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
-  const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string}>>({
-    Pasto1: { attivo: false, cho: '', pro: '', fat: '' },
-    Pasto2: { attivo: false, cho: '', pro: '', fat: '' },
-    Pasto3: { attivo: false, cho: '', pro: '', fat: '' },
-    PostWorkout: { attivo: false, cho: '', pro: '', fat: '' },
+  const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({
+    Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
+    Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
+    Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
+    PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
   });
   
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
 
-  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Chiedimi info sugli esercizi, logiche di allenamento, o mandami la foto di un integratore/scheda da analizzare.' }]);
+  // --- STATI CHAT E IA ---
+  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Mandami la foto di un pasto o scrivimi cosa hai mangiato per stimare i macro e inserirli in automatico nel tuo piano!' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [fileAllegato, setFileAllegato] = useState<{data: string, mimeType: string, nome: string} | null>(null);
@@ -269,6 +271,9 @@ export default function Home() {
     reader.readAsDataURL(file);
   };
 
+  // ==========================================
+  // MAGIC PROMPT INJECTION E ANALISI CHAT
+  // ==========================================
   const inviaMessaggioIA = async () => {
     if (!inputChat.trim() && !fileAllegato) return;
     const msg = inputChat || "Analizza questo file allegato.";
@@ -280,14 +285,49 @@ export default function Home() {
     setIsTyping(true);
     
     try {
-      const contesto = `Utente: ${utente}, Peso: ${biometria.peso}kg, Scheda di oggi: ${schedaAttiva}, Turno: ${tipoTurno}, Allenamento: ${quandoTiAlleni}`;
-      const payload: any = { message: msg, context: contesto };
+      // INIEZIONE DEL COMANDO MAGIC_MACRO NEL CONTESTO DELL'IA
+      const contestoMagico = `
+      SEI IL COACH IA DEL PROTOCOLLO ANTI-SECCO PRO. Utente: ${utente}, Peso: ${biometria.peso}kg.
+      REGOLA D'ORO PER I PASTI FUORI PIANO: Se l'utente ti dice cosa ha mangiato (es. "Ho mangiato una pizza a pranzo" o manda una foto di un cibo) e ti chiede di calcolarlo/inserirlo, tu devi stimare i macronutrienti totali in grammi.
+      Inoltre, DEVI INSERIRE ALLA FINE DELLA TUA RISPOSTA questo esatto comando di sistema testuale per aggiornare l'app:
+      [MAGIC_MACRO | PASTO_TARGET | CHO | PRO | FAT | NOME_CIBO]
+      
+      Regole per PASTO_TARGET: usa "Pasto1" se è colazione, "Pasto2" se è pranzo, "Pasto3" se è cena/spuntino serale.
+      Esempio di comando esatto alla fine del testo:
+      [MAGIC_MACRO | Pasto2 | 110 | 35 | 25 | Pizza Margherita 300g]
+      `;
+      
+      const payload: any = { message: msg, context: contestoMagico };
       if (fileDaInviare) {
         payload.file = { data: fileDaInviare.data, mimeType: fileDaInviare.mimeType };
       }
+      
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
-      setChatLog(prev => [...prev, { role: 'ai', text: data.reply || "Errore nella risposta." }]);
+      
+      let responseText = data.reply || "Errore nella risposta.";
+
+      // ESTRAZIONE DEL COMANDO MAGICO CON REGEX
+      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([^\]]+)\]/i;
+      const match = responseText.match(magicRegex);
+      
+      if(match) {
+          const [fullString, pastoTarget, cho, pro, fat, nomeCibo] = match;
+          
+          // Rimuovo la stringa bruttina di sistema dalla risposta visibile
+          responseText = responseText.replace(fullString, '').trim();
+          
+          // AGGIORNO LO STATO DELL'APP AUTOMATICAMENTE
+          setPastiCustom(prev => ({
+              ...prev,
+              [pastoTarget]: { attivo: true, cho, pro, fat, nome: nomeCibo.trim() }
+          }));
+          
+          // Aggiungo un feedback visivo figo
+          responseText += `\n\n✨ **Magia eseguita!** Ho calcolato i macro e li ho inseriti in automatico nello sgarro del ${pastoTarget} come "${nomeCibo.trim()}". L'algoritmo ha appena ricalcolato il resto della giornata per farti rientrare nelle calorie!`;
+      }
+
+      setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
     } catch (error) {
       setChatLog(prev => [...prev, { role: 'ai', text: "Errore di connessione con i server Gemini." }]);
     }
@@ -390,7 +430,7 @@ export default function Home() {
     setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: !prev[cat].attivo } }));
   };
 
-  const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat', value: string) => {
+  const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat'|'nome', value: string) => {
     setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], [field]: value } }));
   };
 
@@ -515,7 +555,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* --- GRIGLIA INTELLIGENTE RESPONSIVE --- */}
+      {/* --- GRIGLIA INTELLIGENTE RESPONSIVE CON 3 COLONNE DESKTOP --- */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
         
         {/* COLONNA SINISTRA (Telemetria -> Coach IA) */}
@@ -724,6 +764,12 @@ export default function Home() {
                     {isCustom ? (
                        <div className="mt-2 bg-neutral-900 p-2 rounded border border-orange-500/50">
                          <p className="text-[10px] text-orange-400 mb-2 uppercase font-bold">Pasto Fuori Piano / Sgarro</p>
+                         
+                         {/* CAMPO NOME CIBO INIETTATO DALL'IA O MANUALE */}
+                         <div className="mb-2">
+                            <input type="text" placeholder="Nome pasto (es. Pizza Margherita)" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1.5 text-xs text-white rounded outline-none focus:border-orange-500" />
+                         </div>
+
                          <div className="flex gap-2">
                             <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase block">Carbo</span><input type="number" placeholder="g" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1 text-xs text-white rounded outline-none focus:border-orange-500" /></div>
                             <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase block">Pro</span><input type="number" placeholder="g" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className="w-full bg-neutral-950 border border-neutral-700 p-1 text-xs text-white rounded outline-none focus:border-orange-500" /></div>
