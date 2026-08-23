@@ -14,52 +14,52 @@ const baseDbAllenamento = {
   Spinta: {
     focus: "SPINTA (Petto, Spalle, Tricipiti)",
     esercizi: [
-      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca. Scendi fino a sfiorare il petto e spingi verso l'alto con forza.", 
+      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi controllando fino a sfiorare il petto e spingi verso l'alto con forza.", 
         alternative: [
-          { nome: "Chest Press Convergente", anim: "chest_machine", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio. Impugna le maniglie e spingi in avanti contraendo il petto." }, 
-          { nome: "Panca piana manubri", anim: "chest_dumbbell", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana, spingi verso l'alto chiudendo il movimento al centro." }
+          { nome: "Chest Press Convergente", anim: "chest_machine", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio. Impugna le maniglie e spingi in avanti contraendo il petto, poi torna indietro lentamente." }, 
+          { nome: "Panca piana manubri", anim: "chest_dumbbell", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana, spingi verso l'alto chiudendo il movimento al centro per massimizzare la contrazione." }
         ] 
       },
-      { id: "e3", nome: "Panca inclinata manubri", anim: "chest_dumbbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci clavicolari.", 
+      { id: "e3", nome: "Panca inclinata manubri", anim: "chest_dumbbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci alti (clavicolari) del petto.", 
         alternative: [
-          { nome: "Panca inclinata bilanciere", anim: "chest_barbell", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata. Scendi al livello della clavicola e spingi forte per il petto alto." }, 
+          { nome: "Panca inclinata bilanciere", anim: "chest_barbell", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata. Scendi al livello della clavicola e spingi forte per lo spessore del petto alto." }, 
           { nome: "Chest Press Inclinata", anim: "chest_machine", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata della pressa. Mantieni le spalle basse e il petto in fuori." }
         ] 
       },
-      { id: "e4", nome: "Chest press", anim: "chest_machine", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale. Controlla il movimento.", 
+      { id: "e4", nome: "Chest press / Multipower", anim: "chest_machine", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale. Controlla il movimento in ogni singolo centimetro.", 
         alternative: [
-          { nome: "Pectoral Machine", anim: "chest_flye_machine", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti e chiudi le braccia stringendo il petto al centro." }, 
-          { nome: "Croci cavi seduto", anim: "chest_flye_cable", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca. Chiudi le maniglie davanti al petto in tensione continua." }
+          { nome: "Pectoral Machine", anim: "chest_flye_machine", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti e chiudi le braccia stringendo il petto al centro. Ottimo per il pump." }, 
+          { nome: "Croci cavi seduto", anim: "chest_flye_cable", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca. Chiudi le maniglie davanti al petto mantenendo una tensione continua." }
         ] 
       },
-      { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti. Tira il petto al massimo e richiudi.", 
+      { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti. Tira il petto al massimo e poi richiudi.", 
         alternative: [
-          { nome: "Croci cavi piana", anim: "chest_flye_cable", note: "Tensione continua", dettaglio: "CAVI: Cavi bassi. Chiudi le braccia al centro, strizzando i pettorali a fine movimento." }, 
-          { nome: "Pec Deck", anim: "chest_flye_machine", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck a braccia tese per isolare il pettorale senza usare i tricipiti." }
+          { nome: "Croci cavi piana", anim: "chest_flye_cable", note: "Tensione continua", dettaglio: "CAVI: Cavi bassi o medi. Chiudi le braccia al centro, strizzando i pettorali a fine movimento senza punti morti." }, 
+          { nome: "Pec Deck (Fly)", anim: "chest_flye_machine", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck a braccia tese per isolare completamente il pettorale senza usare i tricipiti." }
         ] 
       },
       { id: "e18", nome: "Lento avanti manubri", anim: "shoulder_db", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Seduto a 90°. Parti con i manubri alle orecchie e spingi dritto sopra la testa.", 
         alternative: [
-          { nome: "Military Press", anim: "shoulder_barbell", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi, spingi dal petto alto fin sopra la testa." }, 
-          { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale vincolato per caricare in sicurezza." }
+          { nome: "Military Press", anim: "shoulder_barbell", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi, spingi dal petto alto fin sopra la testa, incastrando la testa in avanti alla fine." }, 
+          { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale vincolato. Eccellente per caricare in totale sicurezza." }
         ] 
       },
-      { id: "e20", nome: "Alzate laterali cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso per colpire il deltoide mediale.", 
+      { id: "e20", nome: "Alzate laterali ai cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso, tenendo il braccio in tensione continua sul deltoide mediale.", 
         alternative: [
-          { nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi, solleva lateralmente i manubri controllando la discesa." }, 
-          { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi bloccando le braccia. Nessuno slancio con la schiena." }
+          { nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi, solleva lateralmente i manubri controllando la discesa per non perdere il focus." }, 
+          { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi bloccando le braccia. Impossibile imbrogliare con slanci della schiena." }
         ] 
       },
-      { id: "e22", nome: "Panca stretta", anim: "chest_barbell", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa stretta. Gomiti incollati al busto e spingi esplodendo in alto.", 
+      { id: "e22", nome: "Panca stretta", anim: "chest_barbell", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa larghezza spalle. Tieni i gomiti incollati al busto e spingi esplodendo in alto.", 
         alternative: [
-          { nome: "French Press", anim: "tricep_barbell", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso, porta il bilanciere alla fronte flettendo i gomiti e distendi in alto." }, 
-          { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "LIBERO/ZAVORRA: Scendi piegando le braccia e tenendo il busto dritto, spingi sui tricipiti." }
+          { nome: "French Press", anim: "tricep_barbell", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso, porta il bilanciere verso la fronte flettendo i gomiti e distendi le braccia." }, 
+          { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "CORPO LIBERO/ZAVORRA: Scendi piegando le braccia e tenendo il busto dritto, spingi in alto sui tricipiti." }
         ] 
       },
-      { id: "e27", nome: "Push down corda", anim: "tricep_cable", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità verso l'esterno per strizzare i tricipiti.", 
+      { id: "e27", nome: "Push down corda", anim: "tricep_cable", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità verso l'esterno alla fine per strizzare i tricipiti.", 
         alternative: [
-          { nome: "Push down sbarra", anim: "tricep_cable", note: "Carico maggiore", dettaglio: "CAVI: Sbarra dritta. Spingi il carico in basso bloccando i gomiti lungo i fianchi." }, 
-          { nome: "Estensioni nuca", anim: "tricep_cable", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi, porta la corda dietro la testa e distendi verso l'alto." }
+          { nome: "Push down sbarra", anim: "tricep_cable", note: "Carico maggiore", dettaglio: "CAVI: Usa una sbarra dritta o a V. Spingi il carico verso il basso bloccando i gomiti lungo i fianchi." }, 
+          { nome: "Estensioni nuca", anim: "tricep_cable", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi, porta la corda dietro la testa e distendi le braccia verso l'alto per l'allungamento." }
         ] 
       }
     ]
@@ -67,40 +67,40 @@ const baseDbAllenamento = {
   Tirata: {
     focus: "TIRATA (Schiena, Bicipiti)",
     esercizi: [
-      { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il tuo corpo verso l'alto abbassando i gomiti.", 
+      { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il tuo corpo verso l'alto abbassando i gomiti verso il suolo.", 
         alternative: [
-          { nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono. Tira la sbarra verso il petto inarcando la schiena." }, 
-          { nome: "Lat Machine Triang.", anim: "back_pulldown", note: "Focus centrale", dettaglio: "MACCHINARIO: Triangolo presa stretta, tira verso il petto basso." }
+          { nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono. Tira la sbarra verso il petto inarcando leggermente la schiena." }, 
+          { nome: "Lat Machine Triang.", anim: "back_pulldown", note: "Focus centrale", dettaglio: "MACCHINARIO: Usa il triangolo a presa stretta, tira verso il petto basso per colpire la schiena in profondità." }
         ] 
       },
-      { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico, schiena piatta.", 
+      { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico, mantenendo la schiena piatta e compatta.", 
         alternative: [
-          { nome: "Rematore Manubrio", anim: "back_row_db", note: "Unilaterale", dettaglio: "MANUBRI: In appoggio su panca. Tira il manubrio portando il gomito dietro la schiena." }, 
-          { nome: "Rematore T-Bar", anim: "back_row_barbell", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira il peso verso il petto strizzando le scapole." }
+          { nome: "Rematore Manubrio", anim: "back_row_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: In appoggio su panca. Tira il manubrio verso il fianco portando il gomito ben dietro la schiena." }, 
+          { nome: "Rematore T-Bar", anim: "back_row_barbell", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira il peso verso il petto strizzando le scapole al massimo." }
         ] 
       },
-      { id: "e9", nome: "Pulley seduto", anim: "back_row_cable", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto, tira la maniglia verso l'addome basso (busto immobile).", 
+      { id: "e9", nome: "Pulley seduto", anim: "back_row_cable", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto, tira la maniglia verso l'addome basso mantenendo il busto quasi immobile.", 
         alternative: [
-          { nome: "Chest Supported", anim: "back_row_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Petto in appoggio. Tira le maniglie lavorando i dorsali." }, 
-          { nome: "Seal Row", anim: "back_row_barbell", note: "Puro isolamento", dettaglio: "BILANCIERE: Sdraiato prono su panca alta, tira il peso senza usare alcuno slancio." }
+          { nome: "Chest Supported", anim: "back_row_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Petto in appoggio. Tira le maniglie per lavorare i dorsali senza affaticare la zona lombare." }, 
+          { nome: "Seal Row", anim: "back_row_barbell", note: "Puro isolamento", dettaglio: "BILANCIERE/MANUBRI: Sdraiato prono su una panca alta, tira il peso senza poter usare alcuno slancio." }
         ] 
       },
-      { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: Cavo alto con sbarra. Spingi verso le cosce a braccia tese per isolare il dorso.", 
+      { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: In piedi, sbarra al cavo alto. Spingi verso le cosce a braccia quasi tese, isolando il dorso.", 
         alternative: [
-          { nome: "Pullover Macchina", anim: "back_pullover", note: "Tensione continua", dettaglio: "MACCHINARIO: Macchina specifica, flettendo le braccia sui cuscinetti." }, 
-          { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Di traverso su panca. Abbassa il manubrio dietro la testa." }
+          { nome: "Pullover Macchina", anim: "back_pullover", note: "Tensione continua", dettaglio: "MACCHINARIO: Macchina specifica, flettendo le braccia sui cuscinetti per un arco di movimento enorme." }, 
+          { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Disteso di traverso su panca. Abbassa il manubrio dietro la testa per allargare la gabbia toracica." }
         ] 
       },
-      { id: "e23", nome: "Curl bilanciere EZ", anim: "bicep_barbell", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE EZ: In piedi. Solleva verso le spalle senza muovere i gomiti.", 
+      { id: "e23", nome: "Curl bilanciere EZ", anim: "bicep_barbell", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE EZ: In piedi. Solleva verso le spalle senza muovere o slanciare i gomiti.", 
         alternative: [
-          { nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: Fletti un braccio alla volta ruotando il polso in salita." }, 
-          { nome: "Curl Cavo Basso", anim: "bicep_cable", note: "Tensione continua", dettaglio: "CAVI: Cavo basso con sbarra corta. Tensione bruciante continua." }
+          { nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: Fletti un braccio alla volta supinando (ruotando) il polso in salita verso l'esterno." }, 
+          { nome: "Curl Cavo Basso", anim: "bicep_cable", note: "Tensione continua", dettaglio: "CAVI: Al cavo basso con sbarra corta. Garantisce resistenza bruciante sia in salita che in discesa." }
         ] 
       },
-      { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso. Presa a martello per colpire anche il brachiale.", 
+      { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Usa una fune al cavo basso. Presa a martello per colpire a fondo anche il muscolo brachiale.", 
         alternative: [
-          { nome: "Curl Inclinata", anim: "bicep_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°, lascia cadere le braccia indietro e fletti." }, 
-          { nome: "Spider Curl", anim: "bicep_barbell", note: "Picco bicipite", dettaglio: "BILANCIERE: Petto in appoggio su panca inclinata, fletti verso le spalle." }
+          { nome: "Curl Inclinata", anim: "bicep_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°, lascia cadere le braccia indietro e fletti allungando il bicipite in modo estremo." }, 
+          { nome: "Spider Curl", anim: "bicep_barbell", note: "Picco del bicipite", dettaglio: "BILANCIERE/MANUBRI: Petto in appoggio su panca inclinata, braccia a penzoloni, fletti verso le spalle." }
         ] 
       }
     ]
@@ -108,46 +108,46 @@ const baseDbAllenamento = {
   Gambe: {
     focus: "GAMBE E POLPACCI",
     esercizi: [
-      { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo e sali potente dai talloni.", 
+      { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo spingendo le ginocchia in fuori e sali potente dai talloni.", 
         alternative: [
-          { nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: In appoggio sulle spalle anteriori. Busto dritto, isola i quadricipiti." }, 
-          { nome: "Hack Squat Libero", anim: "leg_squat", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe (stile stacco). Spingi forte sui quadricipiti." }
+          { nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: In appoggio sulle spalle anteriori. Costringe il busto dritto e isola brutalmente i quadricipiti." }, 
+          { nome: "Hack Squat Libero", anim: "leg_squat", note: "Carico posteriore", dettaglio: "BILANCIERE: Come uno stacco, ma con il bilanciere dietro le gambe. Solleva spingendo sui quadricipiti." }
         ] 
       },
-      { id: "e12", nome: "Hack squat", anim: "leg_machine_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena. Scendi e spingi su isolando le gambe senza la bassa schiena.", 
+      { id: "e12", nome: "Hack squat", anim: "leg_machine_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena e spalle. Scendi in profondità e spingi su eliminando la bassa schiena.", 
         alternative: [
-          { nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana per concentrare il lavoro sui quadricipiti." }, 
-          { nome: "Belt Squat", anim: "leg_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi per caricare salvando la spina dorsale." }
+          { nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Posiziona i piedi in basso e stretti sulla pedana per concentrare il peso sui quadricipiti." }, 
+          { nome: "Belt Squat", anim: "leg_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Squat con cintura pesata agganciata ai fianchi, per caricare salvando la spina dorsale." }
         ] 
       },
-      { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Scendi portando le ginocchia verso il petto e spingi senza bloccare l'articolazione.", 
+      { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Scendi portando le ginocchia verso il petto e spingi senza mai bloccare l'articolazione in alto.", 
         alternative: [
-          { nome: "Affondi Manubri", anim: "leg_lunge", note: "Equilibrio", dettaglio: "MANUBRI: In camminata o sul posto, affonda controllando la discesa." }, 
-          { nome: "Bulgarian Squat", anim: "leg_lunge", note: "Unilaterale", dettaglio: "MANUBRI: Piede posteriore su panca, scendi in affondo per un lavoro mirato." }
+          { nome: "Affondi Manubri", anim: "leg_lunge", note: "Focus equilibrio", dettaglio: "MANUBRI: In camminata o sul posto, affonda controllando la discesa per attivare glutei e femorali." }, 
+          { nome: "Bulgarian Squat", anim: "leg_lunge", note: "Unilaterale", dettaglio: "MANUBRI/LIBERO: Piede posteriore su panca, scendi in affondo sulla gamba avanti per un lavoro mirato." }
         ] 
       },
-      { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Distendi le gambe strizzando forte i quadricipiti nel punto più alto.", 
+      { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Seduto. Distendi le gambe strizzando forte i quadricipiti nel punto più alto del movimento.", 
         alternative: [
-          { nome: "Sissy Squat", anim: "leg_extension", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci e lasciati cadere all'indietro per stretchare i quadricipiti." }, 
-          { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto spingendo unicamente con la gamba in appoggio." }
+          { nome: "Sissy Squat", anim: "leg_extension", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci e lasciati cadere all'indietro per stretchare i quadricipiti alla follia." }, 
+          { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto spingendo unicamente con la gamba in appoggio, lentamente e senza slanci." }
         ] 
       },
-      { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Scivola lungo le cosce spingendo il sedere indietro. Sali contraendo i femorali.", 
+      { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Schiena tesa, scivola lungo le cosce spingendo il sedere indietro. Sali contraendo i femorali.", 
         alternative: [
-          { nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte (non bloccate). Scendi per allungare la catena posteriore." }, 
-          { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto in avanti come in un inchino." }
+          { nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte (non bloccate). Scendi per allungare brutalmente la catena cinetica posteriore." }, 
+          { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto in avanti mantenendo le gambe semi-tese come in un inchino." }
         ] 
       },
-      { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo e frena la discesa.", 
+      { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo, e frena lentissimamente la discesa.", 
         alternative: [
-          { nome: "Leg Curl Seduto", anim: "leg_curl", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola magnificamente il bicipite femorale garantendo stabilità lombare." }, 
-          { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto usando solo la contrazione dei femorali." }
+          { nome: "Leg Curl Seduto", anim: "leg_curl", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Versione da seduto. Isola magnificamente il bicipite femorale garantendo stabilità lombare." }, 
+          { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva l'intero peso del busto usando solo la contrazione dei femorali. Efficacissimo." }
         ] 
       },
-      { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine, e sali in punta di piedi fermandoti 1 secondo.", 
+      { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine, e sali in punta di piedi con fermo di 1 secondo in alto.", 
         alternative: [
-          { nome: "Calf Press", anim: "leg_calf", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press spingendo solo con le caviglie." }, 
-          { nome: "Calf Seduto", anim: "leg_calf", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, solleva i talloni per colpire il soleo in profondità." }
+          { nome: "Calf Press", anim: "leg_calf", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press. Spingi la pedana solo con le caviglie per caricare pesi inenarrabili." }, 
+          { nome: "Calf Seduto", anim: "leg_calf", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, cuscini sulle ginocchia. Solleva i talloni: la gamba piegata colpisce profondamente il soleo." }
         ] 
       }
     ]
@@ -155,7 +155,7 @@ const baseDbAllenamento = {
 };
 
 // ==========================================
-// COMPONENTI SVG ANIMATI E DINAMICI (Due Frame per Movimento)
+// RENDERER SVG ANIMATO (Icone Specifiche Infallibili)
 // ==========================================
 const SvgVisualizer = ({ icon, color }: { icon: string, color: string }) => {
   const line = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -163,62 +163,66 @@ const SvgVisualizer = ({ icon, color }: { icon: string, color: string }) => {
   const machine = { stroke: "#555", strokeWidth: "3", strokeLinecap: "round" as const, fill: "none" };
   const bench = { stroke: "#444", strokeWidth: "4", strokeLinecap: "round" as const };
   const weight = { fill: "#e5e5e5", rx: "1" };
+  // Aggiunte queste due costanti per risolvere i problemi di import SVG
+  const cable = { stroke: "#888", strokeWidth: "1", strokeDasharray: "2 2" };
+  const gear = { stroke: "#e5e5e5", strokeWidth: "2", strokeLinecap: "round" as const, fill: "none" };
 
   return (
     <div className="relative w-16 h-16 bg-neutral-950/80 rounded-lg border border-neutral-800 flex items-center justify-center overflow-hidden shadow-inner shrink-0">
       <style>{`
+        @keyframes svgPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
+        .anim-pulse { animation: svgPulse 1.5s ease-in-out infinite; }
         @keyframes flipA { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
         @keyframes flipB { 0%, 45% { opacity: 0; } 50%, 95% { opacity: 1; } 100% { opacity: 0; } }
         .frame-a { animation: flipA 1.6s infinite; }
         .frame-b { animation: flipB 1.6s infinite; }
       `}</style>
-      <svg viewBox="0 0 50 50" className="w-14 h-14">
+      <svg viewBox="0 0 50 50" className="w-12 h-12 anim-pulse">
+        {/* === SPINTA === */}
+        {icon === "chest_barbell" && ( <><line x1="10" y1="35" x2="40" y2="35" {...bench} /><circle cx="25" cy="28" r="4" {...line} /><line x1="25" y1="32" x2="25" y2="35" {...line} /><line x1="15" y1="20" x2="35" y2="20" stroke="#e5e5e5" strokeWidth="2" /><rect x="12" y="15" width="3" height="10" {...weight} /><rect x="35" y="15" width="3" height="10" {...weight} /><path d="M 21 28 L 18 20 M 29 28 L 32 20" {...line} /></> )}
+        {icon === "chest_dumbbell" && ( <><line x1="10" y1="35" x2="40" y2="35" {...bench} /><circle cx="25" cy="28" r="4" {...line} /><line x1="15" y1="20" x2="20" y2="20" stroke="#e5e5e5" strokeWidth="2" /><line x1="30" y1="20" x2="35" y2="20" stroke="#e5e5e5" strokeWidth="2" /><circle cx="15" cy="20" r="2" {...weight} /><circle cx="20" cy="20" r="2" {...weight} /><circle cx="30" cy="20" r="2" {...weight} /><circle cx="35" cy="20" r="2" {...weight} /><path d="M 21 28 L 17 20 M 29 28 L 33 20" {...line} /></> )}
+        {icon === "chest_machine" && ( <><line x1="25" y1="10" x2="25" y2="40" {...machine} /><line x1="15" y1="40" x2="35" y2="40" {...machine} /><circle cx="25" cy="25" r="4" {...line} /><path d="M 21 25 L 12 25 M 29 25 L 38 25" {...line} /><rect x="10" y="20" width="2" height="10" {...weight} /><rect x="38" y="20" width="2" height="10" {...weight} /></> )}
+        {icon === "chest_flye_db" && ( <><line x1="10" y1="35" x2="40" y2="35" {...bench} /><circle cx="25" cy="28" r="4" {...line} /><path d="M 21 28 L 10 20 M 29 28 L 40 20" {...line} /><circle cx="10" cy="20" r="2.5" {...weight} /><circle cx="40" cy="20" r="2.5" {...weight} /></> )}
+        {icon === "chest_flye_cable" && ( <><line x1="5" y1="10" x2="5" y2="40" {...machine} /><line x1="45" y1="10" x2="45" y2="40" {...machine} /><circle cx="25" cy="25" r="4" {...line} /><path d="M 21 25 L 5 20 M 29 25 L 45 20" stroke="#888" strokeWidth="1.5" strokeDasharray="2 2" /><circle cx="15" cy="22" r="2" {...weight} /><circle cx="35" cy="22" r="2" {...weight} /></> )}
+        {icon === "chest_flye_machine" && ( <><line x1="25" y1="10" x2="25" y2="40" {...machine} /><circle cx="25" cy="25" r="4" {...line} /><path d="M 21 25 C 10 25 10 15 20 15 M 29 25 C 40 25 40 15 30 15" {...line} /></> )}
         
-        {/* SPINTA PETTO */}
-        {icon === "chest_barbell" && ( <><line x1="5" y1="35" x2="45" y2="35" {...bench} /> <g className="frame-a"><circle cx="16" cy="32" r="3.5" {...head} /><path d="M 19 33 L 32 33 L 40 42 L 40 48" {...line} /><path d="M 23 33 L 26 26 L 23 20" {...line} /><line x1="15" y1="20" x2="35" y2="20" stroke="#e5e5e5" strokeWidth="2" /><rect x="12" y="14" width="3" height="12" {...weight} /><rect x="35" y="14" width="3" height="12" {...weight} /></g> <g className="frame-b"><circle cx="16" cy="32" r="3.5" {...head} /><path d="M 19 33 L 32 33 L 40 42 L 40 48" {...line} /><path d="M 23 33 L 23 10" {...line} /><line x1="15" y1="10" x2="35" y2="10" stroke="#e5e5e5" strokeWidth="2" /><rect x="12" y="4" width="3" height="12" {...weight} /><rect x="35" y="4" width="3" height="12" {...weight} /></g> </> )}
-        {icon === "chest_machine" && ( <><path d="M 10 15 L 10 45 M 5 45 L 20 45" {...bench} fill="none" /> <g className="frame-a"><circle cx="16" cy="20" r="3.5" {...head} /><path d="M 14 24 L 14 35 L 25 45" {...line} /><path d="M 14 24 L 20 28 L 22 24" {...line} /><line x1="22" y1="20" x2="22" y2="28" {...machine} strokeWidth="2" /><rect x="20" y="15" width="4" height="15" {...weight} /></g> <g className="frame-b"><circle cx="16" cy="20" r="3.5" {...head} /><path d="M 14 24 L 14 35 L 25 45" {...line} /><path d="M 14 24 L 35 24" {...line} /><line x1="35" y1="20" x2="35" y2="28" {...machine} strokeWidth="2" /><rect x="33" y="15" width="4" height="15" {...weight} /></g> </> )}
-        {icon === "chest_dumbbell" && ( <><line x1="5" y1="35" x2="45" y2="35" {...bench} /> <g className="frame-a"><circle cx="16" cy="32" r="3.5" {...head} /><path d="M 19 33 L 32 33 L 40 42" {...line} /><path d="M 23 33 L 26 26 L 23 20" {...line} /><circle cx="20" cy="20" r="3" {...weight} /><circle cx="26" cy="20" r="3" {...weight} /></g> <g className="frame-b"><circle cx="16" cy="32" r="3.5" {...head} /><path d="M 19 33 L 32 33 L 40 42" {...line} /><path d="M 23 33 L 23 10" {...line} /><circle cx="20" cy="10" r="3" {...weight} /><circle cx="26" cy="10" r="3" {...weight} /></g> </> )}
-        {icon === "chest_flye_db" && ( <><line x1="20" y1="25" x2="30" y2="25" {...bench} strokeWidth="6" /> <g className="frame-a"><circle cx="25" cy="20" r="3.5" {...head} /><path d="M 25 24 L 25 45" {...line} /><path d="M 25 24 L 10 30 M 25 24 L 40 30" {...line} /><rect x="8" y="28" width="4" height="6" {...weight} /><rect x="38" y="28" width="4" height="6" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="20" r="3.5" {...head} /><path d="M 25 24 L 25 45" {...line} /><path d="M 25 24 L 22 10 M 25 24 L 28 10" {...line} /><rect x="20" y="6" width="4" height="6" {...weight} /><rect x="26" y="6" width="4" height="6" {...weight} /></g> </> )}
-        {icon === "chest_flye_machine" && ( <><line x1="25" y1="10" x2="25" y2="40" {...machine} /><g className="frame-a"><circle cx="25" cy="25" r="4" {...head} /><path d="M 21 25 C 10 25 10 15 20 15 M 29 25 C 40 25 40 15 30 15" {...line} /></g> <g className="frame-b"><circle cx="25" cy="25" r="4" {...head} /><path d="M 21 25 L 21 15 M 29 25 L 29 15" {...line} /></g> </> )}
-        {icon === "chest_flye_cable" && ( <><line x1="5" y1="10" x2="5" y2="40" {...machine} /><line x1="45" y1="10" x2="45" y2="40" {...machine} /> <g className="frame-a"><circle cx="25" cy="25" r="4" {...head} /><path d="M 21 25 L 5 20 M 29 25 L 45 20" stroke="#888" strokeWidth="1.5" strokeDasharray="2 2" /><circle cx="15" cy="22" r="3" {...weight} /><circle cx="35" cy="22" r="3" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="25" r="4" {...head} /><path d="M 21 25 L 21 10 M 29 25 L 29 10" stroke="#888" strokeWidth="1.5" strokeDasharray="2 2" /><circle cx="21" cy="10" r="3" {...weight} /><circle cx="29" cy="10" r="3" {...weight} /></g> </> )}
-        
-        {/* SPALLE */}
-        {icon === "shoulder_db" && ( <><line x1="15" y1="35" x2="35" y2="35" {...bench} /> <g className="frame-a"><circle cx="25" cy="15" r="3.5" {...head} /><path d="M 25 19 L 25 35" {...line} /><path d="M 25 21 L 16 26 L 16 18 M 25 21 L 34 26 L 34 18" {...line} /><rect x="14" y="16" width="4" height="6" {...weight} /><rect x="32" y="16" width="4" height="6" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="15" r="3.5" {...head} /><path d="M 25 19 L 25 35" {...line} /><path d="M 25 21 L 18 6 M 25 21 L 32 6" {...line} /><rect x="16" y="2" width="4" height="6" {...weight} /><rect x="30" y="2" width="4" height="6" {...weight} /></g> </> )}
-        {icon === "shoulder_barbell" && ( <><line x1="15" y1="45" x2="35" y2="45" {...bench} /> <g className="frame-a"><circle cx="25" cy="15" r="3.5" {...head} /><path d="M 25 19 L 25 45" {...line} /><path d="M 25 21 L 16 26 L 16 18 M 25 21 L 34 26 L 34 18" {...line} /><line x1="10" y1="17" x2="40" y2="17" stroke="#e5e5e5" strokeWidth="2"/><rect x="10" y="14" width="2" height="6" {...weight} /><rect x="38" y="14" width="2" height="6" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="15" r="3.5" {...head} /><path d="M 25 19 L 25 45" {...line} /><path d="M 25 21 L 18 6 M 25 21 L 32 6" {...line} /><line x1="10" y1="5" x2="40" y2="5" stroke="#e5e5e5" strokeWidth="2"/><rect x="10" y="2" width="2" height="6" {...weight} /><rect x="38" y="2" width="2" height="6" {...weight} /></g> </> )}
-        {icon === "shoulder_machine" && ( <><line x1="15" y1="45" x2="35" y2="45" {...machine} /><line x1="25" y1="45" x2="25" y2="10" {...machine} /> <g className="frame-a"><circle cx="25" cy="25" r="4" {...head} /><path d="M 21 28 L 15 28 M 29 28 L 35 28" {...line} /><rect x="12" y="25" width="6" height="6" {...weight} /><rect x="32" y="25" width="6" height="6" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="25" r="4" {...head} /><path d="M 21 28 L 15 15 M 29 28 L 35 15" {...line} /><rect x="12" y="12" width="6" height="6" {...weight} /><rect x="32" y="12" width="6" height="6" {...weight} /></g> </> )}
-        {icon === "lateral_db" && ( <><g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /><path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /><path d="M 25 21 L 18 35 M 25 21 L 32 35" {...line} /><circle cx="18" cy="35" r="3" {...weight} /><circle cx="32" cy="35" r="3" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="15" r="3.5" {...head} /><path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /><path d="M 25 21 L 10 21 M 25 21 L 40 21" {...line} /><circle cx="8" cy="21" r="3" {...weight} /><circle cx="42" cy="21" r="3" {...weight} /></g> </> )}
+        {/* === SPALLE === */}
+        {icon === "shoulder_db" && ( <><line x1="15" y1="40" x2="35" y2="40" {...bench} /><line x1="25" y1="40" x2="25" y2="25" {...bench} /><circle cx="25" cy="20" r="4" {...line} /><path d="M 21 23 L 15 10 M 29 23 L 35 10" {...line} /><rect x="12" y="8" width="6" height="4" {...weight} /><rect x="32" y="8" width="6" height="4" {...weight} /></> )}
+        {icon === "shoulder_barbell" && ( <><circle cx="25" cy="20" r="4" {...line} /><path d="M 25 24 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...line} /><path d="M 21 23 L 15 10 M 29 23 L 35 10" {...line} /><line x1="10" y1="10" x2="40" y2="10" stroke="#e5e5e5" strokeWidth="2" /><rect x="8" y="5" width="4" height="10" {...weight} /><rect x="38" y="5" width="4" height="10" {...weight} /></> )}
+        {icon === "shoulder_machine" && ( <><line x1="15" y1="45" x2="35" y2="45" {...machine} /><line x1="25" y1="45" x2="25" y2="10" {...machine} /><circle cx="25" cy="25" r="4" {...line} /><path d="M 21 28 L 15 15 M 29 28 L 35 15" {...line} /><rect x="12" y="13" width="6" height="4" {...weight} /><rect x="32" y="13" width="6" height="4" {...weight} /></> )}
+        {icon === "lateral_db" && ( <><circle cx="25" cy="15" r="4" {...line} /><path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /><path d="M 25 21 L 10 21 M 25 21 L 40 21" {...line} /><circle cx="8" cy="21" r="2.5" {...weight} /><circle cx="42" cy="21" r="2.5" {...weight} /></> )}
         {icon === "lateral_cable" && ( <><line x1="5" y1="45" x2="45" y2="45" {...machine} /><circle cx="8" cy="45" r="2" fill="#555" /><circle cx="42" cy="45" r="2" fill="#555" /> <g className="frame-a"><circle cx="25" cy="15" r="3.5" {...head} /><path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /><path d="M 25 21 L 22 35 M 25 21 L 28 35" {...line} /><line x1="8" y1="45" x2="28" y2="35" {...cable} /><line x1="42" y1="45" x2="22" y2="35" {...cable} /></g> <g className="frame-b"><circle cx="25" cy="15" r="3.5" {...head} /><path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /><path d="M 25 21 L 10 21 M 25 21 L 40 21" {...line} /><line x1="8" y1="45" x2="40" y2="21" {...cable} /><line x1="42" y1="45" x2="10" y2="21" {...cable} /></g> </> )}
-        {icon === "lateral_machine" && ( <><line x1="25" y1="45" x2="25" y2="15" {...machine} /> <g className="frame-a"><circle cx="25" cy="20" r="3.5" {...head} /><path d="M 21 25 L 15 35 M 29 25 L 35 35" {...line} /><rect x="13" y="33" width="4" height="6" {...weight} /><rect x="33" y="33" width="4" height="6" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="20" r="3.5" {...head} /><path d="M 21 25 L 10 25 M 29 25 L 40 25" {...line} /><rect x="8" y="23" width="4" height="6" {...weight} /><rect x="38" y="23" width="4" height="6" {...weight} /></g> </> )}
+        {icon === "lateral_machine" && ( <><line x1="25" y1="45" x2="25" y2="15" {...machine} /><circle cx="25" cy="20" r="4" {...line} /><path d="M 21 25 L 10 25 M 29 25 L 40 25" {...line} /><rect x="8" y="23" width="4" height="10" {...weight} /><rect x="38" y="23" width="4" height="10" {...weight} /></> )}
+
+        {/* === TRICIPITI === */}
+        {icon === "tricep_cable" && ( <><line x1="35" y1="5" x2="35" y2="45" {...machine} /><circle cx="20" cy="15" r="4" {...line} /><path d="M 20 19 L 20 40 M 15 40 L 25 40" {...line} /><path d="M 20 22 L 28 35" {...line} /><line x1="35" y1="5" x2="28" y2="35" stroke="#888" strokeWidth="1.5" strokeDasharray="2 2" /><rect x="26" y="35" width="4" height="4" {...weight} /></> )}
+        {icon === "tricep_barbell" && ( <><line x1="10" y1="35" x2="40" y2="35" {...bench} /><circle cx="15" cy="28" r="4" {...line} /><path d="M 19 28 L 35 28 M 15 24 L 25 15 M 25 15 L 30 15" {...line} /><line x1="28" y1="12" x2="28" y2="18" stroke="#e5e5e5" strokeWidth="2" /></> )}
+        {icon === "tricep_dips" && ( <><line x1="15" y1="25" x2="15" y2="45" {...machine} /><line x1="35" y1="25" x2="35" y2="45" {...machine} /><circle cx="25" cy="10" r="4" {...line} /><path d="M 25 14 L 25 35 M 25 35 L 20 45 M 25 35 L 30 45" {...line} /><path d="M 25 17 L 15 25 M 25 17 L 35 25" {...line} /></> )}
+
+        {/* === TIRATA === */}
+        {icon === "back_pullup" && ( <><line x1="10" y1="10" x2="40" y2="10" {...bench} /><circle cx="25" cy="20" r="4" {...line} /><path d="M 25 24 L 25 40 M 20 45 L 25 40 L 30 45" {...line} /><path d="M 25 24 L 15 10 M 25 24 L 35 10" {...line} /></> )}
+        {icon === "back_pulldown" && ( <><line x1="25" y1="5" x2="25" y2="45" {...machine} /><line x1="15" y1="40" x2="35" y2="40" {...bench} /><circle cx="25" cy="20" r="4" {...line} /><path d="M 25 24 L 25 40" {...line} /><path d="M 25 24 L 15 10 M 25 24 L 35 10" {...line} /><line x1="10" y1="10" x2="40" y2="10" stroke="#e5e5e5" strokeWidth="3" /></> )}
+        {icon === "back_row_barbell" && ( <><circle cx="35" cy="15" r="4" {...line} /><path d="M 33 18 L 20 30 L 20 45 M 20 30 L 25 45" {...line} /><path d="M 32 20 L 25 25 L 18 20" {...line} /><line x1="12" y1="20" x2="24" y2="20" stroke="#e5e5e5" strokeWidth="2" /><circle cx="12" cy="20" r="5" {...weight} fill="none" stroke="#e5e5e5" /></> )}
+        {icon === "back_row_db" && ( <><line x1="10" y1="35" x2="30" y2="35" {...bench} /><circle cx="35" cy="15" r="4" {...line} /><path d="M 33 18 L 25 25 L 25 45 M 25 25 L 15 35" {...line} /><path d="M 32 20 L 25 30" {...line} /><rect x="23" y="28" width="4" height="6" {...weight} /></> )}
+        {icon === "back_row_cable" && ( <><line x1="10" y1="40" x2="25" y2="40" {...bench} /><line x1="40" y1="20" x2="40" y2="45" {...machine} /><circle cx="15" cy="20" r="4" {...line} /><path d="M 15 24 L 15 40 M 15 24 L 25 30" {...line} /><path d="M 25 30 L 40 30" stroke="#888" strokeWidth="1.5" strokeDasharray="2 2" /><rect x="23" y="28" width="4" height="4" {...weight} /></> )}
+        {icon === "back_row_machine" && ( <><line x1="20" y1="20" x2="20" y2="45" {...machine} /><circle cx="15" cy="20" r="4" {...line} /><path d="M 15 24 L 15 40 M 15 24 L 25 24" {...line} /><line x1="25" y1="20" x2="25" y2="28" {...machine} /></> )}
+        {icon === "back_pullover" && ( <><line x1="10" y1="5" x2="10" y2="45" {...machine} /><circle cx="35" cy="15" r="4" {...line} /><path d="M 35 19 L 35 40 M 30 45 L 35 40 L 40 45" {...line} /><path d="M 35 22 L 20 35" {...line} /><path d="M 10 5 L 20 35" stroke="#888" strokeWidth="1.5" strokeDasharray="2 2" /><line x1="15" y1="35" x2="25" y2="35" stroke="#e5e5e5" strokeWidth="2" /></> )}
+        {icon === "back_pullover_db" && ( <><line x1="15" y1="35" x2="35" y2="35" {...bench} /><circle cx="25" cy="25" r="4" {...line} /><path d="M 21 25 L 10 25 M 25 29 L 25 45 M 25 21 L 35 21" {...line} /><rect x="35" y="18" width="4" height="6" {...weight} /></> )}
         
-        {/* TRICIPITI */}
-        {icon === "tricep_barbell" && ( <><line x1="5" y1="35" x2="45" y2="35" {...bench} /> <g className="frame-a"><circle cx="16" cy="32" r="3.5" {...head} /><path d="M 19 33 L 32 33 L 40 42" {...line} /><path d="M 23 33 L 23 25 L 15 25" {...line} /><line x1="12" y1="20" x2="12" y2="30" stroke="#e5e5e5" strokeWidth="2" /><rect x="10" y="20" width="4" height="3" {...weight} /><rect x="10" y="27" width="4" height="3" {...weight} /></g> <g className="frame-b"><circle cx="16" cy="32" r="3.5" {...head} /><path d="M 19 33 L 32 33 L 40 42" {...line} /><path d="M 23 33 L 23 15" {...line} /><line x1="18" y1="12" x2="28" y2="12" stroke="#e5e5e5" strokeWidth="2" /><rect x="18" y="10" width="3" height="4" {...weight} /><rect x="25" y="10" width="3" height="4" {...weight} /></g> </> )}
-        {icon === "tricep_dips" && ( <><line x1="15" y1="25" x2="15" y2="45" {...machine} /><line x1="35" y1="25" x2="35" y2="45" {...machine} /> <g className="frame-a"><circle cx="25" cy="15" r="4" {...head} /><path d="M 25 19 L 25 35 M 25 35 L 20 45 M 25 35 L 30 45" {...line} /><path d="M 25 22 L 15 25 M 25 22 L 35 25" {...line} /></g> <g className="frame-b"><circle cx="25" cy="5" r="4" {...head} /><path d="M 25 9 L 25 25 M 25 25 L 20 40 M 25 25 L 30 40" {...line} /><path d="M 25 12 L 15 25 M 25 12 L 35 25" {...line} /></g> </> )}
-        {icon === "tricep_cable" && ( <><line x1="35" y1="5" x2="35" y2="45" {...machine} /><circle cx="33" cy="5" r="2" fill="#555" /> <g className="frame-a"><circle cx="20" cy="15" r="3.5" {...head} /><path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...line} /><path d="M 20 21 L 25 26 L 30 20" {...line} /><line x1="33" y1="5" x2="30" y2="20" {...cable} /></g> <g className="frame-b"><circle cx="20" cy="15" r="3.5" {...head} /><path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...line} /><path d="M 20 21 L 25 26 L 30 35" {...line} /><line x1="33" y1="5" x2="30" y2="35" {...cable} /></g> </> )}
+        {/* === BICIPITI === */}
+        {icon === "bicep_barbell" && ( <><circle cx="25" cy="10" r="4" {...line} /><path d="M 25 14 L 25 35 M 20 45 L 25 35 L 30 45" {...line} /><path d="M 25 16 L 30 25 L 38 18" {...line} /><line x1="32" y1="18" x2="44" y2="18" stroke="#e5e5e5" strokeWidth="2" /><rect x="30" y="14" width="2" height="8" {...weight} /><rect x="44" y="14" width="2" height="8" {...weight} /></> )}
+        {icon === "bicep_db" && ( <><circle cx="25" cy="10" r="4" {...line} /><path d="M 25 14 L 25 35 M 20 45 L 25 35 L 30 45" {...line} /><path d="M 25 16 L 20 25 L 20 35 M 25 16 L 30 25 L 35 15" {...line} /><rect x="32" y="13" width="6" height="4" {...weight} /><rect x="17" y="35" width="6" height="4" {...weight} /></> )}
+        {icon === "bicep_cable" && ( <><line x1="10" y1="5" x2="10" y2="45" {...machine} /><circle cx="35" cy="10" r="4" {...line} /><path d="M 35 14 L 35 35 M 30 45 L 35 35 L 40 45" {...line} /><path d="M 35 16 L 30 25 L 20 20" {...line} /><path d="M 10 45 L 20 20" stroke="#888" strokeWidth="1.5" strokeDasharray="2 2" /><rect x="18" y="18" width="4" height="4" {...weight} /></> )}
 
-        {/* TIRATA */}
-        {icon === "back_pullup" && ( <><line x1="5" y1="6" x2="45" y2="6" {...bench} strokeWidth="3" /> <g className="frame-a"><circle cx="25" cy="22" r="3.5" {...head} /><path d="M 25 26 L 25 40 L 22 48 M 25 40 L 28 48" {...line} /><path d="M 25 26 L 15 6 M 25 26 L 35 6" {...line} /></g> <g className="frame-b"><circle cx="25" cy="10" r="3.5" {...head} /><path d="M 25 14 L 25 30 L 22 35 M 25 30 L 28 35" {...line} /><path d="M 25 14 L 15 20 L 15 6 M 25 14 L 35 20 L 35 6" {...line} /></g> </> )}
-        {icon === "back_pulldown" && ( <><line x1="25" y1="5" x2="25" y2="45" {...machine} /><line x1="15" y1="40" x2="35" y2="40" {...bench} /> <g className="frame-a"><circle cx="25" cy="20" r="4" {...head} /><path d="M 25 24 L 25 40" {...line} /><path d="M 25 24 L 15 10 M 25 24 L 35 10" {...line} /><line x1="10" y1="10" x2="40" y2="10" stroke="#e5e5e5" strokeWidth="3" /></g> <g className="frame-b"><circle cx="25" cy="20" r="4" {...head} /><path d="M 25 24 L 25 40" {...line} /><path d="M 25 24 L 15 22 M 25 24 L 35 22" {...line} /><line x1="10" y1="22" x2="40" y2="22" stroke="#e5e5e5" strokeWidth="3" /></g> </> )}
-        {icon === "back_row_barbell" && ( <><g className="frame-a"><circle cx="38" cy="18" r="3.5" {...head} /><path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...line} /><path d="M 32 23 L 35 40" {...line} /><line x1="28" y1="40" x2="42" y2="40" {...gear} /><circle cx="35" cy="40" r="6" {...weight} fill="none" stroke="#e5e5e5" strokeWidth="2" /></g> <g className="frame-b"><circle cx="38" cy="18" r="3.5" {...head} /><path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...line} /><path d="M 32 23 L 40 20 L 30 28" {...line} /><line x1="23" y1="28" x2="37" y2="28" {...gear} /><circle cx="30" cy="28" r="6" {...weight} fill="none" stroke="#e5e5e5" strokeWidth="2" /></g> </> )}
-        {icon === "back_row_db" && ( <><line x1="10" y1="35" x2="30" y2="35" {...bench} /> <g className="frame-a"><circle cx="35" cy="15" r="4" {...head} /><path d="M 33 18 L 25 25 L 25 45 M 25 25 L 15 35" {...line} /><path d="M 32 20 L 35 40" {...line} /><rect x="33" y="38" width="4" height="6" {...weight} /></g> <g className="frame-b"><circle cx="35" cy="15" r="4" {...head} /><path d="M 33 18 L 25 25 L 25 45 M 25 25 L 15 35" {...line} /><path d="M 32 20 L 40 18 L 30 25" {...line} /><rect x="28" y="23" width="4" height="6" {...weight} /></g> </> )}
-        {icon === "seated_cable_row" && ( <><line x1="10" y1="40" x2="30" y2="40" {...bench} /><line x1="40" y1="30" x2="40" y2="45" {...machine} /><circle cx="38" cy="40" r="2" fill="#555" /> <g className="frame-a"><circle cx="20" cy="20" r="3.5" {...head} /><path d="M 20 24 L 20 38 L 35 38" {...line} /><path d="M 20 24 L 35 35" {...line} /><line x1="38" y1="40" x2="35" y2="35" {...cable} /></g> <g className="frame-b"><circle cx="18" cy="20" r="3.5" {...head} /><path d="M 18 24 L 20 38 L 35 38" {...line} /><path d="M 18 24 L 14 30 L 28 35" {...line} /><line x1="38" y1="40" x2="28" y2="35" {...cable} /></g> </> )}
-        {icon === "back_row_machine" && ( <><line x1="20" y1="20" x2="20" y2="45" {...machine} /> <g className="frame-a"><circle cx="15" cy="20" r="4" {...head} /><path d="M 15 24 L 15 40 M 15 24 L 35 24" {...line} /><rect x="33" y="20" width="4" height="8" {...weight} /></g> <g className="frame-b"><circle cx="15" cy="20" r="4" {...head} /><path d="M 15 24 L 15 40 M 15 24 L 10 30 L 20 30" {...line} /><rect x="18" y="26" width="4" height="8" {...weight} /></g> </> )}
-        {icon === "cable_pullover" && ( <><line x1="10" y1="5" x2="10" y2="45" {...machine} /><circle cx="12" cy="5" r="2" fill="#555" /> <g className="frame-a"><circle cx="35" cy="15" r="3.5" {...head} /><path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...line} /><path d="M 35 21 L 20 10" {...line} /><line x1="12" y1="5" x2="20" y2="10" {...cable} /></g> <g className="frame-b"><circle cx="35" cy="15" r="3.5" {...head} /><path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...line} /><path d="M 35 21 L 35 38" {...line} /><line x1="12" y1="5" x2="35" y2="38" {...cable} /></g> </> )}
-        {icon === "back_pullover_db" && ( <><line x1="15" y1="35" x2="35" y2="35" {...bench} /> <g className="frame-a"><circle cx="25" cy="25" r="4" {...head} /><path d="M 21 25 L 10 25 M 25 29 L 25 45 M 25 21 L 40 21" {...line} /><rect x="38" y="18" width="4" height="6" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="25" r="4" {...head} /><path d="M 21 25 L 10 25 M 25 29 L 25 45 M 25 21 L 25 5" {...line} /><rect x="23" y="2" width="4" height="6" {...weight} /></g> </> )}
-
-        {/* BICIPITI */}
-        {icon === "bicep_barbell" && ( <><g className="frame-a"><circle cx="25" cy="10" r="3.5" {...head} /><path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...line} /><path d="M 25 16 L 25 30 L 28 35" {...line} /><line x1="20" y1="35" x2="36" y2="35" {...gear} /><rect x="18" y="32" width="2" height="6" {...weight} /><rect x="36" y="32" width="2" height="6" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="10" r="3.5" {...head} /><path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...line} /><path d="M 25 16 L 25 30 L 32 20" {...line} /><line x1="24" y1="20" x2="40" y2="20" {...gear} /><rect x="22" y="17" width="2" height="6" {...weight} /><rect x="40" y="17" width="2" height="6" {...weight} /></g> </> )}
-        {icon === "bicep_db" && ( <><g className="frame-a"><circle cx="25" cy="10" r="4" {...head} /><path d="M 25 14 L 25 35 M 20 45 L 25 35 L 30 45" {...line} /><path d="M 25 16 L 20 30 M 25 16 L 30 30" {...line} /><rect x="18" y="30" width="4" height="4" {...weight} /><rect x="28" y="30" width="4" height="4" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="10" r="4" {...head} /><path d="M 25 14 L 25 35 M 20 45 L 25 35 L 30 45" {...line} /><path d="M 25 16 L 20 30 M 25 16 L 30 20" {...line} /><rect x="18" y="30" width="4" height="4" {...weight} /><rect x="28" y="18" width="4" height="4" {...weight} /></g> </> )}
-        {icon === "bicep_cable" && ( <><line x1="10" y1="5" x2="10" y2="45" {...machine} /><circle cx="12" cy="45" r="2" fill="#555" /> <g className="frame-a"><circle cx="35" cy="10" r="3.5" {...head} /><path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...line} /><path d="M 35 16 L 35 30 L 25 40" {...line} /><line x1="12" y1="45" x2="25" y2="40" {...cable} /><line x1="22" y1="40" x2="28" y2="40" {...gear} strokeWidth="3" /></g> <g className="frame-b"><circle cx="35" cy="10" r="3.5" {...head} /><path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...line} /><path d="M 35 16 L 35 30 L 25 20" {...line} /><line x1="12" y1="45" x2="25" y2="20" {...cable} /><line x1="22" y1="20" x2="28" y2="20" {...gear} strokeWidth="3" /></g> </> )}
-
-        {/* GAMBE */}
+        {/* === GAMBE === */}
         {icon === "leg_squat" && ( <><g className="frame-a"><circle cx="25" cy="10" r="3.5" {...head} /><path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...line} /><path d="M 25 15 L 29 19 L 25 13" {...line} /><line x1="18" y1="13" x2="32" y2="13" {...gear} /><circle cx="25" cy="13" r="5" {...weight} fill="none" stroke="#e5e5e5"/></g> <g className="frame-b"><circle cx="32" cy="24" r="3.5" {...head} /><path d="M 32 28 L 20 38 L 26 48 M 20 38 L 16 48" {...line} /><path d="M 32 29 L 36 33 L 32 27" {...line} /><line x1="25" y1="27" x2="39" y2="27" {...gear} /><circle cx="32" cy="27" r="5" {...weight} fill="none" stroke="#e5e5e5"/></g> </> )}
-        {icon === "leg_machine_squat" && ( <><line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /> <g className="frame-a"><circle cx="32" cy="10" r="3.5" {...head} /><path d="M 30 14 L 23 23 L 23 45 M 23 23 L 28 45" {...line} /></g> <g className="frame-b"><circle cx="23" cy="22" r="3.5" {...head} /><path d="M 21 26 L 14 35 L 23 35 L 23 45 M 14 35 L 28 45" {...line} /></g> </> )}
-        {icon === "leg_press" && ( <><path d="M 10 30 L 20 45 L 35 45" {...bench} fill="none" /><line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /> <g className="frame-a"><circle cx="15" cy="25" r="3.5" {...head} /><path d="M 15 28 L 20 45" {...line} /><path d="M 20 45 L 22 30 L 30 20" {...line} /><line x1="28" y1="15" x2="35" y2="22" {...gear} strokeWidth="3" /></g> <g className="frame-b"><circle cx="15" cy="25" r="3.5" {...head} /><path d="M 15 28 L 20 45" {...line} /><path d="M 20 45 L 32 30 L 42 10" {...line} /><line x1="39" y1="5" x2="46" y2="12" {...gear} strokeWidth="3" /></g> </> )}
-        {icon === "leg_extension" && ( <><path d="M 15 20 L 15 35 L 25 35 L 25 45" {...bench} fill="none" /> <g className="frame-a"><circle cx="10" cy="15" r="3.5" {...head} /><path d="M 12 18 L 12 33 L 25 33 L 25 45" {...line} /><circle cx="27" cy="45" r="3" {...weight} /></g> <g className="frame-b"><circle cx="10" cy="15" r="3.5" {...head} /><path d="M 12 18 L 12 33 L 25 33 L 40 33" {...line} /><circle cx="40" cy="31" r="3" {...weight} /><path d="M 25 33 L 40 31" {...machine} strokeWidth="1" /></g> </> )}
-        {icon === "leg_deadlift" && ( <><g className="frame-a"><circle cx="25" cy="10" r="3.5" {...head} /><path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...line} /><path d="M 25 16 L 25 32" {...line} /><line x1="15" y1="32" x2="35" y2="32" {...gear} /><circle cx="25" cy="32" r="6" {...weight} fill="none" stroke="#e5e5e5" strokeWidth="2" /></g> <g className="frame-b"><circle cx="35" cy="20" r="3.5" {...head} /><path d="M 35 20 L 20 30 L 20 48 M 20 30 L 25 48" {...line} /><path d="M 32 22 L 32 40" {...line} /><line x1="22" y1="40" x2="42" y2="40" {...gear} /><circle cx="32" cy="40" r="6" {...weight} fill="none" stroke="#e5e5e5" strokeWidth="2" /></g> </> )}
-        {icon === "leg_curl" && ( <><line x1="10" y1="35" x2="40" y2="35" {...bench} /><path d="M 40 35 L 45 45" {...machine} /> <g className="frame-a"><circle cx="15" cy="32" r="3.5" {...head} /><path d="M 18 34 L 30 34 L 40 34 L 48 34" {...line} /><circle cx="48" cy="32" r="3" {...weight} /></g> <g className="frame-b"><circle cx="15" cy="32" r="3.5" {...head} /><path d="M 18 34 L 30 34 L 40 34 L 38 18" {...line} /><circle cx="36" cy="18" r="3" {...weight} /><path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /></g> </> )}
-        {icon === "leg_lunge" && ( <><g className="frame-a"><circle cx="25" cy="10" r="4" {...head} /><path d="M 25 14 L 25 30 L 35 45 M 25 30 L 15 45" {...line} /><path d="M 25 16 L 25 25" {...line} /><rect x="22" y="25" width="6" height="4" {...weight} /></g> <g className="frame-b"><circle cx="25" cy="15" r="4" {...head} /><path d="M 25 19 L 25 35 L 35 35 L 35 45 M 25 35 L 15 45" {...line} /><path d="M 25 21 L 25 30" {...line} /><rect x="22" y="30" width="6" height="4" {...weight} /></g> </> )}
-        {icon === "leg_calf" && ( <><rect x="20" y="45" width="10" height="5" fill="#555" /> <g className="frame-a"><circle cx="25" cy="10" r="3.5" {...head} /><path d="M 25 14 L 25 30 L 25 45" {...line} /></g> <g className="frame-b"><circle cx="25" cy="6" r="3.5" {...head} /><path d="M 25 10 L 25 26 L 27 40 L 22 45" {...line} /></g> </> )}
+        {icon === "leg_machine_squat" && ( <><line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /><circle cx="25" cy="20" r="4" {...line} /><path d="M 23 24 L 15 35 L 25 35 L 25 45 M 15 35 L 30 45" {...line} /></> )}
+        {icon === "leg_press" && ( <><path d="M 10 30 L 20 45 L 35 45" {...bench} fill="none" /><line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /><circle cx="15" cy="25" r="4" {...line} /><path d="M 15 29 L 20 45 M 20 45 L 32 30 L 42 10" {...line} /><line x1="39" y1="5" x2="46" y2="12" stroke="#e5e5e5" strokeWidth="3" /></> )}
+        {icon === "leg_extension" && ( <><path d="M 15 20 L 15 35 L 25 35 L 25 45" {...bench} fill="none" /><circle cx="10" cy="15" r="4" {...line} /><path d="M 12 19 L 12 33 L 25 33 L 40 33" {...line} /><circle cx="40" cy="31" r="3" {...weight} /><path d="M 25 33 L 40 31" {...machine} strokeWidth="1" /></> )}
+        {icon === "leg_deadlift" && ( <><circle cx="35" cy="15" r="4" {...line} /><path d="M 35 19 L 20 30 L 20 48 M 20 30 L 25 48" {...line} /><path d="M 32 21 L 32 40" {...line} /><line x1="22" y1="40" x2="42" y2="40" stroke="#e5e5e5" strokeWidth="2" /><circle cx="32" cy="40" r="5" {...weight} fill="none" stroke="#e5e5e5" /></> )}
+        {icon === "leg_curl" && ( <><line x1="10" y1="35" x2="40" y2="35" {...bench} /><path d="M 40 35 L 45 45" {...machine} /><circle cx="15" cy="32" r="4" {...line} /><path d="M 19 34 L 30 34 L 40 34 L 38 18" {...line} /><circle cx="36" cy="18" r="3" {...weight} /><path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /></> )}
+        {icon === "leg_lunge" && ( <><circle cx="25" cy="10" r="4" {...line} /><path d="M 25 14 L 25 30 L 35 30 L 35 45 M 25 30 L 15 45" {...line} /><path d="M 25 16 L 25 25" {...line} /><rect x="22" y="25" width="6" height="4" {...weight} /></> )}
+        {icon === "leg_calf" && ( <><rect x="20" y="45" width="10" height="5" fill="#555" /><circle cx="25" cy="10" r="4" {...line} /><path d="M 25 14 L 25 30 L 25 45" {...line} /></> )}
       </svg>
     </div>
   );
@@ -253,7 +257,7 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   );
 };
 
-// La Ruota BIA (6 Spicchi + Sagoma Centrale Realistica)
+// La Ruota BIA "Laica"
 const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, string>, altezza: number | "", eta: number | "" }) => {
   const w = Number(data.peso) || 0;
   const h = Number(altezza) || 0;
@@ -405,8 +409,7 @@ export default function Home() {
   const [fotoWizard, setFotoWizard] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const [rispostaWizard, setRispostaWizard] = useState("");
   const [loadingWizard, setLoadingWizard] = useState(false);
-  const fileWizardRef = useRef<HTMLInputElement>(null);
-
+  
   // --- STATI PROTOCOLLO (Allenamento) ---
   const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); 
   const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
@@ -437,8 +440,8 @@ export default function Home() {
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [fileAllegato, setFileAllegato] = useState<{data: string, mimeType: string, nome: string} | null>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Telemetria Storico & Grafici
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -881,31 +884,29 @@ export default function Home() {
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
               <h2 className="text-lg font-bold text-white">Telemetria</h2>
-            </div>
-            
-            <div className="flex gap-1 mb-4">
-                 <button onClick={() => setVistaTelemetria('FORM')} className={`flex-1 px-1 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaTelemetria === 'FORM' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>Form</button>
-                 <button onClick={() => setVistaTelemetria('STORICO')} className={`flex-1 px-1 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaTelemetria === 'STORICO' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>Storico</button>
+              <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaTelemetria === 'STORICO' ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
+                {vistaTelemetria === 'STORICO' ? 'Torna al Form' : 'Vedi Storico'}
+              </button>
             </div>
 
-            {vistaTelemetria === 'FORM' && (
+            {vistaTelemetria === 'FORM' ? (
                <div className="space-y-4">
                  <p className="text-[10px] text-orange-400 font-bold uppercase border-b border-neutral-800 pb-1">Misure Base</p>
                  <div className="grid grid-cols-2 gap-2">
                    {misureBase.map((m) => (
                        <div key={m.id} className="bg-neutral-950 p-2 rounded-lg border border-neutral-800">
                          <label className="text-[9px] text-neutral-400 uppercase font-bold flex justify-between">{m.label} <span className="text-neutral-600">{m.unit}</span></label>
-                         <input type="number" value={biometria[m.id]} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500 mt-1" placeholder="-" />
+                         <input type="number" value={biometria[m.id as keyof typeof biometria]} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500 mt-1" placeholder="-" />
                        </div>
                    ))}
                  </div>
                  
-                 <p className="text-[10px] text-blue-400 font-bold uppercase border-b border-neutral-800 pb-1 mt-2">Dati Composizione BIA (Opzionali)</p>
+                 <p className="text-[10px] text-blue-400 font-bold uppercase border-b border-neutral-800 pb-1 mt-2">Dati BIA (Opzionali)</p>
                  <div className="grid grid-cols-2 gap-2">
                    {misureBIA.map((m) => (
                        <div key={m.id} className="bg-neutral-950 p-2 rounded-lg border border-neutral-800">
                          <label className="text-[9px] text-neutral-400 uppercase font-bold flex justify-between">{m.label} <span className="text-neutral-600">{m.unit}</span></label>
-                         <input type="number" value={biometria[m.id]} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-blue-400 outline-none focus:text-white mt-1" placeholder="-" />
+                         <input type="number" value={biometria[m.id as keyof typeof biometria]} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-blue-400 outline-none focus:text-white mt-1" placeholder="-" />
                        </div>
                    ))}
                  </div>
@@ -917,10 +918,8 @@ export default function Home() {
 
                  <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] shadow-lg">Salva e Aggiorna Algoritmo</button>
                </div>
-            )}
-
-            {vistaTelemetria === 'STORICO' && (
-               <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[500px]">
+            ) : (
+               <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[600px]">
                  {storicoMisure.length === 0 ? <p className="text-[10px] text-neutral-500 italic text-center p-4">Nessun dato.</p> : (
                     storicoMisure.map(mis => {
                        const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
