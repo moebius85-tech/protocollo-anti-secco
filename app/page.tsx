@@ -8,7 +8,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO (Codifiche Animazioni Precise)
+// 1. DATABASE ALLENAMENTO MASTER (Paziente Zero)
+// Ogni alternativa è mappata con la SUA animazione e la SUA didattica
 // ==========================================
 const baseDbAllenamento = {
   Spinta: {
@@ -29,7 +30,7 @@ const baseDbAllenamento = {
       { id: "e4", nome: "Chest press", anim: "chest_machine", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale. Controlla il movimento.", 
         alternative: [
           { nome: "Pectoral Machine", anim: "chest_flye_machine", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti e chiudi le braccia stringendo il petto al centro." }, 
-          { nome: "Croci cavi seduto", anim: "chest_flye_cable", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro. Chiudi le maniglie davanti al petto." }
+          { nome: "Croci cavi seduto", anim: "chest_flye_cable", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro. Chiudi le maniglie davanti al petto in tensione continua." }
         ] 
       },
       { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti. Tira il petto al massimo e richiudi.", 
@@ -47,19 +48,19 @@ const baseDbAllenamento = {
       { id: "e20", nome: "Alzate laterali cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso per colpire il deltoide mediale.", 
         alternative: [
           { nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi, solleva lateralmente i manubri controllando la discesa." }, 
-          { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi bloccando le braccia. Nessuno slancio." }
+          { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi bloccando le braccia. Nessuno slancio con la schiena." }
         ] 
       },
       { id: "e22", nome: "Panca stretta", anim: "chest_barbell", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa stretta. Gomiti incollati al busto e spingi esplodendo in alto.", 
         alternative: [
-          { nome: "French Press", anim: "tricep_barbell", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso, porta il bilanciere alla fronte flettendo i gomiti." }, 
+          { nome: "French Press", anim: "tricep_barbell", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso, porta il bilanciere alla fronte flettendo i gomiti e distendi in alto." }, 
           { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "LIBERO/ZAVORRA: Scendi piegando le braccia e tenendo il busto dritto, spingi sui tricipiti." }
         ] 
       },
       { id: "e27", nome: "Push down corda", anim: "tricep_cable", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità verso l'esterno per strizzare i tricipiti.", 
         alternative: [
           { nome: "Push down sbarra", anim: "tricep_cable", note: "Carico maggiore", dettaglio: "CAVI: Sbarra dritta. Spingi il carico in basso bloccando i gomiti lungo i fianchi." }, 
-          { nome: "Estensioni nuca", anim: "tricep_cable", note: "Enfasi capo lungo", dettaglio: "CAVI: Dal cavo basso, porta la corda dietro la testa e distendi verso l'alto." }
+          { nome: "Estensioni nuca", anim: "tricep_cable", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi, porta la corda dietro la testa e distendi verso l'alto." }
         ] 
       }
     ]
@@ -67,10 +68,10 @@ const baseDbAllenamento = {
   Tirata: {
     focus: "TIRATA (Schiena, Bicipiti)",
     esercizi: [
-      { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il corpo verso l'alto abbassando i gomiti.", 
+      { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il tuo corpo verso l'alto abbassando i gomiti.", 
         alternative: [
           { nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono. Tira la sbarra verso il petto inarcando la schiena." }, 
-          { nome: "Lat Machine Triang.", anim: "back_pulldown", note: "Focus centrale", dettaglio: "MACCHINARIO: Usa il triangolo e tira verso il petto basso per colpire la schiena in spessore." }
+          { nome: "Lat Machine Triang.", anim: "back_pulldown", note: "Focus centrale", dettaglio: "MACCHINARIO: Triangolo presa stretta, tira verso il petto basso." }
         ] 
       },
       { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico, schiena piatta.", 
@@ -110,7 +111,7 @@ const baseDbAllenamento = {
     esercizi: [
       { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo e sali potente dai talloni.", 
         alternative: [
-          { nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori. Busto dritto, isola i quadricipiti." }, 
+          { nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: In appoggio sulle spalle anteriori. Busto dritto, isola i quadricipiti." }, 
           { nome: "Hack Squat Libero", anim: "leg_squat", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe (stile stacco). Spingi forte sui quadricipiti." }
         ] 
       },
@@ -155,419 +156,78 @@ const baseDbAllenamento = {
 };
 
 // ==========================================
-// 2. MOTORE SVG BIOMECCANICO PERFETTO
+// RENDERER SVG ANIMATO (Variabili sicure per Vercel)
 // ==========================================
 const SvgVisualizer = ({ icon, color }: { icon: string, color: string }) => {
-  const lineProps = { stroke: color, strokeWidth: "3", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  const headProps = { stroke: color, strokeWidth: "2.5", fill: "none" };
-  const machProps = { stroke: "#555", strokeWidth: "3.5", strokeLinecap: "round" as const, fill: "none" };
-  const benchProps = { stroke: "#444", strokeWidth: "5", strokeLinecap: "round" as const };
-  const weightProps = { fill: "#e5e5e5", rx: "1.5" };
-  const barProps = { stroke: "#e5e5e5", strokeWidth: "2.5", strokeLinecap: "round" as const };
-  const cableProps = { stroke: "#888", strokeWidth: "2", strokeDasharray: "2 2" };
+  const line = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  const head = { stroke: color, strokeWidth: "2.5", fill: "none" };
+  const machine = { stroke: "#555", strokeWidth: "3", strokeLinecap: "round" as const, fill: "none" };
+  const bench = { stroke: "#444", strokeWidth: "4", strokeLinecap: "round" as const };
+  const weight = { fill: "#e5e5e5", rx: "1" };
+  const gear = { stroke: "#e5e5e5", strokeWidth: "2", strokeLinecap: "round" as const, fill: "none" };
+  const cable = { stroke: "#888", strokeWidth: "1.5", strokeDasharray: "2 2" };
 
   return (
-    <div className="relative w-16 h-16 bg-neutral-950/90 rounded-lg border border-neutral-800 flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
-      <svg viewBox="0 0 60 60" className="w-14 h-14">
-        
-        {/* SPINTA PETTO */}
-        {icon === "chest_barbell" && (
-          <g>
-            <line x1="10" y1="42" x2="50" y2="42" {...benchProps} />
-            <circle cx="20" cy="38" r="4" {...headProps} />
-            <path d="M 24 39 L 38 39 L 45 48" {...lineProps} />
-            <path d="M 28 39 L 28 30 L 22 25" {...lineProps}><animate attributeName="d" values="M 28 39 L 28 30 L 22 25; M 28 39 L 28 20 L 22 15; M 28 39 L 28 30 L 22 25" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(0,-10); translate(0,0)" dur="2s" repeatCount="indefinite" />
-              <line x1="10" y1="25" x2="35" y2="25" {...barProps} />
-              <rect x="10" y="18" width="4" height="14" {...weightProps} /><rect x="31" y="18" width="4" height="14" {...weightProps} />
-            </g>
-          </g>
-        )}
-
-        {icon === "chest_dumbbell" && (
-          <g>
-            <line x1="10" y1="42" x2="50" y2="42" {...benchProps} />
-            <circle cx="20" cy="38" r="4" {...headProps} />
-            <path d="M 24 39 L 38 39 L 45 48" {...lineProps} />
-            <path d="M 28 39 L 25 30 L 25 25" {...lineProps}><animate attributeName="d" values="M 28 39 L 25 30 L 25 25; M 28 39 L 27 20 L 27 15; M 28 39 L 25 30 L 25 25" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(2,-10); translate(0,0)" dur="2s" repeatCount="indefinite" />
-              <line x1="22" y1="25" x2="28" y2="25" {...barProps} />
-              <circle cx="22" cy="25" r="3" {...weightProps}/><circle cx="28" cy="25" r="3" {...weightProps}/>
-            </g>
-          </g>
-        )}
-
-        {icon === "chest_machine" && (
-          <g>
-            <path d="M 15 20 L 15 50 L 30 50" {...benchProps} fill="none" />
-            <circle cx="22" cy="25" r="4" {...headProps} />
-            <path d="M 20 30 L 20 40 L 35 50" {...lineProps} />
-            <path d="M 20 30 L 25 35 L 28 30" {...lineProps}><animate attributeName="d" values="M 20 30 L 25 35 L 28 30; M 20 30 L 38 30 L 40 30; M 20 30 L 25 35 L 28 30" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(12,0); translate(0,0)" dur="2s" repeatCount="indefinite" />
-              <line x1="28" y1="25" x2="28" y2="35" {...machProps} />
-              <rect x="26" y="20" width="4" height="15" {...weightProps} />
-            </g>
-          </g>
-        )}
-
-        {icon === "chest_flye_db" && (
-          <g>
-            <line x1="25" y1="30" x2="35" y2="30" {...benchProps} strokeWidth="8" />
-            <circle cx="30" cy="25" r="4" {...headProps} />
-            <path d="M 30 30 L 30 50" {...lineProps} />
-            <path d="M 30 30 L 15 35 L 10 30 M 30 30 L 45 35 L 50 30" {...lineProps}><animate attributeName="d" values="M 30 30 L 15 35 L 10 30 M 30 30 L 45 35 L 50 30; M 30 30 L 25 15 L 28 10 M 30 30 L 35 15 L 32 10; M 30 30 L 15 35 L 10 30 M 30 30 L 45 35 L 50 30" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(18,-20); translate(0,0)" dur="2s" repeatCount="indefinite" /><circle cx="10" cy="30" r="3" {...weightProps}/></g>
-            <g><animate attributeName="transform" values="translate(0,0); translate(-18,-20); translate(0,0)" dur="2s" repeatCount="indefinite" /><circle cx="50" cy="30" r="3" {...weightProps}/></g>
-          </g>
-        )}
-
-        {icon === "chest_flye_cable" && (
-          <g>
-            <line x1="10" y1="15" x2="10" y2="50" {...machProps} /><line x1="50" y1="15" x2="50" y2="50" {...machProps} />
-            <circle cx="30" cy="30" r="4" {...headProps} />
-            <path d="M 30 35 L 30 50" {...lineProps} />
-            <path d="M 30 35 L 15 35 M 30 35 L 45 35" {...lineProps}><animate attributeName="d" values="M 30 35 L 15 35 M 30 35 L 45 35; M 30 35 L 25 20 M 30 35 L 35 20; M 30 35 L 15 35 M 30 35 L 45 35" dur="2s" repeatCount="indefinite" /></path>
-            <path d="M 10 25 L 15 35" {...cableProps}><animate attributeName="d" values="M 10 25 L 15 35; M 10 25 L 25 20; M 10 25 L 15 35" dur="2s" repeatCount="indefinite" /></path>
-            <path d="M 50 25 L 45 35" {...cableProps}><animate attributeName="d" values="M 50 25 L 45 35; M 50 25 L 35 20; M 50 25 L 45 35" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
-
-        {icon === "chest_flye_machine" && (
-          <g>
-            <line x1="30" y1="15" x2="30" y2="50" {...machProps} />
-            <circle cx="30" cy="30" r="4" {...headProps} />
-            <path d="M 26 30 C 15 30 15 20 25 20 M 34 30 C 45 30 45 20 35 20" {...lineProps}><animate attributeName="d" values="M 26 30 C 15 30 15 20 25 20 M 34 30 C 45 30 45 20 35 20; M 26 30 L 26 20 M 34 30 L 34 20; M 26 30 C 15 30 15 20 25 20 M 34 30 C 45 30 45 20 35 20" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
+    <div className="relative w-16 h-16 bg-neutral-950/80 rounded-lg border border-neutral-800 flex items-center justify-center overflow-hidden shadow-inner shrink-0">
+      <style>{`
+        @keyframes flipA { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
+        @keyframes flipB { 0%, 45% { opacity: 0; } 50%, 95% { opacity: 1; } 100% { opacity: 0; } }
+        .frame-a { animation: flipA 1.6s infinite; }
+        .frame-b { animation: flipB 1.6s infinite; }
+      `}</style>
+      <svg viewBox="0 0 50 50" className="w-14 h-14">
+        {/* SPINTA */}
+        {icon === "chest_barbell" && ( <><line x1="5" y1="35" x2="45" y2="35" {...bench} /> <line x1="12" y1="35" x2="12" y2="45" {...bench} strokeWidth="2" /> <line x1="38" y1="35" x2="38" y2="45" {...bench} strokeWidth="2" /> <g className="frame-a"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...line} /> <path d="M 23 33 L 26 26 L 23 20" {...line} /> <line x1="18" y1="20" x2="28" y2="20" {...gear} /> <rect x="17" y="14" width="2" height="12" {...weight} /> <rect x="27" y="14" width="2" height="12" {...weight} /> </g> <g className="frame-b"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...line} /> <path d="M 23 33 L 23 10" {...line} /> <line x1="18" y1="10" x2="28" y2="10" {...gear} /> <rect x="17" y="4" width="2" height="12" {...weight} /> <rect x="27" y="4" width="2" height="12" {...weight} /> </g> </> )}
+        {icon === "chest_dumbbell" && ( <><line x1="5" y1="35" x2="45" y2="35" {...bench} /> <line x1="12" y1="35" x2="12" y2="45" {...bench} strokeWidth="2" /> <line x1="38" y1="35" x2="38" y2="45" {...bench} strokeWidth="2" /> <g className="frame-a"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42" {...line} /> <path d="M 23 33 L 26 26 L 23 20" {...line} /> <circle cx="20" cy="20" r="3" {...weight} /> <circle cx="26" cy="20" r="3" {...weight} /> </g> <g className="frame-b"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42" {...line} /> <path d="M 23 33 L 23 10" {...line} /> <circle cx="20" cy="10" r="3" {...weight} /> <circle cx="26" cy="10" r="3" {...weight} /> </g> </> )}
+        {icon === "chest_machine" && ( <><path d="M 10 15 L 10 45 M 5 45 L 20 45" {...bench} fill="none" /> <g className="frame-a"> <circle cx="16" cy="20" r="3.5" {...head} /> <path d="M 14 24 L 14 35 L 25 45" {...line} /> <path d="M 14 24 L 20 28 L 22 24" {...line} /> <line x1="22" y1="20" x2="22" y2="28" {...machine} strokeWidth="2" /> <rect x="20" y="15" width="4" height="15" {...weight} /> </g> <g className="frame-b"> <circle cx="16" cy="20" r="3.5" {...head} /> <path d="M 14 24 L 14 35 L 25 45" {...line} /> <path d="M 14 24 L 35 24" {...line} /> <line x1="35" y1="20" x2="35" y2="28" {...machine} strokeWidth="2" /> <rect x="33" y="15" width="4" height="15" {...weight} /> </g> </> )}
+        {icon === "chest_flye_db" && ( <><line x1="20" y1="25" x2="30" y2="25" {...bench} strokeWidth="6" /> <g className="frame-a"> <circle cx="25" cy="20" r="3.5" {...head} /> <path d="M 25 24 L 25 45" {...line} /> <path d="M 25 24 L 10 20 M 25 24 L 40 20" {...line} /> <rect x="6" y="16" width="6" height="8" {...weight} rx="2" /> <rect x="38" y="16" width="6" height="8" {...weight} rx="2" /> </g> <g className="frame-b"> <circle cx="25" cy="20" r="3.5" {...head} /> <path d="M 25 24 L 25 45" {...line} /> <path d="M 25 24 L 22 10 M 25 24 L 28 10" {...line} /> <rect x="18" y="6" width="6" height="8" {...weight} rx="2" /> <rect x="26" y="6" width="6" height="8" {...weight} rx="2" /> </g> </> )}
+        {icon === "chest_flye_cable" && ( <><line x1="5" y1="10" x2="5" y2="40" {...machine} /> <line x1="45" y1="10" x2="45" y2="40" {...machine} /> <g className="frame-a"> <circle cx="25" cy="25" r="4" {...head} /> <path d="M 21 25 L 5 20 M 29 25 L 45 20" {...cable} /> <circle cx="15" cy="22" r="3" {...weight} /> <circle cx="35" cy="22" r="3" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="25" r="4" {...head} /> <path d="M 21 25 L 21 10 M 29 25 L 29 10" {...cable} /> <circle cx="21" cy="10" r="3" {...weight} /> <circle cx="29" cy="10" r="3" {...weight} /> </g> </> )}
+        {icon === "chest_flye_machine" && ( <><line x1="25" y1="10" x2="25" y2="40" {...machine} /> <g className="frame-a"> <circle cx="25" cy="25" r="4" {...head} /> <path d="M 21 25 C 10 25 10 15 20 15 M 29 25 C 40 25 40 15 30 15" {...line} /> </g> <g className="frame-b"> <circle cx="25" cy="25" r="4" {...head} /> <path d="M 21 25 L 21 15 M 29 25 L 29 15" {...line} /> </g> </> )}
 
         {/* SPALLE */}
-        {icon === "shoulder_db" && (
-          <g>
-            <line x1="20" y1="45" x2="40" y2="45" {...benchProps} /><line x1="30" y1="45" x2="30" y2="25" {...benchProps} />
-            <circle cx="30" cy="20" r="4" {...headProps} />
-            <path d="M 26 26 L 15 32 L 15 20 M 34 26 L 45 32 L 45 20" {...lineProps}><animate attributeName="d" values="M 26 26 L 15 32 L 15 20 M 34 26 L 45 32 L 45 20; M 26 26 L 20 10 L 22 5 M 34 26 L 40 10 L 38 5; M 26 26 L 15 32 L 15 20 M 34 26 L 45 32 L 45 20" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(7,-15); translate(0,0)" dur="2s" repeatCount="indefinite" /><rect x="12" y="18" width="6" height="4" {...weightProps} /></g>
-            <g><animate attributeName="transform" values="translate(0,0); translate(-7,-15); translate(0,0)" dur="2s" repeatCount="indefinite" /><rect x="42" y="18" width="6" height="4" {...weightProps} /></g>
-          </g>
-        )}
-        
-        {icon === "shoulder_barbell" && (
-          <g>
-            <circle cx="30" cy="25" r="4" {...headProps} />
-            <path d="M 30 30 L 30 50 L 25 60 M 30 50 L 35 60" {...lineProps} />
-            <path d="M 26 28 L 15 35 L 15 20 M 34 28 L 45 35 L 45 20" {...lineProps}><animate attributeName="d" values="M 26 28 L 15 35 L 15 20 M 34 28 L 45 35 L 45 20; M 26 28 L 22 15 L 25 10 M 34 28 L 38 15 L 35 10; M 26 28 L 15 35 L 15 20 M 34 28 L 45 35 L 45 20" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(0,-10); translate(0,0)" dur="2s" repeatCount="indefinite" />
-              <line x1="10" y1="20" x2="50" y2="20" {...barProps} />
-              <rect x="10" y="15" width="4" height="10" {...weightProps} /><rect x="46" y="15" width="4" height="10" {...weightProps} />
-            </g>
-          </g>
-        )}
-
-        {icon === "shoulder_machine" && (
-          <g>
-            <line x1="20" y1="50" x2="40" y2="50" {...benchProps} /><line x1="30" y1="50" x2="30" y2="15" {...machProps} />
-            <circle cx="30" cy="25" r="4" {...headProps} />
-            <path d="M 26 30 L 20 35 L 20 20 M 34 30 L 40 35 L 40 20" {...lineProps}><animate attributeName="d" values="M 26 30 L 20 35 L 20 20 M 34 30 L 40 35 L 40 20; M 26 30 L 20 15 L 20 5 M 34 30 L 40 15 L 40 5; M 26 30 L 20 35 L 20 20 M 34 30 L 40 35 L 40 20" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(0,-15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-               <rect x="18" y="18" width="4" height="8" {...weightProps} /><rect x="38" y="18" width="4" height="8" {...weightProps} />
-            </g>
-          </g>
-        )}
-
-        {/* ALZATE LATERALI */}
-        {icon === "lateral_db" && (
-          <g>
-            <circle cx="30" cy="20" r="4" {...headProps} />
-            <path d="M 30 25 L 30 50 M 25 60 L 30 50 L 35 60" {...lineProps} />
-            <path d="M 30 25 L 20 40 L 15 45 M 30 25 L 40 40 L 45 45" {...lineProps}><animate attributeName="d" values="M 30 25 L 20 40 L 15 45 M 30 25 L 40 40 L 45 45; M 30 25 L 15 25 L 5 25 M 30 25 L 45 25 L 55 25; M 30 25 L 20 40 L 15 45 M 30 25 L 40 40 L 45 45" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(-10,-20); translate(0,0)" dur="2s" repeatCount="indefinite" /><circle cx="15" cy="45" r="3" {...weightProps} /></g>
-            <g><animate attributeName="transform" values="translate(0,0); translate(10,-20); translate(0,0)" dur="2s" repeatCount="indefinite" /><circle cx="45" cy="45" r="3" {...weightProps} /></g>
-          </g>
-        )}
-        
-        {icon === "lateral_cable" && (
-          <g>
-            <line x1="10" y1="50" x2="50" y2="50" {...machProps} /><circle cx="15" cy="50" r="2" fill="#555" /><circle cx="45" cy="50" r="2" fill="#555" />
-            <circle cx="30" cy="20" r="4" {...headProps} />
-            <path d="M 30 25 L 30 50" {...lineProps} />
-            <path d="M 30 25 L 25 40 M 30 25 L 35 40" {...lineProps}><animate attributeName="d" values="M 30 25 L 25 40 M 30 25 L 35 40; M 30 25 L 10 25 M 30 25 L 50 25; M 30 25 L 25 40 M 30 25 L 35 40" dur="2s" repeatCount="indefinite" /></path>
-            <path d="M 15 50 L 25 40" {...cableProps}><animate attributeName="d" values="M 15 50 L 25 40; M 15 50 L 10 25; M 15 50 L 25 40" dur="2s" repeatCount="indefinite" /></path>
-            <path d="M 45 50 L 35 40" {...cableProps}><animate attributeName="d" values="M 45 50 L 35 40; M 45 50 L 50 25; M 45 50 L 35 40" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
-
-        {icon === "lateral_machine" && (
-          <g>
-            <line x1="30" y1="50" x2="30" y2="20" {...machProps} />
-            <circle cx="30" cy="25" r="4" {...headProps} />
-            <path d="M 30 30 L 30 50" {...lineProps} />
-            <path d="M 30 30 L 20 40 M 30 30 L 40 40" {...lineProps}><animate attributeName="d" values="M 30 30 L 20 40 M 30 30 L 40 40; M 30 30 L 15 30 M 30 30 L 45 30; M 30 30 L 20 40 M 30 30 L 40 40" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(-5,-10); translate(0,0)" dur="2s" repeatCount="indefinite" /><rect x="18" y="38" width="4" height="10" {...weightProps} /></g>
-            <g><animate attributeName="transform" values="translate(0,0); translate(5,-10); translate(0,0)" dur="2s" repeatCount="indefinite" /><rect x="38" y="38" width="4" height="10" {...weightProps} /></g>
-          </g>
-        )}
+        {icon === "shoulder_db" && ( <><line x1="15" y1="35" x2="35" y2="35" {...bench} /> <line x1="25" y1="35" x2="25" y2="25" {...bench} /> <g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35" {...line} /> <path d="M 25 21 L 16 26 L 16 18 M 25 21 L 34 26 L 34 18" {...line} /> <rect x="14" y="16" width="4" height="6" {...weight} /> <rect x="32" y="16" width="4" height="6" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35" {...line} /> <path d="M 25 21 L 18 6 M 25 21 L 32 6" {...line} /> <rect x="16" y="2" width="4" height="6" {...weight} /> <rect x="30" y="2" width="4" height="6" {...weight} /> </g> </> )}
+        {icon === "shoulder_barbell" && ( <><g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...line} /> <path d="M 25 21 L 16 26 L 16 18 M 25 21 L 34 26 L 34 18" {...line} /> <line x1="10" y1="17" x2="40" y2="17" {...gear} /> <rect x="10" y="14" width="2" height="6" {...weight} /> <rect x="38" y="14" width="2" height="6" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...line} /> <path d="M 25 21 L 18 6 M 25 21 L 32 6" {...line} /> <line x1="10" y1="5" x2="40" y2="5" {...gear} /> <rect x="10" y="2" width="2" height="6" {...weight} /> <rect x="38" y="2" width="2" height="6" {...weight} /> </g> </> )}
+        {icon === "shoulder_machine" && ( <><line x1="15" y1="45" x2="35" y2="45" {...machine} /> <line x1="25" y1="45" x2="25" y2="10" {...machine} /> <g className="frame-a"> <circle cx="25" cy="25" r="4" {...head} /> <path d="M 21 28 L 15 28 M 29 28 L 35 28" {...line} /> <rect x="12" y="25" width="6" height="6" {...weight} /> <rect x="32" y="25" width="6" height="6" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="25" r="4" {...head} /> <path d="M 21 28 L 15 15 M 29 28 L 35 15" {...line} /> <rect x="12" y="12" width="6" height="6" {...weight} /> <rect x="32" y="12" width="6" height="6" {...weight} /> </g> </> )}
+        {icon === "lateral_db" && ( <><g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /> <path d="M 25 21 L 18 35 M 25 21 L 32 35" {...line} /> <circle cx="18" cy="35" r="3" {...weight} /> <circle cx="32" cy="35" r="3" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /> <path d="M 25 21 L 10 21 M 25 21 L 40 21" {...line} /> <circle cx="8" cy="21" r="3" {...weight} /> <circle cx="42" cy="21" r="3" {...weight} /> </g> </> )}
+        {icon === "lateral_cable" && ( <><line x1="5" y1="45" x2="45" y2="45" {...machine} /> <circle cx="8" cy="45" r="2" fill="#555" /> <circle cx="42" cy="45" r="2" fill="#555" /> <g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /> <path d="M 25 21 L 22 35 M 25 21 L 28 35" {...line} /> <line x1="8" y1="45" x2="28" y2="35" {...cable} /> <line x1="42" y1="45" x2="22" y2="35" {...cable} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 20 45 L 30 45" {...line} /> <path d="M 25 21 L 10 21 M 25 21 L 40 21" {...line} /> <line x1="8" y1="45" x2="40" y2="21" {...cable} /> <line x1="42" y1="45" x2="10" y2="21" {...cable} /> </g> </> )}
+        {icon === "lateral_machine" && ( <><line x1="25" y1="45" x2="25" y2="15" {...machine} /> <g className="frame-a"> <circle cx="25" cy="20" r="3.5" {...head} /> <path d="M 21 25 L 15 35 M 29 25 L 35 35" {...line} /> <rect x="13" y="33" width="4" height="6" {...weight} /> <rect x="33" y="33" width="4" height="6" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="20" r="3.5" {...head} /> <path d="M 21 25 L 10 25 M 29 25 L 40 25" {...line} /> <rect x="8" y="23" width="4" height="6" {...weight} /> <rect x="38" y="23" width="4" height="6" {...weight} /> </g> </> )}
 
         {/* TRICIPITI */}
-        {icon === "tricep_cable" && (
-          <g>
-            <line x1="45" y1="5" x2="45" y2="50" {...machProps} /><circle cx="43" cy="5" r="3" fill="#555" />
-            <circle cx="25" cy="20" r="4" {...headProps} />
-            <path d="M 25 25 L 25 45 M 20 55 L 25 45 L 30 55" {...lineProps} />
-            <path d="M 25 27 L 32 35 L 38 25" {...lineProps}><animate attributeName="d" values="M 25 27 L 32 35 L 38 25; M 25 27 L 32 35 L 38 45; M 25 27 L 32 35 L 38 25" dur="2s" repeatCount="indefinite" /></path>
-            <path d="M 43 5 L 38 25" {...cableProps}><animate attributeName="d" values="M 43 5 L 38 25; M 43 5 L 38 45; M 43 5 L 38 25" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(0,20); translate(0,0)" dur="2s" repeatCount="indefinite" /><rect x="36" y="25" width="4" height="4" {...weightProps} /></g>
-          </g>
-        )}
-        
-        {icon === "tricep_barbell" && (
-          <g>
-            <line x1="10" y1="40" x2="50" y2="40" {...benchProps} />
-            <circle cx="20" cy="35" r="4" {...headProps} />
-            <path d="M 24 37 L 40 37 L 45 45" {...lineProps} />
-            <path d="M 28 37 L 28 25 L 18 25" {...lineProps}><animate attributeName="d" values="M 28 37 L 28 25 L 18 25; M 28 37 L 28 25 L 28 10; M 28 37 L 28 25 L 18 25" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(10,-15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-              <line x1="15" y1="20" x2="15" y2="30" {...barProps} />
-              <rect x="12" y="20" width="6" height="2" {...weightProps} /><rect x="12" y="28" width="6" height="2" {...weightProps} />
-            </g>
-          </g>
-        )}
-
-        {icon === "tricep_dips" && (
-          <g>
-            <line x1="20" y1="30" x2="20" y2="55" {...machProps} /><line x1="40" y1="30" x2="40" y2="55" {...machProps} />
-            <g><animate attributeName="transform" values="translate(0,0); translate(0,-15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-               <circle cx="30" cy="20" r="4" {...headProps} />
-               <path d="M 30 25 L 30 45 L 25 55 M 30 45 L 35 55" {...lineProps} />
-            </g>
-            <path d="M 30 27 L 20 35 M 30 27 L 40 35" {...lineProps}><animate attributeName="d" values="M 30 27 L 20 35 M 30 27 L 40 35; M 30 12 L 20 30 M 30 12 L 40 30; M 30 27 L 20 35 M 30 27 L 40 35" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
+        {icon === "tricep_cable" && ( <><line x1="35" y1="5" x2="35" y2="45" {...machine} /> <circle cx="33" cy="5" r="2" fill="#555" /> <g className="frame-a"> <circle cx="20" cy="15" r="3.5" {...head} /> <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...line} /> <path d="M 20 21 L 25 26 L 30 20" {...line} /> <line x1="33" y1="5" x2="30" y2="20" {...cable} /> </g> <g className="frame-b"> <circle cx="20" cy="15" r="3.5" {...head} /> <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...line} /> <path d="M 20 21 L 25 26 L 30 35" {...line} /> <line x1="33" y1="5" x2="30" y2="35" {...cable} /> </g> </> )}
+        {icon === "tricep_barbell" && ( <><line x1="5" y1="35" x2="45" y2="35" {...bench} /> <g className="frame-a"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42" {...line} /> <path d="M 23 33 L 23 25 L 15 25" {...line} /> <line x1="12" y1="20" x2="12" y2="30" {...gear} /> <rect x="10" y="20" width="4" height="3" {...weight} /> <rect x="10" y="27" width="4" height="3" {...weight} /> </g> <g className="frame-b"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42" {...line} /> <path d="M 23 33 L 23 15" {...line} /> <line x1="18" y1="12" x2="28" y2="12" {...gear} /> <rect x="18" y="10" width="3" height="4" {...weight} /> <rect x="25" y="10" width="3" height="4" {...weight} /> </g> </> )}
+        {icon === "tricep_dips" && ( <><line x1="15" y1="25" x2="15" y2="45" {...machine} /> <line x1="35" y1="25" x2="35" y2="45" {...machine} /> <g className="frame-a"> <circle cx="25" cy="15" r="4" {...head} /> <path d="M 25 19 L 25 35 M 25 35 L 20 45 M 25 35 L 30 45" {...line} /> <path d="M 25 22 L 15 25 M 25 22 L 35 25" {...line} /> </g> <g className="frame-b"> <circle cx="25" cy="5" r="4" {...head} /> <path d="M 25 9 L 25 25 M 25 25 L 20 40 M 25 25 L 30 40" {...line} /> <path d="M 25 12 L 15 25 M 25 12 L 35 25" {...line} /> </g> </> )}
 
         {/* TIRATA */}
-        {icon === "back_pullup" && (
-          <g>
-            <line x1="10" y1="10" x2="50" y2="10" {...benchProps} strokeWidth="3" />
-            <g><animate attributeName="transform" values="translate(0,0); translate(0,-15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-               <circle cx="30" cy="28" r="4" {...headProps} />
-               <path d="M 30 32 L 30 50 M 25 60 L 30 50 L 35 60" {...lineProps} />
-            </g>
-            <path d="M 30 32 L 20 10 M 30 32 L 40 10" {...lineProps}><animate attributeName="d" values="M 30 32 L 20 10 M 30 32 L 40 10; M 30 17 L 20 25 L 20 10 M 30 17 L 40 25 L 40 10; M 30 32 L 20 10 M 30 32 L 40 10" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
-
-        {icon === "back_pulldown" && (
-          <g>
-            <line x1="30" y1="5" x2="30" y2="50" {...machProps} /><line x1="20" y1="45" x2="40" y2="45" {...benchProps} />
-            <circle cx="30" cy="25" r="4" {...headProps} />
-            <path d="M 30 30 L 30 45" {...lineProps} />
-            <path d="M 30 30 L 20 15 M 30 30 L 40 15" {...lineProps}><animate attributeName="d" values="M 30 30 L 20 15 M 30 30 L 40 15; M 30 30 L 20 28 M 30 30 L 40 28; M 30 30 L 20 15 M 30 30 L 40 15" dur="2s" repeatCount="indefinite" /></path>
-            <g><animate attributeName="transform" values="translate(0,0); translate(0,13); translate(0,0)" dur="2s" repeatCount="indefinite" />
-               <line x1="15" y1="15" x2="45" y2="15" {...barProps} strokeWidth="3" />
-            </g>
-          </g>
-        )}
-
-        {icon === "back_row_barbell" && (
-          <g>
-             <circle cx="42" cy="20" r="4" {...headProps} />
-             <path d="M 39 23 L 25 35 L 25 55 M 25 35 L 30 55" {...lineProps} />
-             <path d="M 37 25 L 30 45" {...lineProps}><animate attributeName="d" values="M 37 25 L 30 45; M 37 25 L 45 22 L 35 30; M 37 25 L 30 45" dur="2s" repeatCount="indefinite" /></path>
-             <g><animate attributeName="transform" values="translate(0,0); translate(5,-15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <line x1="20" y1="45" x2="40" y2="45" {...barProps} />
-                <circle cx="20" cy="45" r="5" {...weightProps} fill="none" stroke="#e5e5e5" />
-             </g>
-          </g>
-        )}
-
-        {icon === "back_row_db" && (
-          <g>
-             <line x1="10" y1="40" x2="35" y2="40" {...benchProps} />
-             <circle cx="40" cy="20" r="4" {...headProps} />
-             <path d="M 37 23 L 28 30 L 28 55 M 28 30 L 15 40" {...lineProps} />
-             <path d="M 37 25 L 30 45" {...lineProps}><animate attributeName="d" values="M 37 25 L 30 45; M 37 25 L 45 22 L 35 30; M 37 25 L 30 45" dur="2s" repeatCount="indefinite" /></path>
-             <g><animate attributeName="transform" values="translate(0,0); translate(5,-15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <rect x="28" y="42" width="4" height="6" {...weightProps} />
-             </g>
-          </g>
-        )}
-
-        {icon === "back_row_cable" && (
-          <g>
-             <line x1="10" y1="45" x2="30" y2="45" {...benchProps} /><line x1="45" y1="25" x2="45" y2="50" {...machProps} /><circle cx="43" cy="45" r="2" fill="#555" />
-             <circle cx="20" cy="25" r="4" {...headProps} />
-             <path d="M 20 30 L 20 45 M 20 45 L 35 45" {...lineProps} />
-             <path d="M 20 30 L 40 40" {...lineProps}><animate attributeName="d" values="M 20 30 L 40 40; M 18 30 L 15 35 L 30 40; M 20 30 L 40 40" dur="2s" repeatCount="indefinite" /></path>
-             <path d="M 43 45 L 40 40" {...cableProps}><animate attributeName="d" values="M 43 45 L 40 40; M 43 45 L 30 40; M 43 45 L 40 40" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
-
-        {icon === "back_row_machine" && (
-          <g>
-             <line x1="25" y1="25" x2="25" y2="50" {...machProps} />
-             <circle cx="20" cy="25" r="4" {...headProps} />
-             <path d="M 20 30 L 20 45 M 20 30 L 30 30" {...lineProps} />
-             <g><animate attributeName="transform" values="translate(0,0); translate(-10,0); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <rect x="38" y="26" width="4" height="8" {...weightProps} />
-             </g>
-          </g>
-        )}
-
-        {icon === "back_pullover" && (
-          <g>
-             <line x1="15" y1="10" x2="15" y2="50" {...machProps} /><circle cx="17" cy="10" r="2" fill="#555" />
-             <circle cx="40" cy="20" r="4" {...headProps} />
-             <path d="M 40 25 L 40 45 M 35 55 L 40 45 L 45 55" {...lineProps} />
-             <path d="M 40 27 L 25 15" {...lineProps}><animate attributeName="d" values="M 40 27 L 25 15; M 40 27 L 40 45; M 40 27 L 25 15" dur="2s" repeatCount="indefinite" /></path>
-             <path d="M 17 10 L 25 15" {...cableProps}><animate attributeName="d" values="M 17 10 L 25 15; M 17 10 L 40 45; M 17 10 L 25 15" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
-
-        {icon === "back_pullover_db" && (
-          <g>
-             <line x1="20" y1="40" x2="40" y2="40" {...benchProps} />
-             <circle cx="30" cy="30" r="4" {...headProps} />
-             <path d="M 26 30 L 15 30 M 30 35 L 30 50 M 30 25 L 40 25" {...lineProps} />
-             <g><animate attributeName="transform" values="translate(0,0); translate(0,-20); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <rect x="42" y="22" width="4" height="6" {...weightProps} />
-             </g>
-          </g>
-        )}
+        {icon === "back_pullup" && ( <><line x1="5" y1="6" x2="45" y2="6" {...bench} strokeWidth="3" /> <g className="frame-a"> <circle cx="25" cy="22" r="3.5" {...head} /> <path d="M 25 26 L 25 40 L 22 48 M 25 40 L 28 48" {...line} /> <path d="M 25 26 L 15 6 M 25 26 L 35 6" {...line} /> </g> <g className="frame-b"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 22 35 M 25 30 L 28 35" {...line} /> <path d="M 25 14 L 15 20 L 15 6 M 25 14 L 35 20 L 35 6" {...line} /> </g> </> )}
+        {icon === "back_pulldown" && ( <><line x1="25" y1="5" x2="25" y2="45" {...machine} /> <line x1="15" y1="40" x2="35" y2="40" {...bench} /> <g className="frame-a"> <circle cx="25" cy="20" r="4" {...head} /> <path d="M 25 24 L 25 40" {...line} /> <path d="M 25 24 L 15 10 M 25 24 L 35 10" {...line} /> <line x1="10" y1="10" x2="40" y2="10" {...gear} strokeWidth="3" /> </g> <g className="frame-b"> <circle cx="25" cy="20" r="4" {...head} /> <path d="M 25 24 L 25 40" {...line} /> <path d="M 25 24 L 15 22 M 25 24 L 35 22" {...line} /> <line x1="10" y1="22" x2="40" y2="22" {...gear} strokeWidth="3" /> </g> </> )}
+        {icon === "back_row_barbell" && ( <><g className="frame-a"> <circle cx="38" cy="18" r="3.5" {...head} /> <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...line} /> <path d="M 32 23 L 35 40" {...line} /> <line x1="28" y1="40" x2="42" y2="40" {...gear} /> <circle cx="35" cy="40" r="6" {...weight} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> <g className="frame-b"> <circle cx="38" cy="18" r="3.5" {...head} /> <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...line} /> <path d="M 32 23 L 40 20 L 30 28" {...line} /> <line x1="23" y1="28" x2="37" y2="28" {...gear} /> <circle cx="30" cy="28" r="6" {...weight} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> </> )}
+        {icon === "back_row_db" && ( <><line x1="10" y1="35" x2="30" y2="35" {...bench} /> <g className="frame-a"> <circle cx="35" cy="15" r="4" {...head} /> <path d="M 33 18 L 25 25 L 25 45 M 25 25 L 15 35" {...line} /> <path d="M 32 20 L 35 40" {...line} /> <rect x="33" y="38" width="4" height="6" {...weight} /> </g> <g className="frame-b"> <circle cx="35" cy="15" r="4" {...head} /> <path d="M 33 18 L 25 25 L 25 45 M 25 25 L 15 35" {...line} /> <path d="M 32 20 L 40 18 L 30 25" {...line} /> <rect x="28" y="23" width="4" height="6" {...weight} /> </g> </> )}
+        {icon === "back_row_cable" && ( <><line x1="10" y1="40" x2="30" y2="40" {...bench} /> <line x1="40" y1="30" x2="40" y2="45" {...machine} /> <circle cx="38" cy="40" r="2" fill="#555" /> <g className="frame-a"> <circle cx="20" cy="20" r="3.5" {...head} /> <path d="M 20 24 L 20 38 L 35 38" {...line} /> <path d="M 20 24 L 35 35" {...line} /> <line x1="38" y1="40" x2="35" y2="35" {...cable} /> </g> <g className="frame-b"> <circle cx="18" cy="20" r="3.5" {...head} /> <path d="M 18 24 L 20 38 L 35 38" {...line} /> <path d="M 18 24 L 14 30 L 28 35" {...line} /> <line x1="38" y1="40" x2="28" y2="35" {...cable} /> </g> </> )}
+        {icon === "back_row_machine" && ( <><line x1="20" y1="20" x2="20" y2="45" {...machine} /> <g className="frame-a"> <circle cx="15" cy="20" r="4" {...head} /> <path d="M 15 24 L 15 40 M 15 24 L 35 24" {...line} /> <rect x="33" y="20" width="4" height="8" {...weight} /> </g> <g className="frame-b"> <circle cx="15" cy="20" r="4" {...head} /> <path d="M 15 24 L 15 40 M 15 24 L 10 30 L 20 30" {...line} /> <rect x="18" y="26" width="4" height="8" {...weight} /> </g> </> )}
+        {icon === "back_pullover" && ( <><line x1="10" y1="5" x2="10" y2="45" {...machine} /> <circle cx="12" cy="5" r="2" fill="#555" /> <g className="frame-a"> <circle cx="35" cy="15" r="3.5" {...head} /> <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...line} /> <path d="M 35 21 L 20 10" {...line} /> <line x1="12" y1="5" x2="20" y2="10" {...cable} /> </g> <g className="frame-b"> <circle cx="35" cy="15" r="3.5" {...head} /> <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...line} /> <path d="M 35 21 L 35 38" {...line} /> <line x1="12" y1="5" x2="35" y2="38" {...cable} /> </g> </> )}
+        {icon === "back_pullover_db" && ( <><line x1="15" y1="35" x2="35" y2="35" {...bench} /> <g className="frame-a"> <circle cx="25" cy="25" r="4" {...head} /> <path d="M 21 25 L 10 25 M 25 29 L 25 45 M 25 21 L 40 21" {...line} /> <rect x="38" y="18" width="4" height="6" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="25" r="4" {...head} /> <path d="M 21 25 L 10 25 M 25 29 L 25 45 M 25 21 L 25 5" {...line} /> <rect x="23" y="2" width="4" height="6" {...weight} /> </g> </> )}
 
         {/* BICIPITI */}
-        {icon === "bicep_barbell" && (
-          <g>
-             <circle cx="30" cy="15" r="4" {...headProps} />
-             <path d="M 30 20 L 30 40 M 25 55 L 30 40 L 35 55" {...lineProps} />
-             <path d="M 30 22 L 30 35 L 38 40" {...lineProps}><animate attributeName="d" values="M 30 22 L 30 35 L 38 40; M 30 22 L 30 35 L 40 25; M 30 22 L 30 35 L 38 40" dur="2s" repeatCount="indefinite" /></path>
-             <g><animate attributeName="transform" values="translate(0,0); translate(2,-15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <line x1="25" y1="40" x2="45" y2="40" {...gear} />
-                <rect x="23" y="36" width="3" height="8" {...weightProps} /><rect x="44" y="36" width="3" height="8" {...weightProps} />
-             </g>
-          </g>
-        )}
-
-        {icon === "bicep_db" && (
-          <g>
-             <circle cx="30" cy="15" r="4" {...headProps} />
-             <path d="M 30 20 L 30 40 M 25 55 L 30 40 L 35 55" {...lineProps} />
-             <path d="M 30 22 L 25 35 L 25 45 M 30 22 L 35 35 L 40 25" {...lineProps}><animate attributeName="d" values="M 30 22 L 25 35 L 25 45 M 30 22 L 35 35 L 40 25; M 30 22 L 25 35 L 20 25 M 30 22 L 35 35 L 35 45; M 30 22 L 25 35 L 25 45 M 30 22 L 35 35 L 40 25" dur="2s" repeatCount="indefinite" /></path>
-             <g><animate attributeName="transform" values="translate(0,0); translate(-5,-20); translate(0,0)" dur="2s" repeatCount="indefinite" /><rect x="23" y="43" width="4" height="4" {...weightProps} /></g>
-             <g><animate attributeName="transform" values="translate(0,0); translate(-5,20); translate(0,0)" dur="2s" repeatCount="indefinite" /><rect x="38" y="23" width="4" height="4" {...weightProps} /></g>
-          </g>
-        )}
-
-        {icon === "bicep_cable" && (
-          <g>
-             <line x1="15" y1="10" x2="15" y2="50" {...machProps} /><circle cx="17" cy="50" r="2" fill="#555" />
-             <circle cx="40" cy="15" r="4" {...headProps} />
-             <path d="M 40 20 L 40 40 M 35 55 L 40 40 L 45 55" {...lineProps} />
-             <path d="M 40 22 L 40 35 L 30 45" {...lineProps}><animate attributeName="d" values="M 40 22 L 40 35 L 30 45; M 40 22 L 40 35 L 30 25; M 40 22 L 40 35 L 30 45" dur="2s" repeatCount="indefinite" /></path>
-             <path d="M 17 50 L 30 45" {...cableProps}><animate attributeName="d" values="M 17 50 L 30 45; M 17 50 L 30 25; M 17 50 L 30 45" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
+        {icon === "bicep_barbell" && ( <><g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...line} /> <path d="M 25 16 L 25 30 L 28 35" {...line} /> <line x1="20" y1="35" x2="36" y2="35" {...gear} /> <rect x="18" y="32" width="2" height="6" {...weight} /> <rect x="36" y="32" width="2" height="6" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...line} /> <path d="M 25 16 L 25 30 L 32 20" {...line} /> <line x1="24" y1="20" x2="40" y2="20" {...gear} /> <rect x="22" y="17" width="2" height="6" {...weight} /> <rect x="40" y="17" width="2" height="6" {...weight} /> </g> </> )}
+        {icon === "bicep_db" && ( <><g className="frame-a"> <circle cx="25" cy="10" r="4" {...head} /> <path d="M 25 14 L 25 35 M 20 45 L 25 35 L 30 45" {...line} /> <path d="M 25 16 L 20 30 M 25 16 L 30 30" {...line} /> <rect x="18" y="30" width="4" height="4" {...weight} /> <rect x="28" y="30" width="4" height="4" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="10" r="4" {...head} /> <path d="M 25 14 L 25 35 M 20 45 L 25 35 L 30 45" {...line} /> <path d="M 25 16 L 20 30 M 25 16 L 30 20" {...line} /> <rect x="18" y="30" width="4" height="4" {...weight} /> <rect x="28" y="18" width="4" height="4" {...weight} /> </g> </> )}
+        {icon === "bicep_cable" && ( <><line x1="10" y1="5" x2="10" y2="45" {...machine} /> <circle cx="12" cy="45" r="2" fill="#555" /> <g className="frame-a"> <circle cx="35" cy="10" r="3.5" {...head} /> <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...line} /> <path d="M 35 16 L 35 30 L 25 40" {...line} /> <line x1="12" y1="45" x2="25" y2="40" {...cable} /> <line x1="22" y1="40" x2="28" y2="40" {...gear} strokeWidth="3" /> </g> <g className="frame-b"> <circle cx="35" cy="10" r="3.5" {...head} /> <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...line} /> <path d="M 35 16 L 35 30 L 25 20" {...line} /> <line x1="12" y1="45" x2="25" y2="20" {...cable} /> <line x1="22" y1="20" x2="28" y2="20" {...gear} strokeWidth="3" /> </g> </> )}
 
         {/* GAMBE */}
-        {icon === "leg_squat" && (
-          <g>
-             <g><animate attributeName="transform" values="translate(0,0); translate(0,15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <circle cx="30" cy="15" r="4" {...headProps} />
-                <path d="M 30 19 L 30 35" {...lineProps} />
-                <line x1="20" y1="20" x2="40" y2="20" {...gear} /><circle cx="30" cy="20" r="6" {...weightProps} fill="none" stroke="#e5e5e5"/>
-             </g>
-             <path d="M 30 35 L 30 55" {...lineProps}><animate attributeName="d" values="M 30 35 L 30 55; M 30 50 L 45 50 L 30 55; M 30 35 L 30 55" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
-
-        {icon === "leg_machine_squat" && (
-          <g>
-             <line x1="15" y1="55" x2="45" y2="10" {...machProps} strokeWidth="5" />
-             <g><animate attributeName="transform" values="translate(0,0); translate(-10,15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <circle cx="38" cy="15" r="4" {...headProps} />
-                <path d="M 36 20 L 30 29" {...lineProps} />
-             </g>
-             <path d="M 30 29 L 30 55" {...lineProps}><animate attributeName="d" values="M 30 29 L 30 55; M 20 44 L 35 44 L 30 55; M 30 29 L 30 55" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
-
-        {icon === "leg_press" && (
-          <g>
-             <path d="M 10 35 L 25 55 L 45 55" {...benchProps} fill="none" />
-             <line x1="30" y1="10" x2="55" y2="35" {...machProps} strokeWidth="3" />
-             <circle cx="20" cy="30" r="4" {...headProps} />
-             <path d="M 20 35 L 25 55 M 25 55 L 30 35" {...lineProps} />
-             <path d="M 30 35 L 40 25" {...lineProps}><animate attributeName="d" values="M 30 35 L 40 25; M 30 35 L 40 45 L 50 15; M 30 35 L 40 25" dur="2s" repeatCount="indefinite" /></path>
-             <g><animate attributeName="transform" values="translate(0,0); translate(10,-10); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <line x1="35" y1="20" x2="45" y2="30" {...gear} strokeWidth="4" />
-             </g>
-          </g>
-        )}
-
-        {icon === "leg_extension" && (
-          <g>
-             <path d="M 20 25 L 20 40 L 35 40 L 35 55" {...benchProps} fill="none" />
-             <circle cx="15" cy="20" r="4" {...headProps} />
-             <path d="M 17 25 L 17 40 L 35 40" {...lineProps} />
-             <path d="M 35 40 L 35 55" {...lineProps}><animate attributeName="d" values="M 35 40 L 35 55; M 35 40 L 55 40; M 35 40 L 35 55" dur="2s" repeatCount="indefinite" /></path>
-             <g><animate attributeName="transform" values="translate(0,0); translate(20,-15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <circle cx="35" cy="55" r="4" {...weightProps} />
-             </g>
-          </g>
-        )}
-
-        {icon === "leg_deadlift" && (
-          <g>
-             <g><animate attributeName="transform" values="translate(0,0); translate(10,15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <circle cx="30" cy="15" r="4" {...headProps} />
-                <path d="M 30 20 L 30 35 M 30 22 L 30 45" {...lineProps} />
-             </g>
-             <path d="M 30 35 L 30 55" {...lineProps}><animate attributeName="d" values="M 30 35 L 30 55; M 40 50 L 32 55; M 30 35 L 30 55" dur="2s" repeatCount="indefinite" /></path>
-             <g><animate attributeName="transform" values="translate(0,0); translate(0,-30); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <line x1="20" y1="45" x2="40" y2="45" {...gear} /><circle cx="30" cy="45" r="6" {...weightProps} fill="none" stroke="#e5e5e5"/>
-             </g>
-          </g>
-        )}
-
-        {icon === "leg_curl" && (
-          <g>
-             <line x1="10" y1="40" x2="45" y2="40" {...benchProps} />
-             <path d="M 45 40 L 50 50" {...machProps} />
-             <circle cx="15" cy="35" r="4" {...headProps} />
-             <path d="M 20 38 L 35 38 L 45 38" {...lineProps} />
-             <path d="M 45 38 L 55 38" {...lineProps}><animate attributeName="d" values="M 45 38 L 55 38; M 45 38 L 42 20; M 45 38 L 55 38" dur="2s" repeatCount="indefinite" /></path>
-             <g><animate attributeName="transform" values="translate(0,0); translate(-13,-18); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <circle cx="55" cy="38" r="4" {...weightProps} />
-             </g>
-          </g>
-        )}
-
-        {icon === "leg_lunge" && (
-          <g>
-             <g><animate attributeName="transform" values="translate(0,0); translate(0,15); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <circle cx="30" cy="15" r="4" {...headProps} />
-                <path d="M 30 20 L 30 35 M 30 22 L 30 30" {...lineProps} />
-                <rect x="27" y="30" width="6" height="4" {...weightProps} />
-             </g>
-             <path d="M 30 35 L 40 35 L 40 55 M 30 35 L 20 55" {...lineProps}><animate attributeName="d" values="M 30 35 L 40 35 L 40 55 M 30 35 L 20 55; M 30 50 L 40 50 L 40 55 M 30 50 L 20 55; M 30 35 L 40 35 L 40 55 M 30 35 L 20 55" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
-
-        {icon === "leg_calf" && (
-          <g>
-             <rect x="25" y="50" width="15" height="5" fill="#555" />
-             <g><animate attributeName="transform" values="translate(0,0); translate(0,-10); translate(0,0)" dur="2s" repeatCount="indefinite" />
-                <circle cx="30" cy="15" r="4" {...headProps} />
-                <path d="M 30 20 L 30 35" {...lineProps} />
-             </g>
-             <path d="M 30 35 L 30 50 M 30 50 L 25 55" {...lineProps}><animate attributeName="d" values="M 30 35 L 30 50 M 30 50 L 25 55; M 30 25 L 30 45 L 32 50 L 25 55; M 30 35 L 30 50 M 30 50 L 25 55" dur="2s" repeatCount="indefinite" /></path>
-          </g>
-        )}
+        {icon === "leg_squat" && ( <><g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...line} /> <path d="M 25 15 L 29 19 L 25 13" {...line} /> <line x1="18" y1="13" x2="32" y2="13" {...gear} /> <circle cx="25" cy="13" r="5" {...weight} fill="none" stroke="#e5e5e5"/> </g> <g className="frame-b"> <circle cx="32" cy="24" r="3.5" {...head} /> <path d="M 32 28 L 20 38 L 26 48 M 20 38 L 16 48" {...line} /> <path d="M 32 29 L 36 33 L 32 27" {...line} /> <line x1="25" y1="27" x2="39" y2="27" {...gear} /> <circle cx="32" cy="27" r="5" {...weight} fill="none" stroke="#e5e5e5"/> </g> </> )}
+        {icon === "leg_machine_squat" && ( <><line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /> <g className="frame-a"> <circle cx="32" cy="10" r="3.5" {...head} /> <path d="M 30 14 L 23 23 L 23 45 M 23 23 L 28 45" {...line} /> </g> <g className="frame-b"> <circle cx="23" cy="22" r="3.5" {...head} /> <path d="M 21 26 L 14 35 L 23 35 L 23 45 M 14 35 L 28 45" {...line} /> </g> </> )}
+        {icon === "leg_press" && ( <><path d="M 10 30 L 20 45 L 35 45" {...bench} fill="none" /> <line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /> <g className="frame-a"> <circle cx="15" cy="25" r="3.5" {...head} /> <path d="M 15 28 L 20 45" {...line} /> <path d="M 20 45 L 22 30 L 30 20" {...line} /> <line x1="28" y1="15" x2="35" y2="22" {...gear} strokeWidth="3" /> </g> <g className="frame-b"> <circle cx="15" cy="25" r="3.5" {...head} /> <path d="M 15 28 L 20 45" {...line} /> <path d="M 20 45 L 32 30 L 42 10" {...line} /> <line x1="39" y1="5" x2="46" y2="12" {...gear} strokeWidth="3" /> </g> </> )}
+        {icon === "leg_extension" && ( <><path d="M 15 20 L 15 35 L 25 35 L 25 45" {...bench} fill="none" /> <g className="frame-a"> <circle cx="10" cy="15" r="3.5" {...head} /> <path d="M 12 18 L 12 33 L 25 33 L 25 45" {...line} /> <circle cx="27" cy="45" r="3" {...weight} /> </g> <g className="frame-b"> <circle cx="10" cy="15" r="3.5" {...head} /> <path d="M 12 18 L 12 33 L 25 33 L 40 33" {...line} /> <circle cx="40" cy="31" r="3" {...weight} /> <path d="M 25 33 L 40 31" {...machine} strokeWidth="1" /> </g> </> )}
+        {icon === "leg_deadlift" && ( <><g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...line} /> <path d="M 25 16 L 25 32" {...line} /> <line x1="15" y1="32" x2="35" y2="32" {...gear} /> <circle cx="25" cy="32" r="6" {...weight} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> <g className="frame-b"> <circle cx="35" cy="20" r="3.5" {...head} /> <path d="M 35 20 L 20 30 L 20 48 M 20 30 L 25 48" {...line} /> <path d="M 32 22 L 32 40" {...line} /> <line x1="22" y1="40" x2="42" y2="40" {...gear} /> <circle cx="32" cy="40" r="6" {...weight} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> </> )}
+        {icon === "leg_curl" && ( <><line x1="10" y1="35" x2="40" y2="35" {...bench} /> <path d="M 40 35 L 45 45" {...machine} /> <g className="frame-a"> <circle cx="15" cy="32" r="3.5" {...head} /> <path d="M 18 34 L 30 34 L 40 34 L 48 34" {...line} /> <circle cx="48" cy="32" r="3" {...weight} /> </g> <g className="frame-b"> <circle cx="15" cy="32" r="3.5" {...head} /> <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...line} /> <circle cx="36" cy="18" r="3" {...weight} /> <path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /> </g> </> )}
+        {icon === "leg_lunge" && ( <><g className="frame-a"> <circle cx="25" cy="10" r="4" {...head} /> <path d="M 25 14 L 25 30 L 35 45 M 25 30 L 15 45" {...line} /> <path d="M 25 16 L 25 25" {...line} /> <rect x="22" y="25" width="6" height="4" {...weight} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="4" {...head} /> <path d="M 25 19 L 25 35 L 35 35 L 35 45 M 25 35 L 15 45" {...line} /> <path d="M 25 21 L 25 30" {...line} /> <rect x="22" y="30" width="6" height="4" {...weight} /> </g> </> )}
+        {icon === "leg_calf" && ( <><rect x="20" y="45" width="10" height="5" fill="#555" /> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 45" {...line} /> </g> <g className="frame-b"> <circle cx="25" cy="6" r="3.5" {...head} /> <path d="M 25 10 L 25 26 L 27 40 L 22 45" {...line} /> </g> </> )}
       </svg>
     </div>
   );
 };
 
 // ==========================================
-// GRAFICI E RUOTA BIA LAICA (Geometria Rigorosa)
+// GRAFICI & RUOTA BIA
 // ==========================================
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti.</p>;
@@ -595,7 +255,7 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   );
 };
 
-// La Ruota BIA "Laica"
+// La Ruota BIA "Laica" con Tela Realistica Centrata (Scala 500x500)
 const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, string>, altezza: number | "", eta: number | "" }) => {
   const w = Number(data.peso) || 0;
   const h = Number(altezza) || 0;
@@ -612,7 +272,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
   const c = 2 * Math.PI * radius;
   const seg = c / 6;
 
-  // Calcolo matematico perfetto per centrare il testo
+  // Calcolo matematico perfetto per centrare il testo nel raggio (250, 250 è il centro)
   const getLabelPos = (angleDeg: number) => {
     const rad = (angleDeg - 90) * Math.PI / 180;
     return { x: 250 + radius * Math.cos(rad), y: 250 + radius * Math.sin(rad) };
@@ -632,14 +292,12 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
        <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
        <svg viewBox="0 0 500 500" className="w-full h-full drop-shadow-2xl z-10 p-2">
           
-          {/* Spicchi Ruota */}
           <g transform="translate(250, 250) rotate(-120)">
              {sections.map((sec, i) => (
                 <circle key={i} cx="0" cy="0" r={radius} fill="none" stroke={sec.color} strokeWidth={strokeW} strokeDasharray={`${seg - 2} ${c}`} strokeDashoffset={-(i * seg)} className="opacity-90 hover:opacity-100 transition-opacity" />
              ))}
           </g>
 
-          {/* Testo Centrato Rigorosamente */}
           {sections.map((sec, i) => {
              const pos = getLabelPos(sec.angle);
              return (
@@ -650,7 +308,6 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              )
           })}
 
-          {/* Sagoma Umana Termica (Niente Stickman) */}
           <g transform="translate(250, 250) scale(1.1) translate(-250, -250)">
              <path d="M250,130 C240,130 238,140 238,145 C238,152 242,155 247,158 C235,163 225,175 222,190 C217,205 212,240 212,240 L220,245 C220,245 230,205 235,195 C235,230 233,260 233,260 L238,350 L245,350 L245,260 L255,260 L255,350 L262,350 L267,260 C267,260 265,230 265,195 C270,205 280,245 280,245 L288,240 C288,240 283,205 278,190 C275,175 265,163 253,158 C258,155 262,152 262,145 C262,140 260,130 250,130 Z" fill="url(#gradThermal)" stroke="#000" strokeWidth="2"/>
           </g>
@@ -788,6 +445,10 @@ export default function Home() {
   useEffect(() => {
     if (tipoTurno === 'diretto' && quandoTiAlleni === 'pausa') setQuandoTiAlleni('sera');
   }, [tipoTurno, quandoTiAlleni]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatLog]);
 
   useEffect(() => {
     async function fetchAtleti() {
@@ -991,6 +652,7 @@ export default function Home() {
     } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
   };
 
+  // Funzioni UI minori
   const eliminaMisurazione = async (id: string) => { if(confirm("Eliminare misurazione?")) { await supabase.from("check_utente").delete().eq("id", id); caricaProfilo(utenteCorrente, protocolloAttivo); } };
   const getUltimoCarico = (idEs: string) => { for (let i = storicoSessioni.length - 1; i >= 0; i--) { if (storicoSessioni[i].carichi[idEs]) return storicoSessioni[i].carichi[idEs]; } return '0'; };
   const getNumeroSet = (fase: string) => { if (fase.includes('Fase 1')) return fastWorkout ? 3 : 4; return fastWorkout ? 2 : 3; };
@@ -1012,6 +674,7 @@ export default function Home() {
   const apriSwapAlimento = (categoria: string) => { setCategoriaDaCambiare(categoria as keyof typeof dbAlimenti); setModalAlimento(true); };
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
 
+  // Logica Calcolo Dieta
   const pesoNum = Number(biometria.peso) || 80;
   const bmr = Math.round((10 * pesoNum) + (6.25 * (Number(altezza)||175)) - (5 * (Number(eta)||41)) + 5);
   const tdeeMultiplier = protocolloAttivo === 'Shred' ? 1.35 : (protocolloAttivo === 'Ricomposizione' ? 1.45 : 1.55);
@@ -1086,6 +749,9 @@ export default function Home() {
     return dataPoints;
   };
 
+  // ==========================================
+  // RENDER HOME (Control Room)
+  // ==========================================
   if (appState === 'HOME') {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4 relative overflow-hidden">
@@ -1158,7 +824,7 @@ export default function Home() {
                      <option value="Ricomposizione">Obiettivo: Mantenimento</option>
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded">
-                     <p className="text-[10px] text-neutral-500 mb-2">📸 Foto Obiettivo Fisico (Opzionale). L&apos;IA stimera la BIA.</p>
+                     <p className="text-[10px] text-neutral-500 mb-2">📸 Foto Obiettivo Fisico (Opzionale). L&apos;IA stimerà la BIA.</p>
                      <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoFileWizard} />
                    </div>
                    <div className="flex gap-2">
@@ -1181,6 +847,9 @@ export default function Home() {
     );
   }
 
+  // ==========================================
+  // RENDER PROTOCOLLO OPERATIVO
+  // ==========================================
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 p-4 lg:p-6 font-sans overflow-x-hidden">
       
@@ -1216,7 +885,7 @@ export default function Home() {
                    {misureBase.map((m) => (
                        <div key={m.id} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800">
                          <label className="text-[9px] text-neutral-400 uppercase font-bold flex justify-between">{m.label} <span className="text-neutral-600">{m.unit}</span></label>
-                         <input type="number" value={biometria[m.id as keyof typeof biometria]} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500 mt-1" placeholder="-" />
+                         <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500 mt-1" placeholder="-" />
                        </div>
                    ))}
                  </div>
@@ -1226,13 +895,14 @@ export default function Home() {
                    {misureBIA.map((m) => (
                        <div key={m.id} className="bg-neutral-950 p-2 rounded-lg border border-neutral-800">
                          <label className="text-[9px] text-neutral-400 uppercase font-bold flex justify-between">{m.label} <span className="text-neutral-600">{m.unit}</span></label>
-                         <input type="number" value={biometria[m.id as keyof typeof biometria]} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-blue-400 outline-none focus:text-white mt-1" placeholder="-" />
+                         <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-blue-400 outline-none focus:text-white mt-1" placeholder="-" />
                        </div>
                    ))}
                  </div>
 
                  {/* RUOTA BIA COMPOSITION SUBITO SOTTO IL FORM */}
-                 <div className="pt-2">
+                 <div className="pt-4 border-t border-neutral-800">
+                    <p className="text-[10px] text-neutral-500 font-bold uppercase mb-2 text-center">Body Composition Scanner</p>
                     <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
                  </div>
 
@@ -1241,7 +911,7 @@ export default function Home() {
             ) : (
                <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[600px]">
                  {storicoMisure.length === 0 ? <p className="text-[10px] text-neutral-500 italic text-center p-4">Nessun dato.</p> : (
-                    storicoMisure.map(mis => {
+                    storicoMisure.map((mis: any) => {
                        const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
                        return (
                          <div key={mis.id} className="bg-neutral-950 p-3 rounded-lg border border-neutral-800 flex flex-col gap-2">
@@ -1573,8 +1243,8 @@ export default function Home() {
               <button onClick={() => setModalAlimento(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
             </div>
             <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-              {/* @ts-ignore */}
-              {dbAlimenti[categoriaDaCambiare].map((alt, i) => {
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {dbAlimenti[categoriaDaCambiare].map((alt: any, i: number) => {
                  const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
                  const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
                  return (
