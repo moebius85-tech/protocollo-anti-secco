@@ -8,7 +8,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO MASTER (Paziente Zero - Leonardo)
+// 1. DATABASE ALLENAMENTO (Completo con Alternative)
 // ==========================================
 const baseDbAllenamento = {
   Spinta: {
@@ -57,8 +57,57 @@ const mapEsercizioToAnimazione: Record<string, string> = {
   "e14": "leg_press", "e15": "leg_extension", "e13": "romanian_deadlift", "e16": "leg_curl_lying", "e17": "calf_raises"            
 };
 
+// Funzione intelligente che assegna l'SVG corretto anche quando si swappa un esercizio
+const getAnimType = (id: string, nomeAttuale: string) => {
+  const altMap: Record<string, string> = {
+    "Chest Press Convergente": "machine_press",
+    "Panca piana manubri": "bench_press_flat",
+    "Panca inclinata bilanciere": "bench_press_incline_db",
+    "Chest Press Inclinata": "machine_press",
+    "Pectoral Machine": "flyes_flat_db",
+    "Croci ai cavi seduto panca": "flyes_flat_db",
+    "Croci panca piana ai cavi": "flyes_flat_db",
+    "Pec Deck (Fly Machine)": "flyes_flat_db",
+    "Military Press bilanciere": "shoulder_press_db",
+    "Shoulder Press Macchina": "machine_press",
+    "Alzate laterali manubri": "lateral_raises_cables",
+    "Alzate laterali macchina": "lateral_raises_cables",
+    "French Press bilanciere EZ": "bench_press_close",
+    "Dips parallele (strette)": "tricep_pushdown",
+    "Push down sbarra dritta": "tricep_pushdown",
+    "Estensioni dietro nuca cavo basso": "tricep_pushdown",
+    "Lat Machine Presa Prona Larga": "pullups",
+    "Lat Machine Triangolo": "seated_cable_row",
+    "Rematore Manubrio Singolo": "barbell_row",
+    "Rematore T-Bar": "barbell_row",
+    "Rematore Macchina Seduto (Chest Supported)": "seated_cable_row",
+    "Seal Row panca": "barbell_row",
+    "Lat Machine Braccia Tese": "cable_pullover",
+    "Pullover Manubrio Panca": "cable_pullover",
+    "Curl Manubri Alternato": "barbell_curl",
+    "Curl Cavo Basso (Sbarra)": "cable_curl",
+    "Curl Panca Inclinata Manubri": "barbell_curl",
+    "Spider Curl panca 45°": "barbell_curl",
+    "Front Squat": "squat_barbell",
+    "Hack Squat Libero": "squat_barbell",
+    "Leg Press 45° (Piedi bassi e stretti)": "leg_press",
+    "Belt Squat": "squat_barbell",
+    "Affondi Camminati (Manubri)": "squat_barbell",
+    "Bulgarian Split Squat": "squat_barbell",
+    "Sissy Squat": "leg_extension",
+    "Step-up alto controllato": "leg_press",
+    "Stacco a Gambe Tese": "romanian_deadlift",
+    "Good Morning Bilanciere": "romanian_deadlift",
+    "Leg Curl Seduto": "leg_curl_lying",
+    "Glute Ham Raise": "leg_curl_lying",
+    "Calf Press (sulla Leg Press)": "calf_raises",
+    "Calf Seduto Macchina": "calf_raises"
+  };
+  return altMap[nomeAttuale] || mapEsercizioToAnimazione[id] || "squat_barbell";
+};
+
 // ==========================================
-// COMPONENTI SVG 
+// COMPONENTI SVG ANIMATI COMPLETI E INTATTI
 // ==========================================
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -79,16 +128,34 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
       `}</style>
       <svg viewBox="0 0 50 50" className="w-14 h-14">
         {type === "bench_press_flat" && ( <> <line x1="5" y1="35" x2="45" y2="35" {...benchLine} /> <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" /> <line x1="38" y1="35" x2="38" y2="45" {...benchLine} strokeWidth="2" /> <g className="frame-a"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 26 26 L 23 20" {...body} /> <line x1="18" y1="20" x2="28" y2="20" {...gear} /> <rect x="17" y="14" width="2" height="12" {...weightFill} /> <rect x="27" y="14" width="2" height="12" {...weightFill} /> </g> <g className="frame-b"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 23 10" {...body} /> <line x1="18" y1="10" x2="28" y2="10" {...gear} /> <rect x="17" y="4" width="2" height="12" {...weightFill} /> <rect x="27" y="4" width="2" height="12" {...weightFill} /> </g> </> )}
+        {type === "bench_press_close" && ( <> <line x1="5" y1="35" x2="45" y2="35" {...benchLine} /> <line x1="12" y1="35" x2="12" y2="45" {...benchLine} strokeWidth="2" /> <line x1="38" y1="35" x2="38" y2="45" {...benchLine} strokeWidth="2" /> <g className="frame-a"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 23 27 L 23 20" {...body} /> <line x1="20" y1="20" x2="26" y2="20" {...gear} /> <rect x="19" y="15" width="2" height="10" {...weightFill} /> <rect x="25" y="15" width="2" height="10" {...weightFill} /> </g> <g className="frame-b"> <circle cx="16" cy="32" r="3.5" {...head} /> <path d="M 19 33 L 32 33 L 40 42 L 40 48" {...body} /> <path d="M 23 33 L 23 10" {...body} /> <line x1="20" y1="10" x2="26" y2="10" {...gear} /> <rect x="19" y="5" width="2" height="10" {...weightFill} /> <rect x="25" y="5" width="2" height="10" {...weightFill} /> </g> </> )}
+        {type === "machine_press" && ( <> <path d="M 10 15 L 10 45 M 5 45 L 20 45" {...benchLine} fill="none" /> <g className="frame-a"> <circle cx="16" cy="20" r="3.5" {...head} /> <path d="M 14 24 L 14 35 L 25 45" {...body} /> <path d="M 14 24 L 20 28 L 22 24" {...body} /> <line x1="22" y1="20" x2="22" y2="28" {...machine} strokeWidth="2" /> </g> <g className="frame-b"> <circle cx="16" cy="20" r="3.5" {...head} /> <path d="M 14 24 L 14 35 L 25 45" {...body} /> <path d="M 14 24 L 35 24" {...body} /> <line x1="35" y1="20" x2="35" y2="28" {...machine} strokeWidth="2" /> </g> </> )}
+        {type === "bench_press_incline_db" && ( <> <path d="M 10 45 L 20 45 L 30 20 L 35 20" {...benchLine} fill="none"/> <g className="frame-a"> <circle cx="28" cy="18" r="3.5" {...head} /> <path d="M 28 22 L 20 42 L 15 42 L 15 48" {...body} /> <path d="M 25 30 L 30 25 L 25 18" {...body} /> <rect x="22" y="15" width="6" height="4" {...weightFill} /> </g> <g className="frame-b"> <circle cx="28" cy="18" r="3.5" {...head} /> <path d="M 28 22 L 20 42 L 15 42 L 15 48" {...body} /> <path d="M 25 30 L 20 12" {...body} /> <rect x="17" y="10" width="6" height="4" {...weightFill} transform="rotate(-20 20 12)" /> </g> </> )}
+        {type === "flyes_flat_db" && ( <> <line x1="20" y1="25" x2="30" y2="25" {...benchLine} strokeWidth="6" /> <g className="frame-a"> <circle cx="25" cy="20" r="3.5" {...head} /> <path d="M 25 24 L 25 45" {...body} /> <path d="M 25 24 L 10 30 M 25 24 L 40 30" {...body} /> <rect x="8" y="28" width="4" height="6" {...weightFill} /> <rect x="38" y="28" width="4" height="6" {...weightFill} /> </g> <g className="frame-b"> <circle cx="25" cy="20" r="3.5" {...head} /> <path d="M 25 24 L 25 45" {...body} /> <path d="M 25 24 L 22 10 M 25 24 L 28 10" {...body} /> <rect x="20" y="6" width="4" height="6" {...weightFill} /> <rect x="26" y="6" width="4" height="6" {...weightFill} /> </g> </> )}
+        {type === "shoulder_press_db" && ( <> <line x1="15" y1="35" x2="35" y2="35" {...benchLine} /> <g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35" {...body} /> <path d="M 25 21 L 16 26 L 16 18 M 25 21 L 34 26 L 34 18" {...body} /> <rect x="14" y="16" width="4" height="6" {...weightFill} /> <rect x="32" y="16" width="4" height="6" {...weightFill} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35" {...body} /> <path d="M 25 21 L 18 6 M 25 21 L 32 6" {...body} /> <rect x="16" y="2" width="4" height="6" {...weightFill} /> <rect x="30" y="2" width="4" height="6" {...weightFill} /> </g> </> )}
+        {type === "lateral_raises_cables" && ( <> <line x1="5" y1="45" x2="45" y2="45" {...machine} /> <circle cx="8" cy="45" r="2" fill="#555" /> <circle cx="42" cy="45" r="2" fill="#555" /> <g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...body} /> <path d="M 25 21 L 22 35 M 25 21 L 28 35" {...body} /> <line x1="8" y1="45" x2="28" y2="35" {...cable} /> <line x1="42" y1="45" x2="22" y2="35" {...cable} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 45 M 25 45 L 20 45 M 25 45 L 30 45" {...body} /> <path d="M 25 21 L 10 21 M 25 21 L 40 21" {...body} /> <line x1="8" y1="45" x2="40" y2="21" {...cable} /> <line x1="42" y1="45" x2="10" y2="21" {...cable} /> </g> </> )}
+        {type === "tricep_pushdown" && ( <> <line x1="35" y1="5" x2="35" y2="45" {...machine} /> <circle cx="33" cy="5" r="2" fill="#555" /> <g className="frame-a"> <circle cx="20" cy="15" r="3.5" {...head} /> <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...body} /> <path d="M 20 21 L 25 26 L 30 20" {...body} /> <line x1="33" y1="5" x2="30" y2="20" {...cable} /> </g> <g className="frame-b"> <circle cx="20" cy="15" r="3.5" {...head} /> <path d="M 20 19 L 20 35 L 15 45 M 20 35 L 25 45" {...body} /> <path d="M 20 21 L 25 26 L 30 35" {...body} /> <line x1="33" y1="5" x2="30" y2="35" {...cable} /> </g> </> )}
+        {type === "pullups" && ( <> <line x1="5" y1="6" x2="45" y2="6" {...benchLine} strokeWidth="3" /> <g className="frame-a"> <circle cx="25" cy="22" r="3.5" {...head} /> <path d="M 25 26 L 25 40 L 22 48 M 25 40 L 28 48" {...body} /> <path d="M 25 26 L 15 6 M 25 26 L 35 6" {...body} /> </g> <g className="frame-b"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 22 35 M 25 30 L 28 35" {...body} /> <path d="M 25 14 L 15 20 L 15 6 M 25 14 L 35 20 L 35 6" {...body} /> </g> </> )}
+        {type === "barbell_row" && ( <> <g className="frame-a"> <circle cx="38" cy="18" r="3.5" {...head} /> <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> <path d="M 32 23 L 35 40" {...body} /> <line x1="28" y1="40" x2="42" y2="40" {...gear} /> <circle cx="35" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> <g className="frame-b"> <circle cx="38" cy="18" r="3.5" {...head} /> <path d="M 35 21 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> <path d="M 32 23 L 40 20 L 30 28" {...body} /> <line x1="23" y1="28" x2="37" y2="28" {...gear} /> <circle cx="30" cy="28" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> </> )}
+        {type === "seated_cable_row" && ( <> <line x1="10" y1="40" x2="30" y2="40" {...benchLine} /> <line x1="40" y1="30" x2="40" y2="45" {...machine} /> <circle cx="38" cy="40" r="2" fill="#555" /> <g className="frame-a"> <circle cx="20" cy="20" r="3.5" {...head} /> <path d="M 20 24 L 20 38 L 35 38" {...body} /> <path d="M 20 24 L 35 35" {...body} /> <line x1="38" y1="40" x2="35" y2="35" {...cable} /> </g> <g className="frame-b"> <circle cx="18" cy="20" r="3.5" {...head} /> <path d="M 18 24 L 20 38 L 35 38" {...body} /> <path d="M 18 24 L 14 30 L 28 35" {...body} /> <line x1="38" y1="40" x2="28" y2="35" {...cable} /> </g> </> )}
+        {type === "cable_pullover" && ( <> <line x1="10" y1="5" x2="10" y2="45" {...machine} /> <circle cx="12" cy="5" r="2" fill="#555" /> <g className="frame-a"> <circle cx="35" cy="15" r="3.5" {...head} /> <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} /> <path d="M 35 21 L 20 10" {...body} /> <line x1="12" y1="5" x2="20" y2="10" {...cable} /> </g> <g className="frame-b"> <circle cx="35" cy="15" r="3.5" {...head} /> <path d="M 35 19 L 35 35 L 30 45 M 35 35 L 40 45" {...body} /> <path d="M 35 21 L 35 38" {...body} /> <line x1="12" y1="5" x2="35" y2="38" {...cable} /> </g> </> )}
+        {type === "barbell_curl" && ( <> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} /> <path d="M 25 16 L 25 30 L 28 35" {...body} /> <line x1="20" y1="35" x2="36" y2="35" {...gear} /> <rect x="18" y="32" width="2" height="6" {...weightFill} /> <rect x="36" y="32" width="2" height="6" {...weightFill} /> </g> <g className="frame-b"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 32 L 25 48 M 25 32 L 28 48" {...body} /> <path d="M 25 16 L 25 30 L 32 20" {...body} /> <line x1="24" y1="20" x2="40" y2="20" {...gear} /> <rect x="22" y="17" width="2" height="6" {...weightFill} /> <rect x="40" y="17" width="2" height="6" {...weightFill} /> </g> </> )}
+        {type === "cable_curl" && ( <> <line x1="10" y1="5" x2="10" y2="45" {...machine} /> <circle cx="12" cy="45" r="2" fill="#555" /> <g className="frame-a"> <circle cx="35" cy="10" r="3.5" {...head} /> <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} /> <path d="M 35 16 L 35 30 L 25 40" {...body} /> <line x1="12" y1="45" x2="25" y2="40" {...cable} /> <line x1="22" y1="40" x2="28" y2="40" {...gear} strokeWidth="3" /> </g> <g className="frame-b"> <circle cx="35" cy="10" r="3.5" {...head} /> <path d="M 35 14 L 35 32 L 30 48 M 35 32 L 40 48" {...body} /> <path d="M 35 16 L 35 30 L 25 20" {...body} /> <line x1="12" y1="45" x2="25" y2="20" {...cable} /> <line x1="22" y1="20" x2="28" y2="20" {...gear} strokeWidth="3" /> </g> </> )}
         {type === "squat_barbell" && ( <> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> <path d="M 25 15 L 29 19 L 25 13" {...body} /> <line x1="18" y1="13" x2="32" y2="13" {...gear} /> <circle cx="25" cy="13" r="5" {...weightFill} fill="none" stroke="#e5e5e5"/> </g> <g className="frame-b"> <circle cx="32" cy="24" r="3.5" {...head} /> <path d="M 32 28 L 20 38 L 26 48 M 20 38 L 16 48" {...body} /> <path d="M 32 29 L 36 33 L 32 27" {...body} /> <line x1="25" y1="27" x2="39" y2="27" {...gear} /> <circle cx="32" cy="27" r="5" {...weightFill} fill="none" stroke="#e5e5e5"/> </g> </> )}
-        {type !== "bench_press_flat" && type !== "squat_barbell" && ( <> <g className="frame-a"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35 L 20 45 M 25 35 L 30 45" {...body} /> <path d="M 25 21 L 15 25 M 25 21 L 35 25" {...body} /> </g> <g className="frame-b"> <circle cx="25" cy="15" r="3.5" {...head} /> <path d="M 25 19 L 25 35 L 20 45 M 25 35 L 30 45" {...body} /> <path d="M 25 21 L 15 15 M 25 21 L 35 15" {...body} /> </g> </> )}
+        {type === "hack_squat" && ( <> <line x1="10" y1="45" x2="40" y2="5" {...machine} strokeWidth="4" /> <g className="frame-a"> <circle cx="32" cy="10" r="3.5" {...head} /> <path d="M 30 14 L 23 23 L 23 45 M 23 23 L 28 45" {...body} /> </g> <g className="frame-b"> <circle cx="23" cy="22" r="3.5" {...head} /> <path d="M 21 26 L 14 35 L 23 35 L 23 45 M 14 35 L 28 45" {...body} /> </g> </> )}
+        {type === "leg_press" && ( <> <path d="M 10 30 L 20 45 L 35 45" {...benchLine} fill="none" /> <line x1="25" y1="10" x2="45" y2="30" {...machine} strokeWidth="2" /> <g className="frame-a"> <circle cx="15" cy="25" r="3.5" {...head} /> <path d="M 15 28 L 20 45" {...body} /> <path d="M 20 45 L 22 30 L 30 20" {...body} /> <line x1="28" y1="15" x2="35" y2="22" {...gear} strokeWidth="3" /> </g> <g className="frame-b"> <circle cx="15" cy="25" r="3.5" {...head} /> <path d="M 15 28 L 20 45" {...body} /> <path d="M 20 45 L 32 30 L 42 10" {...body} /> <line x1="39" y1="5" x2="46" y2="12" {...gear} strokeWidth="3" /> </g> </> )}
+        {type === "leg_extension" && ( <> <path d="M 15 20 L 15 35 L 25 35 L 25 45" {...benchLine} fill="none" /> <g className="frame-a"> <circle cx="10" cy="15" r="3.5" {...head} /> <path d="M 12 18 L 12 33 L 25 33 L 25 45" {...body} /> <circle cx="27" cy="45" r="3" {...weightFill} /> </g> <g className="frame-b"> <circle cx="10" cy="15" r="3.5" {...head} /> <path d="M 12 18 L 12 33 L 25 33 L 40 33" {...body} /> <circle cx="40" cy="31" r="3" {...weightFill} /> <path d="M 25 33 L 40 31" {...machine} strokeWidth="1" /> </g> </> )}
+        {type === "romanian_deadlift" && ( <> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 48 M 25 30 L 28 48" {...body} /> <path d="M 25 16 L 25 32" {...body} /> <line x1="15" y1="32" x2="35" y2="32" {...gear} /> <circle cx="25" cy="32" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> <g className="frame-b"> <circle cx="35" cy="20" r="3.5" {...head} /> <path d="M 35 20 L 20 30 L 20 48 M 20 30 L 25 48" {...body} /> <path d="M 32 22 L 32 40" {...body} /> <line x1="22" y1="40" x2="42" y2="40" {...gear} /> <circle cx="32" cy="40" r="6" {...weightFill} fill="none" stroke="#e5e5e5" strokeWidth="2" /> </g> </> )}
+        {type === "leg_curl_lying" && ( <> <line x1="10" y1="35" x2="40" y2="35" {...benchLine} /> <path d="M 40 35 L 45 45" {...machine} /> <g className="frame-a"> <circle cx="15" cy="32" r="3.5" {...head} /> <path d="M 18 34 L 30 34 L 40 34 L 48 34" {...body} /> <circle cx="48" cy="32" r="3" {...weightFill} /> </g> <g className="frame-b"> <circle cx="15" cy="32" r="3.5" {...head} /> <path d="M 18 34 L 30 34 L 40 34 L 38 18" {...body} /> <circle cx="36" cy="18" r="3" {...weightFill} /> <path d="M 40 34 L 36 18" {...machine} strokeWidth="1" /> </g> </> )}
+        {type === "calf_raises" && ( <> <rect x="20" y="45" width="10" height="5" fill="#555" /> <g className="frame-a"> <circle cx="25" cy="10" r="3.5" {...head} /> <path d="M 25 14 L 25 30 L 25 45" {...body} /> </g> <g className="frame-b"> <circle cx="25" cy="6" r="3.5" {...head} /> <path d="M 25 10 L 25 26 L 27 40 L 22 45" {...body} /> </g> </> )}
       </svg>
     </div>
   );
 };
 
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
-  if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti.</p>;
-  if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato ({data[0]}). Esegui un&apos;altra sessione.</p>;
+  if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti per il grafico.</p>;
+  if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato ({data[0]}). Esegui un&apos;altra sessione per tracciare la curva.</p>;
   const maxVal = Math.max(...data);
   const minVal = Math.min(...data);
   const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
@@ -187,7 +254,8 @@ const dbAlimenti = {
 
 const infoMisure = {
   peso: { label: "Peso", unit: "kg" }, petto: { label: "Petto", unit: "cm" }, spalle: { label: "Spalle", unit: "cm" },
-  braccia: { label: "Braccia", unit: "cm" }, gambe: { label: "Gambe", unit: "cm" }, glutei: { label: "Glutei", unit: "cm" }
+  braccia: { label: "Braccia", unit: "cm" }, gambe: { label: "Gambe", unit: "cm" }, glutei: { label: "Glutei", unit: "cm" },
+  vita: { label: "Vita (Nuovo)", unit: "cm" }
 };
 
 export default function Home() {
@@ -206,7 +274,8 @@ export default function Home() {
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
   const [stileVita, setStileVita] = useState("Attivo (es. Vendita al dettaglio, in piedi)");
-  const [biometria, setBiometria] = useState<Record<string, string>>({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
+  const [biometria, setBiometria] = useState<Record<string, string>>({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '' });
+  const [valoreBia, setValoreBia] = useState("");
   
   // Turni
   const [tipoTurno, setTipoTurno] = useState('spezzato');
@@ -219,7 +288,7 @@ export default function Home() {
   // --- WIZARD NUOVO ATLETA ---
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
-  const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred' });
+  const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', vita: '', bia: '', stileVita: 'Sedentario', obiettivo: 'Shred' });
   const [fotoWizard, setFotoWizard] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const [rispostaWizard, setRispostaWizard] = useState("");
   const [loadingWizard, setLoadingWizard] = useState(false);
@@ -303,13 +372,15 @@ export default function Home() {
         const circ = typeof validRec.circonferenze === 'string' ? JSON.parse(validRec.circonferenze) : (validRec.circonferenze || {});
         setBiometria({ 
           peso: validRec.peso?.toString() || '', petto: circ.petto || '', spalle: circ.spalle || '', 
-          braccia: circ.braccia || '', gambe: circ.gambe || '', glutei: circ.glutei || '' 
+          braccia: circ.braccia || '', gambe: circ.gambe || '', glutei: circ.glutei || '', vita: circ.vita || ''
         });
+        setValoreBia(circ.bia || "");
         if(circ.profilo?.stileVita) setStileVita(circ.profilo.stileVita);
       }
       setStoricoMisure(data.filter(d => d.peso || (d.circonferenze && typeof d.circonferenze === 'object' && Object.keys(d.circonferenze).length > 0)));
     } else if (nomeAtleta !== "Leonardo") {
-       setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '' });
+       setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '' });
+       setValoreBia("");
        setStoricoMisure([]);
     }
 
@@ -326,6 +397,20 @@ export default function Home() {
     } else { setStoricoSessioni([]); }
     
     setAppState('PROTOCOL');
+  };
+
+  const eliminaAtleta = async () => {
+    if (utenteCorrente === "Leonardo") {
+      alert("Operazione negata. Impossibile eliminare il Paziente Zero (Leonardo).");
+      return;
+    }
+    if (confirm(`Sei sicuro di voler eliminare definitivamente il profilo di ${utenteCorrente} e tutti i suoi dati?`)) {
+      await supabase.from("check_utente").delete().eq("nome_utente", utenteCorrente);
+      await supabase.from("storico_allenamenti").delete().eq("nome_utente", utenteCorrente);
+      setListaAtleti(prev => prev.filter(a => a !== utenteCorrente));
+      setUtenteCorrente("Leonardo");
+      alert(`Profilo di ${utenteCorrente} eliminato.`);
+    }
   };
 
   // ==========================================
@@ -368,7 +453,7 @@ export default function Home() {
   const analizzaObiettivoWizard = async () => {
     setLoadingWizard(true);
     try {
-      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate.`;
+      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Circonferenza Vita: ${datiWizard.vita}cm. BIA: ${datiWizard.bia}%. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate.`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: "Analizza il mio profilo.", context: contesto };
       if (fotoWizard) payload.file = { data: fotoWizard.data, mimeType: fotoWizard.mimeType };
@@ -385,7 +470,18 @@ export default function Home() {
   };
 
   const salvaProfiloWizard = async () => {
-    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo } }, data: new Date().toISOString() };
+    const payload = { 
+      nome_utente: datiWizard.nome, 
+      eta: Number(datiWizard.eta), 
+      altezza: Number(datiWizard.altezza), 
+      peso: Number(datiWizard.peso), 
+      circonferenze: { 
+        vita: datiWizard.vita, 
+        bia: datiWizard.bia, 
+        profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo } 
+      }, 
+      data: new Date().toISOString() 
+    };
     await supabase.from("check_utente").insert([payload]);
     setListaAtleti(prev => [...prev, datiWizard.nome]);
     setModalWizard(false);
@@ -468,7 +564,6 @@ export default function Home() {
         const pro = match[3];
         const fat = match[4];
         const nome = match[5];
-        console.log(pastoTarget);
         updateCustomMeal(cat, 'cho', Math.round(parseFloat(cho.replace(',','.'))).toString());
         updateCustomMeal(cat, 'pro', Math.round(parseFloat(pro.replace(',','.'))).toString());
         updateCustomMeal(cat, 'fat', Math.round(parseFloat(fat.replace(',','.'))).toString());
@@ -479,8 +574,8 @@ export default function Home() {
   };
 
   const valutaCheckFisico = async () => {
-    const { peso, petto, spalle, braccia, gambe, glutei } = biometria;
-    if (peso && eta && altezza && petto && spalle && braccia && gambe && glutei) {
+    const { peso, petto, spalle, braccia, gambe, glutei, vita } = biometria;
+    if (peso && eta && altezza && petto && spalle && braccia && gambe && glutei && vita) {
       let trendCarichi = "Neutro";
       if (storicoSessioni.length >= 2) trendCarichi = "Stallo Rilevato"; 
       let alertMsg = "";
@@ -500,10 +595,10 @@ export default function Home() {
       }
       setMessaggioDieta(alertMsg);
 
-      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo } }, data: new Date().toISOString() };
+      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, bia: valoreBia, profilo: { stileVita, obiettivo: protocolloAttivo } }, data: new Date().toISOString() };
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore Database: " + error.message);
-      else { alert(alertMsg); caricaProfilo(utenteCorrente, protocolloAttivo); } // Reload per refresh grafico
+      else { alert(alertMsg); caricaProfilo(utenteCorrente, protocolloAttivo); } 
     } else { alert("Compila TUTTI i campi fisici per analizzare il trend."); }
   };
 
@@ -615,14 +710,21 @@ export default function Home() {
         <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 50% 50%, #f97316 0%, transparent 50%)', filter: 'blur(100px)'}}></div>
         
         <div className="bg-neutral-900 border border-neutral-800 p-8 rounded-2xl shadow-2xl w-full max-w-md z-10">
-           <h1 className="text-4xl font-black tracking-tighter uppercase text-center mb-2">
-             <span className="text-orange-500">Protocollo</span> <span className="text-white">Anti-Secco</span>
-           </h1>
+           <div className="flex justify-between items-center mb-6">
+              <h1 className="text-4xl font-black tracking-tighter uppercase text-center flex-1">
+                <span className="text-orange-500">Protocollo</span> <span className="text-white">Anti-Secco</span>
+              </h1>
+           </div>
            <p className="text-center text-xs text-neutral-400 font-mono mb-8 tracking-widest">SaaS Periodization Engine</p>
 
            <div className="space-y-6">
               <div>
-                 <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-2">1. Seleziona Atleta / Profilo</label>
+                 <div className="flex justify-between items-center mb-2">
+                   <label className="text-[10px] text-neutral-500 uppercase font-bold">1. Seleziona Atleta / Profilo</label>
+                   {utenteCorrente !== "Leonardo" && (
+                     <button onClick={eliminaAtleta} className="text-[9px] bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white px-2 py-0.5 rounded font-bold uppercase transition-all">🗑️ Elimina</button>
+                   )}
+                 </div>
                  <select value={utenteCorrente} onChange={e => setUtenteCorrente(e.target.value)} className="w-full bg-neutral-950 text-white p-3 rounded-lg border border-neutral-700 outline-none focus:border-orange-500 font-bold">
                     {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
                  </select>
@@ -657,7 +759,11 @@ export default function Home() {
                      <input type="number" placeholder="Peso (kg)" value={datiWizard.peso} onChange={e=>setDatiWizard({...datiWizard, peso: e.target.value})} className="w-1/3 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
                      <input type="number" placeholder="H (cm)" value={datiWizard.altezza} onChange={e=>setDatiWizard({...datiWizard, altezza: e.target.value})} className="w-1/3 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
                    </div>
-                   <button onClick={()=>setStepWizard(2)} className="w-full bg-orange-600 text-white p-2 rounded font-bold uppercase">Avanti</button>
+                   <div className="flex gap-2">
+                     <input type="number" placeholder="Vita (cm)" value={datiWizard.vita} onChange={e=>setDatiWizard({...datiWizard, vita: e.target.value})} className="w-1/2 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
+                     <input type="number" placeholder="BIA (Opzionale %)" value={datiWizard.bia} onChange={e=>setDatiWizard({...datiWizard, bia: e.target.value})} className="w-1/2 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
+                   </div>
+                   <button onClick={()=>{ if(datiWizard.nome && datiWizard.peso) setStepWizard(2); else alert("Inserisci Nome e Peso."); }} className="w-full bg-orange-600 text-white p-2 rounded font-bold uppercase">Avanti</button>
                  </div>
                )}
 
@@ -677,13 +783,16 @@ export default function Home() {
                      <p className="text-[10px] text-neutral-500 mb-2">Se carichi la foto del fisico a cui punti, l&apos;IA farà una stima della massa grassa e calcolerà i tempi di raggiungimento.</p>
                      <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoFileWizard} />
                    </div>
-                   <button onClick={analizzaObiettivoWizard} disabled={loadingWizard} className="w-full bg-blue-600 text-white p-2 rounded font-bold uppercase disabled:opacity-50">{loadingWizard ? 'Analisi in corso...' : 'Calcola Profilo IA'}</button>
+                   <div className="flex gap-2">
+                     <button onClick={() => setStepWizard(1)} className="w-1/3 bg-neutral-800 text-white p-2 rounded font-bold uppercase">Indietro</button>
+                     <button onClick={analizzaObiettivoWizard} disabled={loadingWizard} className="w-2/3 bg-blue-600 text-white p-2 rounded font-bold uppercase disabled:opacity-50">{loadingWizard ? 'Analisi in corso...' : 'Calcola Profilo IA'}</button>
+                   </div>
                  </div>
                )}
 
                {stepWizard === 3 && (
                  <div className="space-y-4">
-                   <div className="bg-neutral-950 p-4 border border-neutral-800 rounded text-xs text-neutral-300">{rispostaWizard}</div>
+                   <div className="bg-neutral-950 p-4 border border-neutral-800 rounded text-xs text-neutral-300 max-h-48 overflow-y-auto whitespace-pre-wrap">{rispostaWizard}</div>
                    <button onClick={salvaProfiloWizard} className="w-full bg-emerald-600 text-white p-2 rounded font-bold uppercase">Salva e Accedi</button>
                  </div>
                )}
@@ -702,7 +811,7 @@ export default function Home() {
       
       <header className="mb-6 border-b border-neutral-800 pb-4 flex justify-between items-center">
         <div>
-          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-neutral-500 hover:text-white mb-2 block transition-all">Torna alla Home</button>
+          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-neutral-500 hover:text-white mb-2 block transition-all">⬅️ Torna alla Home</button>
           <h1 className="text-xl sm:text-2xl font-black tracking-tighter uppercase text-orange-500">
             PROTOCOLLO <span className="text-white">{protocolloAttivo}</span>
           </h1>
@@ -740,6 +849,10 @@ export default function Home() {
                        </div>
                    ))}
                  </div>
+                 <div className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800">
+                    <label className="text-[10px] text-neutral-400 uppercase font-bold">BIA / Massa Grassa % (Opzionale)</label>
+                    <input type="text" value={valoreBia} onChange={(e) => setValoreBia(e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="es. 12%" />
+                 </div>
                  <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] shadow-lg">Salva Misure</button>
                </div>
             ) : vistaGraficiCorpo ? (
@@ -762,6 +875,7 @@ export default function Home() {
                                <p>Peso: <strong>{mis.peso || '-'}kg</strong></p><p>Petto: <strong>{circ.petto || '-'}cm</strong></p>
                                <p>Spalle: <strong>{circ.spalle || '-'}cm</strong></p><p>Braccia: <strong>{circ.braccia || '-'}cm</strong></p>
                                <p>Gambe: <strong>{circ.gambe || '-'}cm</strong></p><p>Glutei: <strong>{circ.glutei || '-'}cm</strong></p>
+                               <p>Vita: <strong>{circ.vita || '-'}cm</strong></p><p>BIA: <strong>{circ.bia || '-'}</strong></p>
                             </div>
                          </div>
                        );
@@ -970,7 +1084,10 @@ export default function Home() {
                     const ultimoCarico = getUltimoCarico(es.id);
                     const numeroSetTarget = getNumeroSet(es.fase);
                     const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
-                    const animType = mapEsercizioToAnimazione[es.id] || "squat_barbell"; 
+                    
+                    // ICONA DINAMICA BASATA SULLO SWAP
+                    const animType = getAnimType(es.id, nomeVis);
+                    
                     let repMostrate = es.rep;
                     if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
 
