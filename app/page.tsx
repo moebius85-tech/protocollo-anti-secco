@@ -8,7 +8,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO (Completo con Alternative)
+// 1. DATABASE ALLENAMENTO MASTER (Paziente Zero - Leonardo)
 // ==========================================
 const baseDbAllenamento = {
   Spinta: {
@@ -49,65 +49,30 @@ const baseDbAllenamento = {
   }
 };
 
+// ==========================================
+// MAPPA TOTALE ANIMAZIONI (Risolto Bug dello Swap Visivo)
+// ==========================================
 const mapEsercizioToAnimazione: Record<string, string> = {
-  "e1": "bench_press_flat", "e3": "bench_press_incline_db", "e4": "machine_press", "e5": "flyes_flat_db",          
-  "e18": "shoulder_press_db", "e20": "lateral_raises_cables", "e22": "bench_press_close", "e27": "tricep_pushdown",       
-  "e6": "pullups", "e7": "barbell_row", "e9": "seated_cable_row", "e10": "cable_pullover",        
-  "e23": "barbell_curl", "e26": "cable_curl", "e11": "squat_barbell", "e12": "hack_squat",            
-  "e14": "leg_press", "e15": "leg_extension", "e13": "romanian_deadlift", "e16": "leg_curl_lying", "e17": "calf_raises"            
+  // Originali Spinta
+  "Panca piana bilanciere": "bench_press_flat", "Panca inclinata manubri": "bench_press_incline_db", "Chest press / Multipower": "machine_press", "Croci ai manubri": "flyes_flat_db", "Lento avanti manubri": "shoulder_press_db", "Alzate laterali ai cavi": "lateral_raises_cables", "Panca stretta bilanciere": "bench_press_close", "Push down cavi corda": "tricep_pushdown",
+  // Alternative Spinta
+  "Chest Press Convergente": "machine_press", "Panca piana manubri": "bench_press_flat", "Panca inclinata bilanciere": "bench_press_incline_db", "Chest Press Inclinata": "machine_press", "Pectoral Machine": "flyes_flat_db", "Croci ai cavi seduto panca": "flyes_flat_db", "Croci panca piana ai cavi": "flyes_flat_db", "Pec Deck (Fly Machine)": "flyes_flat_db", "Military Press bilanciere": "shoulder_press_db", "Shoulder Press Macchina": "machine_press", "Alzate laterali manubri": "lateral_raises_cables", "Alzate laterali macchina": "lateral_raises_cables", "French Press bilanciere EZ": "bench_press_close", "Dips parallele (strette)": "tricep_pushdown", "Push down sbarra dritta": "tricep_pushdown", "Estensioni dietro nuca cavo basso": "tricep_pushdown",
+  // Originali Tirata
+  "Trazioni": "pullups", "Rematore bilanciere": "barbell_row", "Row machine / Pulley": "seated_cable_row", "Pullover ai cavi": "cable_pullover", "Curl bilanciere EZ": "barbell_curl", "Curl ai cavi con barra": "cable_curl",
+  // Alternative Tirata
+  "Lat Machine Presa Prona Larga": "pullups", "Lat Machine Triangolo": "seated_cable_row", "Rematore Manubrio Singolo": "barbell_row", "Rematore T-Bar": "barbell_row", "Rematore Macchina Seduto (Chest Supported)": "seated_cable_row", "Seal Row panca": "barbell_row", "Lat Machine Braccia Tese": "cable_pullover", "Pullover Manubrio Panca": "cable_pullover", "Curl Manubri Alternato": "barbell_curl", "Curl Cavo Basso (Sbarra)": "cable_curl", "Curl Panca Inclinata Manubri": "barbell_curl", "Spider Curl panca 45°": "barbell_curl",
+  // Originali Gambe
+  "Squat bilanciere": "squat_barbell", "Hack squat": "hack_squat", "Leg press 45°": "leg_press", "Leg extension": "leg_extension", "Stacco rumeno": "romanian_deadlift", "Leg curl sdraiato": "leg_curl_lying", "Polpacci": "calf_raises",
+  // Alternative Gambe
+  "Front Squat": "squat_barbell", "Hack Squat Libero": "squat_barbell", "Leg Press 45° (Piedi bassi e stretti)": "leg_press", "Belt Squat": "squat_barbell", "Affondi Camminati (Manubri)": "squat_barbell", "Bulgarian Split Squat": "squat_barbell", "Sissy Squat": "leg_extension", "Step-up alto controllato": "leg_press", "Stacco a Gambe Tese": "romanian_deadlift", "Good Morning Bilanciere": "romanian_deadlift", "Leg Curl Seduto": "leg_curl_lying", "Glute Ham Raise": "leg_curl_lying", "Calf Press (sulla Leg Press)": "calf_raises", "Calf Seduto Macchina": "calf_raises"
 };
 
-// Funzione intelligente che assegna l'SVG corretto anche quando si swappa un esercizio
-const getAnimType = (id: string, nomeAttuale: string) => {
-  const altMap: Record<string, string> = {
-    "Chest Press Convergente": "machine_press",
-    "Panca piana manubri": "bench_press_flat",
-    "Panca inclinata bilanciere": "bench_press_incline_db",
-    "Chest Press Inclinata": "machine_press",
-    "Pectoral Machine": "flyes_flat_db",
-    "Croci ai cavi seduto panca": "flyes_flat_db",
-    "Croci panca piana ai cavi": "flyes_flat_db",
-    "Pec Deck (Fly Machine)": "flyes_flat_db",
-    "Military Press bilanciere": "shoulder_press_db",
-    "Shoulder Press Macchina": "machine_press",
-    "Alzate laterali manubri": "lateral_raises_cables",
-    "Alzate laterali macchina": "lateral_raises_cables",
-    "French Press bilanciere EZ": "bench_press_close",
-    "Dips parallele (strette)": "tricep_pushdown",
-    "Push down sbarra dritta": "tricep_pushdown",
-    "Estensioni dietro nuca cavo basso": "tricep_pushdown",
-    "Lat Machine Presa Prona Larga": "pullups",
-    "Lat Machine Triangolo": "seated_cable_row",
-    "Rematore Manubrio Singolo": "barbell_row",
-    "Rematore T-Bar": "barbell_row",
-    "Rematore Macchina Seduto (Chest Supported)": "seated_cable_row",
-    "Seal Row panca": "barbell_row",
-    "Lat Machine Braccia Tese": "cable_pullover",
-    "Pullover Manubrio Panca": "cable_pullover",
-    "Curl Manubri Alternato": "barbell_curl",
-    "Curl Cavo Basso (Sbarra)": "cable_curl",
-    "Curl Panca Inclinata Manubri": "barbell_curl",
-    "Spider Curl panca 45°": "barbell_curl",
-    "Front Squat": "squat_barbell",
-    "Hack Squat Libero": "squat_barbell",
-    "Leg Press 45° (Piedi bassi e stretti)": "leg_press",
-    "Belt Squat": "squat_barbell",
-    "Affondi Camminati (Manubri)": "squat_barbell",
-    "Bulgarian Split Squat": "squat_barbell",
-    "Sissy Squat": "leg_extension",
-    "Step-up alto controllato": "leg_press",
-    "Stacco a Gambe Tese": "romanian_deadlift",
-    "Good Morning Bilanciere": "romanian_deadlift",
-    "Leg Curl Seduto": "leg_curl_lying",
-    "Glute Ham Raise": "leg_curl_lying",
-    "Calf Press (sulla Leg Press)": "calf_raises",
-    "Calf Seduto Macchina": "calf_raises"
-  };
-  return altMap[nomeAttuale] || mapEsercizioToAnimazione[id] || "squat_barbell";
+const getAnimType = (nomeVis: string) => {
+   return mapEsercizioToAnimazione[nomeVis] || "squat_barbell";
 };
 
 // ==========================================
-// COMPONENTI SVG ANIMATI COMPLETI E INTATTI
+// COMPONENTI SVG (TUTTI GLI ESERCIZI REINTEGRATI)
 // ==========================================
 const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   const body = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -153,9 +118,12 @@ const SvgVisualizer = ({ type, color }: { type: string, color: string }) => {
   );
 };
 
+// ==========================================
+// GRAFICI (Linea & Nuova Ruota BIA "Laica Style")
+// ==========================================
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
-  if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti per il grafico.</p>;
-  if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato ({data[0]}). Esegui un&apos;altra sessione per tracciare la curva.</p>;
+  if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti.</p>;
+  if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato ({data[0]}). Esegui un&apos;altra sessione.</p>;
   const maxVal = Math.max(...data);
   const minVal = Math.min(...data);
   const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
@@ -179,33 +147,66 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const SvgVitruvianHUD = ({ biometria, storico }: { biometria: Record<string, string>, storico: any[] }) => {
-  const getDeltas = (key: string) => {
-     if(storico.length < 2) return null;
-     const current = Number(biometria[key]);
-     const prevCirc = typeof storico[1].circonferenze === 'string' ? JSON.parse(storico[1].circonferenze) : (storico[1].circonferenze || {});
-     const prev = Number(key === 'peso' ? storico[1].peso : prevCirc[key]);
-     if(!current || !prev) return null;
-     const diff = current - prev;
-     return { val: diff > 0 ? `+${diff}` : `${diff}`, color: diff > 0 ? '#22c55e' : (diff < 0 ? '#ef4444' : '#a3a3a3') };
+const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, string>, altezza: number | "", eta: number | "" }) => {
+  const w = Number(data.peso) || 0;
+  const h = Number(altezza) || 0;
+  const a = Number(eta) || 0;
+  const bf = Number(data.bodyFat) || 0;
+  const bw = Number(data.bodyWater) || 0;
+  const mm = Number(data.muscleMass) || 0;
+
+  const bmi = (w > 0 && h > 0) ? (w / Math.pow(h / 100, 2)).toFixed(1) : '0';
+  const bmr = (w > 0 && h > 0 && a > 0) ? Math.round((10 * w) + (6.25 * h) - (5 * a) + 5) : 0;
+
+  const radius = 80;
+  const strokeW = 45;
+  const c = 2 * Math.PI * radius;
+  const seg = c / 6;
+
+  const getPolar = (r: number, angleDeg: number) => {
+    const rad = (angleDeg - 90) * Math.PI / 180;
+    return { x: 150 + r * Math.cos(rad), y: 150 + r * Math.sin(rad) };
   };
 
+  const sections = [
+    { label: 'BMI', val: bmi, color: '#ec4899' },
+    { label: 'BMR (Kcal)', val: bmr, color: '#f97316' },
+    { label: 'MUSCOLO', val: mm > 0 ? `${mm}%` : '-', color: '#ef4444' },
+    { label: 'ACQUA', val: bw > 0 ? `${bw}%` : '-', color: '#3b82f6' },
+    { label: 'GRASSO (BIA)', val: bf > 0 ? `${bf}%` : '-', color: '#22c55e' },
+    { label: 'PESO (kg)', val: w > 0 ? w : '-', color: '#737373' }
+  ];
+
   return (
-    <div className="relative w-full h-[300px] bg-neutral-950 rounded-xl border border-neutral-800 flex items-center justify-center mt-4 overflow-hidden">
+    <div className="relative w-full h-[300px] bg-neutral-950 rounded-xl border border-neutral-800 flex items-center justify-center mt-4 overflow-hidden shadow-inner">
        <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
-       <svg viewBox="0 0 200 300" className="h-full w-auto z-10 opacity-80">
-          <path d="M100 20 C110 20 115 25 115 35 C115 45 105 50 100 50 C95 50 85 45 85 35 C85 25 90 20 100 20 Z" fill="none" stroke="#3b82f6" strokeWidth="2"/>
-          <path d="M100 50 L100 80 M75 80 L125 80 M60 140 L75 80 M140 140 L125 80 M75 140 L125 140 M100 80 L100 140 M75 140 L75 280 M125 140 L125 280 M100 140 L100 170 L75 140 M100 140 L100 170 L125 140" fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4 2"/>
-          <circle cx="100" cy="90" r="4" fill="#f97316" /><circle cx="70" cy="85" r="4" fill="#f97316" /><circle cx="130" cy="85" r="4" fill="#f97316" />
-          <circle cx="65" cy="115" r="4" fill="#f97316" /><circle cx="135" cy="115" r="4" fill="#f97316" /><circle cx="85" cy="200" r="4" fill="#f97316" />
-          <circle cx="115" cy="200" r="4" fill="#f97316" /><circle cx="100" cy="150" r="4" fill="#f97316" />
+       <svg viewBox="0 0 300 300" className="w-full h-full drop-shadow-2xl z-10">
+          <g transform="translate(150, 150)">
+             <path d="M0 -50 C 10 -50 15 -40 15 -30 C 15 -20 10 -15 0 -15 C -10 -15 -15 -20 -15 -30 C -15 -40 -10 -50 0 -50 Z" fill="url(#gradCenter)"/>
+             <path d="M0 -15 L 0 30 M -20 30 L 20 30 M -40 80 L -20 30 M 40 80 L 20 30 M -20 80 L 20 80 M 0 30 L 0 80 L -20 130 M 0 80 L 20 130" fill="none" stroke="url(#gradCenter)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"/>
+          </g>
+          <g transform="translate(150, 150) rotate(-90)">
+             {sections.map((sec, i) => (
+                <circle key={i} cx="0" cy="0" r={radius} fill="none" stroke={sec.color} strokeWidth={strokeW} strokeDasharray={`${seg - 2} ${c}`} strokeDashoffset={-(i * seg)} className="opacity-90 hover:opacity-100 transition-opacity cursor-pointer" />
+             ))}
+          </g>
+          {sections.map((sec, i) => {
+             const angle = i * 60 + 30;
+             const pos = getPolar(radius, angle);
+             return (
+               <g key={`t-${i}`} className="pointer-events-none">
+                 <text x={pos.x} y={pos.y - 4} fill="#fff" fontSize="8" textAnchor="middle" fontWeight="bold">{sec.label}</text>
+                 <text x={pos.x} y={pos.y + 8} fill="#fff" fontSize="12" textAnchor="middle" fontWeight="900">{sec.val}</text>
+               </g>
+             )
+          })}
+          <defs>
+             <linearGradient id="gradCenter" x1="0%" y1="0%" x2="0%" y2="100%">
+               <stop offset="0%" stopColor="#f97316" />
+               <stop offset="100%" stopColor="#3b82f6" />
+             </linearGradient>
+          </defs>
        </svg>
-       <div className="absolute top-10 right-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">Spalle: {biometria.spalle}cm {getDeltas('spalle') && <span style={{color: getDeltas('spalle')?.color}}>({getDeltas('spalle')?.val})</span>}</div>
-       <div className="absolute top-24 left-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">Braccia: {biometria.braccia}cm {getDeltas('braccia') && <span style={{color: getDeltas('braccia')?.color}}>({getDeltas('braccia')?.val})</span>}</div>
-       <div className="absolute top-36 right-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">Petto: {biometria.petto}cm {getDeltas('petto') && <span style={{color: getDeltas('petto')?.color}}>({getDeltas('petto')?.val})</span>}</div>
-       <div className="absolute bottom-32 right-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">Glutei: {biometria.glutei}cm {getDeltas('glutei') && <span style={{color: getDeltas('glutei')?.color}}>({getDeltas('glutei')?.val})</span>}</div>
-       <div className="absolute bottom-12 left-4 text-[9px] font-mono text-neutral-300 bg-neutral-900/80 p-1 border border-neutral-700 rounded">Gambe: {biometria.gambe}cm {getDeltas('gambe') && <span style={{color: getDeltas('gambe')?.color}}>({getDeltas('gambe')?.val})</span>}</div>
     </div>
   );
 };
@@ -252,17 +253,17 @@ const dbAlimenti = {
   ]
 };
 
-const infoMisure = {
-  peso: { label: "Peso", unit: "kg" }, petto: { label: "Petto", unit: "cm" }, spalle: { label: "Spalle", unit: "cm" },
-  braccia: { label: "Braccia", unit: "cm" }, gambe: { label: "Gambe", unit: "cm" }, glutei: { label: "Glutei", unit: "cm" },
-  vita: { label: "Vita (Nuovo)", unit: "cm" }
-};
+// Slot estesi in Telemetria
+const infoMisure = [
+  { id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" },
+  { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" },
+  { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" },
+  { id: 'vita', label: "Vita", unit: "cm" }, { id: 'bodyFat', label: "Body Fat (BIA)", unit: "%" },
+  { id: 'bodyWater', label: "Acqua", unit: "%" }, { id: 'muscleMass', label: "Muscolo", unit: "%" }
+];
 
 export default function Home() {
-  // Costanti Top-Level
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
-
-  // --- STATI GLOBALI APP ---
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
   
   // --- STATI PROFILO ---
@@ -270,12 +271,10 @@ export default function Home() {
   const [utenteCorrente, setUtenteCorrente] = useState("Leonardo");
   const [protocolloAttivo, setProtocolloAttivo] = useState("Massa");
   
-  // Dati Biometrici & Lifestyle
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
   const [stileVita, setStileVita] = useState("Attivo (es. Vendita al dettaglio, in piedi)");
-  const [biometria, setBiometria] = useState<Record<string, string>>({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '' });
-  const [valoreBia, setValoreBia] = useState("");
+  const [biometria, setBiometria] = useState<Record<string, string>>({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '', bodyFat: '', bodyWater: '', muscleMass: '' });
   
   // Turni
   const [tipoTurno, setTipoTurno] = useState('spezzato');
@@ -288,12 +287,12 @@ export default function Home() {
   // --- WIZARD NUOVO ATLETA ---
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
-  const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', vita: '', bia: '', stileVita: 'Sedentario', obiettivo: 'Shred' });
+  // Tolto vita e bia dal wizard come richiesto
+  const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred' });
   const [fotoWizard, setFotoWizard] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const [rispostaWizard, setRispostaWizard] = useState("");
   const [loadingWizard, setLoadingWizard] = useState(false);
-  const fileWizardRef = useRef<HTMLInputElement>(null);
-
+  
   // --- STATI PROTOCOLLO (Allenamento) ---
   const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); 
   const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
@@ -309,7 +308,7 @@ export default function Home() {
   
   // Nutrizione
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
-  const [messaggioDieta, setMessaggioDieta] = useState("Macro standard Anti-Secco impostati.");
+  const [messaggioDieta, setMessaggioDieta] = useState("Macro standard impostati.");
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({
     Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
@@ -320,7 +319,7 @@ export default function Home() {
   const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
 
   // Chat
-  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Mandami la foto di un pasto o scrivimi cosa hai mangiato per stimare i macro e inserirli in automatico nel tuo piano!' }]);
+  const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Mandami la foto di un pasto o scrivimi cosa hai mangiato per stimare i macro!' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [fileAllegato, setFileAllegato] = useState<{data: string, mimeType: string, nome: string} | null>(null);
@@ -330,12 +329,10 @@ export default function Home() {
   // Telemetria Storico & Grafici
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
-  const [vistaStoricoMisure, setVistaStoricoMisure] = useState(false);
-  const [vistaGraficiCorpo, setVistaGraficiCorpo] = useState(false);
+  const [vistaTelemetria, setVistaTelemetria] = useState<'FORM' | 'STORICO' | 'WHEEL'>('FORM');
   const [vistaGraficiCarichi, setVistaGraficiCarichi] = useState(false);
   const [esercizioGraficoSelezionato, setEsercizioGraficoSelezionato] = useState<string>("e1");
 
-  // Costanti calcolate
   const calcolaTempoScheda = () => fastWorkout ? 45 : 75;
 
   useEffect(() => {
@@ -358,7 +355,6 @@ export default function Home() {
     setUtenteCorrente(nomeAtleta);
     setProtocolloAttivo(objScelto);
     
-    // Hardcode Paziente Zero "Leonardo" 
     if (nomeAtleta === "Leonardo") {
       setEta(41); setAltezza(175); setStileVita("Attivo (es. Vendita al dettaglio, in piedi)"); setTipoTurno("spezzato");
     }
@@ -372,15 +368,14 @@ export default function Home() {
         const circ = typeof validRec.circonferenze === 'string' ? JSON.parse(validRec.circonferenze) : (validRec.circonferenze || {});
         setBiometria({ 
           peso: validRec.peso?.toString() || '', petto: circ.petto || '', spalle: circ.spalle || '', 
-          braccia: circ.braccia || '', gambe: circ.gambe || '', glutei: circ.glutei || '', vita: circ.vita || ''
+          braccia: circ.braccia || '', gambe: circ.gambe || '', glutei: circ.glutei || '', 
+          vita: circ.vita || '', bodyFat: circ.bodyFat || '', bodyWater: circ.bodyWater || '', muscleMass: circ.muscleMass || ''
         });
-        setValoreBia(circ.bia || "");
         if(circ.profilo?.stileVita) setStileVita(circ.profilo.stileVita);
       }
       setStoricoMisure(data.filter(d => d.peso || (d.circonferenze && typeof d.circonferenze === 'object' && Object.keys(d.circonferenze).length > 0)));
     } else if (nomeAtleta !== "Leonardo") {
-       setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '' });
-       setValoreBia("");
+       setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '', bodyFat: '', bodyWater: '', muscleMass: '' });
        setStoricoMisure([]);
     }
 
@@ -400,21 +395,17 @@ export default function Home() {
   };
 
   const eliminaAtleta = async () => {
-    if (utenteCorrente === "Leonardo") {
-      alert("Operazione negata. Impossibile eliminare il Paziente Zero (Leonardo).");
-      return;
-    }
-    if (confirm(`Sei sicuro di voler eliminare definitivamente il profilo di ${utenteCorrente} e tutti i suoi dati?`)) {
+    if (utenteCorrente === "Leonardo") { alert("Impossibile eliminare il Paziente Zero (Leonardo)."); return; }
+    if (confirm(`Eliminare definitivamente ${utenteCorrente}?`)) {
       await supabase.from("check_utente").delete().eq("nome_utente", utenteCorrente);
       await supabase.from("storico_allenamenti").delete().eq("nome_utente", utenteCorrente);
       setListaAtleti(prev => prev.filter(a => a !== utenteCorrente));
       setUtenteCorrente("Leonardo");
-      alert(`Profilo di ${utenteCorrente} eliminato.`);
     }
   };
 
   // ==========================================
-  // GENERATORE ALLENAMENTO DINAMICO
+  // GENERATORE ALLENAMENTO DINAMICO POTENZIATO
   // ==========================================
   const generaAllenamentoDinamico = () => {
      const plan = JSON.parse(JSON.stringify(baseDbAllenamento)); 
@@ -423,11 +414,14 @@ export default function Home() {
      const isOver40 = Number(eta) > 40;
      const isShred = protocolloAttivo === 'Shred';
      const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("pesante");
+     const highFat = Number(biometria.bodyFat) > 15; // Logica Metabolica su BIA
 
      Object.keys(plan).forEach(sch => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
-           if (isShred) {
+           // Se la % Grasso è alta o siamo in Shred, si lavora metabolicamente
+           if (isShred || highFat) {
+              ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep"); // Aumenta reps per metabolico
               ex.rep = ex.rep.replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie");
               ex.rep = ex.rep.replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
            } else if (isOver40 && isHeavyJob) {
@@ -444,7 +438,6 @@ export default function Home() {
   const gestisciCaricamentoFileWizard = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 4 * 1024 * 1024) { alert("File troppo grande."); return; }
     const reader = new FileReader();
     reader.onloadend = () => { setFotoWizard({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); };
     reader.readAsDataURL(file);
@@ -453,7 +446,7 @@ export default function Home() {
   const analizzaObiettivoWizard = async () => {
     setLoadingWizard(true);
     try {
-      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Circonferenza Vita: ${datiWizard.vita}cm. BIA: ${datiWizard.bia}%. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate.`;
+      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate per arrivarci.`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: "Analizza il mio profilo.", context: contesto };
       if (fotoWizard) payload.file = { data: fotoWizard.data, mimeType: fotoWizard.mimeType };
@@ -462,40 +455,23 @@ export default function Home() {
       setRispostaWizard(data.reply);
       setStepWizard(3);
     } catch (e) {
-      console.log(e);
-      setRispostaWizard("Errore di rete durante l'analisi. Riprova.");
-      setStepWizard(3);
+      console.log(e); setRispostaWizard("Errore di rete. Riprova."); setStepWizard(3);
     }
     setLoadingWizard(false);
   };
 
   const salvaProfiloWizard = async () => {
-    const payload = { 
-      nome_utente: datiWizard.nome, 
-      eta: Number(datiWizard.eta), 
-      altezza: Number(datiWizard.altezza), 
-      peso: Number(datiWizard.peso), 
-      circonferenze: { 
-        vita: datiWizard.vita, 
-        bia: datiWizard.bia, 
-        profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo } 
-      }, 
-      data: new Date().toISOString() 
-    };
+    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo } }, data: new Date().toISOString() };
     await supabase.from("check_utente").insert([payload]);
     setListaAtleti(prev => [...prev, datiWizard.nome]);
-    setModalWizard(false);
-    setStepWizard(1);
+    setModalWizard(false); setStepWizard(1);
     caricaProfilo(datiWizard.nome, datiWizard.obiettivo);
   };
 
-  // ==========================================
-  // LOGICA CHAT E NUTRIZIONE (Regex antiproiettile)
-  // ==========================================
+  // --- LOGICA CHAT ---
   const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 4 * 1024 * 1024) { alert("File troppo grande."); return; }
     const reader = new FileReader();
     reader.onloadend = () => { setFileAllegato({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); };
     reader.readAsDataURL(file);
@@ -503,103 +479,72 @@ export default function Home() {
 
   const inviaMessaggioIA = async () => {
     if (!inputChat.trim() && !fileAllegato) return;
-    const msg = inputChat || "Analizza questo file allegato.";
-    setChatLog(prev => [...prev, { role: 'user', text: fileAllegato ? `📎 [File: ${fileAllegato.nome}] ${msg}` : msg }]);
-    setInputChat("");
-    
-    const fileDaInviare = fileAllegato;
-    setFileAllegato(null);
-    setIsTyping(true);
-    
+    const msg = inputChat || "Analizza file.";
+    setChatLog(prev => [...prev, { role: 'user', text: fileAllegato ? `📎 [${fileAllegato.nome}] ${msg}` : msg }]);
+    setInputChat(""); setFileAllegato(null); setIsTyping(true);
     try {
-      const contestoMagico = `
-      SEI IL COACH IA DEL PROTOCOLLO. Utente: ${utenteCorrente}, Peso: ${biometria.peso}kg.
-      REGOLA D'ORO PER PASTI: Stima i macronutrienti totali in grammi. INSERISCI SOLO NUMERI SENZA 'g' IN QUESTO COMANDO ALLA FINE:
-      [MAGIC_MACRO | PASTO_TARGET | numero_cho | numero_pro | numero_fat | NOME_CIBO]
-      PASTO_TARGET: usa "Pasto1", "Pasto2", "Pasto3" o "PostWorkout". Chiedi quale pasto se non specificato.
-      `;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payload: any = { message: msg, context: contestoMagico };
-      if (fileDaInviare) payload.file = { data: fileDaInviare.data, mimeType: fileDaInviare.mimeType };
-      
+      const payload: any = { message: msg, context: `SEI IL COACH IA. Utente: ${utenteCorrente}. Estrai Macro e scrivi alla fine: [MAGIC_MACRO | PASTO_TARGET | cho | pro | fat | NOME]` };
+      if (fileAllegato) payload.file = { data: fileAllegato.data, mimeType: fileAllegato.mimeType };
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
-      let responseText = data.reply || "Errore nella risposta.";
-
-      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i;
-      const match = responseText.match(magicRegex);
-      
+      let responseText = data.reply;
+      const match = responseText.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
-          const fullString = match[0];
-          const pastoTarget = match[1];
-          const cho = match[2];
-          const pro = match[3];
-          const fat = match[4];
-          const nomeCibo = match[5];
-          
-          responseText = responseText.replace(fullString, '').trim();
-          setPastiCustom(prev => ({
-              ...prev,
-              [pastoTarget]: { attivo: true, cho: Math.round(parseFloat(cho.replace(',','.'))).toString(), pro: Math.round(parseFloat(pro.replace(',','.'))).toString(), fat: Math.round(parseFloat(fat.replace(',','.'))).toString(), nome: nomeCibo.trim() }
-          }));
-          responseText += `\n\n✨ **Magia eseguita!** Ho calcolato i macro e li ho inseriti nello sgarro del ${pastoTarget} come "${nomeCibo.trim()}". Dieta ricalcolata!`;
+          responseText = responseText.replace(match[0], '').trim();
+          setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
+          responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
-    } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore server Gemini." }]); }
+    } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore." }]); }
     setIsTyping(false);
   };
 
   const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
-    if(!nomeCibo.trim()) return alert("Inserisci prima il nome del pasto sgarro.");
+    if(!nomeCibo.trim()) return alert("Inserisci il nome del sgarro.");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
     try {
-      const payload = { message: `L'utente ha inserito: "${nomeCibo}". Calcola macro. Restituisci SOLO: [MAGIC_MACRO | ${cat} | numero_cho | numero_pro | numero_fat | ${nomeCibo}] (SOLO NUMERI, NESSUN ALTRO TESTO)` };
-      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Utente: "${nomeCibo}". Calcola macro. Restituisci SOLO: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo}]` }) });
       const data = await response.json();
-      const magicRegex = /\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i;
-      const match = data.reply.match(magicRegex);
+      const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
-        const pastoTarget = match[1];
-        const cho = match[2];
-        const pro = match[3];
-        const fat = match[4];
-        const nome = match[5];
-        updateCustomMeal(cat, 'cho', Math.round(parseFloat(cho.replace(',','.'))).toString());
-        updateCustomMeal(cat, 'pro', Math.round(parseFloat(pro.replace(',','.'))).toString());
-        updateCustomMeal(cat, 'fat', Math.round(parseFloat(fat.replace(',','.'))).toString());
-        updateCustomMeal(cat, 'nome', nome.trim());
+        updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString());
+        updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString());
+        updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString());
+        updateCustomMeal(cat, 'nome', match[5].trim());
       } else { alert("Non riconosciuto. Risposta: " + data.reply); }
     } catch(e) { console.log(e); alert("Errore di rete."); }
     setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
   };
 
   const valutaCheckFisico = async () => {
-    const { peso, petto, spalle, braccia, gambe, glutei, vita } = biometria;
-    if (peso && eta && altezza && petto && spalle && braccia && gambe && glutei && vita) {
-      let trendCarichi = "Neutro";
-      if (storicoSessioni.length >= 2) trendCarichi = "Stallo Rilevato"; 
+    const { peso, petto, spalle, braccia, gambe, glutei } = biometria;
+    if (peso && eta && altezza) {
+      let trendCarichi = storicoSessioni.length >= 2 ? "Stallo" : "Neutro"; 
       let alertMsg = "";
       
+      // Controllo IA su BIA e Vita
+      const grassoStimato = Number(biometria.bodyFat) || 0;
+      
       if (protocolloAttivo === 'Massa') {
-        if (Number(peso) > 80 && Number(braccia) < 38 && Number(glutei) > 95) {
-           setMoltiplicatoreCarbo(4); alertMsg = "⚠️ Composizione: Rilevato accumulo grasso. Modulo i carbo a 4g/kg.";
-        } else if (trendCarichi === "Stallo Rilevato") {
-           setMoltiplicatoreCarbo(6.5); alertMsg = "🔥 Prestazioni: Carichi bloccati. Surplus Aggressivo (6.5g/kg) attivato.";
+        if (grassoStimato > 15 || Number(peso) > 85) {
+           setMoltiplicatoreCarbo(4); alertMsg = "⚠️ BIA Rileva accumulo grasso >15%. Modulo i carbo a 4g/kg e alzo reps per ossidazione.";
+        } else if (trendCarichi === "Stallo") {
+           setMoltiplicatoreCarbo(6.5); alertMsg = "🔥 Prestazioni bloccate. Surplus (6.5g/kg) attivato.";
         } else {
-           setMoltiplicatoreCarbo(5); alertMsg = "✅ Parametri in asse. Protocollo Ipertrofico standard mantenuto (5g/kg).";
+           setMoltiplicatoreCarbo(5); alertMsg = "✅ Parametri in asse. (5g/kg).";
         }
       } else if (protocolloAttivo === 'Shred') {
-        setMoltiplicatoreCarbo(2.5); alertMsg = "🔪 Fase Definizone attiva. Carbo mantenuti bassi (2.5g/kg).";
+        setMoltiplicatoreCarbo(2.5); alertMsg = "🔪 Fase Shred. Carbo bassi (2.5g/kg), Volume ridotto.";
       } else {
-        setMoltiplicatoreCarbo(4); alertMsg = "⚖️ Fase Ricomposizione attiva. Calorie in pari per consolidare i risultati.";
+        setMoltiplicatoreCarbo(4); alertMsg = "⚖️ Fase Ricomposizione attiva.";
       }
       setMessaggioDieta(alertMsg);
 
-      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, bia: valoreBia, profilo: { stileVita, obiettivo: protocolloAttivo } }, data: new Date().toISOString() };
+      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo } }, data: new Date().toISOString() };
       const { error } = await supabase.from("check_utente").insert([payload]);
-      if (error) alert("Errore Database: " + error.message);
+      if (error) alert("Errore DB: " + error.message);
       else { alert(alertMsg); caricaProfilo(utenteCorrente, protocolloAttivo); } 
-    } else { alert("Compila TUTTI i campi fisici per analizzare il trend."); }
+    } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
   };
 
   // Funzioni UI minori
@@ -613,7 +558,7 @@ export default function Home() {
     Object.keys(carichiAttuali).forEach(k => { const pesiValidi = carichiAttuali[k].filter(v => v !== ""); if(pesiValidi.length > 0) sessioneCarichiStr[k] = pesiValidi.join(" | "); });
     const payload = { nome_utente: utenteCorrente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: sessioneCarichiStr, data: new Date().toISOString() };
     await supabase.from("storico_allenamenti").insert([payload]);
-    setCarichiAttuali({}); alert(`Sessione salvata per ${utenteCorrente}.`); caricaProfilo(utenteCorrente, protocolloAttivo);
+    setCarichiAttuali({}); alert(`Sessione salvata.`); caricaProfilo(utenteCorrente, protocolloAttivo);
   };
   const toggleCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true } }));
   const resetCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { attivo: false, cho: '', pro: '', fat: '', nome: '' } }));
@@ -623,14 +568,12 @@ export default function Home() {
   const confermaSwapEsercizio = (nuovoNome: string) => { setEserciziModificati({ ...eserciziModificati, [esercizioDaCambiare.id]: nuovoNome }); setModalEsercizio(false); };
   const apriSwapAlimento = (categoria: string) => { setCategoriaDaCambiare(categoria as keyof typeof dbAlimenti); setModalAlimento(true); };
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
-  const aggiornaBiometria = (campo: string, valore: string) => { setBiometria({ ...biometria, [campo]: valore }); };
 
   // Logica Calcolo Dieta
   const pesoNum = Number(biometria.peso) || 80;
   const bmr = Math.round((10 * pesoNum) + (6.25 * (Number(altezza)||175)) - (5 * (Number(eta)||41)) + 5);
   const tdeeMultiplier = protocolloAttivo === 'Shred' ? 1.35 : (protocolloAttivo === 'Ricomposizione' ? 1.45 : 1.55);
   const tdee = Math.round(bmr * tdeeMultiplier); 
-
   const intraCho = protocolloAttivo === 'Shred' ? Math.round(pesoNum * 0.3) : Math.round(pesoNum * 0.5);
   const intraPro = 15;
   const intraFat = 0;
@@ -759,10 +702,6 @@ export default function Home() {
                      <input type="number" placeholder="Peso (kg)" value={datiWizard.peso} onChange={e=>setDatiWizard({...datiWizard, peso: e.target.value})} className="w-1/3 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
                      <input type="number" placeholder="H (cm)" value={datiWizard.altezza} onChange={e=>setDatiWizard({...datiWizard, altezza: e.target.value})} className="w-1/3 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
                    </div>
-                   <div className="flex gap-2">
-                     <input type="number" placeholder="Vita (cm)" value={datiWizard.vita} onChange={e=>setDatiWizard({...datiWizard, vita: e.target.value})} className="w-1/2 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
-                     <input type="number" placeholder="BIA (Opzionale %)" value={datiWizard.bia} onChange={e=>setDatiWizard({...datiWizard, bia: e.target.value})} className="w-1/2 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
-                   </div>
                    <button onClick={()=>{ if(datiWizard.nome && datiWizard.peso) setStepWizard(2); else alert("Inserisci Nome e Peso."); }} className="w-full bg-orange-600 text-white p-2 rounded font-bold uppercase">Avanti</button>
                  </div>
                )}
@@ -780,7 +719,7 @@ export default function Home() {
                      <option value="Ricomposizione">Obiettivo: Mantenimento</option>
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded">
-                     <p className="text-[10px] text-neutral-500 mb-2">Se carichi la foto del fisico a cui punti, l&apos;IA farà una stima della massa grassa e calcolerà i tempi di raggiungimento.</p>
+                     <p className="text-[10px] text-neutral-500 mb-2">📸 Foto Obiettivo Fisico (Opzionale). L&apos;IA stimera la BIA.</p>
                      <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoFileWizard} />
                    </div>
                    <div className="flex gap-2">
@@ -829,38 +768,35 @@ export default function Home() {
           <section className="bg-neutral-900 border border-neutral-800 p-5 rounded-xl shadow-lg flex flex-col">
             <div className="flex justify-between items-center mb-4 border-b border-neutral-700 pb-2">
               <h2 className="text-lg font-bold text-white">Telemetria</h2>
-              <div className="flex gap-1">
-                 <button onClick={() => {setVistaStoricoMisure(!vistaStoricoMisure); setVistaGraficiCorpo(false);}} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaStoricoMisure && !vistaGraficiCorpo ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
-                   {vistaStoricoMisure && !vistaGraficiCorpo ? 'Torna' : 'Storico'}
-                 </button>
-                 <button onClick={() => {setVistaGraficiCorpo(!vistaGraficiCorpo); setVistaStoricoMisure(true);}} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaGraficiCorpo ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>
-                   📊 Scan
-                 </button>
-              </div>
+            </div>
+            
+            <div className="flex gap-1 mb-4">
+                 <button onClick={() => setVistaTelemetria('FORM')} className={`flex-1 px-1 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaTelemetria === 'FORM' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>Form</button>
+                 <button onClick={() => setVistaTelemetria('WHEEL')} className={`flex-1 px-1 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaTelemetria === 'WHEEL' ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>🌀 Ruota BIA</button>
+                 <button onClick={() => setVistaTelemetria('STORICO')} className={`flex-1 px-1 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaTelemetria === 'STORICO' ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'}`}>Storico</button>
             </div>
 
-            {!vistaStoricoMisure ? (
+            {vistaTelemetria === 'FORM' && (
                <div className="space-y-3">
-                 <div className="grid grid-cols-2 gap-3">
-                   {Object.keys(infoMisure).map((chiave) => (
-                       <div key={chiave} className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800 group relative">
-                         <label className="text-[10px] text-neutral-400 uppercase font-bold">{infoMisure[chiave as keyof typeof infoMisure].label}</label>
-                         <input type="number" value={biometria[chiave as keyof typeof biometria]} onChange={(e) => setBiometria({...biometria, [chiave]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="0" />
+                 <div className="grid grid-cols-2 gap-2">
+                   {infoMisure.map((m) => (
+                       <div key={m.id} className="bg-neutral-950 p-2 rounded-lg border border-neutral-800">
+                         <label className="text-[9px] text-neutral-400 uppercase font-bold flex justify-between">{m.label} <span>{m.unit}</span></label>
+                         <input type="number" value={biometria[m.id as keyof typeof biometria]} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500 mt-1" placeholder="-" />
                        </div>
                    ))}
                  </div>
-                 <div className="bg-neutral-950 p-2.5 rounded-lg border border-neutral-800">
-                    <label className="text-[10px] text-neutral-400 uppercase font-bold">BIA / Massa Grassa % (Opzionale)</label>
-                    <input type="text" value={valoreBia} onChange={(e) => setValoreBia(e.target.value)} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-orange-500" placeholder="es. 12%" />
-                 </div>
-                 <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] shadow-lg">Salva Misure</button>
+                 <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] shadow-lg">Salva e Aggiorna Algoritmo</button>
                </div>
-            ) : vistaGraficiCorpo ? (
+            )}
+            
+            {vistaTelemetria === 'WHEEL' && (
                <div className="flex-1 overflow-y-auto pr-1 max-h-[350px]">
-                 <SvgVitruvianHUD biometria={biometria} storico={storicoMisure} />
-                 {storicoMisure.length > 1 && <SvgLineChart data={storicoMisure.map(m => Number(m.peso)).reverse()} label="Peso (kg)" />}
+                 <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
                </div>
-            ) : (
+            )}
+
+            {vistaTelemetria === 'STORICO' && (
                <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[350px]">
                  {storicoMisure.length === 0 ? <p className="text-[10px] text-neutral-500 italic text-center p-4">Nessun dato.</p> : (
                     storicoMisure.map(mis => {
@@ -875,7 +811,7 @@ export default function Home() {
                                <p>Peso: <strong>{mis.peso || '-'}kg</strong></p><p>Petto: <strong>{circ.petto || '-'}cm</strong></p>
                                <p>Spalle: <strong>{circ.spalle || '-'}cm</strong></p><p>Braccia: <strong>{circ.braccia || '-'}cm</strong></p>
                                <p>Gambe: <strong>{circ.gambe || '-'}cm</strong></p><p>Glutei: <strong>{circ.glutei || '-'}cm</strong></p>
-                               <p>Vita: <strong>{circ.vita || '-'}cm</strong></p><p>BIA: <strong>{circ.bia || '-'}</strong></p>
+                               <p className="text-emerald-400">Vita: <strong>{circ.vita || '-'}cm</strong></p><p className="text-blue-400">BIA: <strong>{circ.bodyFat || '-'}%</strong></p>
                             </div>
                          </div>
                        );
@@ -1085,8 +1021,8 @@ export default function Home() {
                     const numeroSetTarget = getNumeroSet(es.fase);
                     const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
                     
-                    // ICONA DINAMICA BASATA SULLO SWAP
-                    const animType = getAnimType(es.id, nomeVis);
+                    // L'Animazione è agganciata al NOME VISUALIZZATO, così se fai swap, l'omino cambia biomeccanica!
+                    const animType = getAnimType(nomeVis); 
                     
                     let repMostrate = es.rep;
                     if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
