@@ -9,7 +9,6 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
 // 1. DATABASE ALLENAMENTO MASTER (Paziente Zero)
-// Ogni alternativa ora ha la SUA icona specifica e la SUA descrizione.
 // ==========================================
 const baseDbAllenamento = {
   Spinta: {
@@ -156,9 +155,8 @@ const baseDbAllenamento = {
 };
 
 // ==========================================
-// RENDERER SVG (Icone Specifiche ed Evidenti)
+// RENDERER SVG ANIMATO (Icone Specifiche Infallibili)
 // ==========================================
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SvgVisualizer = ({ icon, color }: { icon: string, color: string }) => {
   const line = { stroke: color, strokeWidth: "2.5", fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   const machine = { stroke: "#555", strokeWidth: "3", strokeLinecap: "round" as const, fill: "none" };
@@ -194,7 +192,7 @@ const SvgVisualizer = ({ icon, color }: { icon: string, color: string }) => {
         {icon === "tricep_dips" && ( <><line x1="15" y1="25" x2="15" y2="45" {...machine} /><line x1="35" y1="25" x2="35" y2="45" {...machine} /><circle cx="25" cy="10" r="4" {...line} /><path d="M 25 14 L 25 35 M 25 35 L 20 45 M 25 35 L 30 45" {...line} /><path d="M 25 17 L 15 25 M 25 17 L 35 25" {...line} /></> )}
 
         {/* === TIRATA === */}
-        {icon === "pullups" && ( <><line x1="10" y1="10" x2="40" y2="10" {...bench} /><circle cx="25" cy="20" r="4" {...line} /><path d="M 25 24 L 25 40 M 20 45 L 25 40 L 30 45" {...line} /><path d="M 25 24 L 15 10 M 25 24 L 35 10" {...line} /></> )}
+        {icon === "back_pullup" && ( <><line x1="10" y1="10" x2="40" y2="10" {...bench} /><circle cx="25" cy="20" r="4" {...line} /><path d="M 25 24 L 25 40 M 20 45 L 25 40 L 30 45" {...line} /><path d="M 25 24 L 15 10 M 25 24 L 35 10" {...line} /></> )}
         {icon === "back_pulldown" && ( <><line x1="25" y1="5" x2="25" y2="45" {...machine} /><line x1="15" y1="40" x2="35" y2="40" {...bench} /><circle cx="25" cy="20" r="4" {...line} /><path d="M 25 24 L 25 40" {...line} /><path d="M 25 24 L 15 10 M 25 24 L 35 10" {...line} /><line x1="10" y1="10" x2="40" y2="10" stroke="#e5e5e5" strokeWidth="3" /></> )}
         {icon === "back_row_barbell" && ( <><circle cx="35" cy="15" r="4" {...line} /><path d="M 33 18 L 20 30 L 20 45 M 20 30 L 25 45" {...line} /><path d="M 32 20 L 25 25 L 18 20" {...line} /><line x1="12" y1="20" x2="24" y2="20" stroke="#e5e5e5" strokeWidth="2" /><circle cx="12" cy="20" r="5" {...weight} fill="none" stroke="#e5e5e5" /></> )}
         {icon === "back_row_db" && ( <><line x1="10" y1="35" x2="30" y2="35" {...bench} /><circle cx="35" cy="15" r="4" {...line} /><path d="M 33 18 L 25 25 L 25 45 M 25 25 L 15 35" {...line} /><path d="M 32 20 L 25 30" {...line} /><rect x="23" y="28" width="4" height="6" {...weight} /></> )}
@@ -223,7 +221,7 @@ const SvgVisualizer = ({ icon, color }: { icon: string, color: string }) => {
 };
 
 // ==========================================
-// GRAFICI & RUOTA BIA (Riproduzione Perfetta Laica)
+// GRAFICI & RUOTA BIA
 // ==========================================
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti.</p>;
@@ -251,7 +249,7 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   );
 };
 
-// La Ruota BIA "Laica" (6 Spicchi e Sagoma Centrale)
+// La Ruota BIA (6 Spicchi + Sagoma Centrale Realistica)
 const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, string>, altezza: number | "", eta: number | "" }) => {
   const w = Number(data.peso) || 0;
   const h = Number(altezza) || 0;
@@ -263,7 +261,6 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
   const bmi = (w > 0 && h > 0) ? (w / Math.pow(h / 100, 2)).toFixed(1) : '0';
   const bmr = (w > 0 && h > 0 && a > 0) ? Math.round((10 * w) + (6.25 * h) - (5 * a) + 5) : 0;
 
-  // Costanti disegno ruota
   const radius = 120;
   const strokeW = 60;
   const c = 2 * Math.PI * radius;
@@ -275,12 +272,12 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
   };
 
   const sections = [
-    { label: 'BMR (Kcal)', val: bmr > 0 ? bmr : '-', color: '#f97316' }, // Arancione (Mid Right)
-    { label: 'MUSCOLO %', val: mm > 0 ? `${mm}%` : '-', color: '#ef4444' }, // Rosso (Bottom Right)
-    { label: 'ACQUA %', val: bw > 0 ? `${bw}%` : '-', color: '#3b82f6' }, // Blu (Bottom Left)
-    { label: 'GRASSO %', val: bf > 0 ? `${bf}%` : '-', color: '#22c55e' }, // Verde (Mid Left)
-    { label: 'PESO (kg)', val: w > 0 ? w : '-', color: '#737373' }, // Grigio (Top Left)
-    { label: 'BMI', val: bmi, color: '#ec4899' } // Rosa (Top Right)
+    { label: 'BMR (Kcal)', val: bmr > 0 ? bmr : '-', color: '#f97316' },
+    { label: 'MUSCOLO %', val: mm > 0 ? `${mm}%` : '-', color: '#ef4444' },
+    { label: 'ACQUA %', val: bw > 0 ? `${bw}%` : '-', color: '#3b82f6' },
+    { label: 'GRASSO %', val: bf > 0 ? `${bf}%` : '-', color: '#22c55e' },
+    { label: 'PESO (kg)', val: w > 0 ? w : '-', color: '#737373' },
+    { label: 'BMI', val: bmi, color: '#ec4899' }
   ];
 
   return (
@@ -288,16 +285,14 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
        <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
        <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-2xl z-10 p-4">
           
-          {/* Slices della Ruota */}
           <g transform="translate(200, 200) rotate(-60)">
              {sections.map((sec, i) => (
                 <circle key={i} cx="0" cy="0" r={radius} fill="none" stroke={sec.color} strokeWidth={strokeW} strokeDasharray={`${seg - 2} ${c}`} strokeDashoffset={-(i * seg)} className="opacity-90 hover:opacity-100 transition-opacity cursor-pointer" />
              ))}
           </g>
 
-          {/* Testi degli Spicchi */}
           {sections.map((sec, i) => {
-             const angle = i * 60 + 30; // Posiziona il testo al centro dello spicchio
+             const angle = i * 60 + 30;
              const pos = getPolar(radius, angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
@@ -307,13 +302,11 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              )
           })}
 
-          {/* Sagoma Centrale Realistica (Termica) */}
           <g transform="translate(200, 200) scale(1.1) translate(-200, -200)">
              <path d="M200,100 C190,100 188,110 188,115 C188,122 192,125 197,128 C185,133 175,145 172,160 C167,175 162,210 162,210 L170,215 C170,215 180,175 185,165 C185,200 183,230 183,230 L188,320 L195,320 L195,230 L205,230 L205,320 L212,320 L217,230 C217,230 215,200 215,165 C220,175 230,215 230,215 L238,210 C238,210 233,175 228,160 C225,145 215,133 203,128 C208,125 212,122 212,115 C212,110 210,100 200,100 Z" fill="url(#gradThermal)" stroke="#000" strokeWidth="2"/>
           </g>
 
           <defs>
-             {/* Gradiente in stile Termocamera (Rosso-Giallo-Verde-Blu) */}
              <linearGradient id="gradThermal" x1="0%" y1="0%" x2="0%" y2="100%">
                <stop offset="0%" stopColor="#ef4444" />
                <stop offset="30%" stopColor="#f97316" />
@@ -368,7 +361,6 @@ const dbAlimenti = {
   ]
 };
 
-// Misure Form Telemetria (Divise tra Base e BIA)
 const misureBase = [
   { id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" },
   { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" },
@@ -383,7 +375,6 @@ export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
   
-  // --- STATI PROFILO ---
   const [listaAtleti, setListaAtleti] = useState<string[]>(["Leonardo"]);
   const [utenteCorrente, setUtenteCorrente] = useState("Leonardo");
   const [protocolloAttivo, setProtocolloAttivo] = useState("Massa");
@@ -393,7 +384,6 @@ export default function Home() {
   const [stileVita, setStileVita] = useState("Attivo (es. Vendita al dettaglio, in piedi)");
   const [biometria, setBiometria] = useState<Record<string, string>>({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '', bodyFat: '', bodyWater: '', muscleMass: '' });
   
-  // Turni
   const [tipoTurno, setTipoTurno] = useState('spezzato');
   const [inizio1, setInizio1] = useState('');
   const [fine1, setFine1] = useState('');
@@ -401,16 +391,14 @@ export default function Home() {
   const [fine2, setFine2] = useState('');
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
   
-  // --- WIZARD NUOVO ATLETA ---
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
-  // Tolto vita e bia dal wizard (vanno in telemetria)
   const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred' });
   const [fotoWizard, setFotoWizard] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const [rispostaWizard, setRispostaWizard] = useState("");
   const [loadingWizard, setLoadingWizard] = useState(false);
-  
-  // --- STATI PROTOCOLLO (Allenamento) ---
+  const fileWizardRef = useRef<HTMLInputElement>(null);
+
   const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); 
   const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
   const [fastWorkout, setFastWorkout] = useState(false);
@@ -423,7 +411,6 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   
-  // Nutrizione
   const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("Macro standard impostati.");
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
@@ -435,7 +422,6 @@ export default function Home() {
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
   const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
 
-  // Chat
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Mandami la foto di un pasto o scrivimi cosa hai mangiato per stimare i macro!' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -443,7 +429,6 @@ export default function Home() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Telemetria Storico & Grafici
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
   const [vistaTelemetria, setVistaTelemetria] = useState<'FORM' | 'STORICO' | 'WHEEL'>('FORM');
@@ -521,24 +506,20 @@ export default function Home() {
     }
   };
 
-  // ==========================================
-  // GENERATORE ALLENAMENTO DINAMICO POTENZIATO
-  // ==========================================
   const generaAllenamentoDinamico = () => {
      const plan = JSON.parse(JSON.stringify(baseDbAllenamento)); 
-     if (utenteCorrente === "Leonardo") return plan; // Paziente Zero inviolabile
+     if (utenteCorrente === "Leonardo") return plan; 
 
      const isOver40 = Number(eta) > 40;
      const isShred = protocolloAttivo === 'Shred';
      const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("pesante");
-     const highFat = Number(biometria.bodyFat) > 15; // Logica Metabolica su BIA
+     const highFat = Number(biometria.bodyFat) > 15; 
 
      Object.keys(plan).forEach(sch => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
-           // Se la % Grasso è alta o siamo in Shred, si lavora metabolicamente
            if (isShred || highFat) {
-              ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep"); // Aumenta reps per metabolico
+              ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep"); 
               ex.rep = ex.rep.replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie");
               ex.rep = ex.rep.replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
            } else if (isOver40 && isHeavyJob) {
@@ -551,7 +532,6 @@ export default function Home() {
 
   const dbDinamico = generaAllenamentoDinamico();
 
-  // --- WIZARD LOGIC ---
   const gestisciCaricamentoFileWizard = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -563,7 +543,7 @@ export default function Home() {
   const analizzaObiettivoWizard = async () => {
     setLoadingWizard(true);
     try {
-      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate.`;
+      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate per arrivarci.`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: "Analizza il mio profilo.", context: contesto };
       if (fotoWizard) payload.file = { data: fotoWizard.data, mimeType: fotoWizard.mimeType };
@@ -585,7 +565,6 @@ export default function Home() {
     caricaProfilo(datiWizard.nome, datiWizard.obiettivo);
   };
 
-  // --- LOGICA CHAT ---
   const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -664,7 +643,6 @@ export default function Home() {
     } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
   };
 
-  // Funzioni UI minori
   const eliminaMisurazione = async (id: string) => { if(confirm("Eliminare misurazione?")) { await supabase.from("check_utente").delete().eq("id", id); caricaProfilo(utenteCorrente, protocolloAttivo); } };
   const getUltimoCarico = (idEs: string) => { for (let i = storicoSessioni.length - 1; i >= 0; i--) { if (storicoSessioni[i].carichi[idEs]) return storicoSessioni[i].carichi[idEs]; } return '0'; };
   const getNumeroSet = (fase: string) => { if (fase.includes('Fase 1')) return fastWorkout ? 3 : 4; return fastWorkout ? 2 : 3; };
@@ -686,7 +664,6 @@ export default function Home() {
   const apriSwapAlimento = (categoria: string) => { setCategoriaDaCambiare(categoria as keyof typeof dbAlimenti); setModalAlimento(true); };
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
 
-  // Logica Calcolo Dieta
   const pesoNum = Number(biometria.peso) || 80;
   const bmr = Math.round((10 * pesoNum) + (6.25 * (Number(altezza)||175)) - (5 * (Number(eta)||41)) + 5);
   const tdeeMultiplier = protocolloAttivo === 'Shred' ? 1.35 : (protocolloAttivo === 'Ricomposizione' ? 1.45 : 1.55);
@@ -762,7 +739,7 @@ export default function Home() {
   };
 
   // ==========================================
-  // RENDER HOME (Control Room)
+  // RENDER HOME
   // ==========================================
   if (appState === 'HOME') {
     return (
@@ -922,7 +899,6 @@ export default function Home() {
             {vistaTelemetria === 'WHEEL' && (
                <div className="flex-1 overflow-y-auto pr-1">
                  <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
-                 {storicoMisure.length > 1 && <SvgLineChart data={storicoMisure.map(m => Number(m.peso)).reverse()} label="Peso (kg)" />}
                </div>
             )}
 
@@ -1147,7 +1123,6 @@ export default function Home() {
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {dbDinamico[schedaAttiva].esercizi.map((es: any) => {
                     const nomeAttuale = eserciziModificati[es.id] || es.nome;
-                    // Recupero dell'oggetto alternativo completo (con sua animazione e dettaglio) se swappato
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const altEs = es.alternative.find((a: any) => a.nome === nomeAttuale);
                     const currentEx = altEs || es;
@@ -1156,8 +1131,7 @@ export default function Home() {
                     const numeroSetTarget = getNumeroSet(es.fase);
                     const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
                     
-                    // ICONA DINAMICA BASATA SULLA PROPRIETA' 'anim'
-                    const animType = currentEx.anim; 
+                    const animType = currentEx.anim || "squat_barbell"; 
                     
                     let repMostrate = es.rep;
                     if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
@@ -1171,7 +1145,7 @@ export default function Home() {
                             <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 text-neutral-400 px-2 py-1 rounded font-bold uppercase">Swap</button>
                           </div>
                           <div className="flex items-center gap-4 mt-2">
-                            <SvgVisualizer type={animType} color={phaseColor} />
+                            <SvgVisualizer icon={animType} color={phaseColor} />
                             <div className="flex-1">
                                <h3 className="font-bold text-sm text-white">{nomeAttuale}</h3>
                                <p className="text-[10px] text-neutral-400 italic mt-1 leading-relaxed bg-neutral-900 p-2 rounded border border-neutral-800">{currentEx.dettaglio}</p>
