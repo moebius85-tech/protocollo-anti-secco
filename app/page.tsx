@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from "@supabase/supabase-js";
+import { MediaVisualizer } from './animations';
 
 // Configurazione Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtxfkahzyduq.supabase.co";
@@ -8,102 +9,59 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. IL CATALOGO MULTIMEDIALE (Sostituisci i link con le tue GIF/Immagini reali in futuro)
-// ==========================================
-const dbMedia: Record<string, string> = {
-  // SPINTA
-  "chest_barbell": "https://placehold.co/150x150/171717/f97316?text=Panca+Bilanciere",
-  "chest_machine": "https://placehold.co/150x150/171717/3b82f6?text=Chest+Press",
-  "chest_dumbbell": "https://placehold.co/150x150/171717/f97316?text=Panca+Manubri",
-  "chest_flye_db": "https://placehold.co/150x150/171717/f97316?text=Croci+Manubri",
-  "chest_flye_cable": "https://placehold.co/150x150/171717/10b981?text=Croci+Cavi",
-  "chest_flye_machine": "https://placehold.co/150x150/171717/3b82f6?text=Pec+Deck",
-  "shoulder_db": "https://placehold.co/150x150/171717/f97316?text=Lento+Manubri",
-  "shoulder_barbell": "https://placehold.co/150x150/171717/f97316?text=Military+Press",
-  "shoulder_machine": "https://placehold.co/150x150/171717/3b82f6?text=Shoulder+Press",
-  "lateral_cable": "https://placehold.co/150x150/171717/10b981?text=Alzate+Cavi",
-  "lateral_db": "https://placehold.co/150x150/171717/f97316?text=Alzate+Manubri",
-  "lateral_machine": "https://placehold.co/150x150/171717/3b82f6?text=Alzate+Macchina",
-  "bench_press_close": "https://placehold.co/150x150/171717/f97316?text=Panca+Stretta",
-  "tricep_barbell": "https://placehold.co/150x150/171717/f97316?text=French+Press",
-  "tricep_dips": "https://placehold.co/150x150/171717/a855f7?text=Dips+Parallele",
-  "tricep_cable": "https://placehold.co/150x150/171717/10b981?text=Push+Down",
-  // TIRATA
-  "back_pullup": "https://placehold.co/150x150/171717/a855f7?text=Trazioni",
-  "back_pulldown": "https://placehold.co/150x150/171717/3b82f6?text=Lat+Machine",
-  "back_row_barbell": "https://placehold.co/150x150/171717/f97316?text=Rematore+Bilanciere",
-  "back_row_db": "https://placehold.co/150x150/171717/f97316?text=Rematore+Manubrio",
-  "back_row_cable": "https://placehold.co/150x150/171717/10b981?text=Pulley+Seduto",
-  "back_row_machine": "https://placehold.co/150x150/171717/3b82f6?text=Row+Machine",
-  "back_pullover": "https://placehold.co/150x150/171717/10b981?text=Pullover+Cavi",
-  "back_pullover_db": "https://placehold.co/150x150/171717/f97316?text=Pullover+Manubrio",
-  "bicep_barbell": "https://placehold.co/150x150/171717/f97316?text=Curl+Bilanciere",
-  "bicep_db": "https://placehold.co/150x150/171717/f97316?text=Curl+Manubri",
-  "bicep_cable": "https://placehold.co/150x150/171717/10b981?text=Curl+Cavi",
-  // GAMBE
-  "leg_squat": "https://placehold.co/150x150/171717/f97316?text=Squat",
-  "leg_machine_squat": "https://placehold.co/150x150/171717/3b82f6?text=Hack+Squat",
-  "leg_press": "https://placehold.co/150x150/171717/3b82f6?text=Leg+Press",
-  "leg_lunge": "https://placehold.co/150x150/171717/f97316?text=Affondi",
-  "leg_extension": "https://placehold.co/150x150/171717/3b82f6?text=Leg+Extension",
-  "leg_deadlift": "https://placehold.co/150x150/171717/f97316?text=Stacco+Rumeno",
-  "leg_curl": "https://placehold.co/150x150/171717/3b82f6?text=Leg+Curl",
-  "leg_calf": "https://placehold.co/150x150/171717/3b82f6?text=Calf+Machine"
-};
-
-// ==========================================
-// 2. DATABASE ALLENAMENTO MASTER (Paziente Zero)
+// 1. DATABASE ALLENAMENTO MASTER (Paziente Zero)
+// Ogni alternativa è mappata con la SUA animazione e la SUA didattica
 // ==========================================
 const baseDbAllenamento = {
   Spinta: {
     focus: "SPINTA (Petto, Spalle, Tricipiti)",
     esercizi: [
-      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi controllando fino a sfiorare il petto e spingi verso l'alto con forza.", 
+      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca. Scendi fino a sfiorare il petto e spingi verso l'alto con forza.", 
         alternative: [
-          { nome: "Chest Press Convergente", anim: "chest_machine", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio. Impugna le maniglie e spingi in avanti contraendo il petto, poi torna indietro lentamente." }, 
-          { nome: "Panca piana manubri", anim: "chest_dumbbell", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana, spingi verso l'alto chiudendo il movimento al centro per massimizzare la contrazione." }
+          { nome: "Chest Press Convergente", anim: "chest_machine", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio. Impugna le maniglie e spingi in avanti contraendo il petto." }, 
+          { nome: "Panca piana manubri", anim: "chest_dumbbell", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana, spingi verso l'alto chiudendo il movimento al centro." }
         ] 
       },
-      { id: "e3", nome: "Panca inclinata manubri", anim: "chest_dumbbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci alti (clavicolari) del petto.", 
+      { id: "e3", nome: "Panca inclinata manubri", anim: "chest_dumbbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci clavicolari.", 
         alternative: [
-          { nome: "Panca inclinata bilanciere", anim: "chest_barbell", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata. Scendi al livello della clavicola e spingi forte per lo spessore del petto alto." }, 
+          { nome: "Panca inclinata bilanciere", anim: "chest_barbell", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata. Scendi al livello della clavicola e spingi forte per il petto alto." }, 
           { nome: "Chest Press Inclinata", anim: "chest_machine", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata della pressa. Mantieni le spalle basse e il petto in fuori." }
         ] 
       },
-      { id: "e4", nome: "Chest press / Multipower", anim: "chest_machine", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale. Controlla il movimento in ogni singolo centimetro.", 
+      { id: "e4", nome: "Chest press", anim: "chest_machine", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale. Controlla il movimento.", 
         alternative: [
-          { nome: "Pectoral Machine", anim: "chest_flye_machine", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti e chiudi le braccia stringendo il petto al centro. Ottimo per il pump." }, 
-          { nome: "Croci cavi seduto", anim: "chest_flye_cable", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca. Chiudi le maniglie davanti al petto mantenendo una tensione continua." }
+          { nome: "Pectoral Machine", anim: "chest_flye_machine", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti e chiudi le braccia stringendo il petto al centro." }, 
+          { nome: "Croci cavi seduto", anim: "chest_flye_cable", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro. Chiudi le maniglie davanti al petto in tensione continua." }
         ] 
       },
-      { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti. Tira il petto al massimo e poi richiudi.", 
+      { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti. Tira il petto al massimo e richiudi.", 
         alternative: [
-          { nome: "Croci cavi piana", anim: "chest_flye_cable", note: "Tensione continua", dettaglio: "CAVI: Cavi bassi o medi. Chiudi le braccia al centro, strizzando i pettorali a fine movimento senza punti morti." }, 
-          { nome: "Pec Deck (Fly)", anim: "chest_flye_machine", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck a braccia tese per isolare completamente il pettorale senza usare i tricipiti." }
+          { nome: "Croci cavi piana", anim: "chest_flye_cable", note: "Tensione continua", dettaglio: "CAVI: Dai cavi bassi. Chiudi le braccia al centro, strizzando i pettorali a fine movimento." }, 
+          { nome: "Pec Deck (Fly)", anim: "chest_flye_machine", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck a braccia tese per isolare completamente il pettorale." }
         ] 
       },
       { id: "e18", nome: "Lento avanti manubri", anim: "shoulder_db", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Seduto a 90°. Parti con i manubri alle orecchie e spingi dritto sopra la testa.", 
         alternative: [
-          { nome: "Military Press", anim: "shoulder_barbell", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi, spingi dal petto alto fin sopra la testa, incastrando la testa in avanti alla fine." }, 
-          { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale vincolato. Eccellente per caricare in totale sicurezza." }
+          { nome: "Military Press", anim: "shoulder_barbell", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi, spingi dal petto alto fin sopra la testa." }, 
+          { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale vincolato per caricare in sicurezza." }
         ] 
       },
-      { id: "e20", nome: "Alzate laterali ai cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso, tenendo il braccio in tensione continua sul deltoide mediale.", 
+      { id: "e20", nome: "Alzate laterali cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso per colpire il deltoide mediale.", 
         alternative: [
-          { nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi, solleva lateralmente i manubri controllando la discesa per non perdere il focus." }, 
-          { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi bloccando le braccia. Impossibile imbrogliare con slanci della schiena." }
+          { nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi, solleva lateralmente i manubri controllando la discesa." }, 
+          { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi bloccando le braccia. Nessuno slancio con la schiena." }
         ] 
       },
-      { id: "e22", nome: "Panca stretta", anim: "chest_barbell", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa larghezza spalle. Tieni i gomiti incollati al busto e spingi esplodendo in alto.", 
+      { id: "e22", nome: "Panca stretta", anim: "chest_barbell", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa stretta. Gomiti incollati al busto e spingi esplodendo in alto.", 
         alternative: [
-          { nome: "French Press", anim: "tricep_barbell", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso, porta il bilanciere verso la fronte flettendo i gomiti e distendi le braccia." }, 
-          { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "CORPO LIBERO/ZAVORRA: Scendi piegando le braccia e tenendo il busto dritto, spingi in alto sui tricipiti." }
+          { nome: "French Press", anim: "tricep_barbell", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso, porta il bilanciere alla fronte flettendo i gomiti e distendi in alto." }, 
+          { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "LIBERO/ZAVORRA: Scendi piegando le braccia e tenendo il busto dritto, spingi sui tricipiti." }
         ] 
       },
-      { id: "e27", nome: "Push down corda", anim: "tricep_cable", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità verso l'esterno alla fine per strizzare i tricipiti.", 
+      { id: "e27", nome: "Push down corda", anim: "tricep_cable", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità verso l'esterno per strizzare i tricipiti.", 
         alternative: [
-          { nome: "Push down sbarra", anim: "tricep_cable", note: "Carico maggiore", dettaglio: "CAVI: Usa una sbarra dritta o a V. Spingi il carico verso il basso bloccando i gomiti lungo i fianchi." }, 
-          { nome: "Estensioni nuca", anim: "tricep_cable", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi, porta la corda dietro la testa e distendi le braccia verso l'alto per l'allungamento." }
+          { nome: "Push down sbarra", anim: "tricep_cable", note: "Carico maggiore", dettaglio: "CAVI: Sbarra dritta. Spingi il carico in basso bloccando i gomiti lungo i fianchi." }, 
+          { nome: "Estensioni nuca", anim: "tricep_cable", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi, porta la corda dietro la testa e distendi verso l'alto." }
         ] 
       }
     ]
@@ -111,40 +69,40 @@ const baseDbAllenamento = {
   Tirata: {
     focus: "TIRATA (Schiena, Bicipiti)",
     esercizi: [
-      { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il tuo corpo verso l'alto abbassando i gomiti verso il suolo.", 
+      { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il corpo verso l'alto abbassando i gomiti.", 
         alternative: [
-          { nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono. Tira la sbarra verso il petto inarcando leggermente la schiena." }, 
-          { nome: "Lat Machine Triang.", anim: "back_pulldown", note: "Focus centrale", dettaglio: "MACCHINARIO: Usa il triangolo a presa stretta, tira verso il petto basso per colpire la schiena in profondità." }
+          { nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono. Tira la sbarra verso il petto inarcando la schiena." }, 
+          { nome: "Lat Machine Triang.", anim: "back_pulldown", note: "Focus centrale", dettaglio: "MACCHINARIO: Triangolo presa stretta, tira verso il petto basso." }
         ] 
       },
-      { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico, mantenendo la schiena piatta e compatta.", 
+      { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico, schiena piatta.", 
         alternative: [
-          { nome: "Rematore Manubrio", anim: "back_row_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: In appoggio su panca. Tira il manubrio verso il fianco portando il gomito ben dietro la schiena." }, 
-          { nome: "Rematore T-Bar", anim: "back_row_barbell", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira il peso verso il petto strizzando le scapole al massimo." }
+          { nome: "Rematore Manubrio", anim: "back_row_db", note: "Unilaterale", dettaglio: "MANUBRI: In appoggio su panca. Tira il manubrio portando il gomito dietro la schiena." }, 
+          { nome: "Rematore T-Bar", anim: "back_row_barbell", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira il peso verso il petto strizzando le scapole." }
         ] 
       },
-      { id: "e9", nome: "Pulley seduto", anim: "back_row_cable", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto al pulley, tira la maniglia verso l'addome basso mantenendo il busto quasi immobile.", 
+      { id: "e9", nome: "Pulley seduto", anim: "back_row_cable", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto, tira la maniglia verso l'addome basso (busto immobile).", 
         alternative: [
-          { nome: "Chest Supported", anim: "back_row_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Seduto con il petto in appoggio. Tira le maniglie lavorando i dorsali senza affaticare la zona lombare." }, 
-          { nome: "Seal Row", anim: "back_row_barbell", note: "Puro isolamento", dettaglio: "BILANCIERE/MANUBRI: Sdraiato prono su una panca alta, tira il peso verso l'alto senza poter usare alcuno slancio." }
+          { nome: "Chest Supported", anim: "back_row_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Petto in appoggio. Tira le maniglie lavorando i dorsali." }, 
+          { nome: "Seal Row", anim: "back_row_barbell", note: "Puro isolamento", dettaglio: "BILANCIERE: Sdraiato prono su panca alta, tira il peso senza usare alcuno slancio." }
         ] 
       },
-      { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: In piedi, cavo alto con sbarra. Spingi verso le cosce a braccia quasi tese, isolando il gran dorsale.", 
+      { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: Cavo alto con sbarra. Spingi verso le cosce a braccia tese per isolare il dorso.", 
         alternative: [
-          { nome: "Pullover Macchina", anim: "back_pullover", note: "Tensione continua", dettaglio: "MACCHINARIO: Usa la macchina specifica del pullover, flettendo le braccia sui cuscinetti per un arco di movimento enorme." }, 
-          { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Disteso di traverso su panca. Abbassa il manubrio dietro la testa per allargare la gabbia toracica." }
+          { nome: "Pullover Macchina", anim: "back_pullover", note: "Tensione continua", dettaglio: "MACCHINARIO: Macchina specifica, flettendo le braccia sui cuscinetti." }, 
+          { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Di traverso su panca. Abbassa il manubrio dietro la testa." }
         ] 
       },
       { id: "e23", nome: "Curl bilanciere EZ", anim: "bicep_barbell", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE EZ: In piedi. Solleva verso le spalle senza muovere i gomiti.", 
         alternative: [
-          { nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: In piedi o seduto, fletti un braccio alla volta supinando (ruotando) il polso in salita verso l'esterno." }, 
-          { nome: "Curl Cavo Basso", anim: "bicep_cable", note: "Tensione continua", dettaglio: "CAVI: Al cavo basso con sbarra corta. Garantisce resistenza bruciante sia in salita che in discesa." }
+          { nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: Fletti un braccio alla volta ruotando il polso in salita." }, 
+          { nome: "Curl Cavo Basso", anim: "bicep_cable", note: "Tensione continua", dettaglio: "CAVI: Cavo basso con sbarra corta. Tensione bruciante continua." }
         ] 
       },
-      { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Usa una fune al cavo basso. Presa a martello per colpire anche il muscolo brachiale.", 
+      { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso. Presa a martello per colpire anche il brachiale.", 
         alternative: [
-          { nome: "Curl Inclinata", anim: "bicep_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°, lascia cadere le braccia indietro e fletti allungando il bicipite in modo estremo." }, 
-          { nome: "Spider Curl", anim: "bicep_barbell", note: "Picco del bicipite", dettaglio: "BILANCIERE/MANUBRI: Petto in appoggio su panca inclinata, braccia a penzoloni, fletti verso le spalle." }
+          { nome: "Curl Inclinata", anim: "bicep_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°, lascia cadere le braccia indietro e fletti." }, 
+          { nome: "Spider Curl", anim: "bicep_barbell", note: "Picco bicipite", dettaglio: "BILANCIERE: Petto in appoggio su panca inclinata, fletti verso le spalle." }
         ] 
       }
     ]
@@ -152,46 +110,46 @@ const baseDbAllenamento = {
   Gambe: {
     focus: "GAMBE E POLPACCI",
     esercizi: [
-      { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo spingendo le ginocchia in fuori e sali potente dai talloni.", 
+      { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo e sali potente dai talloni.", 
         alternative: [
-          { nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: In appoggio sulle spalle anteriori. Costringe il busto dritto e isola brutalmente i quadricipiti." }, 
-          { nome: "Hack Squat Libero", anim: "leg_squat", note: "Carico posteriore", dettaglio: "BILANCIERE: Come uno stacco, ma con il bilanciere dietro le gambe. Solleva spingendo forte sui quadricipiti." }
+          { nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori. Busto dritto, isola i quadricipiti." }, 
+          { nome: "Hack Squat Libero", anim: "leg_squat", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe (stile stacco). Spingi forte sui quadricipiti." }
         ] 
       },
-      { id: "e12", nome: "Hack squat", anim: "leg_machine_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena e spalle. Scendi in profondità e spingi su eliminando l'uso della bassa schiena.", 
+      { id: "e12", nome: "Hack squat", anim: "leg_machine_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena. Scendi e spingi su isolando le gambe senza la bassa schiena.", 
         alternative: [
-          { nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Posiziona i piedi in basso e stretti sulla pedana per concentrare il peso sui quadricipiti." }, 
-          { nome: "Belt Squat", anim: "leg_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Squat con cintura pesata agganciata ai fianchi, per caricare salvando totalmente la spina dorsale." }
+          { nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana per concentrare il lavoro sui quadricipiti." }, 
+          { nome: "Belt Squat", anim: "leg_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi per caricare salvando la spina dorsale." }
         ] 
       },
-      { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Pedana 45°. Scendi portando le ginocchia verso il petto e spingi senza mai bloccare l'articolazione in alto.", 
+      { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Scendi portando le ginocchia verso il petto e spingi senza bloccare l'articolazione.", 
         alternative: [
-          { nome: "Affondi Manubri", anim: "leg_lunge", note: "Focus equilibrio", dettaglio: "MANUBRI: In camminata o sul posto, affonda controllando la discesa per attivare glutei e femorali." }, 
-          { nome: "Bulgarian Squat", anim: "leg_lunge", note: "Unilaterale", dettaglio: "MANUBRI/LIBERO: Piede posteriore su una panca, scendi in affondo sulla gamba avanti per un lavoro mirato." }
+          { nome: "Affondi Manubri", anim: "leg_lunge", note: "Equilibrio", dettaglio: "MANUBRI: In camminata o sul posto, affonda controllando la discesa." }, 
+          { nome: "Bulgarian Squat", anim: "leg_lunge", note: "Unilaterale", dettaglio: "MANUBRI: Piede posteriore su panca, scendi in affondo per un lavoro mirato." }
         ] 
       },
-      { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Seduto. Distendi le gambe strizzando forte i quadricipiti nel punto più alto del movimento.", 
+      { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Distendi le gambe strizzando forte i quadricipiti nel punto più alto.", 
         alternative: [
-          { nome: "Sissy Squat", anim: "leg_extension", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci e lasciati cadere all'indietro con la schiena per stretchare i quadricipiti alla follia." }, 
-          { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto spingendo unicamente con la gamba in appoggio, lentamente e senza slanci." }
+          { nome: "Sissy Squat", anim: "leg_extension", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci e lasciati cadere all'indietro per stretchare i quadricipiti." }, 
+          { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto spingendo unicamente con la gamba in appoggio." }
         ] 
       },
-      { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Schiena tesa, scivola lungo le cosce spingendo il sedere indietro. Sali contraendo i femorali.", 
+      { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Scivola lungo le cosce spingendo il sedere indietro. Sali contraendo i femorali.", 
         alternative: [
-          { nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte (non bloccate). Scendi per allungare brutalmente la catena cinetica posteriore." }, 
-          { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto in avanti mantenendo le gambe semi-tese come in un inchino." }
+          { nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte (non bloccate). Scendi per allungare la catena posteriore." }, 
+          { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto in avanti come in un inchino." }
         ] 
       },
-      { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo, e frena lentissimamente la discesa.", 
+      { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo e frena la discesa.", 
         alternative: [
-          { nome: "Leg Curl Seduto", anim: "leg_curl", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Versione da seduto. Isola magnificamente il bicipite femorale garantendo stabilità lombare." }, 
-          { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva l'intero peso del busto usando solo la contrazione dei femorali. Efficacissimo." }
+          { nome: "Leg Curl Seduto", anim: "leg_curl", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola magnificamente il bicipite femorale garantendo stabilità lombare." }, 
+          { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto usando solo la contrazione dei femorali." }
         ] 
       },
-      { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine, e sali in punta di piedi con fermo di 1 secondo in alto.", 
+      { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine, e sali in punta di piedi fermandoti 1 secondo.", 
         alternative: [
-          { nome: "Calf Press", anim: "leg_calf", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press spingendo solo con la flessione della caviglia per caricare in sicurezza." }, 
-          { nome: "Calf Seduto", anim: "leg_calf", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, cuscini sulle ginocchia. Solleva i talloni colpisce in profondità il muscolo soleo." }
+          { nome: "Calf Press", anim: "leg_calf", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press spingendo solo con le caviglie." }, 
+          { nome: "Calf Seduto", anim: "leg_calf", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, solleva i talloni per colpire il soleo in profondità." }
         ] 
       }
     ]
@@ -199,18 +157,8 @@ const baseDbAllenamento = {
 };
 
 // ==========================================
-// COMPONENTI (Media, Grafico, Ruota BIA)
+// GRAFICI & RUOTA BIA LAICA (Geometria 500x500 Perfetta)
 // ==========================================
-const MediaVisualizer = ({ animKey }: { animKey: string }) => {
-  const url = dbMedia[animKey] || "https://placehold.co/150x150/171717/ffffff?text=Esercizio";
-  return (
-    <div className="w-16 h-16 bg-neutral-950 rounded-lg border border-neutral-700 overflow-hidden flex-shrink-0 shadow-inner">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={url} alt={animKey} className="w-full h-full object-cover" />
-    </div>
-  );
-}
-
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti.</p>;
   if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato. Esegui un&apos;altra sessione.</p>;
@@ -237,6 +185,7 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   );
 };
 
+// La Ruota BIA "Laica" con Tela Realistica Centrata (Scala 500x500)
 const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, string>, altezza: number | "", eta: number | "" }) => {
   const w = Number(data.peso) || 0;
   const h = Number(altezza) || 0;
@@ -248,11 +197,12 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
   const bmi = (w > 0 && h > 0) ? (w / Math.pow(h / 100, 2)).toFixed(1) : '0';
   const bmr = (w > 0 && h > 0 && a > 0) ? Math.round((10 * w) + (6.25 * h) - (5 * a) + 5) : 0;
 
-  const radius = 180; 
-  const strokeW = 80;
+  const radius = 160; 
+  const strokeW = 70;
   const c = 2 * Math.PI * radius;
   const seg = c / 6;
 
+  // Calcolo matematico perfetto per centrare il testo nel raggio (250, 250 è il centro)
   const getLabelPos = (angleDeg: number) => {
     const rad = (angleDeg - 90) * Math.PI / 180;
     return { x: 250 + radius * Math.cos(rad), y: 250 + radius * Math.sin(rad) };
@@ -268,7 +218,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
   ];
 
   return (
-    <div className="relative w-full max-w-lg mx-auto h-[450px] bg-neutral-950 rounded-xl border border-neutral-800 flex items-center justify-center overflow-hidden shadow-inner mt-4">
+    <div className="relative w-full max-w-md mx-auto h-[400px] bg-neutral-950 rounded-xl border border-neutral-800 flex items-center justify-center overflow-hidden shadow-inner mt-4">
        <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
        <svg viewBox="0 0 500 500" className="w-full h-full drop-shadow-2xl z-10 p-2">
           
@@ -282,8 +232,8 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              const pos = getLabelPos(sec.angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
-                 <text x={pos.x} y={pos.y - 6} fill="#fff" fontSize="14" textAnchor="middle" fontWeight="bold" className="drop-shadow-md">{sec.label}</text>
-                 <text x={pos.x} y={pos.y + 16} fill="#fff" fontSize="20" textAnchor="middle" fontWeight="900" className="drop-shadow-md">{sec.val}</text>
+                 <text x={pos.x} y={pos.y - 6} fill="#fff" fontSize="12" textAnchor="middle" fontWeight="bold" className="drop-shadow-md">{sec.label}</text>
+                 <text x={pos.x} y={pos.y + 14} fill="#fff" fontSize="18" textAnchor="middle" fontWeight="900" className="drop-shadow-md">{sec.val}</text>
                </g>
              )
           })}
@@ -306,7 +256,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
 };
 
 // ==========================================
-// 3. DATABASE ALIMENTAZIONE COMPLETO
+// 2. DATABASE ALIMENTAZIONE COMPLETO
 // ==========================================
 const dbAlimenti = {
   Pasto1: [
@@ -795,7 +745,7 @@ export default function Home() {
                      <option value="Ricomposizione">Obiettivo: Mantenimento</option>
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded">
-                     <p className="text-[10px] text-neutral-500 mb-2">📸 Foto Obiettivo Fisico (Opzionale). L&apos;IA stimera la BIA.</p>
+                     <p className="text-[10px] text-neutral-500 mb-2">📸 Foto Obiettivo Fisico (Opzionale). L&apos;IA stimerà la BIA.</p>
                      <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoFileWizard} />
                    </div>
                    <div className="flex gap-2">
@@ -1104,6 +1054,7 @@ export default function Home() {
                     const numeroSetTarget = getNumeroSet(es.fase);
                     const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
                     
+                    // Il MediaVisualizer è ora caricato dal file esterno animations.tsx
                     const animType = currentEx.anim || "chest_barbell"; 
                     
                     let repMostrate = es.rep;
@@ -1118,7 +1069,8 @@ export default function Home() {
                             <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-neutral-800 text-neutral-400 px-2 py-1 rounded font-bold uppercase hover:text-white transition-colors">Swap</button>
                           </div>
                           <div className="flex items-center gap-4 mt-2">
-                            <MediaVisualizer animKey={animType} />
+                            {/* COMPONENTE VETTORIALE MODULARE ESTERNO */}
+                            <MediaVisualizer animKey={animType} color={phaseColor} />
                             <div className="flex-1">
                                <h3 className="font-bold text-sm text-white">{nomeAttuale}</h3>
                                <p className="text-[10px] text-neutral-400 italic mt-1 leading-relaxed bg-neutral-900 p-2 rounded border border-neutral-800">{currentEx.dettaglio}</p>
