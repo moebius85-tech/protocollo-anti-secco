@@ -212,24 +212,24 @@ const ChestFlyeDbFlat = ({ color }: { color: string }) => (
 // ==========================================
 const ShoulderDb = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-    <line x1="35" y1="55" x2="68" y2="55" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
-    <line x1="65" y1="55" x2="65" y2="20" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
-    <line x1="45" y1="55" x2="45" y2="90" stroke="#444" strokeWidth="4"/>
-    <line x1="65" y1="55" x2="65" y2="90" stroke="#444" strokeWidth="4"/>
-    <circle cx="58" cy="20" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
-    <line x1="58" y1="28" x2="58" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
-    <path d="M 58 55 L 35 55 L 35 85 L 25 85" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <line x1="35" y1="64" x2="68" y2="64" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="65" y1="64" x2="65" y2="25" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="45" y1="64" x2="45" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="65" y1="64" x2="65" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="60" cy="27" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="60" y1="33" x2="60" y2="60" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 60 60 L 35 60 L 35 90 M 35 90 L 25 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
     <g>
       <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
-      <path d="M 58 28 L 65 42 L 53 32" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
-      <ellipse cx="53" cy="32" rx="2.5" ry="7" fill="#e5e5e5"/>
-      <line x1="49" y1="32" x2="57" y2="32" stroke="#ccc" strokeWidth="2"/>
+      <path d="M 60 36 L 66 48 L 56 40" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <ellipse cx="56" cy="40" rx="2.5" ry="7" fill="#e5e5e5"/>
+      <line x1="52" y1="40" x2="60" y2="40" stroke="#ccc" strokeWidth="2"/>
     </g>
     <g opacity="0">
       <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
-      <line x1="58" y1="28" x2="58" y2="5" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
-      <ellipse cx="58" cy="5" rx="2.5" ry="7" fill="#e5e5e5"/>
-      <line x1="54" y1="5" x2="62" y2="5" stroke="#ccc" strokeWidth="2"/>
+      <line x1="60" y1="36" x2="60" y2="10" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <ellipse cx="60" cy="10" rx="2.5" ry="7" fill="#e5e5e5"/>
+      <line x1="56" y1="10" x2="64" y2="10" stroke="#ccc" strokeWidth="2"/>
     </g>
   </svg>
 );
@@ -322,7 +322,106 @@ const TricepDips = ({ color }: { color: string }) => (
       <circle cx="50" cy="5" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
       <path d="M 48 15 L 47 32 L 45 50" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
       <line x1="48" y1="15" x2="40" y2="45" stroke={color} strokeWidth="5" strokeLinecap="round"/>
-      <path d="M 40 45 L 50 70 L 65 65" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d="M 40" y1="45" x2="50" y2="70" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="50" y1="70" x2="65" y2="65" stroke={color} strokeWidth="4.5" strokeLinecap="round"/>
+    </g>
+  </svg>
+);
+
+// ==========================================
+// LOTTO 3: SCHIENA E BICIPITI (Tirata)
+// ==========================================
+const BackPullup = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="10" y1="15" x2="90" y2="15" stroke="#444" strokeWidth="4" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <circle cx="50" cy="35" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+      <line x1="42" y1="43" x2="58" y2="43" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <line x1="50" y1="43" x2="50" y2="70" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <line x1="45" y1="70" x2="55" y2="70" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <path d="M 45 70 L 45 95 M 55 70 L 55 95" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round"/>
+      <path d="M 30 15 L 36 30 L 42 43" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d="M 70 15 L 64 30 L 58 43" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <circle cx="50" cy="15" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+      <line x1="42" y1="23" x2="58" y2="23" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <line x1="50" y1="23" x2="50" y2="50" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <line x1="45" y1="50" x2="55" y2="50" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <path d="M 45 50 L 45 75 M 55 50 L 55 75" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round"/>
+      <path d="M 30 15 L 25 35 L 42 23" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d="M 70 15 L 75 35 L 58 23" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    </g>
+  </svg>
+);
+
+const BackRowBarbell = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="10" y1="90" x2="90" y2="90" stroke="#333" strokeWidth="3"/>
+    <circle cx="68" cy="27" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="60" y1="35" x2="30" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 30 55 L 40 70 L 40 90 M 32 90 L 48 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 60 35 L 60 55 L 60 70" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="45" y1="70" x2="75" y2="70" stroke="#e5e5e5" strokeWidth="2.5"/>
+      <rect x="43" y="60" width="4" height="20" fill="#e5e5e5" rx="1"/>
+      <rect x="73" y="60" width="4" height="20" fill="#e5e5e5" rx="1"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 60 35 L 40 25 L 50 48" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="35" y1="48" x2="65" y2="48" stroke="#e5e5e5" strokeWidth="2.5"/>
+      <rect x="33" y="38" width="4" height="20" fill="#e5e5e5" rx="1"/>
+      <rect x="63" y="38" width="4" height="20" fill="#e5e5e5" rx="1"/>
+    </g>
+  </svg>
+);
+
+const BackRowCable = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="10" y1="75" x2="70" y2="75" stroke="#333" strokeWidth="4"/> 
+    <line x1="80" y1="40" x2="80" y2="90" stroke="#444" strokeWidth="6" strokeLinecap="round"/>
+    <rect x="70" y="65" width="10" height="10" fill="#555" rx="2"/> 
+    <circle cx="80" cy="50" r="4" fill="#666"/>
+    <circle cx="30" cy="27" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="30" y1="35" x2="30" y2="70" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 30 70 L 55 60 L 70 70" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 30 35 L 45 42 L 60 50" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="60" y1="50" x2="80" y2="50" stroke="#888" strokeWidth="1.5"/>
+      <rect x="58" y="47" width="4" height="6" fill="#e5e5e5" rx="1"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 30 35 L 15 42 L 35 50" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="35" y1="50" x2="80" y2="50" stroke="#888" strokeWidth="1.5"/>
+      <rect x="33" y="47" width="4" height="6" fill="#e5e5e5" rx="1"/>
+    </g>
+  </svg>
+);
+
+const BicepBarbell = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="20" y1="90" x2="80" y2="90" stroke="#333" strokeWidth="3"/>
+    <circle cx="50" cy="15" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="50" y1="23" x2="50" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 50 55 L 50 72 L 50 90 M 42 90 L 58 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <line x1="50" y1="23" x2="50" y2="45" stroke={color} strokeWidth="4" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="50" y1="45" x2="55" y2="65" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <ellipse cx="55" cy="65" rx="3" ry="3" fill="#e5e5e5"/>
+      <line x1="45" y1="65" x2="65" y2="65" stroke="#e5e5e5" strokeWidth="2"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="50" y1="45" x2="65" y2="30" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <ellipse cx="65" cy="30" rx="3" ry="3" fill="#e5e5e5"/>
+      <line x1="55" y1="30" x2="75" y2="30" stroke="#e5e5e5" strokeWidth="2"/>
     </g>
   </svg>
 );
@@ -348,14 +447,27 @@ export const MediaVisualizer = ({ animKey, color }: { animKey: string, color: st
           
           // --- SPALLE E TRICIPITI ---
           case 'shoulder_db': return <ShoulderDb color={color} />;
-          case 'shoulder_barbell': return <ShoulderDb color={color} />; // Fallback a DB
-          case 'shoulder_machine': return <ShoulderDb color={color} />; // Fallback a DB
+          case 'shoulder_barbell': return <ShoulderDb color={color} />; 
+          case 'shoulder_machine': return <ShoulderDb color={color} />; 
           case 'lateral_cable': return <LateralDb color={color} />;
           case 'lateral_db': return <LateralDb color={color} />;
           case 'lateral_machine': return <LateralDb color={color} />;
           case 'tricep_barbell': return <TricepBarbell color={color} />;
           case 'tricep_dips': return <TricepDips color={color} />;
           case 'tricep_cable': return <TricepCable color={color} />;
+
+          // --- TIRATA / SCHIENA E BICIPITI ---
+          case 'back_pullup': return <BackPullup color={color} />;
+          case 'back_pulldown': return <BackPullup color={color} />; // Fallback a trazioni
+          case 'back_row_barbell': return <BackRowBarbell color={color} />;
+          case 'back_row_db': return <BackRowBarbell color={color} />; // Fallback a bilanciere
+          case 'back_row_cable': return <BackRowCable color={color} />;
+          case 'back_row_machine': return <BackRowCable color={color} />; // Fallback a pulley
+          case 'back_pullover': return <BackRowCable color={color} />; // Temporaneo
+          case 'back_pullover_db': return <BackRowCable color={color} />; // Temporaneo
+          case 'bicep_barbell': return <BicepBarbell color={color} />;
+          case 'bicep_db': return <BicepBarbell color={color} />;
+          case 'bicep_cable': return <BicepBarbell color={color} />;
           
           default: return (
              <div className="flex flex-col items-center opacity-50">
