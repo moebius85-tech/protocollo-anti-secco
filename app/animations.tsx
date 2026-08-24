@@ -7,115 +7,108 @@ import React from 'react';
 // --- LOTTO 1: PETTO ---
 
 const ChestBarbell = ({ color }: { color: string }) => (
-  <svg viewBox="0 0 50 50" className="w-full h-full drop-shadow-md">
-    {/* Panca */}
-    <line x1="5" y1="35" x2="45" y2="35" stroke="#444" strokeWidth="4" strokeLinecap="round" />
-    <line x1="12" y1="35" x2="12" y2="45" stroke="#444" strokeWidth="2" strokeLinecap="round" />
-    <line x1="38" y1="35" x2="38" y2="45" stroke="#444" strokeWidth="2" strokeLinecap="round" />
-    
-    {/* Frame 1: Bilanciere al petto */}
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="72" y1="15" x2="72" y2="90" stroke="#444" strokeWidth="4" strokeLinecap="round"/>
+    <line x1="68" y1="35" x2="72" y2="35" stroke="#555" strokeWidth="3"/>
+    <rect x="15" y="52" width="65" height="6" fill="#333" rx="1"/>
+    <line x1="25" y1="58" x2="25" y2="90" stroke="#444" strokeWidth="3"/>
+    <line x1="65" y1="58" x2="65" y2="90" stroke="#444" strokeWidth="3"/>
+    <circle cx="65" cy="47" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="60" y1="49.5" x2="35" y2="49.5" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 35 49.5 L 25 70 L 25 90 M 25 90 L 15 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
     <g>
-      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
-      <circle cx="16" cy="32" r="3.5" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M 19 33 L 32 33 L 40 42 L 40 48" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 23 33 L 26 26 L 23 20" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <line x1="15" y1="20" x2="35" y2="20" stroke="#e5e5e5" strokeWidth="2" strokeLinecap="round" />
-      <rect x="12" y="14" width="3" height="12" fill="#e5e5e5" rx="1" />
-      <rect x="35" y="14" width="3" height="12" fill="#e5e5e5" rx="1" />
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 53 49.5 L 50 65 L 53 40" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="35" y1="40" x2="68" y2="40" stroke="#e5e5e5" strokeWidth="2.5" strokeLinecap="round"/>
+      <rect x="33" y="30" width="4" height="20" fill="#e5e5e5" rx="1"/>
+      <rect x="66" y="30" width="4" height="20" fill="#e5e5e5" rx="1"/>
     </g>
-    
-    {/* Frame 2: Bilanciere in alto (Spinta) */}
     <g opacity="0">
-      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
-      <circle cx="16" cy="32" r="3.5" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M 19 33 L 32 33 L 40 42 L 40 48" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 23 33 L 23 10" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <line x1="15" y1="10" x2="35" y2="10" stroke="#e5e5e5" strokeWidth="2" strokeLinecap="round" />
-      <rect x="12" y="4" width="3" height="12" fill="#e5e5e5" rx="1" />
-      <rect x="35" y="4" width="3" height="12" fill="#e5e5e5" rx="1" />
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="53" y1="49.5" x2="53" y2="18" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="35" y1="18" x2="68" y2="18" stroke="#e5e5e5" strokeWidth="2.5" strokeLinecap="round"/>
+      <rect x="33" y="8" width="4" height="20" fill="#e5e5e5" rx="1"/>
+      <rect x="66" y="8" width="4" height="20" fill="#e5e5e5" rx="1"/>
+    </g>
+  </svg>
+);
+
+const ChestDumbbellIncline = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="40" y1="62" x2="60" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="58" y1="62" x2="78" y2="30" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="45" y1="62" x2="45" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="65" y1="52" x2="65" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="80" cy="24" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="75" y1="32" x2="55" y2="58" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 55 58 L 40 62 L 40 90 M 40 90 L 30 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 68 41 L 72 55 L 65 42" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="60" y1="42" x2="70" y2="42" stroke="#e5e5e5" strokeWidth="2.5" strokeLinecap="round"/>
+      <rect x="58" y="36" width="3" height="12" fill="#e5e5e5" rx="1"/>
+      <rect x="69" y="36" width="3" height="12" fill="#e5e5e5" rx="1"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="68" y1="41" x2="68" y2="15" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="63" y1="15" x2="73" y2="15" stroke="#e5e5e5" strokeWidth="2.5" strokeLinecap="round"/>
+      <rect x="61" y="9" width="3" height="12" fill="#e5e5e5" rx="1"/>
+      <rect x="72" y="9" width="3" height="12" fill="#e5e5e5" rx="1"/>
     </g>
   </svg>
 );
 
 const ChestMachine = ({ color }: { color: string }) => (
-  <svg viewBox="0 0 50 50" className="w-full h-full drop-shadow-md">
-    {/* Struttura Macchinario e Seduta */}
-    <path d="M 10 15 L 10 45 L 20 45" stroke="#444" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    <line x1="25" y1="10" x2="25" y2="40" stroke="#555" strokeWidth="3" strokeLinecap="round" />
-    <line x1="15" y1="40" x2="35" y2="40" stroke="#555" strokeWidth="3" strokeLinecap="round" />
-    
-    {/* Frame 1: Partenza (Mani vicine al petto) */}
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="45" y1="62" x2="70" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="68" y1="62" x2="68" y2="20" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="55" y1="62" x2="55" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="68" y1="62" x2="68" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="63" cy="20" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="63" y1="27" x2="63" y2="58" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 63 58 L 42 58 L 42 90 M 42 90 L 32 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
     <g>
-      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
-      <circle cx="16" cy="20" r="3.5" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M 14 24 L 14 35 L 25 45" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 14 24 L 20 28 L 22 24" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <line x1="22" y1="20" x2="22" y2="28" stroke="#e5e5e5" strokeWidth="3" strokeLinecap="round" />
-      <rect x="20" y="15" width="4" height="15" fill="#e5e5e5" rx="1" />
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 63 35 L 75 42 L 55 35" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="55" y1="15" x2="55" y2="45" stroke="#555" strokeWidth="3" strokeLinecap="round"/>
+      <rect x="53" y="30" width="4" height="10" fill="#e5e5e5" rx="1"/>
     </g>
-    
-    {/* Frame 2: Spinta in avanti */}
     <g opacity="0">
-      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
-      <circle cx="16" cy="20" r="3.5" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M 14 24 L 14 35 L 25 45" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 14 24 L 35 24" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <line x1="35" y1="20" x2="35" y2="28" stroke="#e5e5e5" strokeWidth="3" strokeLinecap="round" />
-      <rect x="33" y="15" width="4" height="15" fill="#e5e5e5" rx="1" />
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="63" y1="35" x2="25" y2="35" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="25" y1="15" x2="25" y2="45" stroke="#555" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="68" y1="15" x2="25" y2="15" stroke="#444" strokeWidth="2"/>
+      <rect x="23" y="30" width="4" height="10" fill="#e5e5e5" rx="1"/>
     </g>
   </svg>
 );
 
-const ChestDumbbell = ({ color }: { color: string }) => (
-  <svg viewBox="0 0 50 50" className="w-full h-full drop-shadow-md">
-    {/* Panca */}
-    <line x1="5" y1="35" x2="45" y2="35" stroke="#444" strokeWidth="4" strokeLinecap="round" />
-    
-    {/* Frame 1: Manubri in basso (Allungamento) */}
+const PecDeckFrontal = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <rect x="42" y="10" width="16" height="80" fill="#333" rx="2"/>
+    <rect x="30" y="60" width="40" height="8" fill="#222" rx="2"/>
+    <circle cx="50" cy="20" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <rect x="42" y="27" width="16" height="33" fill="none" stroke={color} strokeWidth="3" rx="2"/>
+    <path d="M 45 60 L 40 80 L 40 90 M 35 90 L 45 90" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round"/>
+    <path d="M 55 60 L 60 80 L 60 90 M 55 90 L 65 90" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round"/>
     <g>
-      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
-      <circle cx="16" cy="32" r="3.5" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M 19 33 L 32 33 L 40 42" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 23 33 L 26 26 L 22 20" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="20" cy="20" r="2.5" fill="#e5e5e5" />
-      <circle cx="26" cy="20" r="2.5" fill="#e5e5e5" />
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 42 33 L 20 33 L 20 20" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round"/>
+      <path d="M 58 33 L 80 33 L 80 20" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round"/>
+      <polyline points="50,15 20,15 20,25" stroke="#555" strokeWidth="3" fill="none"/>
+      <polyline points="50,15 80,15 80,25" stroke="#555" strokeWidth="3" fill="none"/>
+      <rect x="18" y="25" width="4" height="15" fill="#e5e5e5" rx="1"/>
+      <rect x="78" y="25" width="4" height="15" fill="#e5e5e5" rx="1"/>
     </g>
-    
-    {/* Frame 2: Manubri chiusi in alto (Contrazione) */}
     <g opacity="0">
-      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
-      <circle cx="16" cy="32" r="3.5" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M 19 33 L 32 33 L 40 42" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 23 33 L 23 10" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="20" cy="10" r="2.5" fill="#e5e5e5" />
-      <circle cx="26" cy="10" r="2.5" fill="#e5e5e5" />
-    </g>
-  </svg>
-);
-
-const ChestFlyeDb = ({ color }: { color: string }) => (
-  <svg viewBox="0 0 50 50" className="w-full h-full drop-shadow-md">
-    {/* Panca vista frontale (spessa) */}
-    <line x1="20" y1="25" x2="30" y2="25" stroke="#444" strokeWidth="6" strokeLinecap="round" />
-    
-    {/* Frame 1: Braccia aperte */}
-    <g>
-      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
-      <circle cx="25" cy="20" r="3.5" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M 25 24 L 25 45" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 25 24 L 10 20 M 25 24 L 40 20" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="6" y="16" width="6" height="8" fill="#e5e5e5" rx="2" />
-      <rect x="38" y="16" width="6" height="8" fill="#e5e5e5" rx="2" />
-    </g>
-    
-    {/* Frame 2: Braccia chiuse in alto */}
-    <g opacity="0">
-      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite" />
-      <circle cx="25" cy="20" r="3.5" stroke={color} strokeWidth="2.5" fill="none" />
-      <path d="M 25 24 L 25 45" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 25 24 L 22 10 M 25 24 L 28 10" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="18" y="6" width="6" height="8" fill="#e5e5e5" rx="2" />
-      <rect x="26" y="6" width="6" height="8" fill="#e5e5e5" rx="2" />
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 42 33 L 42 20" stroke={color} strokeWidth="4" fill="none" strokeLinecap="round"/>
+      <path d="M 58 33 L 58 20" stroke={color} strokeWidth="4" fill="none" strokeLinecap="round"/>
+      <polyline points="50,15 42,15 42,25" stroke="#555" strokeWidth="3" fill="none"/>
+      <polyline points="50,15 58,15 58,25" stroke="#555" strokeWidth="3" fill="none"/>
+      <rect x="40" y="25" width="4" height="15" fill="#e5e5e5" rx="1"/>
+      <rect x="56" y="25" width="4" height="15" fill="#e5e5e5" rx="1"/>
     </g>
   </svg>
 );
@@ -132,10 +125,9 @@ export const MediaVisualizer = ({ animKey, color }: { animKey: string, color: st
           // --- LOTTO 1: PETTO ---
           case 'chest_barbell': return <ChestBarbell color={color} />;
           case 'chest_machine': return <ChestMachine color={color} />;
-          case 'chest_dumbbell': return <ChestDumbbell color={color} />;
-          case 'chest_flye_db': return <ChestFlyeDb color={color} />;
+          case 'chest_dumbbell': return <ChestDumbbellIncline color={color} />;
+          case 'chest_flye_machine': return <PecDeckFrontal color={color} />;
           
-          // Se l'animazione non è ancora stata creata, mostra un ingranaggio
           default: return (
              <div className="flex flex-col items-center opacity-50">
                <span className="text-xl">⚙️</span>
