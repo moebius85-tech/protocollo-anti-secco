@@ -1,12 +1,9 @@
 import React from 'react';
 
 // ==========================================
-// LIBRERIA ANIMAZIONI SVG - PROTOCOLLO ANTI-SECCO
+// 1. PANCA PIANA BILANCIERE
 // ==========================================
-
-// --- LOTTO 1: PETTO ---
-
-const ChestBarbell = ({ color }: { color: string }) => (
+const ChestBarbellFlat = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="72" y1="15" x2="72" y2="90" stroke="#444" strokeWidth="4" strokeLinecap="round"/>
     <line x1="68" y1="35" x2="72" y2="35" stroke="#555" strokeWidth="3"/>
@@ -33,6 +30,66 @@ const ChestBarbell = ({ color }: { color: string }) => (
   </svg>
 );
 
+// ==========================================
+// 2. PANCA INCLINATA BILANCIERE
+// ==========================================
+const ChestBarbellIncline = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="40" y1="62" x2="60" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="58" y1="62" x2="78" y2="30" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="45" y1="62" x2="45" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="65" y1="52" x2="65" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="80" cy="24" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="75" y1="32" x2="55" y2="58" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 55 58 L 40 62 L 40 90 M 40 90 L 30 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 68 41 L 72 55 L 65 42" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="48" y1="42" x2="80" y2="42" stroke="#e5e5e5" strokeWidth="2.5" strokeLinecap="round"/>
+      <rect x="46" y="32" width="4" height="20" fill="#e5e5e5" rx="1"/>
+      <rect x="78" y="32" width="4" height="20" fill="#e5e5e5" rx="1"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="68" y1="41" x2="68" y2="15" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="48" y1="15" x2="80" y2="15" stroke="#e5e5e5" strokeWidth="2.5" strokeLinecap="round"/>
+      <rect x="46" y="5" width="4" height="20" fill="#e5e5e5" rx="1"/>
+      <rect x="78" y="5" width="4" height="20" fill="#e5e5e5" rx="1"/>
+    </g>
+  </svg>
+);
+
+// ==========================================
+// 3. PANCA PIANA MANUBRI
+// ==========================================
+const ChestDumbbellFlat = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <rect x="15" y="52" width="65" height="6" fill="#333" rx="1"/>
+    <line x1="25" y1="58" x2="25" y2="90" stroke="#444" strokeWidth="3"/>
+    <line x1="65" y1="58" x2="65" y2="90" stroke="#444" strokeWidth="3"/>
+    <circle cx="65" cy="47" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="60" y1="49.5" x2="35" y2="49.5" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 35 49.5 L 25 70 L 25 90 M 25 90 L 15 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 53 49.5 L 50 65 L 53 40" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="49" y1="40" x2="57" y2="40" stroke="#e5e5e5" strokeWidth="2.5" strokeLinecap="round"/>
+      <ellipse cx="49" cy="40" rx="2" ry="8" fill="#e5e5e5"/>
+      <ellipse cx="57" cy="40" rx="2" ry="8" fill="#e5e5e5"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="53" y1="49.5" x2="53" y2="18" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="49" y1="18" x2="57" y2="18" stroke="#e5e5e5" strokeWidth="2.5" strokeLinecap="round"/>
+      <ellipse cx="49" cy="18" rx="2" ry="8" fill="#e5e5e5"/>
+      <ellipse cx="57" cy="18" rx="2" ry="8" fill="#e5e5e5"/>
+    </g>
+  </svg>
+);
+
+// ==========================================
+// 4. PANCA INCLINATA MANUBRI
+// ==========================================
 const ChestDumbbellIncline = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="40" y1="62" x2="60" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
@@ -59,7 +116,10 @@ const ChestDumbbellIncline = ({ color }: { color: string }) => (
   </svg>
 );
 
-const ChestMachine = ({ color }: { color: string }) => (
+// ==========================================
+// 5. CHEST PRESS (PIANA)
+// ==========================================
+const ChestMachineFlat = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="45" y1="62" x2="70" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
     <line x1="68" y1="62" x2="68" y2="20" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
@@ -84,6 +144,37 @@ const ChestMachine = ({ color }: { color: string }) => (
   </svg>
 );
 
+// ==========================================
+// 6. CHEST PRESS INCLINATA
+// ==========================================
+const ChestMachineIncline = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="45" y1="62" x2="70" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="68" y1="62" x2="78" y2="20" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="55" y1="62" x2="55" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="68" y1="62" x2="68" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="75" cy="18" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="74" y1="26" x2="65" y2="58" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 65 58 L 42 58 L 42 90 M 42 90 L 32 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 70 38 L 80 48 L 60 40" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="60" y1="20" x2="60" y2="50" stroke="#555" strokeWidth="3" strokeLinecap="round"/>
+      <rect x="58" y="35" width="4" height="10" fill="#e5e5e5" rx="1"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="70" y1="38" x2="35" y2="25" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="35" y1="10" x2="35" y2="40" stroke="#555" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="75" y1="15" x2="35" y2="10" stroke="#444" strokeWidth="2"/>
+      <rect x="33" y="20" width="4" height="10" fill="#e5e5e5" rx="1"/>
+    </g>
+  </svg>
+);
+
+// ==========================================
+// 7. PEC DECK (Frontale) / CROCI CAVI
+// ==========================================
 const PecDeckFrontal = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <rect x="42" y="10" width="16" height="80" fill="#333" rx="2"/>
@@ -113,6 +204,27 @@ const PecDeckFrontal = ({ color }: { color: string }) => (
   </svg>
 );
 
+const ChestFlyeDbFlat = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <rect x="15" y="52" width="65" height="6" fill="#333" rx="1"/>
+    <line x1="25" y1="58" x2="25" y2="90" stroke="#444" strokeWidth="3"/>
+    <line x1="65" y1="58" x2="65" y2="90" stroke="#444" strokeWidth="3"/>
+    <circle cx="65" cy="47" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="60" y1="49.5" x2="35" y2="49.5" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 35 49.5 L 25 70 L 25 90 M 25 90 L 15 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 53 49.5 L 53 75 L 50 85" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx="50" cy="85" r="4" fill="#e5e5e5"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="53" y1="49.5" x2="53" y2="18" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <circle cx="53" cy="18" r="4" fill="#e5e5e5"/>
+    </g>
+  </svg>
+);
+
 
 // ==========================================
 // IL CERVELLO CHE ESPORTA L'ICONA CORRETTA A PAGE.TSX
@@ -122,11 +234,15 @@ export const MediaVisualizer = ({ animKey, color }: { animKey: string, color: st
     <div className="w-16 h-16 bg-neutral-900 rounded-lg border border-neutral-700 flex items-center justify-center shadow-inner shrink-0 p-1">
       {(() => {
         switch (animKey) {
-          // --- LOTTO 1: PETTO ---
-          case 'chest_barbell': return <ChestBarbell color={color} />;
-          case 'chest_machine': return <ChestMachine color={color} />;
-          case 'chest_dumbbell': return <ChestDumbbellIncline color={color} />;
+          // --- SPINTA / PETTO ---
+          case 'chest_barbell_flat': return <ChestBarbellFlat color={color} />;
+          case 'chest_barbell_incline': return <ChestBarbellIncline color={color} />;
+          case 'chest_dumbbell_flat': return <ChestDumbbellFlat color={color} />;
+          case 'chest_dumbbell_incline': return <ChestDumbbellIncline color={color} />;
+          case 'chest_machine_flat': return <ChestMachineFlat color={color} />;
+          case 'chest_machine_incline': return <ChestMachineIncline color={color} />;
           case 'chest_flye_machine': return <PecDeckFrontal color={color} />;
+          case 'chest_flye_db': return <ChestFlyeDbFlat color={color} />;
           
           default: return (
              <div className="flex flex-col items-center opacity-50">
