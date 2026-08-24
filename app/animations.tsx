@@ -1,8 +1,10 @@
 import React from 'react';
 
 // ==========================================
-// LOTTO 1: SPINTA (PETTO)
+// LIBRERIA ANIMAZIONI SVG - PROTOCOLLO ANTI-SECCO
 // ==========================================
+
+// --- LOTTO 1: SPINTA (PETTO) ---
 const ChestBarbellFlat = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="72" y1="15" x2="72" y2="90" stroke="#444" strokeWidth="4" strokeLinecap="round"/>
@@ -207,29 +209,27 @@ const ChestFlyeDbFlat = ({ color }: { color: string }) => (
   </svg>
 );
 
-// ==========================================
-// LOTTO 2: SPALLE E TRICIPITI
-// ==========================================
+// --- LOTTO 2 E 3: SPALLE E BRACCIA ---
 const ShoulderDb = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-    <line x1="35" y1="64" x2="68" y2="64" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
-    <line x1="65" y1="64" x2="65" y2="25" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
-    <line x1="45" y1="64" x2="45" y2="90" stroke="#444" strokeWidth="4"/>
-    <line x1="65" y1="64" x2="65" y2="90" stroke="#444" strokeWidth="4"/>
-    <circle cx="60" cy="27" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
-    <line x1="60" y1="33" x2="60" y2="60" stroke={color} strokeWidth="5" strokeLinecap="round"/>
-    <path d="M 60 60 L 35 60 L 35 90 M 35 90 L 25 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <line x1="35" y1="55" x2="68" y2="55" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="65" y1="55" x2="65" y2="20" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="45" y1="55" x2="45" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="65" y1="55" x2="65" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="58" cy="20" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="58" y1="28" x2="58" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 58 55 L 35 55 L 35 85 L 25 85" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
     <g>
       <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
-      <path d="M 60 36 L 66 48 L 56 40" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
-      <ellipse cx="56" cy="40" rx="2.5" ry="7" fill="#e5e5e5"/>
-      <line x1="52" y1="40" x2="60" y2="40" stroke="#ccc" strokeWidth="2"/>
+      <path d="M 58 28 L 65 42 L 53 32" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <ellipse cx="53" cy="32" rx="2.5" ry="7" fill="#e5e5e5"/>
+      <line x1="49" y1="32" x2="57" y2="32" stroke="#ccc" strokeWidth="2"/>
     </g>
     <g opacity="0">
       <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
-      <line x1="60" y1="36" x2="60" y2="10" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
-      <ellipse cx="60" cy="10" rx="2.5" ry="7" fill="#e5e5e5"/>
-      <line x1="56" y1="10" x2="64" y2="10" stroke="#ccc" strokeWidth="2"/>
+      <line x1="58" y1="28" x2="58" y2="5" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <ellipse cx="58" cy="5" rx="2.5" ry="7" fill="#e5e5e5"/>
+      <line x1="54" y1="5" x2="62" y2="5" stroke="#ccc" strokeWidth="2"/>
     </g>
   </svg>
 );
@@ -328,9 +328,6 @@ const TricepDips = ({ color }: { color: string }) => (
   </svg>
 );
 
-// ==========================================
-// LOTTO 3: SCHIENA E BICIPITI (Tirata)
-// ==========================================
 const BackPullup = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="10" y1="15" x2="90" y2="15" stroke="#444" strokeWidth="4" strokeLinecap="round"/>
@@ -426,6 +423,97 @@ const BicepBarbell = ({ color }: { color: string }) => (
   </svg>
 );
 
+// --- LOTTO 4: GAMBE ---
+const LegSquat = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="10" y1="90" x2="90" y2="90" stroke="#333" strokeWidth="3"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <circle cx="50" cy="15" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+      <line x1="50" y1="20" x2="50" y2="45" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <path d="M 50 45 L 53 65 L 50 85 M 50 85 L 58 85" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d="M 50 20 L 45 28 L 50 20" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round"/>
+      <ellipse cx="50" cy="20" rx="3" ry="12" fill="#e5e5e5"/>
+      <line x1="45" y1="20" x2="55" y2="20" stroke="#e5e5e5" strokeWidth="2"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <circle cx="53" cy="36" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+      <line x1="50" y1="42" x2="35" y2="65" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <path d="M 35 65 L 60 65 L 50 85 M 50 85 L 58 85" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d="M 50 42 L 45 50 L 50 42" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round"/>
+      <ellipse cx="50" cy="42" rx="3" ry="12" fill="#e5e5e5"/>
+      <line x1="45" y1="42" x2="55" y2="42" stroke="#e5e5e5" strokeWidth="2"/>
+    </g>
+  </svg>
+);
+
+const LegPress = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="20" y1="90" x2="80" y2="90" stroke="#333" strokeWidth="4"/>
+    <line x1="80" y1="90" x2="30" y2="20" stroke="#444" strokeWidth="6" strokeLinecap="round"/>
+    <polygon points="45,90 65,90 75,75 55,75" fill="#222"/>
+    <circle cx="68" cy="70" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="65" y1="75" x2="50" y2="85" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 50 85 L 45 65 L 35 70" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="30" y1="65" x2="40" y2="75" stroke="#e5e5e5" strokeWidth="4" strokeLinecap="round"/>
+      <line x1="35" y1="70" x2="55" y2="40" stroke="#555" strokeWidth="2"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="50" y1="85" x2="20" y2="50" stroke={color} strokeWidth="4.5" strokeLinecap="round"/>
+      <line x1="15" y1="45" x2="25" y2="55" stroke="#e5e5e5" strokeWidth="4" strokeLinecap="round"/>
+      <line x1="20" y1="50" x2="40" y2="20" stroke="#555" strokeWidth="2"/>
+    </g>
+  </svg>
+);
+
+const LegExtension = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="25" y1="60" x2="55" y2="60" stroke="#333" strokeWidth="6"/>
+    <line x1="25" y1="60" x2="25" y2="20" stroke="#333" strokeWidth="6"/>
+    <line x1="35" y1="60" x2="35" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="50" y1="60" x2="50" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="30" cy="18" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="30" y1="25" x2="30" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <line x1="30" y1="55" x2="55" y2="55" stroke={color} strokeWidth="4.5" strokeLinecap="round"/>
+    <path d="M 30 25 L 35 40 L 30 55" stroke={color} strokeWidth="3" fill="none" strokeLinejoin="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 55 55 L 55 80 M 50 80 L 60 80" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx="55" cy="75" r="4" fill="#e5e5e5"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 55 55 L 80 55 M 80 50 L 80 60" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx="75" cy="55" r="4" fill="#e5e5e5"/>
+    </g>
+  </svg>
+);
+
+const LegCurl = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="20" y1="55" x2="80" y2="55" stroke="#333" strokeWidth="6"/>
+    <line x1="30" y1="55" x2="30" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="70" y1="55" x2="70" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="20" cy="52" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="26" y1="52" x2="45" y2="52" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <line x1="45" y1="52" x2="70" y2="52" stroke={color} strokeWidth="4.5" strokeLinecap="round"/>
+    <path d="M 26 52 L 20 65 L 15 55" stroke={color} strokeWidth="3" fill="none" strokeLinejoin="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 70 52 L 95 52 M 95 52 L 95 58" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx="90" cy="50" r="4" fill="#e5e5e5"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 70 52 L 60 28 M 60 28 L 65 24" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx="63" cy="30" r="4" fill="#e5e5e5"/>
+    </g>
+  </svg>
+);
 
 // ==========================================
 // IL CERVELLO CHE ESPORTA L'ICONA CORRETTA A PAGE.TSX
@@ -458,16 +546,25 @@ export const MediaVisualizer = ({ animKey, color }: { animKey: string, color: st
 
           // --- TIRATA / SCHIENA E BICIPITI ---
           case 'back_pullup': return <BackPullup color={color} />;
-          case 'back_pulldown': return <BackPullup color={color} />; // Fallback a trazioni
+          case 'back_pulldown': return <BackPullup color={color} />;
           case 'back_row_barbell': return <BackRowBarbell color={color} />;
-          case 'back_row_db': return <BackRowBarbell color={color} />; // Fallback a bilanciere
+          case 'back_row_db': return <BackRowBarbell color={color} />; 
           case 'back_row_cable': return <BackRowCable color={color} />;
-          case 'back_row_machine': return <BackRowCable color={color} />; // Fallback a pulley
-          case 'back_pullover': return <BackRowCable color={color} />; // Temporaneo
-          case 'back_pullover_db': return <BackRowCable color={color} />; // Temporaneo
+          case 'back_row_machine': return <BackRowCable color={color} />; 
+          case 'back_pullover': return <BackRowCable color={color} />; 
+          case 'back_pullover_db': return <BackRowCable color={color} />; 
           case 'bicep_barbell': return <BicepBarbell color={color} />;
           case 'bicep_db': return <BicepBarbell color={color} />;
           case 'bicep_cable': return <BicepBarbell color={color} />;
+
+          // --- GAMBE ---
+          case 'leg_squat': return <LegSquat color={color} />;
+          case 'leg_machine_squat': return <LegSquat color={color} />; // Fallback a Squat libero
+          case 'leg_press': return <LegPress color={color} />;
+          case 'leg_lunge': return <LegSquat color={color} />; // Fallback momentaneo
+          case 'leg_extension': return <LegExtension color={color} />;
+          case 'leg_deadlift': return <LegSquat color={color} />; // Fallback a Squat
+          case 'leg_curl': return <LegCurl color={color} />;
           
           default: return (
              <div className="flex flex-col items-center opacity-50">
