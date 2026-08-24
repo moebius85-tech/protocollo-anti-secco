@@ -1,7 +1,7 @@
 import React from 'react';
 
 // ==========================================
-// 1. PANCA PIANA BILANCIERE
+// LOTTO 1: SPINTA (PETTO)
 // ==========================================
 const ChestBarbellFlat = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
@@ -30,9 +30,6 @@ const ChestBarbellFlat = ({ color }: { color: string }) => (
   </svg>
 );
 
-// ==========================================
-// 2. PANCA INCLINATA BILANCIERE
-// ==========================================
 const ChestBarbellIncline = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="40" y1="62" x2="60" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
@@ -59,9 +56,6 @@ const ChestBarbellIncline = ({ color }: { color: string }) => (
   </svg>
 );
 
-// ==========================================
-// 3. PANCA PIANA MANUBRI
-// ==========================================
 const ChestDumbbellFlat = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <rect x="15" y="52" width="65" height="6" fill="#333" rx="1"/>
@@ -87,9 +81,6 @@ const ChestDumbbellFlat = ({ color }: { color: string }) => (
   </svg>
 );
 
-// ==========================================
-// 4. PANCA INCLINATA MANUBRI
-// ==========================================
 const ChestDumbbellIncline = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="40" y1="62" x2="60" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
@@ -116,9 +107,6 @@ const ChestDumbbellIncline = ({ color }: { color: string }) => (
   </svg>
 );
 
-// ==========================================
-// 5. CHEST PRESS (PIANA)
-// ==========================================
 const ChestMachineFlat = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="45" y1="62" x2="70" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
@@ -144,9 +132,6 @@ const ChestMachineFlat = ({ color }: { color: string }) => (
   </svg>
 );
 
-// ==========================================
-// 6. CHEST PRESS INCLINATA
-// ==========================================
 const ChestMachineIncline = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <line x1="45" y1="62" x2="70" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
@@ -172,9 +157,6 @@ const ChestMachineIncline = ({ color }: { color: string }) => (
   </svg>
 );
 
-// ==========================================
-// 7. PEC DECK (Frontale) / CROCI CAVI
-// ==========================================
 const PecDeckFrontal = ({ color }: { color: string }) => (
   <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
     <rect x="42" y="10" width="16" height="80" fill="#333" rx="2"/>
@@ -225,6 +207,126 @@ const ChestFlyeDbFlat = ({ color }: { color: string }) => (
   </svg>
 );
 
+// ==========================================
+// LOTTO 2: SPALLE E TRICIPITI
+// ==========================================
+const ShoulderDb = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="35" y1="55" x2="68" y2="55" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="65" y1="55" x2="65" y2="20" stroke="#333" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="45" y1="55" x2="45" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="65" y1="55" x2="65" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="58" cy="20" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="58" y1="28" x2="58" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 58 55 L 35 55 L 35 85 L 25 85" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 58 28 L 65 42 L 53 32" stroke={color} strokeWidth="3.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <ellipse cx="53" cy="32" rx="2.5" ry="7" fill="#e5e5e5"/>
+      <line x1="49" y1="32" x2="57" y2="32" stroke="#ccc" strokeWidth="2"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="58" y1="28" x2="58" y2="5" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <ellipse cx="58" cy="5" rx="2.5" ry="7" fill="#e5e5e5"/>
+      <line x1="54" y1="5" x2="62" y2="5" stroke="#ccc" strokeWidth="2"/>
+    </g>
+  </svg>
+);
+
+const LateralDb = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <circle cx="50" cy="18" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="40" y1="28" x2="60" y2="28" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <line x1="50" y1="28" x2="50" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <line x1="45" y1="55" x2="55" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 45 55 L 40 70 L 40 90 M 35 90 L 45 90" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <path d="M 55 55 L 60 70 L 60 90 M 55 90 L 65 90" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 40 28 L 35 40 L 35 55" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d="M 60 28 L 65 40 L 65 55" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx="35" cy="57" r="3" fill="#e5e5e5"/>
+      <circle cx="65" cy="57" r="3" fill="#e5e5e5"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 40 28 L 25 32 L 15 35" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <path d="M 60 28 L 75 32 L 85 35" stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx="15" cy="36" r="3" fill="#e5e5e5"/>
+      <circle cx="85" cy="36" r="3" fill="#e5e5e5"/>
+    </g>
+  </svg>
+);
+
+const TricepCable = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="25" y1="5" x2="25" y2="95" stroke="#444" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="25" y1="15" x2="40" y2="15" stroke="#555" strokeWidth="4"/>
+    <circle cx="40" cy="15" r="4" fill="#666"/>
+    <circle cx="50" cy="20" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="55" y1="30" x2="65" y2="55" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 65 55 L 60 75 L 60 90 M 50 90 L 70 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <line x1="55" y1="30" x2="50" y2="45" stroke={color} strokeWidth="4" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="50" y1="45" x2="38" y2="40" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="40" y1="15" x2="38" y2="40" stroke="#888" strokeWidth="1.5"/>
+      <rect x="36" y="38" width="4" height="6" fill="#e5e5e5" rx="1"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="50" y1="45" x2="45" y2="60" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="40" y1="15" x2="45" y2="60" stroke="#888" strokeWidth="1.5"/>
+      <rect x="43" y="58" width="4" height="6" fill="#e5e5e5" rx="1"/>
+    </g>
+  </svg>
+);
+
+const TricepBarbell = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <rect x="15" y="52" width="65" height="6" fill="#333" rx="1"/>
+    <line x1="25" y1="58" x2="25" y2="90" stroke="#444" strokeWidth="3"/>
+    <line x1="65" y1="58" x2="65" y2="90" stroke="#444" strokeWidth="3"/>
+    <circle cx="65" cy="47" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+    <line x1="60" y1="49.5" x2="35" y2="49.5" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <path d="M 35 49.5 L 25 70 L 25 90 M 25 90 L 15 90" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    <line x1="53" y1="49.5" x2="53" y2="22" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="53" y1="22" x2="68" y2="35" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <circle cx="68" cy="35" r="3" fill="#e5e5e5"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <line x1="53" y1="22" x2="53" y2="5" stroke={color} strokeWidth="3.5" strokeLinecap="round"/>
+      <line x1="45" y1="5" x2="61" y2="5" stroke="#e5e5e5" strokeWidth="2.5"/>
+    </g>
+  </svg>
+);
+
+const TricepDips = ({ color }: { color: string }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+    <line x1="15" y1="50" x2="85" y2="50" stroke="#555" strokeWidth="6" strokeLinecap="round"/>
+    <line x1="30" y1="50" x2="30" y2="95" stroke="#444" strokeWidth="4"/>
+    <line x1="70" y1="50" x2="70" y2="95" stroke="#444" strokeWidth="4"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <circle cx="58" cy="27" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+      <path d="M 55 35 L 65 45 L 45 50" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="55" y1="35" x2="45" y2="60" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <path d="M 45 60 L 55 85 L 70 80" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <circle cx="50" cy="5" r="5" stroke={color} strokeWidth="2.5" fill="none"/>
+      <path d="M 48 15 L 47 32 L 45 50" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <line x1="48" y1="15" x2="40" y2="45" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+      <path d="M 40 45 L 50 70 L 65 65" stroke={color} strokeWidth="4.5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+    </g>
+  </svg>
+);
+
 
 // ==========================================
 // IL CERVELLO CHE ESPORTA L'ICONA CORRETTA A PAGE.TSX
@@ -243,6 +345,17 @@ export const MediaVisualizer = ({ animKey, color }: { animKey: string, color: st
           case 'chest_machine_incline': return <ChestMachineIncline color={color} />;
           case 'chest_flye_machine': return <PecDeckFrontal color={color} />;
           case 'chest_flye_db': return <ChestFlyeDbFlat color={color} />;
+          
+          // --- SPALLE E TRICIPITI ---
+          case 'shoulder_db': return <ShoulderDb color={color} />;
+          case 'shoulder_barbell': return <ShoulderDb color={color} />; // Fallback a DB
+          case 'shoulder_machine': return <ShoulderDb color={color} />; // Fallback a DB
+          case 'lateral_cable': return <LateralDb color={color} />;
+          case 'lateral_db': return <LateralDb color={color} />;
+          case 'lateral_machine': return <LateralDb color={color} />;
+          case 'tricep_barbell': return <TricepBarbell color={color} />;
+          case 'tricep_dips': return <TricepDips color={color} />;
+          case 'tricep_cable': return <TricepCable color={color} />;
           
           default: return (
              <div className="flex flex-col items-center opacity-50">
