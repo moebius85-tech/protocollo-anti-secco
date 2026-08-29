@@ -1534,6 +1534,204 @@ export const HipThrustAnimation = () => (
   </svg>
 );
 
+
+export const CalfPressAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <line x1="10" y1="85" x2="40" y2="85" stroke="#333" strokeWidth="6"/> 
+    <line x1="40" y1="85" x2="15" y2="50" stroke="#333" strokeWidth="8" strokeLinecap="round"/> 
+    <line x1="30" y1="90" x2="90" y2="30" stroke="#444" strokeWidth="4"/> 
+    <path d="M 15 50 L 30 70" stroke="#3b82f6" strokeWidth="5" fill="none"/> 
+    <circle cx="10" cy="42" r="5.5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+    <circle cx="30" cy="70" r="2.5" fill="#e5e5e5"/> 
+    <circle cx="15" cy="50" r="2.5" fill="#e5e5e5"/> 
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+      <path d="M 30 70 L 45 55 L 60 40 L 57 37" stroke="#3b82f6" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <circle cx="45" cy="55" r="2.5" fill="#e5e5e5"/> 
+      <circle cx="60" cy="40" r="2.5" fill="#e5e5e5"/> 
+      <line x1="56" y1="36" x2="68" y2="50" stroke="#e5e5e5" strokeWidth="4" strokeLinecap="round"/> 
+      <rect x="65" y="45" width="12" height="20" fill="#cbd5e1" stroke="#475569" strokeWidth="1.5" transform="rotate(-45 65 45)"/> 
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+      <path d="M 30 70 L 45 55 L 60 40 L 68 32" stroke="#3b82f6" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <circle cx="45" cy="55" r="2.5" fill="#e5e5e5"/> 
+      <circle cx="60" cy="40" r="2.5" fill="#e5e5e5"/> 
+      <line x1="66" y1="26" x2="78" y2="40" stroke="#e5e5e5" strokeWidth="4" strokeLinecap="round"/> 
+      <rect x="75" y="35" width="12" height="20" fill="#cbd5e1" stroke="#475569" strokeWidth="1.5" transform="rotate(-45 75 35)"/> 
+    </g>
+  </svg>
+);
+
+export const LegCurlSedutoAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <rect x="25" y="65" width="30" height="8" fill="#333" rx="2" />
+    <line x1="25" y1="65" x2="25" y2="35" stroke="#333" strokeWidth="8" strokeLinecap="round" />
+    <line x1="35" y1="73" x2="35" y2="95" stroke="#444" strokeWidth="4" />
+    <circle cx="20" cy="25" r="5.5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+    <line x1="25" y1="35" x2="35" y2="65" stroke="#3b82f6" strokeWidth="5" strokeLinecap="round" />
+    <circle cx="35" cy="65" r="2.5" fill="#e5e5e5"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 35 65 L 65 65 L 85 65" stroke="#3b82f6" strokeWidth="5" fill="none" strokeLinecap="round"/>
+      <circle cx="65" cy="65" r="2.5" fill="#e5e5e5"/>
+      <rect x="80" y="55" width="10" height="20" fill="#cbd5e1" rx="5" />
+      <path d="M 65 65 L 85 65" stroke="#71717a" strokeWidth="2" fill="none"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 35 65 L 65 65 L 55 90" stroke="#3b82f6" strokeWidth="5" fill="none" strokeLinejoin="round" strokeLinecap="round"/>
+      <circle cx="65" cy="65" r="2.5" fill="#e5e5e5"/>
+      <rect x="50" y="80" width="10" height="20" fill="#cbd5e1" rx="5" transform="rotate(30 55 90)"/>
+      <path d="M 65 65 L 55 90" stroke="#71717a" strokeWidth="2" fill="none"/>
+    </g>
+  </svg>
+);
+
+export const BulgarianSquatAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <rect x="70" y="60" width="20" height="8" fill="#333" rx="2" /> 
+    <line x1="10" y1="90" x2="90" y2="90" stroke="#333" strokeWidth="4" strokeLinecap="round" />
+    <circle cx="35" cy="90" r="3" fill="#e5e5e5"/> 
+    <circle cx="75" cy="56" r="3" fill="#e5e5e5"/> 
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 35 90 L 40 60 L 50 45 L 50 15" stroke="#3b82f6" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <path d="M 75 56 L 65 56 L 50 45" stroke="#3b82f6" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <circle cx="50" cy="7" r="5.5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+      <line x1="50" y1="15" x2="50" y2="45" stroke="#3b82f6" strokeWidth="4.5" strokeLinecap="round"/>
+      <ellipse cx="50" cy="45" rx="3" ry="8" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 35 90 L 45 75 L 50 65 L 50 35" stroke="#3b82f6" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <path d="M 75 56 L 65 85 L 50 65" stroke="#3b82f6" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <circle cx="50" cy="27" r="5.5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+      <line x1="50" y1="35" x2="50" y2="65" stroke="#3b82f6" strokeWidth="4.5" strokeLinecap="round"/>
+      <ellipse cx="50" cy="65" rx="3" ry="8" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2"/>
+    </g>
+  </svg>
+);
+
+export const HackSquatMachineAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <line x1="30" y1="90" x2="80" y2="40" stroke="#444" strokeWidth="4" />
+    <line x1="10" y1="90" x2="90" y2="90" stroke="#333" strokeWidth="4" strokeLinecap="round" />
+    <circle cx="45" cy="90" r="3" fill="#e5e5e5"/> 
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 45 90 L 60 70 L 70 50" stroke="#f97316" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <circle cx="78" cy="42" r="5.5" stroke="#f97316" strokeWidth="2.5" fill="none"/>
+      <rect x="65" y="45" width="15" height="5" fill="#cbd5e1" transform="rotate(-45 70 50)"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 45 90 L 65 85 L 50 70" stroke="#f97316" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <circle cx="58" cy="62" r="5.5" stroke="#f97316" strokeWidth="2.5" fill="none"/>
+      <rect x="45" y="65" width="15" height="5" fill="#cbd5e1" transform="rotate(-45 50 70)"/>
+    </g>
+  </svg>
+);
+
+export const BeltSquatAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <rect x="20" y="85" width="20" height="10" fill="#333" />
+    <rect x="60" y="85" width="20" height="10" fill="#333" />
+    <circle cx="50" cy="90" r="4" fill="#555" /> 
+    <line x1="50" y1="90" x2="50" y2="45" stroke="#71717a" strokeWidth="2" /> 
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 30 85 L 45 60 L 50 45 L 50 15" stroke="#f97316" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <path d="M 70 85 L 55 60 L 50 45" stroke="#f97316" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <circle cx="50" cy="7" r="5.5" stroke="#f97316" strokeWidth="2.5" fill="none"/>
+      <rect x="45" y="43" width="10" height="4" fill="#e5e5e5" rx="2" /> 
+      <line x1="50" y1="90" x2="50" y2="45" stroke="#71717a" strokeWidth="2" /> 
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 30 85 L 45 75 L 50 65 L 50 35" stroke="#f97316" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <path d="M 70 85 L 55 75 L 50 65" stroke="#f97316" strokeWidth="5" fill="none" strokeLinejoin="round"/>
+      <circle cx="50" cy="27" r="5.5" stroke="#f97316" strokeWidth="2.5" fill="none"/>
+      <rect x="45" y="63" width="10" height="4" fill="#e5e5e5" rx="2" /> 
+      <line x1="50" y1="90" x2="50" y2="65" stroke="#71717a" strokeWidth="2" /> 
+    </g>
+  </svg>
+);
+
+export const CurlCavoBassoAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <line x1="10" y1="90" x2="90" y2="90" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
+    <circle cx="85" cy="85" r="4" fill="#555" /> 
+    <g stroke="#3b82f6" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <path d="M 38 90 L 45 55 M 62 90 L 55 55"/>
+      <path d="M 45 55 L 50 55 M 55 55 L 50 55 M 50 55 L 50 24"/>
+    </g>
+    <circle cx="50" cy="15" r="5.5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.6s" repeatCount="indefinite"/>
+      <path d="M 50 24 L 45 55 L 55 75" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
+      <line x1="85" y1="85" x2="55" y2="75" stroke="#71717a" strokeWidth="1.5" />
+      <line x1="45" y1="75" x2="65" y2="75" stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round"/> 
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.6s" repeatCount="indefinite"/>
+      <path d="M 50 24 L 45 55 L 60 35" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
+      <line x1="85" y1="85" x2="60" y2="35" stroke="#71717a" strokeWidth="1.5" />
+      <line x1="50" y1="35" x2="70" y2="35" stroke="#cbd5e1" strokeWidth="3" strokeLinecap="round"/> 
+    </g>
+  </svg>
+);
+
+export const CurlCaviCordaAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <line x1="10" y1="90" x2="90" y2="90" stroke="#333" strokeWidth="4" strokeLinecap="round"/>
+    <circle cx="85" cy="85" r="4" fill="#555" /> 
+    <g stroke="#3b82f6" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <path d="M 38 90 L 45 55 M 62 90 L 55 55"/>
+      <path d="M 45 55 L 50 55 M 55 55 L 50 55 M 50 55 L 50 24"/>
+    </g>
+    <circle cx="50" cy="15" r="5.5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.6s" repeatCount="indefinite"/>
+      <path d="M 50 24 L 45 55 L 55 75" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
+      <line x1="85" y1="85" x2="55" y2="75" stroke="#71717a" strokeWidth="1.5" />
+      <path d="M 52 70 L 55 75 L 58 70" stroke="#cbd5e1" strokeWidth="3" fill="none" strokeLinecap="round"/> 
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.6s" repeatCount="indefinite"/>
+      <path d="M 50 24 L 45 55 L 60 35" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
+      <line x1="85" y1="85" x2="60" y2="35" stroke="#71717a" strokeWidth="1.5" />
+      <path d="M 57 30 L 60 35 L 63 30" stroke="#cbd5e1" strokeWidth="3" fill="none" strokeLinecap="round"/> 
+    </g>
+  </svg>
+);
+
+export const CurlInclinataAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <line x1="40" y1="62" x2="60" y2="62" stroke="#333" strokeWidth="6" strokeLinecap="round"/> 
+    <line x1="58" y1="62" x2="78" y2="30" stroke="#333" strokeWidth="6" strokeLinecap="round"/> 
+    <line x1="45" y1="62" x2="45" y2="90" stroke="#444" strokeWidth="4"/>
+    <line x1="65" y1="52" x2="65" y2="90" stroke="#444" strokeWidth="4"/>
+    <circle cx="80" cy="24" r="5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+    <line x1="75" y1="32" x2="55" y2="58" stroke="#3b82f6" strokeWidth="5" strokeLinecap="round"/> 
+    <path d="M 55 58 L 40 62 L 40 90 M 40 90 L 30 90" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 68 41 L 65 65 L 65 85" stroke="#3b82f6" strokeWidth="3.5" fill="none" strokeLinejoin="round"/>
+      <line x1="61" y1="85" x2="69" y2="85" stroke="#e5e5e5" strokeWidth="2.5"/> 
+      <ellipse cx="61" cy="85" rx="2" ry="7" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2"/> 
+      <ellipse cx="69" cy="85" rx="2" ry="7" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M 68 41 L 65 65 L 55 45" stroke="#3b82f6" strokeWidth="3.5" fill="none" strokeLinejoin="round"/>
+      <line x1="51" y1="45" x2="59" y2="45" stroke="#e5e5e5" strokeWidth="2.5"/> 
+      <ellipse cx="51" cy="45" rx="2" ry="7" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2"/> 
+      <ellipse cx="59" cy="45" rx="2" ry="7" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2"/>
+    </g>
+  </svg>
+);
+
 const animationRegistry: Record<string, React.FC> = {
   // Spinta
   'chest_barbell_flat': PPianaBilAnimation,
@@ -1572,17 +1770,26 @@ const animationRegistry: Record<string, React.FC> = {
   'back_seal_row': SealRowAnimation,
   'bicep_barbell': CurlBilanciereAnimation,
   'bicep_db': CurlAlternatoAnimation,
+  'bicep_incline_db': CurlInclinataAnimation,
   'bicep_cable': CurlPancaScottAnimation,
+  'bicep_cable_bar': CurlCavoBassoAnimation,
+  'bicep_cable_rope': CurlCaviCordaAnimation,
   'bicep_spider_curl': SpiderCurlAnimation,
   
   // Gambe
   'leg_squat': SquatBilanciereAnimation,
+  'leg_hack_machine': HackSquatMachineAnimation,
+  'leg_belt_squat': BeltSquatAnimation,
+  'leg_hack_barbell': SquatBilanciereAnimation,
   'leg_press': LegPress45Animation,
   'leg_lunge': AffondiManubriAnimation,
+  'leg_bulgarian': BulgarianSquatAnimation,
   'leg_extension': LegExtensionAnimation,
   'leg_deadlift': DeadliftAnimation,
   'leg_curl': LegCurlSdraiatoAnimation,
+  'leg_curl_seduto': LegCurlSedutoAnimation,
   'leg_calf': CalfRaiseInPiediAnimation,
+  'leg_calf_press': CalfPressAnimation,
   'leg_calf_seated': CalfSedutoAnimation,
   'leg_sissy_squat': SissySquatAnimation,
 
