@@ -1251,6 +1251,129 @@ export const CableCrunchAnimation = () => (
       </svg>
 );
 
+export const TricepDipsAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <line x1="20" y1="60" x2="80" y2="60" stroke="#333" strokeWidth="6" strokeLinecap="round" />
+    <line x1="30" y1="60" x2="30" y2="95" stroke="#222" strokeWidth="6" />
+    <line x1="70" y1="60" x2="70" y2="95" stroke="#222" strokeWidth="6" />
+    <circle cx="50" cy="60" r="3" fill="#e5e5e5" /> 
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 50 60 L 30 45 L 50 45" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+      <circle cx="30" cy="45" r="2.5" fill="#e5e5e5"/>
+      <circle cx="50" cy="45" r="2.5" fill="#e5e5e5"/>
+      <path d="M 50 45 L 50 80 L 35 90 L 45 80" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round" /> 
+      <circle cx="50" cy="37" r="5.5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+      <circle cx="50" cy="80" r="2.5" fill="#e5e5e5"/>
+      <circle cx="35" cy="90" r="2.5" fill="#e5e5e5"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 50 60 L 45 40 L 50 20" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+      <circle cx="45" cy="40" r="2.5" fill="#e5e5e5"/>
+      <circle cx="50" cy="20" r="2.5" fill="#e5e5e5"/>
+      <path d="M 50 20 L 50 55 L 35 65 L 45 55" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round" /> 
+      <circle cx="50" cy="12" r="5.5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+      <circle cx="50" cy="55" r="2.5" fill="#e5e5e5"/>
+      <circle cx="35" cy="65" r="2.5" fill="#e5e5e5"/>
+    </g>
+  </svg>
+);
+
+export const PulloverManubrioAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <rect x="30" y="60" width="40" height="10" fill="#333" rx="2" />
+    <line x1="10" y1="95" x2="90" y2="95" stroke="#222" strokeWidth="4" />
+    <path d="M 35 60 L 20 60 L 20 95" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round"/>
+    <circle cx="35" cy="60" r="2.5" fill="#e5e5e5"/>
+    <circle cx="20" cy="60" r="2.5" fill="#e5e5e5"/>
+    <circle cx="75" cy="65" r="5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="2.2s" repeatCount="indefinite"/>
+      <line x1="35" y1="60" x2="55" y2="60" stroke="#3b82f6" strokeWidth="4.5" />
+      <circle cx="55" cy="60" r="2.5" fill="#e5e5e5"/>
+      <path d="M 55 60 L 75 40 L 90 50" stroke="#3b82f6" strokeWidth="4" fill="none" strokeLinejoin="round" />
+      <circle cx="75" cy="40" r="2.5" fill="#e5e5e5"/>
+      <circle cx="90" cy="50" r="2.5" fill="#e5e5e5"/>
+      <line x1="90" y1="42" x2="90" y2="58" stroke="#71717a" strokeWidth="2" />
+      <ellipse cx="90" cy="42" rx="6" ry="2" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2" />
+      <ellipse cx="90" cy="58" rx="6" ry="2" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2" />
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="2.2s" repeatCount="indefinite"/>
+      <line x1="35" y1="60" x2="55" y2="60" stroke="#3b82f6" strokeWidth="4.5" />
+      <circle cx="55" cy="60" r="2.5" fill="#e5e5e5"/>
+      <path d="M 55 60 L 50 30 L 45 15" stroke="#3b82f6" strokeWidth="4" fill="none" strokeLinejoin="round" />
+      <circle cx="50" cy="30" r="2.5" fill="#e5e5e5"/>
+      <circle cx="45" cy="15" r="2.5" fill="#e5e5e5"/>
+      <line x1="37" y1="15" x2="53" y2="15" stroke="#71717a" strokeWidth="2" />
+      <ellipse cx="37" cy="15" rx="2" ry="6" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2" />
+      <ellipse cx="53" cy="15" rx="2" ry="6" fill="#cbd5e1" stroke="#475569" strokeWidth="1.2" />
+    </g>
+  </svg>
+);
+
+export const RematoreTBarAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <circle cx="40" cy="90" r="3" fill="#e5e5e5"/>
+    <path d="M 40 90 L 30 60 L 55 45" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round"/>
+    <circle cx="63" cy="37" r="5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+    <g fill="#e5e5e5">
+      <circle cx="30" cy="60" r="2.5"/>
+      <circle cx="55" cy="45" r="2.5"/>
+      <circle cx="10" cy="90" r="4" fill="#333" />
+    </g>
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <line x1="10" y1="90" x2="75" y2="70" stroke="#e5e5e5" strokeWidth="3" strokeLinecap="round" />
+      <rect x="62" y="65" width="8" height="20" fill="#cbd5e1" rx="1" transform="rotate(-15 66 75)" />
+      <path d="M 55 45 L 55 60 L 63 73" stroke="#3b82f6" strokeWidth="4" fill="none" strokeLinejoin="round" />
+      <circle cx="55" cy="60" r="2.5" fill="#e5e5e5"/>
+      <circle cx="63" cy="73" r="2.5" fill="#e5e5e5"/>
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <line x1="10" y1="90" x2="68" y2="50" stroke="#e5e5e5" strokeWidth="3" strokeLinecap="round" />
+      <rect x="55" y="45" width="8" height="20" fill="#cbd5e1" rx="1" transform="rotate(-30 59 55)" />
+      <path d="M 55 45 L 40 40 L 58 53" stroke="#3b82f6" strokeWidth="4" fill="none" strokeLinejoin="round" />
+      <circle cx="40" cy="40" r="2.5" fill="#e5e5e5"/>
+      <circle cx="58" cy="53" r="2.5" fill="#e5e5e5"/>
+    </g>
+  </svg>
+);
+
+export const CalfSedutoAnimation = () => (
+  <svg viewBox="0 0 100 100" width="100%" height="100%">
+    <rect x="20" y="55" width="20" height="6" fill="#333" rx="2" />
+    <rect x="65" y="90" width="15" height="10" fill="#222" rx="1" />
+    <line x1="30" y1="55" x2="30" y2="25" stroke="#3b82f6" strokeWidth="4.5" strokeLinecap="round" />
+    <circle cx="30" cy="15" r="5" stroke="#3b82f6" strokeWidth="2.5" fill="none"/>
+    <circle cx="30" cy="55" r="2.5" fill="#e5e5e5"/>
+    <circle cx="30" cy="25" r="2.5" fill="#e5e5e5"/>
+    <line x1="30" y1="25" x2="55" y2="45" stroke="#3b82f6" strokeWidth="3.5" />
+    <circle cx="55" cy="45" r="2" fill="#e5e5e5"/> 
+    <circle cx="70" cy="90" r="3" fill="#e5e5e5"/> 
+    <g>
+      <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 30 55 L 60 63 L 65 95 L 70 90" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+      <circle cx="60" cy="63" r="2.5" fill="#e5e5e5"/>
+      <circle cx="65" cy="95" r="2.5" fill="#e5e5e5"/>
+      <rect x="55" y="55" width="12" height="6" fill="#71717a" rx="3" />
+      <line x1="61" y1="55" x2="61" y2="35" stroke="#71717a" strokeWidth="2" />
+      <rect x="56" y="25" width="10" height="10" fill="#cbd5e1" rx="1" />
+    </g>
+    <g opacity="0">
+      <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
+      <path d="M 30 55 L 58 50 L 63 75 L 70 90" stroke="#3b82f6" strokeWidth="4.5" fill="none" strokeLinejoin="round" />
+      <circle cx="58" cy="50" r="2.5" fill="#e5e5e5"/>
+      <circle cx="63" cy="75" r="2.5" fill="#e5e5e5"/>
+      <rect x="53" y="42" width="12" height="6" fill="#71717a" rx="3" />
+      <line x1="59" y1="42" x2="59" y2="22" stroke="#71717a" strokeWidth="2" />
+      <rect x="54" y="12" width="10" height="10" fill="#cbd5e1" rx="1" />
+    </g>
+  </svg>
+);
+
 
 const animationRegistry: Record<string, React.FC> = {
   // Spinta
@@ -1272,7 +1395,7 @@ const animationRegistry: Record<string, React.FC> = {
   'lateral_machine': AlzateMacchinaAnimation,
   'tricep_close_grip': FrenchPressAnimation,
   'tricep_french_press': FrenchPressAnimation,
-  'tricep_dips': PushdownCaviAnimation,
+  'tricep_dips': TricepDipsAnimation,
   'tricep_pushdown': PushdownCaviAnimation,
   'tricep_overhead': EstensioniManAnimation,
   
@@ -1285,6 +1408,9 @@ const animationRegistry: Record<string, React.FC> = {
   'back_pulley': PulleyBassoAnimation,
   'back_row_machine': PulleyBassoAnimation,
   'back_pullover_cable': LatPresaStrettaAnimation,
+  'back_pullover_cable': LatPresaStrettaAnimation,
+  'back_pullover_db': PulloverManubrioAnimation,
+  'back_t_bar': RematoreTBarAnimation,
   'bicep_barbell': CurlBilanciereAnimation,
   'bicep_db': CurlAlternatoAnimation,
   'bicep_cable': CurlPancaScottAnimation,
@@ -1294,6 +1420,8 @@ const animationRegistry: Record<string, React.FC> = {
   'leg_press': LegPress45Animation,
   'leg_lunge': AffondiManubriAnimation,
   'leg_extension': LegExtensionAnimation,
+  'leg_calf': CalfRaiseInPiediAnimation,
+  'leg_calf_seated': CalfSedutoAnimation,
   'leg_deadlift': SquatBilanciereAnimation, // fallback since Deadlift SVG was cut from txt
   'leg_curl': LegCurlSdraiatoAnimation,
   'leg_calf': CalfRaiseInPiediAnimation,
