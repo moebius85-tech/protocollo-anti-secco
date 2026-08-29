@@ -207,12 +207,12 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
   };
 
   const sections = [
-    { label: 'BMI', val: bmi, color: '#ec4899', angle: 330 },           
-    { label: 'BMR Kcal', val: bmr > 0 ? bmr : '-', color: '#f97316', angle: 30 },  
-    { label: 'MASSA MUSC. %', val: mm > 0 ? `${mm}%` : '-', color: '#ef4444', angle: 90 },  
-    { label: 'ACQUA CORP. %', val: bw > 0 ? `${bw}%` : '-', color: '#3b82f6', angle: 150 }, 
-    { label: 'MASSA GRASSA %', val: bf > 0 ? `${bf}%` : '-', color: '#22c55e', angle: 210 }, 
-    { label: 'PESO kg', val: w > 0 ? w : '-', color: '#737373', angle: 270 }        
+    { label: 'BMI', val: bmi, color: '#ec4899', angle: 0 },           
+    { label: 'BMR Kcal', val: bmr > 0 ? bmr : '-', color: '#f97316', angle: 60 },  
+    { label: 'MASSA MUSC. %', val: mm > 0 ? `${mm}%` : '-', color: '#ef4444', angle: 120 },  
+    { label: 'ACQUA CORP. %', val: bw > 0 ? `${bw}%` : '-', color: '#3b82f6', angle: 180 }, 
+    { label: 'MASSA GRASSA %', val: bf > 0 ? `${bf}%` : '-', color: '#22c55e', angle: 240 }, 
+    { label: 'PESO kg', val: w > 0 ? w : '-', color: '#737373', angle: 300 }        
   ];
 
   return (
@@ -228,7 +228,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              const pos = getLabelPos(sec.angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
-                 <text x={pos.x} y={pos.y - 6} fill="#fff" fontSize="12" textAnchor="middle" fontWeight="bold" className="drop-shadow-md">{sec.label}</text>
+                 <text x={pos.x} y={pos.y - 6} fill="#fff" fontSize="10" textAnchor="middle" fontWeight="bold" className="drop-shadow-md">{sec.label}</text>
                  <text x={pos.x} y={pos.y + 14} fill="#fff" fontSize="18" textAnchor="middle" fontWeight="900" className="drop-shadow-md">{sec.val}</text>
                </g>
              )
