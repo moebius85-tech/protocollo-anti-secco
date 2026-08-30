@@ -303,6 +303,7 @@ export default function Home() {
   const [inizio2, setInizio2] = useState('');
   const [fine2, setFine2] = useState('');
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
+  const [digiuno, setDigiuno] = useState(false); 
   
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
@@ -415,24 +416,63 @@ export default function Home() {
     }
   };
 
-  const generaAllenamentoDinamico = () => {
+    const generaAllenamentoDinamico = () => {
      const plan = JSON.parse(JSON.stringify(baseDbAllenamento)); 
-     if (utenteCorrente === "Leonardo") return plan; 
 
      const isOver40 = Number(eta) > 40;
      const isShred = protocolloAttivo === 'Shred';
-     const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("pesante");
-     const highFat = Number(biometria.bodyFat) > 15; 
+     const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("Fisico");
+     
+     const fatNum = Number(biometria.bodyFat) || 0;
+     const pesoNum = Number(biometria.peso) || 0;
+     const highFat = fatNum > 15;
+     
+     // Nuovi Trigger Biomeccanici
+     const isKetoOrLowCarb = tipoDieta === 'Keto' || tipoDieta === 'LowCarb';
+     const isOverweightMechanically = fatNum > 20 || pesoNum > 95;
+     const needsLumbarProtection = isOver40 && stileVita.includes("Fisico");
+
+     // Helper per scambiare l'esercizio base
+     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     const swapToAlternative = (ex: any, partialName: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const alt = ex.alternative.find((a: any) => a.nome.toLowerCase().includes(partialName.toLowerCase()));
+        if (alt) {
+            ex.nome = alt.nome;
+            ex.anim = alt.anim;
+            ex.dettaglio = alt.dettaglio;
+        }
+     };
 
      Object.keys(plan).forEach(sch => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
+           
+           // --- 1. MODIFICA VOLUME E INTENSITÀ ---
            if (isShred || highFat) {
               ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep"); 
               ex.rep = ex.rep.replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie");
               ex.rep = ex.rep.replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
            } else if (isOver40 && isHeavyJob) {
               ex.rep = ex.rep.replace("4-5 serie", "3-4 serie"); 
+           }
+
+           // --- 2. MOTORE DI SOSTITUZIONE BIOMECCANICA ---
+           if (!eserciziModificati[ex.id]) { // Cambia solo se l'utente non lo ha swappato a mano
+               if (isOverweightMechanically) {
+                   if (ex.id === "e6") swapToAlternative(ex, "Lat Machine Larga");
+                   if (ex.id === "e22") swapToAlternative(ex, "French Press"); 
+               }
+               if (isKetoOrLowCarb || isShred) {
+                   if (ex.id === "e1") swapToAlternative(ex, "Chest Press Convergente");
+                   if (ex.id === "e18") swapToAlternative(ex, "Shoulder Press");
+                   if (ex.id === "e11") swapToAlternative(ex, "Front Squat"); 
+               }
+               if (needsLumbarProtection) {
+                   if (ex.id === "e11") swapToAlternative(ex, "Hack Squat Macchina");
+                   if (ex.id === "e7") swapToAlternative(ex, "Rematore Manubrio");
+                   if (ex.id === "e13") swapToAlternative(ex, "Stacco Gambe Tese");
+               }
            }
         });
      });
@@ -671,10 +711,12 @@ Obiettivo: ${protocolloAttivo}`);
   targetFat = Math.max(targetFat, intraFat);
   targetPro = Math.max(targetPro, intraPro);
 
-  // 5. Estrazione del "peso" proporzionale dai pasti originali (per fare i blocchi proporzionali)
+    // 5. Estrazione del "peso" proporzionale dai pasti originali (per fare i blocchi proporzionali)
+  const activeCategories = digiuno ? ['Pasto2', 'Pasto3', 'PostWorkout'] : ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'];
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const originalMeals: Record<string, any> = {};
-  ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+  activeCategories.forEach(cat => {
      const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]];
      if(item) {
        originalMeals[cat] = { cho: item.baseCarbo, pro: item.pro, fat: item.fat };
@@ -682,11 +724,10 @@ Obiettivo: ${protocolloAttivo}`);
   });
 
   let customCho = 0, customPro = 0, customFat = 0, sumNonCustomOrigCho = 0, sumNonCustomOrigPro = 0, sumNonCustomOrigFat = 0;
-  ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+  activeCategories.forEach(cat => {
      if(pastiCustom[cat].attivo) {
         customCho += Number(pastiCustom[cat].cho) || 0; customPro += Number(pastiCustom[cat].pro) || 0; customFat += Number(pastiCustom[cat].fat) || 0;
      } else if(originalMeals[cat]) {
-        // Se dieta Keto, distribuiamo in base ai grassi originali (essendo i cho base altini, falserebbero)
         sumNonCustomOrigCho += tipoDieta === 'Keto' ? 1 : originalMeals[cat].cho; 
         sumNonCustomOrigPro += originalMeals[cat].pro; 
         sumNonCustomOrigFat += originalMeals[cat].fat;
@@ -699,7 +740,7 @@ Obiettivo: ${protocolloAttivo}`);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const finalMeals: Record<string, any> = {};
-  ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+  activeCategories.forEach(cat => {
      if(pastiCustom[cat].attivo) {
         finalMeals[cat] = { cho: Number(pastiCustom[cat].cho) || 0, pro: Number(pastiCustom[cat].pro) || 0, fat: Number(pastiCustom[cat].fat) || 0 };
      } else if(originalMeals[cat]) {
@@ -713,14 +754,14 @@ Obiettivo: ${protocolloAttivo}`);
   });
 
   let actualCho = intraCho + customCho, actualPro = intraPro + customPro, actualFat = intraFat + customFat;
-  ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
+  activeCategories.forEach(cat => {
      if(!pastiCustom[cat].attivo && finalMeals[cat]) {
         actualCho += finalMeals[cat].cho; actualPro += finalMeals[cat].pro; actualFat += finalMeals[cat].fat;
      }
   });
   const actualIntakeKcal = Math.round((actualCho * 4) + (actualPro * 4) + (actualFat * 9));
 
-    const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
+      const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
     // 1. PRE-WORKOUT LOGIC (Timing + Goal)
     let preW = "";
     if (quandoTiAlleni === 'sera') {
@@ -735,11 +776,8 @@ Obiettivo: ${protocolloAttivo}`);
 • L-Tirosina: 1g (Focus mentale pre-workout)`;
     }
 
-    // Integrazione mirata per Shred
-    if (protocolloAttivo === 'Shred') {
-      preW += `
+    if (protocolloAttivo === 'Shred') preW += `
 • Acetil L-Carnitina (ALC): 1.5g (Favorisce ossidazione grassi)`;
-    }
 
     // 2. INTRA-WORKOUT LOGIC (Diet + Goal)
     let intraW = "2️⃣ INTRA-WORKOUT:";
@@ -755,14 +793,13 @@ Obiettivo: ${protocolloAttivo}`);
 • EAA: 15g
 • Glutammina: 3g (Supporto intestinale e recupero)`;
     } else {
-      // Equilibrata, Zona, HighCarb
       intraW += `
 • Ciclodestrine (HBCD): ${intraCho}g (Energia e ripristino glicogeno)
 • EAA: 15g (Sintesi proteica)
 • Creatina Monoidrato: 5g`;
     }
 
-    // 3. SUPPLEMENTAZIONE SALUTE / GENERALE (Extra value)
+    // 3. SUPPLEMENTAZIONE SALUTE / GENERALE
     let saluteW = "3️⃣ BASE SALUTE E RECOVERY (Ai pasti):";
     if (tipoDieta === 'Keto' || protocolloAttivo === 'Shred') {
        saluteW += `
@@ -773,8 +810,6 @@ Obiettivo: ${protocolloAttivo}`);
 • Omega-3: 1g
 • Vitamina D3 + K2`;
     }
-    
-    // GDA per regimi ad alti carboidrati
     if (protocolloAttivo === 'Massa' && (tipoDieta === 'HighCarb' || tipoDieta === 'Equilibrata')) {
        saluteW += `
 • GDA (Berberina / Acido Alfa Lipoico): 15 min prima del pasto più ricco di Carbo (Ottimizza la sensibilità insulinica)`;
@@ -785,10 +820,37 @@ Obiettivo: ${protocolloAttivo}`);
 ${intraW}
 
 ${saluteW}` };
+    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO INTERMITTENTE (16:8)", descrizione: "• Finestra di digiuno: 16 ore.
+• Consentiti: Acqua, Caffè amaro, Tè verde.
+• Consigliato: 1 pizzico di Sale Rosa (Sodio) per mantenere l'idratazione.
+• Le calorie della colazione sono state spalmate nei restanti pasti." };
     
-    if (quandoTiAlleni === 'mattina') return [ bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' }, { idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
-    if (quandoTiAlleni === 'pausa') return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Fine Pausa)' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
-    return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, { idCategoria: 'Pasto2', titoloUI: 'Pranzo' }, { idCategoria: 'Pasto3', titoloUI: 'Spuntino' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' } ];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const t: any[] = [];
+    
+    if (quandoTiAlleni === 'mattina') {
+        if (digiuno) t.push(bloccoDigiuno);
+        t.push(bloccoIntra);
+        t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' });
+        if (!digiuno) t.push({ idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' });
+        t.push({ idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' });
+        t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' });
+    } else if (quandoTiAlleni === 'pausa') {
+        if (digiuno) t.push(bloccoDigiuno);
+        else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' });
+        t.push(bloccoIntra);
+        t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Fine Pausa)' });
+        t.push({ idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' });
+        t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' });
+    } else {
+        if (digiuno) t.push(bloccoDigiuno);
+        else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' });
+        t.push({ idCategoria: 'Pasto2', titoloUI: 'Pranzo' });
+        t.push({ idCategoria: 'Pasto3', titoloUI: 'Spuntino' });
+        t.push(bloccoIntra);
+        t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' });
+    }
+    return t;
   };
 
   const getDataGraficoEsercizio = () => {
@@ -1055,6 +1117,12 @@ ${saluteW}` };
                 </div>
               )}
               <div className="mt-4 border-t border-neutral-700 pt-4">
+                <div className="flex justify-between items-center mb-3">
+                   <span className="text-xs text-neutral-400 uppercase font-bold">Digiuno Intermittente (16:8)</span>
+                   <button onClick={() => setDigiuno(!digiuno)} className={`w-10 h-5 rounded-full relative transition-colors ${digiuno ? 'bg-orange-500' : 'bg-neutral-700'}`}>
+                      <div className={`w-3.5 h-3.5 bg-white rounded-full absolute top-[3px] transition-transform ${digiuno ? 'translate-x-5' : 'translate-x-1'}`}></div>
+                   </button>
+                </div>
                 <span className="text-xs text-neutral-400 uppercase font-bold mb-2 block">Collocazione Allenamento:</span>
                 <div className="flex space-x-2">
                   <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'mattina' ? 'bg-orange-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}>Mattina</button>
@@ -1069,31 +1137,7 @@ ${saluteW}` };
             <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-                <select 
-                  value={tipoDieta} 
-                  onChange={async (e) => {
-                    const nuovaDieta = e.target.value;
-                    setTipoDieta(nuovaDieta);
-                    if (biometria.peso && eta && altezza) {
-                      const payload = { 
-                        nome_utente: utenteCorrente, 
-                        eta: Number(eta), 
-                        altezza: Number(altezza), 
-                        peso: Number(biometria.peso), 
-                        circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: nuovaDieta } }, 
-                        data: new Date().toISOString() 
-                      };
-                      await supabase.from("check_utente").insert([payload]);
-                    }
-                  }}
-                  className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white outline-none cursor-pointer text-center appearance-none hover:opacity-80 transition-opacity`}
-                >
-                  <option value="Equilibrata">⚖️ Equilibrata</option>
-                  <option value="Keto">🥩 Keto</option>
-                  <option value="LowCarb">🥑 Low Carb</option>
-                  <option value="Zona">🧩 Zona</option>
-                  <option value="HighCarb">🍚 High Carb</option>
-                </select>
+                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white`}>{tipoDieta}</span>
               </div>
               <div className="flex gap-2">
                 <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded">BMR: {bmr} Kcal</span>
