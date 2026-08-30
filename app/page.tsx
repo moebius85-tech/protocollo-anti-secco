@@ -415,68 +415,24 @@ export default function Home() {
     }
   };
 
-    const generaAllenamentoDinamico = () => {
+  const generaAllenamentoDinamico = () => {
      const plan = JSON.parse(JSON.stringify(baseDbAllenamento)); 
      if (utenteCorrente === "Leonardo") return plan; 
 
      const isOver40 = Number(eta) > 40;
      const isShred = protocolloAttivo === 'Shred';
-     const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("Fisico");
-     
-     const fatNum = Number(biometria.bodyFat) || 0;
-     const pesoNum = Number(biometria.peso) || 0;
-     const highFat = fatNum > 15;
-     
-     // Nuovi Trigger Biomeccanici
-     const isKetoOrLowCarb = tipoDieta === 'Keto' || tipoDieta === 'LowCarb';
-     const isOverweightMechanically = fatNum > 20 || pesoNum > 95;
-     const needsLumbarProtection = isOver40 && stileVita.includes("Fisico");
-
-     // Helper per scambiare l'esercizio base con un'alternativa specifica
-     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-     const swapToAlternative = (ex: any, partialName: string) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const alt = ex.alternative.find((a: any) => a.nome.toLowerCase().includes(partialName.toLowerCase()));
-        if (alt) {
-            ex.nome = alt.nome;
-            ex.anim = alt.anim;
-            ex.dettaglio = alt.dettaglio;
-        }
-     };
+     const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("pesante");
+     const highFat = Number(biometria.bodyFat) > 15; 
 
      Object.keys(plan).forEach(sch => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
-           
-           // --- 1. MODIFICA VOLUME E INTENSITÀ ---
            if (isShred || highFat) {
               ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep"); 
               ex.rep = ex.rep.replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie");
               ex.rep = ex.rep.replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
            } else if (isOver40 && isHeavyJob) {
               ex.rep = ex.rep.replace("4-5 serie", "3-4 serie"); 
-           }
-
-           // --- 2. MOTORE DI SOSTITUZIONE BIOMECCANICA ---
-           
-           // A. Sovrappeso Meccanico: Via Trazioni a corpo libero
-           if (isOverweightMechanically) {
-               if (ex.id === "e6") swapToAlternative(ex, "Lat Machine Larga");
-               if (ex.id === "e22") swapToAlternative(ex, "French Press"); // Evita Dips
-           }
-
-           // B. Glicogeno Vuoto (Keto/LowCarb/Shred): Sostituzione Pesi Liberi con Macchine (Sicurezza)
-           if (isKetoOrLowCarb || isShred) {
-               if (ex.id === "e1") swapToAlternative(ex, "Chest Press Convergente");
-               if (ex.id === "e18") swapToAlternative(ex, "Shoulder Press");
-               if (ex.id === "e11") swapToAlternative(ex, "Front Squat"); // Abbassa il carico totale spostandolo in avanti
-           }
-
-           // C. Protezione Lombare (Lavoro fisico usurante + Over 40)
-           if (needsLumbarProtection) {
-               if (ex.id === "e11") swapToAlternative(ex, "Hack Squat Libero"); // Posteriore, meno carico assiale
-               if (ex.id === "e7") swapToAlternative(ex, "Rematore Manubrio"); // In appoggio, salva la bassa schiena
-               if (ex.id === "e13") swapToAlternative(ex, "Stacco Gambe Tese"); // Meno carico assoluto
            }
         });
      });
@@ -1113,7 +1069,31 @@ ${saluteW}` };
             <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white`}>{tipoDieta}</span>
+                <select 
+                  value={tipoDieta} 
+                  onChange={async (e) => {
+                    const nuovaDieta = e.target.value;
+                    setTipoDieta(nuovaDieta);
+                    if (biometria.peso && eta && altezza) {
+                      const payload = { 
+                        nome_utente: utenteCorrente, 
+                        eta: Number(eta), 
+                        altezza: Number(altezza), 
+                        peso: Number(biometria.peso), 
+                        circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: nuovaDieta } }, 
+                        data: new Date().toISOString() 
+                      };
+                      await supabase.from("check_utente").insert([payload]);
+                    }
+                  }}
+                  className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white outline-none cursor-pointer text-center appearance-none hover:opacity-80 transition-opacity`}
+                >
+                  <option value="Equilibrata">⚖️ Equilibrata</option>
+                  <option value="Keto">🥩 Keto</option>
+                  <option value="LowCarb">🥑 Low Carb</option>
+                  <option value="Zona">🧩 Zona</option>
+                  <option value="HighCarb">🍚 High Carb</option>
+                </select>
               </div>
               <div className="flex gap-2">
                 <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded">BMR: {bmr} Kcal</span>
