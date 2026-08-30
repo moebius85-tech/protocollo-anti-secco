@@ -715,19 +715,71 @@ Obiettivo: ${protocolloAttivo}`);
   });
   const actualIntakeKcal = Math.round((actualCho * 4) + (actualPro * 4) + (actualFat * 9));
 
-  const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
-    const preW = quandoTiAlleni === 'sera' ? `1️⃣ PRE-WORKOUT:
-• Pump Stim-Free: Citrullina 6g + Arginina 3g` : `1️⃣ PRE-WORKOUT:
-• Focus & Pump: Caffeina 200mg + Citrullina 6g`;
-    const intraChoText = intraCho > 0 ? `
-• Ciclodestrine: ${intraCho}g` : `
-• Elettroliti / MCT: Focus Idratazione (0g CHO)`;
-    const intraW = `2️⃣ INTRA-WORKOUT:${intraChoText}
+    const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
+    // 1. PRE-WORKOUT LOGIC (Timing + Goal)
+    let preW = "";
+    if (quandoTiAlleni === 'sera') {
+      preW = `1️⃣ PRE-WORKOUT (Stim-Free per riposo notturno):
+• L-Citrullina: 6-8g (Vasodilatazione e Pump)
+• Arginina AKG: 3g
+• Ashwagandha KSM-66: 500mg (Abbattimento cortisolo post-allenamento)`;
+    } else {
+      preW = `1️⃣ PRE-WORKOUT (Focus & Energia):
+• Caffeina: 200mg (Stimolante SNC)
+• L-Citrullina: 6g (Pump)
+• L-Tirosina: 1g (Focus mentale pre-workout)`;
+    }
+
+    // Integrazione mirata per Shred
+    if (protocolloAttivo === 'Shred') {
+      preW += `
+• Acetil L-Carnitina (ALC): 1.5g (Favorisce ossidazione grassi)`;
+    }
+
+    // 2. INTRA-WORKOUT LOGIC (Diet + Goal)
+    let intraW = "2️⃣ INTRA-WORKOUT:";
+    if (tipoDieta === 'Keto') {
+      intraW += `
+• Elettroliti: Sodio 1g, Potassio 500mg, Magnesio 200mg (Fondamentali in Keto!)
+• MCT Oil in polvere: 10g (Energia immediata dai chetoni)
+• EAA (Aminoacidi Essenziali): 15g (Preservazione massa)
+• ❌ ZERO Carboidrati`;
+    } else if (tipoDieta === 'LowCarb') {
+      intraW += `
+• Ciclodestrine (HBCD): ${intraCho}g (Minimo stimolo insulinico)
 • EAA: 15g
-• Creatina: 5g`;
+• Glutammina: 3g (Supporto intestinale e recupero)`;
+    } else {
+      // Equilibrata, Zona, HighCarb
+      intraW += `
+• Ciclodestrine (HBCD): ${intraCho}g (Energia e ripristino glicogeno)
+• EAA: 15g (Sintesi proteica)
+• Creatina Monoidrato: 5g`;
+    }
+
+    // 3. SUPPLEMENTAZIONE SALUTE / GENERALE (Extra value)
+    let saluteW = "3️⃣ BASE SALUTE E RECOVERY (Ai pasti):";
+    if (tipoDieta === 'Keto' || protocolloAttivo === 'Shred') {
+       saluteW += `
+• Omega-3 (EPA/DHA): 2-3g (Azione antinfiammatoria)
+• Multivitaminico ad alto dosaggio`;
+    } else {
+       saluteW += `
+• Omega-3: 1g
+• Vitamina D3 + K2`;
+    }
+    
+    // GDA per regimi ad alti carboidrati
+    if (protocolloAttivo === 'Massa' && (tipoDieta === 'HighCarb' || tipoDieta === 'Equilibrata')) {
+       saluteW += `
+• GDA (Berberina / Acido Alfa Lipoico): 15 min prima del pasto più ricco di Carbo (Ottimizza la sensibilità insulinica)`;
+    }
+
     const bloccoIntra = { isIntra: true, titolo: "STACK INTEGRAZIONE", descrizione: `${preW}
 
-${intraW}` };
+${intraW}
+
+${saluteW}` };
     
     if (quandoTiAlleni === 'mattina') return [ bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' }, { idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     if (quandoTiAlleni === 'pausa') return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Fine Pausa)' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
