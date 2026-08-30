@@ -9,8 +9,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// 1. DATABASE ALLENAMENTO MASTER (Paziente Zero)
-// Ogni alternativa è mappata ESATTAMENTE con l'animazione corretta
+// 1. DATABASE ALLENAMENTO MASTER
 // ==========================================
 const baseDbAllenamento = {
   Spinta: {
@@ -116,7 +115,7 @@ const baseDbAllenamento = {
           { nome: "Hack Squat Libero", anim: "leg_hack_barbell", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe (stile stacco). Spingi forte sui quadricipiti." }
         ] 
       },
-      { id: "e12", nome: "Hack squat", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena. Scendi e spingi su isolando le gambe senza la bassa schiena.", 
+      { id: "e12", nome: "Hack squat", anim: "leg_hack_machine", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena. Scendi e spingi su isolando le gambe senza la bassa schiena.", 
         alternative: [
           { nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana per concentrare il lavoro sui quadricipiti." }, 
           { nome: "Belt Squat", anim: "leg_belt_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi per caricare salvando la spina dorsale." }
@@ -155,6 +154,39 @@ const baseDbAllenamento = {
     ]
   }
 };
+
+const dbAlimenti = {
+  Pasto1: [
+    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro Arachidi` },
+    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: 30, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro Arachidi (sopra)` },
+    { nome: "Uova intere + Pane segale + Avocado", baseCarbo: 10, pro: 25, fat: 22, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova Intere • ${Math.round(f*6)}g Avocado` }
+  ],
+  Pasto2: [
+    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Petto Pollo • ${f}g Olio EVO` },
+    { nome: "Pasta di Semola + Carne Magra (Manzo)", baseCarbo: 20, pro: 45, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato Magro • ${f}g Olio EVO` },
+    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: 40, fat: 20, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone • Grassi dal pesce` }
+  ],
+  Pasto3: [
+    { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: 20, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle` },
+    { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: 25, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*8)}g Fiocchi Latte Magri • ${f}g Burro Arachidi` },
+    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: 16, fat: 14, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*3)}g Parmigiano 30 Mesi • ${Math.round(c*1.5)}g Fette Wasa` }
+  ],
+  PostWorkout: [
+    { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate` },
+    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate` },
+    { nome: "Gallette di riso + Bresaola", baseCarbo: 15, pro: 30, fat: 3, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola` }
+  ]
+};
+
+const misureBase = [
+  { id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" },
+  { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" },
+  { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }
+];
+const misureBIA = [
+  { id: 'vita', label: "Circonferenza Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa (BIA)", unit: "%" },
+  { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Muscolare", unit: "%" }
+];
 
 // ==========================================
 // GRAFICI & RUOTA BIA LAICA
@@ -249,58 +281,6 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
   );
 };
 
-// ==========================================
-// 2. DATABASE ALIMENTAZIONE COMPLETO
-// ==========================================
-const dbAlimenti = {
-  Pasto1: [
-    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro Arachidi` },
-    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: 30, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro Arachidi (sopra)` },
-    { nome: "Uova intere + Pane segale + Avocado", baseCarbo: 10, pro: 25, fat: 22, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova Intere • ${Math.round(f*6)}g Avocado` },
-    { nome: "Crema di riso + Isolate + Mandorle", baseCarbo: 15, pro: 35, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate • ${Math.round(f*2)}g Mandorle` },
-    { nome: "Yogurt Greco 0% + Muesli + Noci", baseCarbo: 12, pro: 25, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.4)}g Muesli • ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*1.5)}g Noci` },
-    { nome: "Fette Biscottate + Marmellata + Whey", baseCarbo: 16, pro: 30, fat: 5, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/7)} Fette Biscott. • Velo Marmellata • ${Math.round(p*1.2)}g Whey` },
-    { nome: "Toast integrale + Fesa Tacchino + Olio", baseCarbo: 11, pro: 28, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Toast • ${Math.round(p*4)}g Fesa • ${f}g Olio EVO` }
-  ],
-  Pasto2: [
-    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Petto Pollo • ${f}g Olio EVO` },
-    { nome: "Pasta di Semola + Carne Magra (Manzo)", baseCarbo: 20, pro: 45, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato Magro • ${f}g Olio EVO` },
-    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: 40, fat: 20, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone • Grassi dal pesce` },
-    { nome: "Gnocchi di patate + Merluzzo + Olio", baseCarbo: 18, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3)}g Gnocchi • ${Math.round(p*5)}g Merluzzo • ${f}g Olio EVO` },
-    { nome: "Quinoa + Tacchino + Crema mandorle", baseCarbo: 15, pro: 40, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Quinoa • ${Math.round(p*4)}g Tacchino • ${f}g Crema Mandorle` },
-    { nome: "Cous Cous + Gamberetti + Zucchine", baseCarbo: 19, pro: 35, fat: 8, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Cous Cous • ${Math.round(p*5)}g Gamberetti • ${f}g Olio EVO` },
-    { nome: "Riso Venere + Tartare Manzo + Limone", baseCarbo: 17, pro: 42, fat: 14, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Riso Venere • ${Math.round(p*4.5)}g Tartare • ${f}g Olio EVO` },
-    { nome: "Wrap integrale + Pollo + Avocado", baseCarbo: 14, pro: 38, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Piada Integrale • ${Math.round(p*4)}g Pollo • ${Math.round(f*6)}g Avocado` }
-  ],
-  Pasto3: [
-    { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: 20, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle` },
-    { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: 25, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*8)}g Fiocchi Latte Magri • ${f}g Burro Arachidi` },
-    { nome: "Caseine micellari + Noci", baseCarbo: 2, pro: 30, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*1.2)}g Caseine (Polvere) • ${Math.round(f*1.5)}g Noci Sgusciate` },
-    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: 16, fat: 14, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*3)}g Parmigiano 30 Mesi • ${Math.round(c*1.5)}g Fette Wasa` },
-    { nome: "Patate Dolci + Salmone (Pasto)", baseCarbo: 16, pro: 40, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone` },
-    { nome: "Skyr Naturale + Ciocc. Fondente 85%", baseCarbo: 6, pro: 22, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*9)}g Skyr • ${Math.round(f*2.2)}g Cioccolato Fondente 85%` }
-  ],
-  PostWorkout: [
-    { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate` },
-    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate` },
-    { nome: "Gallette di riso + Bresaola", baseCarbo: 15, pro: 30, fat: 3, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola` },
-    { nome: "Maltodestrine + EAA (Shaker)", baseCarbo: 14, pro: 15, fat: 0, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c)}g Maltodestrine • ${p}g EAA (Aminoacidi)` },
-    { nome: "Riso Basmati + Merluzzo (Solido)", baseCarbo: 20, pro: 40, fat: 2, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*5)}g Merluzzo` },
-    { nome: "Gnocchi + Albume pastorizzato", baseCarbo: 18, pro: 35, fat: 0, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3)}g Gnocchi • ${Math.round(p*10)}g Albume (cotto)` },
-    { nome: "Sorbetto frutta + Whey Isolate", baseCarbo: 14, pro: 30, fat: 0, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*3.5)}g Sorbetto • ${Math.round(p*1.1)}g Isolate (a parte)` }
-  ]
-};
-
-const misureBase = [
-  { id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" },
-  { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" },
-  { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }
-];
-const misureBIA = [
-  { id: 'vita', label: "Circonferenza Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa (BIA)", unit: "%" },
-  { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Muscolare", unit: "%" }
-];
-
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -308,6 +288,9 @@ export default function Home() {
   const [listaAtleti, setListaAtleti] = useState<string[]>(["Leonardo"]);
   const [utenteCorrente, setUtenteCorrente] = useState("Leonardo");
   const [protocolloAttivo, setProtocolloAttivo] = useState("Massa");
+  
+  // STATO PER TIPO DI DIETA
+  const [tipoDieta, setTipoDieta] = useState("Equilibrata");
   
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
@@ -323,7 +306,7 @@ export default function Home() {
   
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
-  const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred' });
+  const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred', dieta: 'Equilibrata' });
   const [fotoWizard, setFotoWizard] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const [rispostaWizard, setRispostaWizard] = useState("");
   const [loadingWizard, setLoadingWizard] = useState(false);
@@ -340,8 +323,7 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   
-  const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
-  const [messaggioDieta, setMessaggioDieta] = useState("Macro standard impostati.");
+  const [messaggioDieta, setMessaggioDieta] = useState("In attesa di analisi biometrica...");
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({
     Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
@@ -382,9 +364,10 @@ export default function Home() {
     fetchAtleti();
   }, []);
 
-  const caricaProfilo = async (nomeAtleta: string, objScelto: string) => {
+  const caricaProfilo = async (nomeAtleta: string, objScelto: string, dietaScelta: string) => {
     setUtenteCorrente(nomeAtleta);
     setProtocolloAttivo(objScelto);
+    setTipoDieta(dietaScelta);
     
     if (nomeAtleta === "Leonardo") {
       setEta(41); setAltezza(175); setStileVita("Attivo (es. Vendita al dettaglio, in piedi)"); setTipoTurno("spezzato");
@@ -403,16 +386,13 @@ export default function Home() {
           vita: circ.vita || '', bodyFat: circ.bodyFat || '', bodyWater: circ.bodyWater || '', muscleMass: circ.muscleMass || ''
         });
         if(circ.profilo?.stileVita) setStileVita(circ.profilo.stileVita);
+        if(circ.profilo?.dieta) setTipoDieta(circ.profilo.dieta);
       }
       setStoricoMisure(data.filter(d => d.peso || (d.circonferenze && typeof d.circonferenze === 'object' && Object.keys(d.circonferenze).length > 0)));
     } else if (nomeAtleta !== "Leonardo") {
        setBiometria({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '', bodyFat: '', bodyWater: '', muscleMass: '' });
        setStoricoMisure([]);
     }
-
-    if(objScelto === 'Shred') setMoltiplicatoreCarbo(2.5);
-    else if(objScelto === 'Ricomposizione') setMoltiplicatoreCarbo(4);
-    else setMoltiplicatoreCarbo(5);
 
     const resSess = await supabase.from("storico_allenamenti").select("*").eq("nome_utente", nomeAtleta).order("data", { ascending: true });
     if (resSess.data) {
@@ -472,7 +452,7 @@ export default function Home() {
   const analizzaObiettivoWizard = async () => {
     setLoadingWizard(true);
     try {
-      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate per arrivarci.`;
+      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Dieta preferita: ${datiWizard.dieta}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate per arrivarci.`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: "Analizza il mio profilo.", context: contesto };
       if (fotoWizard) payload.file = { data: fotoWizard.data, mimeType: fotoWizard.mimeType };
@@ -487,11 +467,11 @@ export default function Home() {
   };
 
   const salvaProfiloWizard = async () => {
-    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo } }, data: new Date().toISOString() };
+    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo, dieta: datiWizard.dieta } }, data: new Date().toISOString() };
     await supabase.from("check_utente").insert([payload]);
     setListaAtleti(prev => [...prev, datiWizard.nome]);
     setModalWizard(false); setStepWizard(1);
-    caricaProfilo(datiWizard.nome, datiWizard.obiettivo);
+    caricaProfilo(datiWizard.nome, datiWizard.obiettivo, datiWizard.dieta);
   };
 
   const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -518,7 +498,9 @@ export default function Home() {
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
           setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
-          responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
+          responseText += `
+
+✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
     } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore." }]); }
@@ -543,37 +525,21 @@ export default function Home() {
   };
 
   const valutaCheckFisico = async () => {
-    const { peso, bodyFat } = biometria;
+    const { peso } = biometria;
     if (peso && eta && altezza) {
-      const trendCarichi = storicoSessioni.length >= 2 ? "Stallo" : "Neutro"; 
-      let alertMsg = "";
-      
-      const grassoStimato = Number(bodyFat) || 0;
-      
-      if (protocolloAttivo === 'Massa') {
-        if (grassoStimato > 15 || Number(peso) > 85) {
-           setMoltiplicatoreCarbo(4); 
-           alertMsg = "⚠️ BIA rileva accumulo grasso >15%. Taglio carbo a 4g/kg e alzo ripetizioni in scheda per favorire l'ossidazione.";
-        } else if (trendCarichi === "Stallo") {
-           setMoltiplicatoreCarbo(6.5); alertMsg = "🔥 Prestazioni bloccate. Surplus (6.5g/kg) attivato.";
-        } else {
-           setMoltiplicatoreCarbo(5); alertMsg = "✅ Parametri in asse. (5g/kg).";
-        }
-      } else if (protocolloAttivo === 'Shred') {
-        setMoltiplicatoreCarbo(2.5); alertMsg = "🔪 Fase Shred. Carbo bassi (2.5g/kg), Volume ridotto.";
-      } else {
-        setMoltiplicatoreCarbo(4); alertMsg = "⚖️ Fase Ricomposizione attiva.";
-      }
-      setMessaggioDieta(alertMsg);
-
-      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo } }, data: new Date().toISOString() };
+      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta } }, data: new Date().toISOString() };
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
-      else { alert(alertMsg); caricaProfilo(utenteCorrente, protocolloAttivo); } 
+      else { 
+        alert(`Sistema Aggiornato.
+TDEE Ricalcolato per regime: ${tipoDieta}
+Obiettivo: ${protocolloAttivo}`); 
+        caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
+      } 
     } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
   };
 
-  const eliminaMisurazione = async (id: string) => { if(confirm("Eliminare misurazione?")) { await supabase.from("check_utente").delete().eq("id", id); caricaProfilo(utenteCorrente, protocolloAttivo); } };
+  const eliminaMisurazione = async (id: string) => { if(confirm("Eliminare misurazione?")) { await supabase.from("check_utente").delete().eq("id", id); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); } };
   const getUltimoCarico = (idEs: string) => { for (let i = storicoSessioni.length - 1; i >= 0; i--) { if (storicoSessioni[i].carichi[idEs]) return storicoSessioni[i].carichi[idEs]; } return '0'; };
   const getNumeroSet = (fase: string) => { if (fase.includes('Fase 1')) return fastWorkout ? 3 : 4; return fastWorkout ? 2 : 3; };
   const updateCaricoSet = (idEs: string, indexSet: number, valore: string) => { setCarichiAttuali(prev => { const arr = prev[idEs] ? [...prev[idEs]] : Array(5).fill(""); arr[indexSet] = valore; return { ...prev, [idEs]: arr }; }); };
@@ -583,7 +549,7 @@ export default function Home() {
     Object.keys(carichiAttuali).forEach(k => { const pesiValidi = carichiAttuali[k].filter(v => v !== ""); if(pesiValidi.length > 0) sessioneCarichiStr[k] = pesiValidi.join(" | "); });
     const payload = { nome_utente: utenteCorrente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: sessioneCarichiStr, data: new Date().toISOString() };
     await supabase.from("storico_allenamenti").insert([payload]);
-    setCarichiAttuali({}); alert(`Sessione salvata.`); caricaProfilo(utenteCorrente, protocolloAttivo);
+    setCarichiAttuali({}); alert(`Sessione salvata.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta);
   };
   const toggleCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true } }));
   const resetCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { attivo: false, cho: '', pro: '', fat: '', nome: '' } }));
@@ -615,23 +581,98 @@ export default function Home() {
   const apriSwapAlimento = (categoria: string) => { setCategoriaDaCambiare(categoria as keyof typeof dbAlimenti); setModalAlimento(true); };
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
 
+
+  // ==========================================
+  // MOTORE MACRO DINAMICO AVANZATO
+  // ==========================================
   const pesoNum = Number(biometria.peso) || 80;
   const bmr = Math.round((10 * pesoNum) + (6.25 * (Number(altezza)||175)) - (5 * (Number(eta)||41)) + 5);
-  const tdeeMultiplier = protocolloAttivo === 'Shred' ? 1.35 : (protocolloAttivo === 'Ricomposizione' ? 1.45 : 1.55);
-  const tdee = Math.round(bmr * tdeeMultiplier); 
-  const intraCho = protocolloAttivo === 'Shred' ? Math.round(pesoNum * 0.3) : Math.round(pesoNum * 0.5);
-  const intraPro = 15;
-  const intraFat = 0;
   
-  let targetCho = intraCho, targetPro = intraPro, targetFat = intraFat;
+  // 1. Multiplicatore Attività (Stile di Vita + Turni)
+  let activityMult = 1.2;
+  if (stileVita.includes("Attivo")) activityMult = 1.4;
+  if (stileVita.includes("Fisico")) activityMult = 1.6;
+  if (tipoTurno === "spezzato") activityMult += 0.05; // Extra stress
+  
+  let baseTdee = Math.round(bmr * activityMult);
+
+  // 2. Modifica TDEE in base a Obiettivo + BodyFat
+  const grassoStimato = Number(biometria.bodyFat) || 0;
+  if (protocolloAttivo === 'Shred') {
+      baseTdee = Math.round(baseTdee * 0.80); // Deficit 20%
+  } else if (protocolloAttivo === 'Massa') {
+      if (grassoStimato > 15 || pesoNum > 85) {
+          baseTdee = Math.round(baseTdee * 1.05); // Surplus leggero
+      } else {
+          baseTdee = Math.round(baseTdee * 1.15); // Surplus forte
+      }
+  }
+
+  const tdee = baseTdee;
+
+  // 3. Calcolo Target Macronutrienti in base al Tipo di Dieta
+  let targetPro = pesoNum * 2.2;
+  if (protocolloAttivo === 'Shred') targetPro = pesoNum * 2.5;
+
+  let targetCho = 0;
+  let targetFat = 0;
+
+  switch (tipoDieta) {
+      case 'Keto':
+          targetCho = 30; // Chetosi
+          targetPro = pesoNum * 2.5; // Protezione muscolare
+          targetFat = (tdee - (targetCho * 4) - (targetPro * 4)) / 9;
+          break;
+      case 'LowCarb':
+          targetCho = pesoNum * 1.5; // Basso carbo
+          targetPro = pesoNum * 2.5;
+          targetFat = (tdee - (targetCho * 4) - (targetPro * 4)) / 9;
+          break;
+      case 'Zona':
+          targetCho = (tdee * 0.40) / 4;
+          targetPro = (tdee * 0.30) / 4;
+          targetFat = (tdee * 0.30) / 9;
+          break;
+      case 'HighCarb':
+          targetFat = Math.max(pesoNum * 0.8, 40); // Minimo vitale grassi
+          targetPro = pesoNum * 2.0;
+          targetCho = (tdee - (targetFat * 9) - (targetPro * 4)) / 4;
+          break;
+      case 'Equilibrata':
+      default:
+          targetFat = pesoNum * 1.0;
+          targetCho = (tdee - (targetFat * 9) - (targetPro * 4)) / 4;
+          break;
+  }
+
+  // Override Protocollo Leonardo Originale
+  if (utenteCorrente === "Leonardo" && tipoDieta === "Equilibrata") {
+      const mult = protocolloAttivo === 'Shred' ? 2.5 : (protocolloAttivo === 'Massa' ? 5 : 4);
+      targetCho = pesoNum * mult;
+      targetPro = protocolloAttivo === 'Shred' ? (pesoNum * 2.5) : (pesoNum * 2.2);
+      targetFat = pesoNum * 1.0;
+  }
+
+  // 4. Intra-Workout Dinamico
+  let intraCho = protocolloAttivo === 'Shred' ? Math.round(pesoNum * 0.3) : Math.round(pesoNum * 0.5);
+  if (tipoDieta === 'Keto') intraCho = 0;
+  else if (tipoDieta === 'LowCarb') intraCho = Math.round(pesoNum * 0.2);
+
+  const intraPro = 15; // EAA
+  const intraFat = 0;
+
+  // Sicurezza matemtiche base (i target del pasto non possono essere negativi rispetto all'intra)
+  targetCho = Math.max(targetCho, intraCho);
+  targetFat = Math.max(targetFat, intraFat);
+  targetPro = Math.max(targetPro, intraPro);
+
+  // 5. Estrazione del "peso" proporzionale dai pasti originali (per fare i blocchi proporzionali)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const originalMeals: Record<string, any> = {};
   ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'].forEach(cat => {
      const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]];
      if(item) {
-       const modPro = protocolloAttivo === 'Shred' ? item.pro * 1.2 : item.pro;
-       originalMeals[cat] = { cho: item.baseCarbo * moltiplicatoreCarbo, pro: Math.round(modPro), fat: item.fat };
-       targetCho += originalMeals[cat].cho; targetPro += originalMeals[cat].pro; targetFat += originalMeals[cat].fat;
+       originalMeals[cat] = { cho: item.baseCarbo, pro: item.pro, fat: item.fat };
      }
   });
 
@@ -640,7 +681,10 @@ export default function Home() {
      if(pastiCustom[cat].attivo) {
         customCho += Number(pastiCustom[cat].cho) || 0; customPro += Number(pastiCustom[cat].pro) || 0; customFat += Number(pastiCustom[cat].fat) || 0;
      } else if(originalMeals[cat]) {
-        sumNonCustomOrigCho += originalMeals[cat].cho; sumNonCustomOrigPro += originalMeals[cat].pro; sumNonCustomOrigFat += originalMeals[cat].fat;
+        // Se dieta Keto, distribuiamo in base ai grassi originali (essendo i cho base altini, falserebbero)
+        sumNonCustomOrigCho += tipoDieta === 'Keto' ? 1 : originalMeals[cat].cho; 
+        sumNonCustomOrigPro += originalMeals[cat].pro; 
+        sumNonCustomOrigFat += originalMeals[cat].fat;
      }
   });
 
@@ -654,8 +698,9 @@ export default function Home() {
      if(pastiCustom[cat].attivo) {
         finalMeals[cat] = { cho: Number(pastiCustom[cat].cho) || 0, pro: Number(pastiCustom[cat].pro) || 0, fat: Number(pastiCustom[cat].fat) || 0 };
      } else if(originalMeals[cat]) {
+        const origC = tipoDieta === 'Keto' ? 1 : originalMeals[cat].cho;
         finalMeals[cat] = {
-           cho: sumNonCustomOrigCho > 0 ? Math.round(remainingCho * (originalMeals[cat].cho / sumNonCustomOrigCho)) : 0,
+           cho: sumNonCustomOrigCho > 0 ? Math.round(remainingCho * (origC / sumNonCustomOrigCho)) : 0,
            pro: sumNonCustomOrigPro > 0 ? Math.round(remainingPro * (originalMeals[cat].pro / sumNonCustomOrigPro)) : 0,
            fat: sumNonCustomOrigFat > 0 ? Math.round(remainingFat * (originalMeals[cat].fat / sumNonCustomOrigFat)) : 0
         };
@@ -671,9 +716,19 @@ export default function Home() {
   const actualIntakeKcal = Math.round((actualCho * 4) + (actualPro * 4) + (actualFat * 9));
 
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
-    const preW = quandoTiAlleni === 'sera' ? `1️⃣ PRE-WORKOUT:\n• Pump Stim-Free: Citrullina 6g + Arginina 3g` : `1️⃣ PRE-WORKOUT:\n• Focus & Pump: Caffeina 200mg + Citrullina 6g`;
-    const intraW = `2️⃣ INTRA-WORKOUT:\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g\n• Creatina: 5g`;
-    const bloccoIntra = { isIntra: true, titolo: "STACK INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}` };
+    const preW = quandoTiAlleni === 'sera' ? `1️⃣ PRE-WORKOUT:
+• Pump Stim-Free: Citrullina 6g + Arginina 3g` : `1️⃣ PRE-WORKOUT:
+• Focus & Pump: Caffeina 200mg + Citrullina 6g`;
+    const intraChoText = intraCho > 0 ? `
+• Ciclodestrine: ${intraCho}g` : `
+• Elettroliti / MCT: Focus Idratazione (0g CHO)`;
+    const intraW = `2️⃣ INTRA-WORKOUT:${intraChoText}
+• EAA: 15g
+• Creatina: 5g`;
+    const bloccoIntra = { isIntra: true, titolo: "STACK INTEGRAZIONE", descrizione: `${preW}
+
+${intraW}` };
+    
     if (quandoTiAlleni === 'mattina') return [ bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' }, { idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     if (quandoTiAlleni === 'pausa') return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Fine Pausa)' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, { idCategoria: 'Pasto2', titoloUI: 'Pranzo' }, { idCategoria: 'Pasto3', titoloUI: 'Spuntino' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' } ];
@@ -702,7 +757,7 @@ export default function Home() {
            </div>
            <p className="text-center text-xs text-neutral-400 font-mono mb-8 tracking-widest">SaaS Periodization Engine</p>
 
-           <div className="space-y-6">
+           <div className="space-y-4">
               <div>
                  <div className="flex justify-between items-center mb-2">
                    <label className="text-[10px] text-neutral-500 uppercase font-bold">1. Seleziona Atleta / Profilo</label>
@@ -725,7 +780,18 @@ export default function Home() {
                  </select>
               </div>
 
-              <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo)} className="w-full bg-orange-600 hover:bg-orange-500 text-white font-black p-4 rounded-xl uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)] mt-4">
+              <div>
+                 <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-2">3. Strategia Nutrizionale</label>
+                 <select value={tipoDieta} onChange={e => setTipoDieta(e.target.value)} className="w-full bg-neutral-950 text-white p-3 rounded-lg border border-neutral-700 outline-none focus:border-emerald-500 font-bold text-sm">
+                    <option value="Equilibrata">⚖️ Equilibrata (Classica Bodybuilding)</option>
+                    <option value="Keto">🥩 Chetogenica (Keto - Cho Max 30g)</option>
+                    <option value="LowCarb">🥑 Low Carb / Iperproteica</option>
+                    <option value="Zona">🧩 Dieta a Zona (40-30-30)</option>
+                    <option value="HighCarb">🍚 High Carb / Low Fat</option>
+                 </select>
+              </div>
+
+              <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className="w-full bg-orange-600 hover:bg-orange-500 text-white font-black p-4 rounded-xl uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)] mt-2">
                  Accedi al Sistema
               </button>
            </div>
@@ -759,6 +825,13 @@ export default function Home() {
                      <option value="Massa">Obiettivo: Massa / Ipertrofia</option>
                      <option value="Shred">Obiettivo: Dimagrimento (Shred)</option>
                      <option value="Ricomposizione">Obiettivo: Mantenimento</option>
+                   </select>
+                   <select value={datiWizard.dieta} onChange={e=>setDatiWizard({...datiWizard, dieta: e.target.value})} className="w-full bg-neutral-950 text-white p-2 border border-neutral-700 rounded text-xs">
+                     <option value="Equilibrata">Dieta: Equilibrata</option>
+                     <option value="Keto">Dieta: Chetogenica</option>
+                     <option value="LowCarb">Dieta: Low Carb</option>
+                     <option value="Zona">Dieta: Zona</option>
+                     <option value="HighCarb">Dieta: High Carb</option>
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded">
                      <p className="text-[10px] text-neutral-500 mb-2">📸 Foto Obiettivo Fisico (Opzionale). L&apos;IA stimerà la BIA.</p>
@@ -795,8 +868,11 @@ export default function Home() {
           </h1>
         </div>
         <div className="text-right">
-          <span className="text-[10px] text-neutral-500 block uppercase font-bold">Atleta Operativo</span>
-          <span className="text-sm font-bold text-white bg-neutral-900 px-3 py-1 rounded border border-neutral-700">{utenteCorrente}</span>
+          <span className="text-[10px] text-neutral-500 block uppercase font-bold mb-1">Atleta Operativo</span>
+          <div className="flex flex-col items-end gap-1">
+             <span className="text-sm font-bold text-white bg-neutral-900 px-3 py-1 rounded border border-neutral-700">{utenteCorrente}</span>
+             <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">{tipoDieta}</span>
+          </div>
         </div>
       </header>
 
@@ -936,16 +1012,16 @@ export default function Home() {
             <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white`}>{moltiplicatoreCarbo}g CHO/Kg</span>
+                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white`}>{tipoDieta}</span>
               </div>
               <div className="flex gap-2">
                 <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded">BMR: {bmr} Kcal</span>
-                <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded">TDEE: {tdee} Kcal</span>
+                <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded">TDEE: {baseTdee} Kcal</span>
                 <span className="text-[9px] bg-orange-950 border border-orange-900 text-orange-400 font-bold px-2 py-1 rounded flex-1 text-center">INTAKE: {actualIntakeKcal} Kcal</span>
               </div>
             </div>
             
-            <p className="text-[10px] text-neutral-400 mb-4 font-mono italic">{messaggioDieta}</p>
+            <p className="text-[10px] text-neutral-400 mb-4 font-mono italic whitespace-pre-wrap">{messaggioDieta}</p>
 
             <div className="space-y-3">
               {generaTimelineDieta().map((blocco, idx) => {
