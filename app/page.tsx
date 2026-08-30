@@ -820,10 +820,10 @@ Obiettivo: ${protocolloAttivo}`);
 ${intraW}
 
 ${saluteW}` };
-    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO INTERMITTENTE (16:8)", descrizione: "• Finestra di digiuno: 16 ore.
+    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO INTERMITTENTE (16:8)", descrizione: `• Finestra di digiuno: 16 ore.
 • Consentiti: Acqua, Caffè amaro, Tè verde.
 • Consigliato: 1 pizzico di Sale Rosa (Sodio) per mantenere l'idratazione.
-• Le calorie della colazione sono state spalmate nei restanti pasti." };
+• Le calorie della colazione sono state spalmate nei restanti pasti.` };
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t: any[] = [];
