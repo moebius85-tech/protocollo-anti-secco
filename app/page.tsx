@@ -308,7 +308,8 @@ export default function Home() {
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
   const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred', dieta: 'Equilibrata' });
-  const [fotoWizard, setFotoWizard] = useState<{data: string, mimeType: string, nome: string} | null>(null);
+  const [fotoPartenza, setFotoPartenza] = useState<{data: string, mimeType: string, nome: string} | null>(null);
+  const [fotoArrivo, setFotoArrivo] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const [rispostaWizard, setRispostaWizard] = useState("");
   const [loadingWizard, setLoadingWizard] = useState(false);
   
@@ -481,21 +482,32 @@ export default function Home() {
 
   const dbDinamico = generaAllenamentoDinamico();
 
-  const gestisciCaricamentoFileWizard = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const gestisciCaricamentoPartenza = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onloadend = () => { setFotoWizard({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); };
+    reader.onloadend = () => { setFotoPartenza({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); };
+    reader.readAsDataURL(file);
+  };
+
+  const gestisciCaricamentoArrivo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => { setFotoArrivo({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); };
     reader.readAsDataURL(file);
   };
 
   const analizzaObiettivoWizard = async () => {
     setLoadingWizard(true);
     try {
-      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Dieta preferita: ${datiWizard.dieta}. Se c'è una foto, stima la body fat. Fornisci un verdetto indicando le settimane stimate per arrivarci.`;
+      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Dieta preferita: ${datiWizard.dieta}. Valuta le foto allegate (Partenza e/o Obiettivo) per stimare la BIA attuale e il divario fisico con il target. Fornisci un verdetto indicando le settimane stimate per arrivarci.`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: "Analizza il mio profilo.", context: contesto };
-      if (fotoWizard) payload.file = { data: fotoWizard.data, mimeType: fotoWizard.mimeType };
+      const files = [];
+      if (fotoPartenza) files.push({ data: fotoPartenza.data, mimeType: fotoPartenza.mimeType, label: "Partenza" });
+      if (fotoArrivo) files.push({ data: fotoArrivo.data, mimeType: fotoArrivo.mimeType, label: "Obiettivo" });
+      if (files.length > 0) payload.files = files; // Inviamo array multiplo al backend
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
       setRispostaWizard(data.reply);
@@ -952,9 +964,15 @@ ${saluteW}` };
                      <option value="Zona">Dieta: Zona</option>
                      <option value="HighCarb">Dieta: High Carb</option>
                    </select>
-                   <div className="bg-neutral-950 p-3 border border-neutral-800 rounded">
-                     <p className="text-[10px] text-neutral-500 mb-2">📸 Foto Obiettivo Fisico (Opzionale). L&apos;IA stimerà la BIA.</p>
-                     <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoFileWizard} />
+                   <div className="bg-neutral-950 p-3 border border-neutral-800 rounded flex flex-col gap-3">
+                     <div>
+                        <p className="text-[10px] text-neutral-500 mb-1">📸 Foto Partenza / Condizione Attuale (Opzionale)</p>
+                        <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                     </div>
+                     <div className="border-t border-neutral-800 pt-2">
+                        <p className="text-[10px] text-neutral-500 mb-1">📸 Foto Obiettivo / Modello ideale (Opzionale)</p>
+                        <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                     </div>
                    </div>
                    <div className="flex gap-2">
                      <button onClick={() => setStepWizard(1)} className="w-1/3 bg-neutral-800 text-white p-2 rounded font-bold uppercase">Indietro</button>
