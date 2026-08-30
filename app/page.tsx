@@ -1137,7 +1137,31 @@ ${saluteW}` };
             <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-                <span className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white`}>{tipoDieta}</span>
+                <select 
+                  value={tipoDieta} 
+                  onChange={async (e) => {
+                    const nuovaDieta = e.target.value;
+                    setTipoDieta(nuovaDieta);
+                    if (biometria.peso && eta && altezza) {
+                      const payload = { 
+                        nome_utente: utenteCorrente, 
+                        eta: Number(eta), 
+                        altezza: Number(altezza), 
+                        peso: Number(biometria.peso), 
+                        circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: nuovaDieta } }, 
+                        data: new Date().toISOString() 
+                      };
+                      await supabase.from("check_utente").insert([payload]);
+                    }
+                  }}
+                  className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white outline-none cursor-pointer text-center appearance-none hover:opacity-80 transition-opacity bg-transparent border border-white/20`}
+                >
+                  <option value="Equilibrata" className="bg-neutral-900">⚖️ Equilibrata</option>
+                  <option value="Keto" className="bg-neutral-900">🥩 Keto</option>
+                  <option value="LowCarb" className="bg-neutral-900">🥑 Low Carb</option>
+                  <option value="Zona" className="bg-neutral-900">🧩 Zona</option>
+                  <option value="HighCarb" className="bg-neutral-900">🍚 High Carb</option>
+                </select>
               </div>
               <div className="flex gap-2">
                 <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded">BMR: {bmr} Kcal</span>
