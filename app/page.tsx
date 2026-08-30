@@ -98,7 +98,7 @@ const baseDbAllenamento = {
           { nome: "Curl Cavo Basso", anim: "bicep_cable_bar", note: "Tensione continua", dettaglio: "CAVI: Cavo basso con sbarra corta. Tensione bruciante continua." }
         ] 
       },
-      { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso. Presa a martello per colpire anche il brachiale.", 
+      { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable_rope", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso. Presa a martello per colpire anche il brachiale.", 
         alternative: [
           { nome: "Curl Inclinata", anim: "bicep_incline_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°, lascia cadere le braccia indietro e fletti." }, 
           { nome: "Spider Curl", anim: "bicep_spider_curl", note: "Picco bicipite", dettaglio: "BILANCIERE: Petto in appoggio su panca inclinata, fletti verso le spalle." }
@@ -323,6 +323,7 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   
+  const [moltiplicatoreCarbo, setMoltiplicatoreCarbo] = useState(5);
   const [messaggioDieta, setMessaggioDieta] = useState("In attesa di analisi biometrica...");
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({
@@ -498,9 +499,7 @@ export default function Home() {
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
           setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
-          responseText += `
-
-✨ Macro calcolati per ${match[1]}!`;
+          responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
     } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore." }]); }
@@ -531,9 +530,7 @@ export default function Home() {
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
       else { 
-        alert(`Sistema Aggiornato.
-TDEE Ricalcolato per regime: ${tipoDieta}
-Obiettivo: ${protocolloAttivo}`); 
+        alert(`Sistema Aggiornato.\nTDEE Ricalcolato per regime: ${tipoDieta}\nObiettivo: ${protocolloAttivo}`); 
         caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
       } 
     } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
@@ -715,71 +712,45 @@ Obiettivo: ${protocolloAttivo}`);
   });
   const actualIntakeKcal = Math.round((actualCho * 4) + (actualPro * 4) + (actualFat * 9));
 
-    const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
+  const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
     // 1. PRE-WORKOUT LOGIC (Timing + Goal)
     let preW = "";
     if (quandoTiAlleni === 'sera') {
-      preW = `1️⃣ PRE-WORKOUT (Stim-Free per riposo notturno):
-• L-Citrullina: 6-8g (Vasodilatazione e Pump)
-• Arginina AKG: 3g
-• Ashwagandha KSM-66: 500mg (Abbattimento cortisolo post-allenamento)`;
+      preW = `1️⃣ PRE-WORKOUT (Stim-Free per riposo notturno):\n• L-Citrullina: 6-8g (Vasodilatazione e Pump)\n• Arginina AKG: 3g\n• Ashwagandha KSM-66: 500mg (Abbattimento cortisolo post-allenamento)`;
     } else {
-      preW = `1️⃣ PRE-WORKOUT (Focus & Energia):
-• Caffeina: 200mg (Stimolante SNC)
-• L-Citrullina: 6g (Pump)
-• L-Tirosina: 1g (Focus mentale pre-workout)`;
+      preW = `1️⃣ PRE-WORKOUT (Focus & Energia):\n• Caffeina: 200mg (Stimolante SNC)\n• L-Citrullina: 6g (Pump)\n• L-Tirosina: 1g (Focus mentale pre-workout)`;
     }
 
     // Integrazione mirata per Shred
     if (protocolloAttivo === 'Shred') {
-      preW += `
-• Acetil L-Carnitina (ALC): 1.5g (Favorisce ossidazione grassi)`;
+      preW += `\n• Acetil L-Carnitina (ALC): 1.5g (Favorisce ossidazione grassi)`;
     }
 
     // 2. INTRA-WORKOUT LOGIC (Diet + Goal)
     let intraW = "2️⃣ INTRA-WORKOUT:";
     if (tipoDieta === 'Keto') {
-      intraW += `
-• Elettroliti: Sodio 1g, Potassio 500mg, Magnesio 200mg (Fondamentali in Keto!)
-• MCT Oil in polvere: 10g (Energia immediata dai chetoni)
-• EAA (Aminoacidi Essenziali): 15g (Preservazione massa)
-• ❌ ZERO Carboidrati`;
+      intraW += `\n• Elettroliti: Sodio 1g, Potassio 500mg, Magnesio 200mg (Fondamentali in Keto!)\n• MCT Oil in polvere: 10g (Energia immediata dai chetoni)\n• EAA (Aminoacidi Essenziali): 15g (Preservazione massa)\n• ❌ ZERO Carboidrati`;
     } else if (tipoDieta === 'LowCarb') {
-      intraW += `
-• Ciclodestrine (HBCD): ${intraCho}g (Minimo stimolo insulinico)
-• EAA: 15g
-• Glutammina: 3g (Supporto intestinale e recupero)`;
+      intraW += `\n• Ciclodestrine (HBCD): ${intraCho}g (Minimo stimolo insulinico)\n• EAA: 15g\n• Glutammina: 3g (Supporto intestinale e recupero)`;
     } else {
       // Equilibrata, Zona, HighCarb
-      intraW += `
-• Ciclodestrine (HBCD): ${intraCho}g (Energia e ripristino glicogeno)
-• EAA: 15g (Sintesi proteica)
-• Creatina Monoidrato: 5g`;
+      intraW += `\n• Ciclodestrine (HBCD): ${intraCho}g (Energia e ripristino glicogeno)\n• EAA: 15g (Sintesi proteica)\n• Creatina Monoidrato: 5g`;
     }
 
     // 3. SUPPLEMENTAZIONE SALUTE / GENERALE (Extra value)
     let saluteW = "3️⃣ BASE SALUTE E RECOVERY (Ai pasti):";
     if (tipoDieta === 'Keto' || protocolloAttivo === 'Shred') {
-       saluteW += `
-• Omega-3 (EPA/DHA): 2-3g (Azione antinfiammatoria)
-• Multivitaminico ad alto dosaggio`;
+       saluteW += `\n• Omega-3 (EPA/DHA): 2-3g (Azione antinfiammatoria)\n• Multivitaminico ad alto dosaggio`;
     } else {
-       saluteW += `
-• Omega-3: 1g
-• Vitamina D3 + K2`;
+       saluteW += `\n• Omega-3: 1g\n• Vitamina D3 + K2`;
     }
     
     // GDA per regimi ad alti carboidrati
     if (protocolloAttivo === 'Massa' && (tipoDieta === 'HighCarb' || tipoDieta === 'Equilibrata')) {
-       saluteW += `
-• GDA (Berberina / Acido Alfa Lipoico): 15 min prima del pasto più ricco di Carbo (Ottimizza la sensibilità insulinica)`;
+       saluteW += `\n• GDA (Berberina / Acido Alfa Lipoico): 15 min prima del pasto più ricco di Carbo (Ottimizza la sensibilità insulinica)`;
     }
 
-    const bloccoIntra = { isIntra: true, titolo: "STACK INTEGRAZIONE", descrizione: `${preW}
-
-${intraW}
-
-${saluteW}` };
+    const bloccoIntra = { isIntra: true, titolo: "STACK INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
     
     if (quandoTiAlleni === 'mattina') return [ bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' }, { idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
     if (quandoTiAlleni === 'pausa') return [ { idCategoria: 'Pasto1', titoloUI: 'Colazione' }, bloccoIntra, { idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Fine Pausa)' }, { idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }, { idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' }];
