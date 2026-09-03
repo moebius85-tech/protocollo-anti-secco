@@ -571,9 +571,7 @@ export default function Home() {
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
           setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
-          responseText += `
-
-✨ Macro calcolati per ${match[1]}!`;
+          responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
     } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore." }]); }
@@ -604,9 +602,7 @@ export default function Home() {
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
       else { 
-        alert(`Sistema Aggiornato.
-TDEE Ricalcolato per regime: ${tipoDieta}
-Obiettivo: ${protocolloAttivo}`); 
+        alert(`Sistema Aggiornato.\nTDEE Ricalcolato per regime: ${tipoDieta}\nObiettivo: ${protocolloAttivo}`); 
         caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
       } 
     } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
@@ -889,6 +885,16 @@ ${saluteW}` };
     return t;
   };
 
+  const getDataGraficoEsercizio = () => {
+    const dataPoints: number[] = [];
+    storicoSessioni.forEach(sess => {
+      if (sess.carichi[esercizioGraficoSelezionato]) {
+        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
+      }
+    });
+    return dataPoints;
+  };
+
   if (appState === 'HOME') {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4 relative overflow-hidden">
@@ -1027,7 +1033,7 @@ ${saluteW}` };
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded flex items-center gap-3 mt-2">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-4 h-4 accent-orange-500" />
-                     <label htmlFor="metabolismo" className="text-[10px] text-neutral-300 font-bold uppercase">Soffri di Stallo / Metabolismo Bloccato? (Mangi poco ma non dimagrisci)</label>
+                     <label htmlFor="metabolismo" className="text-[10px] text-neutral-300 font-bold uppercase">Soffri di Stallo / Metabolismo Bloccato?</label>
                    </div>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded flex flex-col gap-3">
                      <div>
