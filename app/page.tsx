@@ -291,6 +291,7 @@ export default function Home() {
   
   // STATO PER TIPO DI DIETA
   const [tipoDieta, setTipoDieta] = useState("Equilibrata");
+  const [protocolloAutore, setProtocolloAutore] = useState("Nessuno");
   
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
@@ -307,13 +308,14 @@ export default function Home() {
   
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
-  const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred', dieta: 'Equilibrata' });
+  const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred', dieta: 'Equilibrata', autore: 'Nessuno' });
   const [fotoPartenza, setFotoPartenza] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const [fotoArrivo, setFotoArrivo] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const [rispostaWizard, setRispostaWizard] = useState("");
   const [loadingWizard, setLoadingWizard] = useState(false);
   
   const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); 
+  const [gerardoCarbOverride, setGerardoCarbOverride] = useState<number | null>(null); // Stato per override manuale di Gerardo
   const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
   const [fastWorkout, setFastWorkout] = useState(false);
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
@@ -354,6 +356,11 @@ export default function Home() {
     if (tipoTurno === 'diretto' && quandoTiAlleni === 'pausa') setQuandoTiAlleni('sera');
   }, [tipoTurno, quandoTiAlleni]);
 
+  // Reset del carb override quando si cambia il giorno del calendario
+  useEffect(() => {
+    setGerardoCarbOverride(null);
+  }, [giornoCalendario]);
+
   useEffect(() => {
     async function fetchAtleti() {
       const { data } = await supabase.from("check_utente").select("nome_utente");
@@ -389,6 +396,7 @@ export default function Home() {
         });
         if(circ.profilo?.stileVita) setStileVita(circ.profilo.stileVita);
         if(circ.profilo?.dieta) setTipoDieta(circ.profilo.dieta);
+        if(circ.profilo?.autore) setProtocolloAutore(circ.profilo.autore);
       }
       setStoricoMisure(data.filter(d => d.peso || (d.circonferenze && typeof d.circonferenze === 'object' && Object.keys(d.circonferenze).length > 0)));
     } else if (nomeAtleta !== "Leonardo") {
@@ -446,33 +454,54 @@ export default function Home() {
      };
 
      Object.keys(plan).forEach(sch => {
+        let methodCycleGerardo = 0; // Contatore per ciclare i metodi di Gerardo
+        
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
            
-           // --- 1. MODIFICA VOLUME E INTENSITÀ ---
-           if (isShred || highFat) {
-              ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep"); 
-              ex.rep = ex.rep.replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie");
-              ex.rep = ex.rep.replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
-           } else if (isOver40 && isHeavyJob) {
-              ex.rep = ex.rep.replace("4-5 serie", "3-4 serie"); 
-           }
-
-           // --- 2. MOTORE DI SOSTITUZIONE BIOMECCANICA ---
-           if (!eserciziModificati[ex.id]) { // Cambia solo se l'utente non lo ha swappato a mano
-               if (isOverweightMechanically) {
-                   if (ex.id === "e6") swapToAlternative(ex, "Lat Machine Larga");
-                   if (ex.id === "e22") swapToAlternative(ex, "French Press"); 
-               }
-               if (isKetoOrLowCarb || isShred) {
-                   if (ex.id === "e1") swapToAlternative(ex, "Chest Press Convergente");
-                   if (ex.id === "e18") swapToAlternative(ex, "Shoulder Press");
-                   if (ex.id === "e11") swapToAlternative(ex, "Front Squat"); 
-               }
-               if (needsLumbarProtection) {
+           // --- OVERRIDE PROTOCOLLI AUTORE ---
+           if (protocolloAutore === 'Gerardo Calvo (Reset Ormonale)') {
+               // Ciclo Metodi: 7x10 (Lattacido), 5x5 (Neurale), 3x10 (Eccentrico)
+               if (methodCycleGerardo === 0) ex.rep = "7x10 | Rec: 30 sec (15RM - Stress Met.)";
+               else if (methodCycleGerardo === 1) ex.rep = "5x5 | Rec: 90 sec (Buffer 2 - Neurale)";
+               else ex.rep = "3x10 (5 Norm + 5 Eccentriche lente) | Rec: 60 sec";
+               methodCycleGerardo = (methodCycleGerardo + 1) % 3;
+           } 
+           else if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)') {
+               // Focus su Recupero e niente cedimento estremo
+               ex.rep = "3 serie, 8-10 rep | Rec: 90 sec (Buffer 1-2, NO Cedimento)";
+               // Evita esercizi estremi se sovrappeso o con poco recupero (sovrascriviamo a macchine sicure)
+               if (!eserciziModificati[ex.id]) {
                    if (ex.id === "e11") swapToAlternative(ex, "Hack Squat Macchina");
-                   if (ex.id === "e7") swapToAlternative(ex, "Rematore Manubrio");
-                   if (ex.id === "e13") swapToAlternative(ex, "Stacco Gambe Tese");
+                   if (ex.id === "e1") swapToAlternative(ex, "Chest Press Convergente");
+               }
+           }
+           else {
+               // --- 1. MODIFICA VOLUME E INTENSITÀ STANDARD ---
+               if (isShred || highFat) {
+                  ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep"); 
+                  ex.rep = ex.rep.replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie");
+                  ex.rep = ex.rep.replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
+               } else if (isOver40 && isHeavyJob) {
+                  ex.rep = ex.rep.replace("4-5 serie", "3-4 serie"); 
+               }
+    
+               // --- 2. MOTORE DI SOSTITUZIONE BIOMECCANICA STANDARD ---
+               if (!eserciziModificati[ex.id]) { 
+                   if (isOverweightMechanically) {
+                       if (ex.id === "e6") swapToAlternative(ex, "Lat Machine Larga");
+                       if (ex.id === "e22") swapToAlternative(ex, "French Press"); 
+                   }
+                   if (isKetoOrLowCarb || isShred) {
+                       if (ex.id === "e1") swapToAlternative(ex, "Chest Press Convergente");
+                       if (ex.id === "e18") swapToAlternative(ex, "Shoulder Press");
+                       if (ex.id === "e11") swapToAlternative(ex, "Front Squat"); 
+                   }
+                   if (needsLumbarProtection) {
+                       if (ex.id === "e11") swapToAlternative(ex, "Hack Squat Macchina");
+                       if (ex.id === "e7") swapToAlternative(ex, "Rematore Manubrio");
+                       if (ex.id === "e13") swapToAlternative(ex, "Stacco Gambe Tese");
+                   }
                }
            }
         });
@@ -519,7 +548,7 @@ export default function Home() {
   };
 
   const salvaProfiloWizard = async () => {
-    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo, dieta: datiWizard.dieta } }, data: new Date().toISOString() };
+    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo, dieta: datiWizard.dieta, autore: datiWizard.autore } }, data: new Date().toISOString() };
     await supabase.from("check_utente").insert([payload]);
     setListaAtleti(prev => [...prev, datiWizard.nome]);
     setModalWizard(false); setStepWizard(1);
@@ -550,9 +579,7 @@ export default function Home() {
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
           setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
-          responseText += `
-
-✨ Macro calcolati per ${match[1]}!`;
+          responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
     } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore." }]); }
@@ -579,13 +606,11 @@ export default function Home() {
   const valutaCheckFisico = async () => {
     const { peso } = biometria;
     if (peso && eta && altezza) {
-      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta } }, data: new Date().toISOString() };
+      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore } }, data: new Date().toISOString() };
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
       else { 
-        alert(`Sistema Aggiornato.
-TDEE Ricalcolato per regime: ${tipoDieta}
-Obiettivo: ${protocolloAttivo}`); 
+        alert(`Sistema Aggiornato.\nTDEE Ricalcolato per regime: ${tipoDieta}\nObiettivo: ${protocolloAttivo}`); 
         caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
       } 
     } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
@@ -697,8 +722,26 @@ Obiettivo: ${protocolloAttivo}`);
           break;
   }
 
+  // --- OVERRIDE PROTOCOLLI AUTORE (MACRO) ---
+  if (protocolloAutore === 'Gerardo Calvo (Reset Ormonale)') {
+      // Modello HPO (Altezza - 100) per le proteine
+      const hpo = Math.max((Number(altezza) || 175) - 100, 60);
+      targetPro = hpo * 2.2;
+      targetFat = 65; // Fisso come da protocollo
+      
+      const dayIndex = giorniSettimana.indexOf(giornoCalendario);
+      const autoCarb = [150, 250, 350][dayIndex % 3] || 150;
+      targetCho = gerardoCarbOverride !== null ? gerardoCarbOverride : autoCarb;
+  } else if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)') {
+      // Grassi costanti, pro moderate, resto carbo
+      targetFat = 70;
+      targetPro = pesoNum * 1.8;
+      targetCho = Math.max(0, (tdee - (targetFat * 9) - (targetPro * 4)) / 4);
+  }
+  // Lorenzo Lari usa i macro calcolati dinamicamente dalla base CICO, quindi non necessita overwrite matematico qui.
+
   // Override Protocollo Leonardo Originale
-  if (utenteCorrente === "Leonardo" && tipoDieta === "Equilibrata") {
+  if (utenteCorrente === "Leonardo" && tipoDieta === "Equilibrata" && protocolloAutore === "Nessuno") {
       const mult = protocolloAttivo === 'Shred' ? 2.5 : (protocolloAttivo === 'Massa' ? 5 : 4);
       targetCho = pesoNum * mult;
       targetPro = protocolloAttivo === 'Shred' ? (pesoNum * 2.5) : (pesoNum * 2.2);
@@ -777,65 +820,36 @@ Obiettivo: ${protocolloAttivo}`);
     // 1. PRE-WORKOUT LOGIC (Timing + Goal)
     let preW = "";
     if (quandoTiAlleni === 'sera') {
-      preW = `1️⃣ PRE-WORKOUT (Stim-Free per riposo notturno):
-• L-Citrullina: 6-8g (Vasodilatazione e Pump)
-• Arginina AKG: 3g
-• Ashwagandha KSM-66: 500mg (Abbattimento cortisolo post-allenamento)`;
+      preW = `1️⃣ PRE-WORKOUT (Stim-Free per riposo notturno):\n• L-Citrullina: 6-8g (Vasodilatazione e Pump)\n• Arginina AKG: 3g\n• Ashwagandha KSM-66: 500mg (Abbattimento cortisolo post-allenamento)`;
     } else {
-      preW = `1️⃣ PRE-WORKOUT (Focus & Energia):
-• Caffeina: 200mg (Stimolante SNC)
-• L-Citrullina: 6g (Pump)
-• L-Tirosina: 1g (Focus mentale pre-workout)`;
+      preW = `1️⃣ PRE-WORKOUT (Focus & Energia):\n• Caffeina: 200mg (Stimolante SNC)\n• L-Citrullina: 6g (Pump)\n• L-Tirosina: 1g (Focus mentale pre-workout)`;
     }
 
-    if (protocolloAttivo === 'Shred') preW += `
-• Acetil L-Carnitina (ALC): 1.5g (Favorisce ossidazione grassi)`;
+    if (protocolloAttivo === 'Shred') preW += `\n• Acetil L-Carnitina (ALC): 1.5g (Favorisce ossidazione grassi)`;
 
     // 2. INTRA-WORKOUT LOGIC (Diet + Goal)
     let intraW = "2️⃣ INTRA-WORKOUT:";
     if (tipoDieta === 'Keto') {
-      intraW += `
-• Elettroliti: Sodio 1g, Potassio 500mg, Magnesio 200mg (Fondamentali in Keto!)
-• MCT Oil in polvere: 10g (Energia immediata dai chetoni)
-• EAA (Aminoacidi Essenziali): 15g (Preservazione massa)
-• ❌ ZERO Carboidrati`;
+      intraW += `\n• Elettroliti: Sodio 1g, Potassio 500mg, Magnesio 200mg (Fondamentali in Keto!)\n• MCT Oil in polvere: 10g (Energia immediata dai chetoni)\n• EAA (Aminoacidi Essenziali): 15g (Preservazione massa)\n• ❌ ZERO Carboidrati`;
     } else if (tipoDieta === 'LowCarb') {
-      intraW += `
-• Ciclodestrine (HBCD): ${intraCho}g (Minimo stimolo insulinico)
-• EAA: 15g
-• Glutammina: 3g (Supporto intestinale e recupero)`;
+      intraW += `\n• Ciclodestrine (HBCD): ${intraCho}g (Minimo stimolo insulinico)\n• EAA: 15g\n• Glutammina: 3g (Supporto intestinale e recupero)`;
     } else {
-      intraW += `
-• Ciclodestrine (HBCD): ${intraCho}g (Energia e ripristino glicogeno)
-• EAA: 15g (Sintesi proteica)
-• Creatina Monoidrato: 5g`;
+      intraW += `\n• Ciclodestrine (HBCD): ${intraCho}g (Energia e ripristino glicogeno)\n• EAA: 15g (Sintesi proteica)\n• Creatina Monoidrato: 5g`;
     }
 
     // 3. SUPPLEMENTAZIONE SALUTE / GENERALE
     let saluteW = "3️⃣ BASE SALUTE E RECOVERY (Ai pasti):";
     if (tipoDieta === 'Keto' || protocolloAttivo === 'Shred') {
-       saluteW += `
-• Omega-3 (EPA/DHA): 2-3g (Azione antinfiammatoria)
-• Multivitaminico ad alto dosaggio`;
+       saluteW += `\n• Omega-3 (EPA/DHA): 2-3g (Azione antinfiammatoria)\n• Multivitaminico ad alto dosaggio`;
     } else {
-       saluteW += `
-• Omega-3: 1g
-• Vitamina D3 + K2`;
+       saluteW += `\n• Omega-3: 1g\n• Vitamina D3 + K2`;
     }
     if (protocolloAttivo === 'Massa' && (tipoDieta === 'HighCarb' || tipoDieta === 'Equilibrata')) {
-       saluteW += `
-• GDA (Berberina / Acido Alfa Lipoico): 15 min prima del pasto più ricco di Carbo (Ottimizza la sensibilità insulinica)`;
+       saluteW += `\n• GDA (Berberina / Acido Alfa Lipoico): 15 min prima del pasto più ricco di Carbo (Ottimizza la sensibilità insulinica)`;
     }
 
-    const bloccoIntra = { isIntra: true, titolo: "STACK INTEGRAZIONE", descrizione: `${preW}
-
-${intraW}
-
-${saluteW}` };
-    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO INTERMITTENTE (16:8)", descrizione: `• Finestra di digiuno: 16 ore.
-• Consentiti: Acqua, Caffè amaro, Tè verde.
-• Consigliato: 1 pizzico di Sale Rosa (Sodio) per mantenere l'idratazione.
-• Le calorie della colazione sono state spalmate nei restanti pasti.` };
+    const bloccoIntra = { isIntra: true, titolo: "STACK INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
+    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO INTERMITTENTE (16:8)", descrizione: `• Finestra di digiuno: 16 ore.\n• Consentiti: Acqua, Caffè amaro, Tè verde.\n• Consigliato: 1 pizzico di Sale Rosa (Sodio) per mantenere l'idratazione.\n• Le calorie della colazione sono state spalmate nei restanti pasti.` };
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t: any[] = [];
@@ -922,6 +936,23 @@ ${saluteW}` };
                  </select>
               </div>
 
+              <div>
+                 <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-2">4. Protocollo Master / Coach (Opzionale)</label>
+                 <select value={protocolloAutore} onChange={async (e) => {
+                    const nuovoAutore = e.target.value;
+                    setProtocolloAutore(nuovoAutore);
+                    if (biometria.peso && eta && altezza) {
+                      const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: nuovoAutore } }, data: new Date().toISOString() };
+                      await supabase.from("check_utente").insert([payload]);
+                    }
+                 }} className="w-full bg-neutral-950 text-white p-3 rounded-lg border border-neutral-700 outline-none focus:border-purple-500 font-bold text-sm">
+                    <option value="Nessuno">🤖 Nessuno (Algoritmo Base Anti-Secco)</option>
+                    <option value="Aldo Masolo (Reset Metabolico)">🟢 Aldo Masolo (Reset Metabolico)</option>
+                    <option value="Gerardo Calvo (Reset Ormonale)">🔴 Gerardo Calvo (Reset Ormonale)</option>
+                    <option value="Lorenzo Lari (Flessibile)">🟡 Lorenzo Lari (Alimentazione Flessibile)</option>
+                 </select>
+              </div>
+
               <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className="w-full bg-orange-600 hover:bg-orange-500 text-white font-black p-4 rounded-xl uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)] mt-2">
                  Accedi al Sistema
               </button>
@@ -963,6 +994,12 @@ ${saluteW}` };
                      <option value="LowCarb">Dieta: Low Carb</option>
                      <option value="Zona">Dieta: Zona</option>
                      <option value="HighCarb">Dieta: High Carb</option>
+                   </select>
+                   <select value={datiWizard.autore || 'Nessuno'} onChange={e=>setDatiWizard({...datiWizard, autore: e.target.value})} className="w-full bg-neutral-950 text-white p-2 border border-purple-500/50 rounded text-xs">
+                     <option value="Nessuno">Coach: Intelligenza Artificiale Base</option>
+                     <option value="Aldo Masolo (Reset Metabolico)">Coach: Aldo Masolo</option>
+                     <option value="Gerardo Calvo (Reset Ormonale)">Coach: Gerardo Calvo</option>
+                     <option value="Lorenzo Lari (Flessibile)">Coach: Lorenzo Lari</option>
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded flex flex-col gap-3">
                      <div>
@@ -1008,7 +1045,10 @@ ${saluteW}` };
           <span className="text-[10px] text-neutral-500 block uppercase font-bold mb-1">Atleta Operativo</span>
           <div className="flex flex-col items-end gap-1">
              <span className="text-sm font-bold text-white bg-neutral-900 px-3 py-1 rounded border border-neutral-700">{utenteCorrente}</span>
-             <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">{tipoDieta}</span>
+             <div className="flex gap-2">
+                <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">{tipoDieta}</span>
+                {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest px-1 border-l border-neutral-700">{protocolloAutore.split(' ')[0]}</span>}
+             </div>
           </div>
         </div>
       </header>
@@ -1155,31 +1195,46 @@ ${saluteW}` };
             <div className="flex flex-col border-b border-neutral-700 pb-3 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-                <select 
-                  value={tipoDieta} 
-                  onChange={async (e) => {
-                    const nuovaDieta = e.target.value;
-                    setTipoDieta(nuovaDieta);
-                    if (biometria.peso && eta && altezza) {
-                      const payload = { 
-                        nome_utente: utenteCorrente, 
-                        eta: Number(eta), 
-                        altezza: Number(altezza), 
-                        peso: Number(biometria.peso), 
-                        circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: nuovaDieta } }, 
-                        data: new Date().toISOString() 
-                      };
-                      await supabase.from("check_utente").insert([payload]);
-                    }
-                  }}
-                  className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white outline-none cursor-pointer text-center appearance-none hover:opacity-80 transition-opacity bg-transparent border border-white/20`}
-                >
-                  <option value="Equilibrata" className="bg-neutral-900">⚖️ Equilibrata</option>
-                  <option value="Keto" className="bg-neutral-900">🥩 Keto</option>
-                  <option value="LowCarb" className="bg-neutral-900">🥑 Low Carb</option>
-                  <option value="Zona" className="bg-neutral-900">🧩 Zona</option>
-                  <option value="HighCarb" className="bg-neutral-900">🍚 High Carb</option>
-                </select>
+                <div className="flex gap-2 items-center">
+                  {protocolloAutore === 'Gerardo Calvo (Reset Ormonale)' && (
+                     <button 
+                       onClick={() => {
+                          const current = gerardoCarbOverride !== null ? gerardoCarbOverride : [150, 250, 350][giorniSettimana.indexOf(giornoCalendario) % 3];
+                          const next = current === 150 ? 250 : (current === 250 ? 350 : 150);
+                          setGerardoCarbOverride(next);
+                       }}
+                       className="text-[9px] bg-purple-900/40 border border-purple-500 text-purple-300 px-2 py-1 rounded font-bold uppercase transition-all hover:bg-purple-600 hover:text-white"
+                       title="Forza un giorno diverso del ciclo"
+                     >
+                       🔄 Ciclo: {targetCho}g CHO
+                     </button>
+                  )}
+                  <select 
+                    value={tipoDieta} 
+                    onChange={async (e) => {
+                      const nuovaDieta = e.target.value;
+                      setTipoDieta(nuovaDieta);
+                      if (biometria.peso && eta && altezza) {
+                        const payload = { 
+                          nome_utente: utenteCorrente, 
+                          eta: Number(eta), 
+                          altezza: Number(altezza), 
+                          peso: Number(biometria.peso), 
+                          circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: nuovaDieta, autore: protocolloAutore } }, 
+                          data: new Date().toISOString() 
+                        };
+                        await supabase.from("check_utente").insert([payload]);
+                      }
+                    }}
+                    className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${protocolloAttivo === 'Shred' ? 'bg-blue-600' : 'bg-orange-600'} text-white outline-none cursor-pointer text-center appearance-none hover:opacity-80 transition-opacity bg-transparent border border-white/20`}
+                  >
+                    <option value="Equilibrata" className="bg-neutral-900">⚖️ Equilibrata</option>
+                    <option value="Keto" className="bg-neutral-900">🥩 Keto</option>
+                    <option value="LowCarb" className="bg-neutral-900">🥑 Low Carb</option>
+                    <option value="Zona" className="bg-neutral-900">🧩 Zona</option>
+                    <option value="HighCarb" className="bg-neutral-900">🍚 High Carb</option>
+                  </select>
+                </div>
               </div>
               <div className="flex gap-2">
                 <span className="text-[9px] bg-neutral-950 border border-neutral-800 text-neutral-400 px-2 py-1 rounded">BMR: {bmr} Kcal</span>
@@ -1188,9 +1243,21 @@ ${saluteW}` };
               </div>
             </div>
             
-            <p className="text-[10px] text-neutral-400 mb-4 font-mono italic whitespace-pre-wrap">{messaggioDieta}</p>
+            {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
+               <div className="mt-4 p-3 bg-yellow-950/20 border border-yellow-600/50 rounded-lg">
+                  <div className="flex justify-between items-center mb-1">
+                     <span className="text-[10px] font-black text-yellow-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
+                     <span className="text-xs font-bold text-white">{Math.round(actualIntakeKcal * 0.2)} Kcal</span>
+                  </div>
+                  <div className="w-full bg-neutral-900 h-2 rounded-full overflow-hidden flex">
+                     <div className="bg-emerald-500 h-full w-[80%]"></div>
+                     <div className="bg-yellow-500 h-full w-[20%]"></div>
+                  </div>
+                  <p className="text-[9px] text-neutral-400 mt-2">Puoi destinare il 20% delle tue calorie odierne a cibi sfiziosi, senza sensi di colpa e restando nei target!</p>
+               </div>
+            )}
 
-            <div className="space-y-3">
+            <div className="space-y-3 mt-4">
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
                   return (
