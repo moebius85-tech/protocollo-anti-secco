@@ -952,6 +952,16 @@ ${saluteW}` };
     return t;
   };
 
+  const getDataGraficoEsercizio = () => {
+    const dataPoints: number[] = [];
+    storicoSessioni.forEach(sess => {
+      if (sess.carichi[esercizioGraficoSelezionato]) {
+        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
+      }
+    });
+    return dataPoints;
+  };
+
   if (appState === 'HOME') {
     return (
       <div className="min-h-screen bg-[#050f14] flex items-center justify-center p-4 relative overflow-hidden">
@@ -1368,7 +1378,8 @@ ${saluteW}` };
                  <Skeleton className="h-24 w-full" />
                  <Skeleton className="h-24 w-full" />
                </div>
-            ) : <div className="space-y-3 mt-4">
+            ) : (
+              <div className="space-y-3 mt-4">
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
                   return (
@@ -1433,7 +1444,8 @@ ${saluteW}` };
                   </div>
                 );
               })}
-            </div>
+              </div>
+            )}
           </section>
         </div>
 
@@ -1485,7 +1497,8 @@ ${saluteW}` };
                     <Skeleton className="h-32 w-full" />
                     <Skeleton className="h-32 w-full" />
                  </div>
-              ) : <div className="flex-1 overflow-y-auto pr-2 space-y-4">
+              ) : (
+                 <div className="flex-1 overflow-y-auto pr-2 space-y-4">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {dbDinamico[schedaAttiva].esercizi.map((es: any) => {
                     const nomeAttuale = eserciziModificati[es.id] || es.nome;
@@ -1536,7 +1549,8 @@ ${saluteW}` };
                     );
                   })}
                 </div>
-                <button onClick={salvaSessione} className="w-full mt-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white font-bold uppercase tracking-widest text-sm rounded-lg shadow-lg shrink-0 hover:bg-lime-400 transition-all">Salva Database</button>
+              )}
+              <button onClick={salvaSessione} className="w-full mt-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white font-bold uppercase tracking-widest text-sm rounded-lg shadow-lg shrink-0 hover:bg-lime-400 transition-all">Salva Database</button>
               </>
             ) : vistaGraficiCarichi ? (
               <div className="flex-1 overflow-y-auto space-y-4">
