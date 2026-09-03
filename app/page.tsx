@@ -540,7 +540,7 @@ export default function Home() {
   };
 
   const salvaProfiloWizard = async () => {
-    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo, dieta: datiWizard.dieta, autore: datiWizard.autore, metabolismoBloccato: datiWizard.metabolismoBloccato } }, data: new Date().toISOString() };
+    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo, dieta: (datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo')) ? 'Equilibrata' : datiWizard.dieta, autore: datiWizard.autore, metabolismoBloccato: datiWizard.metabolismoBloccato } }, data: new Date().toISOString() };
     await supabase.from("check_utente").insert([payload]);
     setListaAtleti(prev => [...prev, datiWizard.nome]);
     setModalWizard(false); setStepWizard(1);
@@ -991,7 +991,8 @@ ${saluteW}` };
 
         {modalWizard && (
           <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className="bg-neutral-900 border border-neutral-700 rounded-xl w-full max-w-lg shadow-2xl p-6">
+            <div className="bg-neutral-900 border border-neutral-700 rounded-xl w-full max-w-lg shadow-2xl p-6 relative">
+               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-4 right-4 text-neutral-500 hover:text-white font-bold text-xl">&times;</button>
                <h3 className="font-black text-xl text-orange-500 uppercase mb-4 border-b border-neutral-800 pb-2">Nuova Profilazione</h3>
                
                {stepWizard === 1 && (
@@ -1002,7 +1003,10 @@ ${saluteW}` };
                      <input type="number" placeholder="Peso (kg)" value={datiWizard.peso} onChange={e=>setDatiWizard({...datiWizard, peso: e.target.value})} className="w-1/3 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
                      <input type="number" placeholder="H (cm)" value={datiWizard.altezza} onChange={e=>setDatiWizard({...datiWizard, altezza: e.target.value})} className="w-1/3 bg-neutral-950 text-white p-2 border border-neutral-700 rounded" />
                    </div>
-                   <button onClick={()=>{ if(datiWizard.nome && datiWizard.peso) setStepWizard(2); else alert("Inserisci Nome e Peso."); }} className="w-full bg-orange-600 text-white p-2 rounded font-bold uppercase">Avanti</button>
+                   <div className="flex gap-2">
+                     <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="w-1/3 bg-neutral-800 text-white p-2 rounded font-bold uppercase">Annulla</button>
+                     <button onClick={()=>{ if(datiWizard.nome && datiWizard.peso) setStepWizard(2); else alert("Inserisci Nome e Peso."); }} className="w-2/3 bg-orange-600 text-white p-2 rounded font-bold uppercase">Avanti</button>
+                   </div>
                  </div>
                )}
 
@@ -1018,7 +1022,7 @@ ${saluteW}` };
                      <option value="Shred">Obiettivo: Dimagrimento (Shred)</option>
                      <option value="Ricomposizione">Obiettivo: Mantenimento</option>
                    </select>
-                   <select value={datiWizard.dieta} onChange={e=>setDatiWizard({...datiWizard, dieta: e.target.value})} className="w-full bg-neutral-950 text-white p-2 border border-neutral-700 rounded text-xs">
+                   <select value={datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo') ? 'Equilibrata' : datiWizard.dieta} disabled={datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo')} onChange={e=>setDatiWizard({...datiWizard, dieta: e.target.value})} className={`w-full bg-neutral-950 text-white p-2 rounded text-xs border ${datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo') ? 'border-neutral-800 text-neutral-500' : 'border-neutral-700'}`}>
                      <option value="Equilibrata">Dieta: Equilibrata</option>
                      <option value="Keto">Dieta: Chetogenica</option>
                      <option value="LowCarb">Dieta: Low Carb</option>
@@ -1033,7 +1037,7 @@ ${saluteW}` };
                    </select>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded flex items-center gap-3 mt-2">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-4 h-4 accent-orange-500" />
-                     <label htmlFor="metabolismo" className="text-[10px] text-neutral-300 font-bold uppercase">Soffri di Stallo / Metabolismo Bloccato?</label>
+                     <label htmlFor="metabolismo" className="text-[10px] text-neutral-300 font-bold uppercase">Soffri di Stallo / Metabolismo Bloccato? (Mangi poco ma non dimagrisci)</label>
                    </div>
                    <div className="bg-neutral-950 p-3 border border-neutral-800 rounded flex flex-col gap-3">
                      <div>
@@ -1055,7 +1059,10 @@ ${saluteW}` };
                {stepWizard === 3 && (
                  <div className="space-y-4">
                    <div className="bg-neutral-950 p-4 border border-neutral-800 rounded text-xs text-neutral-300 max-h-48 overflow-y-auto whitespace-pre-wrap">{rispostaWizard}</div>
-                   <button onClick={salvaProfiloWizard} className="w-full bg-emerald-600 text-white p-2 rounded font-bold uppercase">Salva e Accedi</button>
+                   <div className="flex gap-2">
+                     <button onClick={() => setStepWizard(2)} className="w-1/3 bg-neutral-800 text-white p-2 rounded font-bold uppercase">Indietro</button>
+                     <button onClick={salvaProfiloWizard} className="w-2/3 bg-emerald-600 text-white p-2 rounded font-bold uppercase">Salva e Accedi (Ignora Errori)</button>
+                   </div>
                  </div>
                )}
             </div>
