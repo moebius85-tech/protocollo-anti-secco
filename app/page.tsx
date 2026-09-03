@@ -9,6 +9,19 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
+// STILI GLOBALI (NEUMORPHISM + GLASSMORPHISM)
+// ==========================================
+const UI = {
+  card: "bg-[#0b1319]/80 backdrop-blur-2xl shadow-[8px_8px_24px_rgba(0,0,0,0.6),-2px_-2px_10px_rgba(255,255,255,0.03)] border border-white/5 rounded-[2rem]",
+  glassPanel: "bg-white/[0.02] backdrop-blur-xl border border-white/5 shadow-[4px_4px_16px_rgba(0,0,0,0.4)] rounded-3xl p-4",
+  input: "w-full bg-[#050a0f] shadow-[inset_3px_3px_8px_rgba(0,0,0,0.6),inset_-1px_-1px_4px_rgba(255,255,255,0.02)] border border-white/5 p-3.5 rounded-2xl text-sm text-white outline-none focus:ring-2 focus:ring-teal-500/40 transition-all font-medium",
+  btnPrimary: "bg-gradient-to-tr from-emerald-500 to-teal-400 shadow-[0_8px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_12px_30px_rgba(16,185,129,0.5)] hover:-translate-y-1 transition-all border-none text-white font-bold uppercase tracking-widest rounded-2xl p-4 w-full flex items-center justify-center",
+  btnSecondary: "bg-white/[0.03] shadow-[4px_4px_12px_rgba(0,0,0,0.3),-2px_-2px_8px_rgba(255,255,255,0.02)] border border-white/5 hover:bg-white/10 text-white p-3 rounded-2xl font-semibold uppercase tracking-wider transition-all text-xs",
+  label: "text-[10px] text-teal-200/70 uppercase font-bold tracking-widest block mb-2",
+  textHighlight: "text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]"
+};
+
+// ==========================================
 // 1. DATABASE ALLENAMENTO MASTER
 // ==========================================
 const baseDbAllenamento = {
@@ -189,7 +202,6 @@ const misureBIA = [
   { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Muscolare", unit: "%" }
 ];
 
-
 // ==========================================
 // NUOVI COMPONENTI UI (Glassmorphism & Micro-interazioni)
 // ==========================================
@@ -212,34 +224,29 @@ const AnimatedCounter = ({ value, suffix = "" }: { value: number, suffix?: strin
 };
 
 const Skeleton = ({ className }: { className: string }) => (
-  <div className={`animate-pulse bg-white/5 rounded-xl border border-white/5 ${className}`}></div>
+  <div className={`animate-pulse bg-white/5 rounded-2xl shadow-[inset_2px_2px_5px_rgba(0,0,0,0.2)] ${className}`}></div>
 );
 
 const HumanHeatmap = ({ scheda }: { scheda: string }) => {
   const getActive = (part: string) => {
-    if (scheda === 'Spinta' && ['chest', 'shoulders', 'triceps'].includes(part)) return '#34d399'; // emerald-400
+    if (scheda === 'Spinta' && ['chest', 'shoulders', 'triceps'].includes(part)) return '#34d399'; 
     if (scheda === 'Tirata' && ['back', 'biceps'].includes(part)) return '#34d399';
     if (scheda === 'Gambe' && ['legs', 'calves', 'glutes'].includes(part)) return '#34d399';
-    return '#1e293b'; // slate-800 inactive
+    return '#1e293b'; 
   };
   return (
-    <div className="w-full flex justify-center py-6 bg-black/20 rounded-xl border border-white/5 shadow-inner mb-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent"></div>
+    <div className={`${UI.glassPanel} w-full flex justify-center py-6 mb-4 relative overflow-hidden`}>
+      <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent"></div>
       <svg width="140" height="200" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_0_12px_rgba(52,211,153,0.3)] z-10">
-         {/* Testa */}
          <circle cx="50" cy="20" r="12" fill="#0f172a" stroke={getActive('head')} strokeWidth="2" className="transition-all duration-700" />
-         {/* Spalle e Petto */}
          <path d="M30 40 Q50 35 70 40 L75 60 L25 60 Z" fill={getActive('chest')} className="transition-colors duration-700" />
          <circle cx="25" cy="45" r="8" fill={getActive('shoulders')} className="transition-colors duration-700" />
          <circle cx="75" cy="45" r="8" fill={getActive('shoulders')} className="transition-colors duration-700" />
-         {/* Braccia */}
          <rect x="15" y="50" width="10" height="30" rx="5" fill={getActive('triceps')} className="transition-colors duration-700" />
          <rect x="75" y="50" width="10" height="30" rx="5" fill={getActive('triceps')} className="transition-colors duration-700" />
          <rect x="13" y="82" width="10" height="25" rx="5" fill={getActive('biceps')} className="transition-colors duration-700" />
          <rect x="77" y="82" width="10" height="25" rx="5" fill={getActive('biceps')} className="transition-colors duration-700" />
-         {/* Dorso e Core */}
          <path d="M32 62 L68 62 L62 110 L38 110 Z" fill={scheda === 'Tirata' ? getActive('back') : '#0f172a'} className="transition-colors duration-700" />
-         {/* Gambe */}
          <rect x="35" y="115" width="12" height="40" rx="6" fill={getActive('legs')} className="transition-colors duration-700" />
          <rect x="53" y="115" width="12" height="40" rx="6" fill={getActive('legs')} className="transition-colors duration-700" />
          <rect x="35" y="158" width="10" height="35" rx="5" fill={getActive('calves')} className="transition-colors duration-700" />
@@ -249,9 +256,6 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
   );
 };
 
-// ==========================================
-// GRAFICI & RUOTA BIA LAICA
-// ==========================================
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   if (!data || data.length === 0) return <p className="text-[10px] text-neutral-500 italic">Dati insufficienti.</p>;
   if (data.length === 1) return <p className="text-[10px] text-neutral-500 italic">Un solo dato. Esegui un&apos;altra sessione.</p>;
@@ -262,10 +266,10 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   const points = data.map((val, i) => `${padding + (i / (data.length - 1)) * (width - padding * 2)},${height - padding - ((val - minVal) / range) * (height - padding * 2)}`).join(" ");
 
   return (
-    <div className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/10 rounded p-3 mt-2">
-       <span className="text-[10px] text-lime-300 font-bold uppercase block mb-2">{label} - Trend</span>
-       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]">
-          <polyline points={points} fill="none" stroke="#f97316" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    <div className={UI.glassPanel + " mt-2"}>
+       <span className={UI.label}>{label} - Trend</span>
+       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]">
+          <polyline points={points} fill="none" stroke="#34d399" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           {data.map((val, i) => {
             const x = padding + (i / (data.length - 1)) * (width - padding * 2);
             const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
@@ -301,28 +305,28 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
 
   const sections = [
     { label: 'BMI', val: bmi, color: '#ec4899', angle: 0 },           
-    { label: 'BMR Kcal', val: bmr > 0 ? bmr : '-', color: '#f97316', angle: 60 },  
+    { label: 'BMR Kcal', val: bmr > 0 ? bmr : '-', color: '#10b981', angle: 60 },  
     { label: 'MASSA MUSC. %', val: mm > 0 ? `${mm}%` : '-', color: '#ef4444', angle: 120 },  
     { label: 'ACQUA CORP. %', val: bw > 0 ? `${bw}%` : '-', color: '#3b82f6', angle: 180 }, 
-    { label: 'MASSA GRASSA %', val: bf > 0 ? `${bf}%` : '-', color: '#22c55e', angle: 240 }, 
-    { label: 'PESO kg', val: w > 0 ? w : '-', color: '#737373', angle: 300 }        
+    { label: 'MASSA GRASSA %', val: bf > 0 ? `${bf}%` : '-', color: '#14b8a6', angle: 240 }, 
+    { label: 'PESO kg', val: w > 0 ? w : '-', color: '#94a3b8', angle: 300 }        
   ];
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[400px] bg-[#050f14] rounded-xl border border-white/10 flex items-center justify-center overflow-hidden shadow-inner mt-4">
-       <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
+    <div className="relative w-full max-w-md mx-auto h-[400px] bg-black/20 shadow-[inset_4px_4px_16px_rgba(0,0,0,0.6)] rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden mt-4">
+       <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
        <svg viewBox="0 0 500 500" className="w-full h-full drop-shadow-2xl z-10 p-2">
           <g transform="translate(250, 250) rotate(-120)">
              {sections.map((sec, i) => (
-                <circle key={i} cx="0" cy="0" r={radius} fill="none" stroke={sec.color} strokeWidth={strokeW} strokeDasharray={`${seg - 2} ${c}`} strokeDashoffset={-(i * seg)} className="opacity-90 hover:opacity-100 transition-opacity" />
+                <circle key={i} cx="0" cy="0" r={radius} fill="none" stroke={sec.color} strokeWidth={strokeW} strokeDasharray={`${seg - 2} ${c}`} strokeDashoffset={-(i * seg)} className="opacity-80 hover:opacity-100 transition-opacity" />
              ))}
           </g>
           {sections.map((sec, i) => {
              const pos = getLabelPos(sec.angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
-                 <text x={pos.x} y={pos.y - 6} fill="#fff" fontSize="10" textAnchor="middle" fontWeight="bold" className="drop-shadow-md">{sec.label}</text>
-                 <text x={pos.x} y={pos.y + 14} fill="#fff" fontSize="18" textAnchor="middle" fontWeight="900" className="drop-shadow-md">{sec.val}</text>
+                 <text x={pos.x} y={pos.y - 6} fill="#94a3b8" fontSize="10" textAnchor="middle" fontWeight="bold" className="tracking-widest">{sec.label}</text>
+                 <text x={pos.x} y={pos.y + 14} fill="#fff" fontSize="18" textAnchor="middle" fontWeight="300" className="drop-shadow-md">{sec.val}</text>
                </g>
              )
           })}
@@ -331,10 +335,10 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
           </g>
           <defs>
              <linearGradient id="gradThermal" x1="0%" y1="0%" x2="0%" y2="100%">
-               <stop offset="0%" stopColor="#ef4444" />
-               <stop offset="30%" stopColor="#f97316" />
-               <stop offset="60%" stopColor="#22c55e" />
-               <stop offset="100%" stopColor="#3b82f6" />
+               <stop offset="0%" stopColor="#10b981" />
+               <stop offset="30%" stopColor="#0d9488" />
+               <stop offset="60%" stopColor="#3b82f6" />
+               <stop offset="100%" stopColor="#ec4899" />
              </linearGradient>
           </defs>
        </svg>
@@ -634,9 +638,7 @@ export default function Home() {
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
           setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
-          responseText += `
-
-✨ Macro calcolati per ${match[1]}!`;
+          responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
     } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore." }]); }
@@ -667,9 +669,7 @@ export default function Home() {
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
       else { 
-        alert(`Sistema Aggiornato.
-TDEE Ricalcolato per regime: ${tipoDieta}
-Obiettivo: ${protocolloAttivo}`); 
+        alert(`Sistema Aggiornato.\nTDEE Ricalcolato per regime: ${tipoDieta}\nObiettivo: ${protocolloAttivo}`); 
         caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
       } 
     } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
@@ -964,34 +964,35 @@ ${saluteW}` };
 
   if (appState === 'HOME') {
     return (
-      <div className="min-h-screen bg-[#050f14] flex items-center justify-center p-4 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30" style={{backgroundImage: 'radial-gradient(circle at 15% 20%, #10b981 0%, transparent 40%), radial-gradient(circle at 85% 80%, #0d9488 0%, transparent 40%)', filter: 'blur(120px)'}}></div>
+      <div className="min-h-screen bg-[#071318] text-neutral-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative flex items-center justify-center p-4">
+        {/* Sfondo Radiale Smeraldo Fluido */}
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-teal-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
         
-        <div className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/10 p-8 rounded-2xl shadow-2xl w-full max-w-md z-10">
-           <div className="flex justify-between items-center mb-6">
-              <h1 className="text-4xl font-black tracking-tighter uppercase text-center flex-1">
-                <span className="text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]">Protocollo</span> <span className="text-white">Anti-Secco</span>
+        <div className={UI.card + " w-full max-w-md z-10 p-8"}>
+           <div className="flex justify-center items-center mb-8">
+              <h1 className="text-4xl font-light tracking-widest uppercase text-center flex-1">
+                OMNI<span className={UI.textHighlight + " font-bold"}>COACH</span>
               </h1>
            </div>
-           <p className="text-center text-xs text-neutral-400 font-mono mb-8 tracking-widest">A.I. Human Performance Engine</p>
-
-           <div className="space-y-4">
+           
+           <div className="space-y-5">
               <div>
                  <div className="flex justify-between items-center mb-2">
-                   <label className="text-[10px] text-neutral-500 uppercase font-bold">1. Seleziona Atleta / Profilo</label>
+                   <label className={UI.label}>1. Seleziona Atleta / Profilo</label>
                    {utenteCorrente !== "Leonardo" && (
-                     <button onClick={eliminaAtleta} className="text-[9px] bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white px-2 py-0.5 rounded font-bold uppercase transition-all">🗑️ Elimina</button>
+                     <button onClick={eliminaAtleta} className="text-[9px] bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-2 py-0.5 rounded font-bold uppercase transition-all">🗑️ Elimina</button>
                    )}
                  </div>
-                 <select value={utenteCorrente} onChange={e => setUtenteCorrente(e.target.value)} className="w-full bg-[#050f14] text-white p-3 rounded-lg border border-white/20 outline-none focus:border-orange-500 font-bold">
+                 <select value={utenteCorrente} onChange={e => setUtenteCorrente(e.target.value)} className={UI.input}>
                     {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
                  </select>
-                 <button onClick={() => setModalWizard(true)} className="w-full mt-2 bg-white/10 backdrop-blur-md border border-white/10 hover:bg-neutral-700 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] font-bold p-2 rounded-lg text-xs transition-all">+ Crea Nuovo Profilo Algoritmico</button>
+                 <button onClick={() => setModalWizard(true)} className={UI.btnSecondary + " w-full mt-3 text-emerald-400"}>+ Crea Nuovo Profilo Algoritmico</button>
               </div>
 
               <div>
-                 <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-2">2. Fase Metabolica (Ciclo)</label>
-                 <select value={protocolloAttivo} onChange={e => setProtocolloAttivo(e.target.value)} className="w-full bg-[#050f14] text-white p-3 rounded-lg border border-white/20 outline-none focus:border-teal-500 font-bold">
+                 <label className={UI.label}>2. Fase Metabolica (Ciclo)</label>
+                 <select value={protocolloAttivo} onChange={e => setProtocolloAttivo(e.target.value)} className={UI.input}>
                     <option value="Massa">🔥 Costruzione (Massa / Ipertrofia)</option>
                     <option value="Shred">🔪 Definizione (Shred / Deficit)</option>
                     <option value="Ricomposizione">⚖️ Mantenimento (Ricomposizione)</option>
@@ -999,7 +1000,7 @@ ${saluteW}` };
               </div>
 
               <div>
-                 <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-2">3. Strategia Nutrizionale</label>
+                 <label className={UI.label}>3. Strategia Nutrizionale</label>
                  <select 
                     value={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo') ? 'Equilibrata' : tipoDieta} 
                     disabled={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')}
@@ -1011,7 +1012,7 @@ ${saluteW}` };
                         await supabase.from("check_utente").insert([payload]);
                       }
                     }} 
-                    className={`w-full bg-[#050f14] text-white p-3 rounded-lg border ${protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo') ? 'border-white/10 text-neutral-500' : 'border-white/20 focus:border-emerald-500'} outline-none font-bold text-sm transition-all`}
+                    className={`${UI.input} ${protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo') ? 'opacity-50' : ''}`}
                  >
                     <option value="Equilibrata">⚖️ Equilibrata (Classica Bodybuilding)</option>
                     <option value="Keto">🥩 Chetogenica (Keto - Cho Max 30g)</option>
@@ -1022,7 +1023,7 @@ ${saluteW}` };
               </div>
 
               <div>
-                 <label className="text-[10px] text-neutral-500 uppercase font-bold block mb-2">4. Protocollo Master / Coach (Opzionale)</label>
+                 <label className={UI.label}>4. Protocollo Master / Coach</label>
                  <select value={protocolloAutore} onChange={async (e) => {
                     const nuovoAutore = e.target.value;
                     setProtocolloAutore(nuovoAutore);
@@ -1030,15 +1031,15 @@ ${saluteW}` };
                       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: nuovoAutore, metabolismoBloccato } }, data: new Date().toISOString() };
                       await supabase.from("check_utente").insert([payload]);
                     }
-                 }} className="w-full bg-[#050f14] text-white p-3 rounded-lg border border-white/20 outline-none focus:border-purple-500 font-bold text-sm">
-                    <option value="Nessuno">🤖 Nessuno (Algoritmo Base Anti-Secco)</option>
+                 }} className={UI.input}>
+                    <option value="Nessuno">🤖 Nessuno (Algoritmo Base)</option>
                     <option value="Aldo Masolo (Reset Metabolico)">🟢 Aldo Masolo (Reset Metabolico)</option>
                     <option value="Gerardo Calvo (Reset Ormonale)">🔴 Gerardo Calvo (Reset Ormonale)</option>
                     <option value="Lorenzo Lari (Flessibile)">🟡 Lorenzo Lari (Alimentazione Flessibile)</option>
                  </select>
               </div>
               
-              <div className="bg-[#050f14] p-3 border border-white/10 rounded-lg flex items-center gap-3">
+              <div className="bg-black/20 p-4 border border-white/5 rounded-2xl flex items-center gap-3 shadow-inner">
                  <input type="checkbox" id="metabolismoMain" checked={metabolismoBloccato} onChange={async (e) => {
                     const bloccato = e.target.checked;
                     setMetabolismoBloccato(bloccato);
@@ -1046,89 +1047,115 @@ ${saluteW}` };
                       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore, metabolismoBloccato: bloccato } }, data: new Date().toISOString() };
                       await supabase.from("check_utente").insert([payload]);
                     }
-                 }} className="w-4 h-4 accent-emerald-500 cursor-pointer" />
-                 <label htmlFor="metabolismoMain" className="text-[10px] text-neutral-300 font-bold uppercase cursor-pointer">Soffri di Stallo / Metabolismo Bloccato?</label>
+                 }} className="w-5 h-5 accent-emerald-500 cursor-pointer rounded bg-black/40 border-white/10" />
+                 <label htmlFor="metabolismoMain" className="text-xs text-neutral-300 font-semibold tracking-wide cursor-pointer">Soffri di Stallo Metabolico?</label>
               </div>
 
-              <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className="w-full bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white hover:bg-lime-400 text-white font-black p-4 rounded-xl uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(249,115,22,0.3)] mt-2">
-                 Accedi al Sistema
+              <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className={UI.btnPrimary + " mt-4"}>
+                 ACCEDI AL SISTEMA
               </button>
            </div>
         </div>
 
         {modalWizard && (
-          <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/20 rounded-xl w-full max-w-lg shadow-2xl p-6 relative">
-               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-4 right-4 text-neutral-500 hover:text-white font-bold text-xl">&times;</button>
-               <h3 className="font-black text-xl text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] uppercase mb-4 border-b border-white/10 pb-2">Nuova Profilazione</h3>
+          <div className="fixed inset-0 bg-[#071318]/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
+            <div className={UI.card + " w-full max-w-lg p-8 relative"}>
+               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-5 right-6 text-neutral-500 hover:text-white font-bold text-2xl transition-colors">&times;</button>
+               <h3 className={`font-light text-2xl uppercase tracking-widest mb-6 border-b border-white/5 pb-4 text-white`}>Nuova Profilazione</h3>
                
                {stepWizard === 1 && (
-                 <div className="space-y-4">
-                   <input type="text" placeholder="Nome Atleta" value={datiWizard.nome} onChange={e=>setDatiWizard({...datiWizard, nome: e.target.value})} className="w-full bg-[#050f14] text-white p-2 border border-white/20 rounded" />
-                   <div className="flex gap-2">
-                     <input type="number" placeholder="Età" value={datiWizard.eta} onChange={e=>setDatiWizard({...datiWizard, eta: e.target.value})} className="w-1/3 bg-[#050f14] text-white p-2 border border-white/20 rounded" />
-                     <input type="number" placeholder="Peso (kg)" value={datiWizard.peso} onChange={e=>setDatiWizard({...datiWizard, peso: e.target.value})} className="w-1/3 bg-[#050f14] text-white p-2 border border-white/20 rounded" />
-                     <input type="number" placeholder="H (cm)" value={datiWizard.altezza} onChange={e=>setDatiWizard({...datiWizard, altezza: e.target.value})} className="w-1/3 bg-[#050f14] text-white p-2 border border-white/20 rounded" />
+                 <div className="space-y-5">
+                   <div>
+                     <label className={UI.label}>Nome Atleta</label>
+                     <input type="text" placeholder="Es. Leonardo" value={datiWizard.nome} onChange={e=>setDatiWizard({...datiWizard, nome: e.target.value})} className={UI.input} />
                    </div>
-                   <div className="flex gap-2">
-                     <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="w-1/3 bg-white/10 backdrop-blur-md border border-white/10 text-white p-2 rounded font-bold uppercase">Annulla</button>
-                     <button onClick={()=>{ if(datiWizard.nome && datiWizard.peso) setStepWizard(2); else alert("Inserisci Nome e Peso."); }} className="w-2/3 bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white p-2 rounded font-bold uppercase">Avanti</button>
+                   <div className="flex gap-4">
+                     <div className="w-1/3">
+                        <label className={UI.label}>Età</label>
+                        <input type="number" placeholder="Anni" value={datiWizard.eta} onChange={e=>setDatiWizard({...datiWizard, eta: e.target.value})} className={UI.input} />
+                     </div>
+                     <div className="w-1/3">
+                        <label className={UI.label}>Peso</label>
+                        <input type="number" placeholder="Kg" value={datiWizard.peso} onChange={e=>setDatiWizard({...datiWizard, peso: e.target.value})} className={UI.input} />
+                     </div>
+                     <div className="w-1/3">
+                        <label className={UI.label}>Altezza</label>
+                        <input type="number" placeholder="Cm" value={datiWizard.altezza} onChange={e=>setDatiWizard({...datiWizard, altezza: e.target.value})} className={UI.input} />
+                     </div>
+                   </div>
+                   <div className="flex gap-3 pt-4 border-t border-white/5">
+                     <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className={UI.btnSecondary + " w-1/3"}>Annulla</button>
+                     <button onClick={()=>{ if(datiWizard.nome && datiWizard.peso) setStepWizard(2); else alert("Inserisci Nome e Peso."); }} className={UI.btnPrimary + " w-2/3"}>Avanti</button>
                    </div>
                  </div>
                )}
 
                {stepWizard === 2 && (
-                 <div className="space-y-4">
-                   <select value={datiWizard.stileVita} onChange={e=>setDatiWizard({...datiWizard, stileVita: e.target.value})} className="w-full bg-[#050f14] text-white p-2 border border-white/20 rounded text-xs">
-                     <option value="Sedentario">Sedentario (Scrivania)</option>
-                     <option value="Attivo (es. Vendita al dettaglio, in piedi)">Attivo (Molte ore in piedi / Negozi)</option>
-                     <option value="Fisico">Lavoro Fisico Usurante</option>
-                   </select>
-                   <select value={datiWizard.obiettivo} onChange={e=>setDatiWizard({...datiWizard, obiettivo: e.target.value})} className="w-full bg-[#050f14] text-white p-2 border border-white/20 rounded text-xs">
-                     <option value="Massa">Obiettivo: Massa / Ipertrofia</option>
-                     <option value="Shred">Obiettivo: Dimagrimento (Shred)</option>
-                     <option value="Ricomposizione">Obiettivo: Mantenimento</option>
-                   </select>
-                   <select value={datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo') ? 'Equilibrata' : datiWizard.dieta} disabled={datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo')} onChange={e=>setDatiWizard({...datiWizard, dieta: e.target.value})} className={`w-full bg-[#050f14] text-white p-2 rounded text-xs border ${datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo') ? 'border-white/10 text-neutral-500' : 'border-white/20'}`}>
-                     <option value="Equilibrata">Dieta: Equilibrata</option>
-                     <option value="Keto">Dieta: Chetogenica</option>
-                     <option value="LowCarb">Dieta: Low Carb</option>
-                     <option value="Zona">Dieta: Zona</option>
-                     <option value="HighCarb">Dieta: High Carb</option>
-                   </select>
-                   <select value={datiWizard.autore || 'Nessuno'} onChange={e=>setDatiWizard({...datiWizard, autore: e.target.value})} className="w-full bg-[#050f14] text-white p-2 border border-purple-500/50 rounded text-xs">
-                     <option value="Nessuno">Coach: Intelligenza Artificiale Base</option>
-                     <option value="Aldo Masolo (Reset Metabolico)">Coach: Aldo Masolo</option>
-                     <option value="Gerardo Calvo (Reset Ormonale)">Coach: Gerardo Calvo</option>
-                     <option value="Lorenzo Lari (Flessibile)">Coach: Lorenzo Lari</option>
-                   </select>
-                   <div className="bg-[#050f14] p-3 border border-white/10 rounded flex items-center gap-3 mt-2">
-                     <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-4 h-4 accent-emerald-500" />
-                     <label htmlFor="metabolismo" className="text-[10px] text-neutral-300 font-bold uppercase">Soffri di Stallo / Metabolismo Bloccato? (Mangi poco ma non dimagrisci)</label>
+                 <div className="space-y-5">
+                   <div>
+                     <label className={UI.label}>Stile di Vita</label>
+                     <select value={datiWizard.stileVita} onChange={e=>setDatiWizard({...datiWizard, stileVita: e.target.value})} className={UI.input}>
+                       <option value="Sedentario">Sedentario (Scrivania)</option>
+                       <option value="Attivo (es. Vendita al dettaglio, in piedi)">Attivo (Molte ore in piedi)</option>
+                       <option value="Fisico">Lavoro Fisico Usurante</option>
+                     </select>
                    </div>
-                   <div className="bg-[#050f14] p-3 border border-white/10 rounded flex flex-col gap-3">
+                   <div>
+                     <label className={UI.label}>Obiettivo Fisico</label>
+                     <select value={datiWizard.obiettivo} onChange={e=>setDatiWizard({...datiWizard, obiettivo: e.target.value})} className={UI.input}>
+                       <option value="Massa">Massa / Ipertrofia</option>
+                       <option value="Shred">Dimagrimento (Shred)</option>
+                       <option value="Ricomposizione">Mantenimento</option>
+                     </select>
+                   </div>
+                   <div>
+                     <label className={UI.label}>Dieta Iniziale</label>
+                     <select value={datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo') ? 'Equilibrata' : datiWizard.dieta} disabled={datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo')} onChange={e=>setDatiWizard({...datiWizard, dieta: e.target.value})} className={`${UI.input} ${datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo') ? 'opacity-50' : ''}`}>
+                       <option value="Equilibrata">Dieta: Equilibrata</option>
+                       <option value="Keto">Dieta: Chetogenica</option>
+                       <option value="LowCarb">Dieta: Low Carb</option>
+                       <option value="Zona">Dieta: Zona</option>
+                       <option value="HighCarb">Dieta: High Carb</option>
+                     </select>
+                   </div>
+                   <div>
+                     <label className={UI.label}>Master Coach</label>
+                     <select value={datiWizard.autore || 'Nessuno'} onChange={e=>setDatiWizard({...datiWizard, autore: e.target.value})} className={UI.input}>
+                       <option value="Nessuno">Intelligenza Artificiale Base</option>
+                       <option value="Aldo Masolo (Reset Metabolico)">Aldo Masolo (Reset Metabolico)</option>
+                       <option value="Gerardo Calvo (Reset Ormonale)">Gerardo Calvo (Reset Ormonale)</option>
+                       <option value="Lorenzo Lari (Flessibile)">Lorenzo Lari (Flessibile)</option>
+                     </select>
+                   </div>
+                   
+                   <div className="bg-black/20 p-4 border border-white/5 rounded-2xl flex items-center gap-3 shadow-inner">
+                     <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-emerald-500 rounded cursor-pointer" />
+                     <label htmlFor="metabolismo" className="text-xs text-neutral-300 font-semibold tracking-wide cursor-pointer">Soffri di Stallo Metabolico?</label>
+                   </div>
+
+                   <div className="bg-white/[0.02] p-4 border border-white/5 rounded-2xl flex flex-col gap-4">
                      <div>
-                        <p className="text-[10px] text-neutral-500 mb-1">📸 Foto Partenza / Condizione Attuale (Opzionale)</p>
-                        <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <p className={UI.label + " mb-1"}>📸 Foto Condizione Attuale</p>
+                        <input type="file" className="text-xs text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-emerald-400 hover:file:bg-white/20 transition-all cursor-pointer" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
-                     <div className="border-t border-white/10 pt-2">
-                        <p className="text-[10px] text-neutral-500 mb-1">📸 Foto Obiettivo / Modello ideale (Opzionale)</p>
-                        <input type="file" className="text-xs text-neutral-400" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                     <div className="border-t border-white/5 pt-3">
+                        <p className={UI.label + " mb-1"}>📸 Foto Obiettivo Ideale</p>
+                        <input type="file" className="text-xs text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-teal-400 hover:file:bg-white/20 transition-all cursor-pointer" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
-                   <div className="flex gap-2">
-                     <button onClick={() => setStepWizard(1)} className="w-1/3 bg-white/10 backdrop-blur-md border border-white/10 text-white p-2 rounded font-bold uppercase">Indietro</button>
-                     <button onClick={analizzaObiettivoWizard} disabled={loadingWizard} className="w-2/3 bg-teal-500 text-white p-2 rounded font-bold uppercase disabled:opacity-50">{loadingWizard ? 'Analisi in corso...' : 'Calcola Profilo IA'}</button>
+                   <div className="flex gap-3 pt-4 border-t border-white/5">
+                     <button onClick={() => setStepWizard(1)} className={UI.btnSecondary + " w-1/3"}>Indietro</button>
+                     <button onClick={analizzaObiettivoWizard} disabled={loadingWizard} className={UI.btnPrimary + " w-2/3 disabled:opacity-50"}>{loadingWizard ? 'Analisi in corso...' : 'Calcola Profilo IA'}</button>
                    </div>
                  </div>
                )}
 
                {stepWizard === 3 && (
-                 <div className="space-y-4">
-                   <div className="bg-[#050f14] p-4 border border-white/10 rounded text-xs text-neutral-300 max-h-48 overflow-y-auto whitespace-pre-wrap">{rispostaWizard}</div>
-                   <div className="flex gap-2">
-                     <button onClick={() => setStepWizard(2)} className="w-1/3 bg-white/10 backdrop-blur-md border border-white/10 text-white p-2 rounded font-bold uppercase">Indietro</button>
-                     <button onClick={salvaProfiloWizard} className="w-2/3 bg-emerald-600 text-white p-2 rounded font-bold uppercase">Salva e Accedi (Ignora Errori)</button>
+                 <div className="space-y-5">
+                   <div className="bg-black/20 p-5 border border-white/5 rounded-2xl text-sm text-neutral-300 max-h-64 overflow-y-auto whitespace-pre-wrap leading-relaxed shadow-inner font-medium">{rispostaWizard}</div>
+                   <div className="flex gap-3 pt-4 border-t border-white/5">
+                     <button onClick={() => setStepWizard(2)} className={UI.btnSecondary + " w-1/3"}>Indietro</button>
+                     <button onClick={salvaProfiloWizard} className={UI.btnPrimary + " w-2/3"}>Salva e Accedi</button>
                    </div>
                  </div>
                )}
@@ -1140,440 +1167,460 @@ ${saluteW}` };
   }
 
   return (
-    <main className="min-h-screen bg-[#050f14] text-neutral-100 p-4 lg:p-6 font-sans overflow-x-hidden">
-      
-      <header className="mb-6 border-b border-white/10 pb-4 flex justify-between items-center">
-        <div>
-          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-neutral-500 hover:text-white mb-2 block transition-all">⬅️ Torna alla Home</button>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tighter uppercase text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]">
-            PROTOCOLLO <span className="text-white">{protocolloAttivo}</span>
-          </h1>
-        </div>
-        <div className="text-right">
-          <span className="text-[10px] text-neutral-500 block uppercase font-bold mb-1">Atleta Operativo</span>
-          <div className="flex flex-col items-end gap-1">
-             <span className="text-sm font-bold text-white bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] px-3 py-1 rounded border border-white/20">{utenteCorrente}</span>
-             <div className="flex gap-2">
-                <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">{tipoDieta}</span>
-                {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest px-1 border-l border-white/20">{protocolloAutore.split(' ')[0]}</span>}
-             </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#071318] text-neutral-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative">
+      {/* Sfondo Radiale Globale - OmniCoach Style */}
+      <div className="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] bg-emerald-600/10 rounded-full blur-[140px] mix-blend-screen pointer-events-none z-0"></div>
+      <div className="fixed bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-teal-600/10 rounded-full blur-[140px] mix-blend-screen pointer-events-none z-0"></div>
 
-      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
+      <main className="p-4 lg:p-6 max-w-7xl mx-auto relative z-10">
         
-        {/* COLONNA SINISTRA: Telemetria & Coach IA */}
-        <div className="flex flex-col gap-6 lg:col-span-3">
-          <section className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/10 p-5 rounded-xl shadow-lg flex flex-col">
-            <div className="flex justify-between items-center mb-4 border-b border-white/20 pb-2">
-              <h2 className="text-lg font-bold text-white">Telemetria</h2>
-              <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaTelemetria === 'STORICO' ? 'bg-teal-500 text-white' : 'bg-white/10 backdrop-blur-md border border-white/10 text-neutral-300 hover:bg-neutral-700'}`}>
-                {vistaTelemetria === 'STORICO' ? 'Torna al Form' : 'Vedi Storico'}
-              </button>
-            </div>
-
-            {isDataLoading ? (
-               <div className="space-y-4">
-                 <Skeleton className="h-10 w-full" />
-                 <Skeleton className="h-24 w-full" />
-                 <Skeleton className="h-64 w-full" />
+        <header className="mb-8 border-b border-white/5 pb-6 flex justify-between items-center">
+          <div>
+            <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-neutral-500 hover:text-white mb-2 block transition-all tracking-widest">⬅️ Torna alla Home</button>
+            <h1 className="text-2xl sm:text-3xl font-light tracking-widest uppercase text-white drop-shadow-md">
+              OMNICOACH <span className={UI.textHighlight}>{protocolloAttivo}</span>
+            </h1>
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] text-teal-200/50 block uppercase font-bold mb-1 tracking-widest">Atleta Operativo</span>
+            <div className="flex flex-col items-end gap-1.5">
+               <span className="text-sm font-semibold text-white bg-white/5 backdrop-blur-md shadow-lg px-4 py-1.5 rounded-full border border-white/10">{utenteCorrente}</span>
+               <div className="flex gap-2">
+                  <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">{tipoDieta}</span>
+                  {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-teal-400 uppercase tracking-widest px-2 border-l border-white/10">{protocolloAutore.split(' ')[0]}</span>}
                </div>
-            ) : vistaTelemetria === 'FORM' ? (
-               <div className="space-y-4">
-                 <p className="text-[10px] text-lime-300 font-bold uppercase border-b border-white/10 pb-1">Misure Base</p>
-                 <div className="grid grid-cols-2 gap-2">
-                   {misureBase.map((m) => (
-                       <div key={m.id} className="bg-[#050f14] p-2.5 rounded-lg border border-white/10">
-                         <label className="text-[9px] text-neutral-400 uppercase font-bold flex justify-between">{m.label} <span className="text-neutral-600">{m.unit}</span></label>
-                         <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] mt-1" placeholder="-" />
-                       </div>
-                   ))}
-                 </div>
-                 
-                 <p className="text-[10px] text-teal-400 font-bold uppercase border-b border-white/10 pb-1 mt-2">Dati Composizione BIA (Opzionali)</p>
-                 <div className="grid grid-cols-2 gap-2">
-                   {misureBIA.map((m) => (
-                       <div key={m.id} className="bg-[#050f14] p-2 rounded-lg border border-white/10">
-                         <label className="text-[9px] text-neutral-400 uppercase font-bold flex justify-between">{m.label} <span className="text-neutral-600">{m.unit}</span></label>
-                         <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-teal-400 outline-none focus:text-white mt-1" placeholder="-" />
-                       </div>
-                   ))}
-                 </div>
-
-                 {/* RUOTA BIA COMPOSITION SUBITO SOTTO IL FORM */}
-                 <div className="pt-2">
-                    <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
-                 </div>
-
-                 <button onClick={valutaCheckFisico} className="w-full py-2.5 mt-2 bg-teal-500 hover:bg-blue-500 text-white font-bold rounded-lg uppercase tracking-widest text-[10px] shadow-lg">Salva e Aggiorna Algoritmo</button>
-               </div>
-            ) : (
-               <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[600px]">
-                 {storicoMisure.length === 0 ? <p className="text-[10px] text-neutral-500 italic text-center p-4">Nessun dato.</p> : (
-                    storicoMisure.map((mis: any) => {
-                       const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
-                       return (
-                         <div key={mis.id} className="bg-[#050f14] p-3 rounded-lg border border-white/10 flex flex-col gap-2">
-                            <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                               <p className="text-[11px] font-bold text-lime-300">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
-                               <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-500 hover:text-white text-[10px] uppercase">🗑️ Elimina</button>
-                            </div>
-                            <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] text-neutral-300 font-mono">
-                               <p>Peso: <strong>{mis.peso || '-'}kg</strong></p><p>Petto: <strong>{circ.petto || '-'}cm</strong></p>
-                               <p>Spalle: <strong>{circ.spalle || '-'}cm</strong></p><p>Braccia: <strong>{circ.braccia || '-'}cm</strong></p>
-                               <p>Gambe: <strong>{circ.gambe || '-'}cm</strong></p><p>Glutei: <strong>{circ.glutei || '-'}cm</strong></p>
-                               <p className="text-emerald-400">Vita: <strong>{circ.vita || '-'}cm</strong></p><p className="text-teal-400">BIA: <strong>{circ.bodyFat || '-'}%</strong></p>
-                            </div>
-                         </div>
-                       );
-                    })
-                 )}
-               </div>
-            )}
-          </section>
-
-          <section className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/10 p-4 rounded-xl shadow-lg flex flex-col h-[400px]">
-            <h2 className="text-base font-bold text-white border-b border-white/20 pb-2 mb-2 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span> Coach IA
-            </h2>
-            <div className="flex-1 overflow-y-auto space-y-3 p-2 bg-[#050f14] rounded-lg border border-white/10 mb-3">
-              {chatLog.map((msg, i) => (
-                <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                  <span className={`text-[9px] uppercase font-bold mb-1 ${msg.role === 'user' ? 'text-neutral-500 pr-1' : 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] pl-1'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
-                  <div className={`p-2.5 rounded-xl text-xs leading-relaxed max-w-[90%] ${msg.role === 'user' ? 'bg-white/10 backdrop-blur-md border border-white/10 text-white rounded-br-sm' : 'bg-emerald-950/40 border border-emerald-900/50 text-neutral-200 rounded-bl-sm'}`}>{msg.text}</div>
-                </div>
-              ))}
-              {isTyping && <div className="text-[10px] text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] font-mono pl-2 animate-pulse">Analisi in corso...</div>}
-              <div ref={chatEndRef} />
             </div>
-            {fileAllegato && (
-              <div className="flex items-center gap-2 mb-2 p-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-lg border border-white/20 w-fit">
-                <span className="text-xs text-lime-300 font-mono truncate max-w-[150px]">📎 {fileAllegato.nome}</span>
-                <button onClick={() => setFileAllegato(null)} className="text-red-500 font-bold ml-2">X</button>
-              </div>
-            )}
-            <div className="flex gap-2">
-              <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
-              <button onClick={() => fileInputRef.current?.click()} className="bg-white/10 backdrop-blur-md border border-white/10 px-3 py-2 rounded-lg text-lg">📎</button>
-              <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega..." className="flex-1 bg-[#050f14] border border-white/20 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-orange-500" />
-              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white font-bold px-3 py-2 rounded-lg text-xs disabled:opacity-50">Invia</button>
-            </div>
-          </section>
-        </div>
+          </div>
+        </header>
 
-        {/* COLONNA CENTRALE: Turni & Nutrizione */}
-        <div className="flex flex-col gap-6 lg:col-span-4">
-          <section className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/10 p-5 rounded-xl shadow-lg">
-            <div className="flex justify-between items-center mb-4 border-b border-white/20 pb-2">
-              <h2 className="text-lg font-bold text-white">Incastro Turni</h2>
-              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#050f14] text-xs text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] p-2 rounded border border-white/20 outline-none">
-                <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
-              </select>
-            </div>
-            <div className="space-y-4">
-              <div className="bg-[#050f14] p-3 rounded-lg border border-white/10">
-                <span className="text-xs text-teal-400 uppercase font-bold mb-2 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
-                <div className="flex space-x-2">
-                  <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm text-white p-1 border-b border-white/20 outline-none" />
-                  <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm text-white p-1 border-b border-white/20 outline-none" />
-                </div>
-              </div>
-              {tipoTurno === 'spezzato' && (
-                <div className="bg-[#050f14] p-3 rounded-lg border border-white/10">
-                  <span className="text-xs text-teal-400 uppercase font-bold mb-2 block">Pomeriggio (Lavoro)</span>
-                  <div className="flex space-x-2">
-                    <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm text-white p-1 border-b border-white/20 outline-none" />
-                    <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm text-white p-1 border-b border-white/20 outline-none" />
-                  </div>
-                </div>
-              )}
-              <div className="mt-4 border-t border-white/20 pt-4">
-                <div className="flex justify-between items-center mb-3">
-                   <span className="text-xs text-neutral-400 uppercase font-bold">Digiuno Intermittente (16:8)</span>
-                   <button onClick={() => setDigiuno(!digiuno)} className={`w-10 h-5 rounded-full relative transition-colors ${digiuno ? 'bg-lime-400' : 'bg-neutral-700'}`}>
-                      <div className={`w-3.5 h-3.5 bg-white rounded-full absolute top-[3px] transition-transform ${digiuno ? 'translate-x-5' : 'translate-x-1'}`}></div>
-                   </button>
-                </div>
-                <span className="text-xs text-neutral-400 uppercase font-bold mb-2 block">Collocazione Allenamento:</span>
-                <div className="flex space-x-2">
-                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white' : 'bg-white/10 backdrop-blur-md border border-white/10 text-neutral-400'}`}>Mattina</button>
-                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white' : 'bg-white/10 backdrop-blur-md border border-white/10 text-neutral-400'}`}>Pausa</button>}
-                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-2 text-[10px] font-bold uppercase rounded ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white' : 'bg-white/10 backdrop-blur-md border border-white/10 text-neutral-400'}`}>Sera</button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/10 p-5 rounded-xl shadow-lg">
-            <div className="flex flex-col border-b border-white/20 pb-3 mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <h2 className="text-lg font-bold text-white">Timeline Nutrizionale</h2>
-                <div className="flex gap-2 items-center">
-                  {protocolloAutore === 'Gerardo Calvo (Reset Ormonale)' && (
-                     <button 
-                       onClick={() => {
-                          const current = gerardoCarbOverride !== null ? gerardoCarbOverride : [150, 250, 350][giorniSettimana.indexOf(giornoCalendario) % 3];
-                          const next = current === 150 ? 250 : (current === 250 ? 350 : 150);
-                          setGerardoCarbOverride(next);
-                       }}
-                       className="text-[9px] bg-purple-900/40 border border-purple-500 text-purple-300 px-2 py-1 rounded font-bold uppercase transition-all hover:bg-purple-600 hover:text-white"
-                       title="Forza un giorno diverso del ciclo"
-                     >
-                       🔄 Ciclo: {targetCho}g CHO
-                     </button>
-                  )}
-                  <select 
-                    value={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo') ? 'Equilibrata' : tipoDieta} 
-                    disabled={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')}
-                    onChange={async (e) => {
-                      const nuovaDieta = e.target.value;
-                      setTipoDieta(nuovaDieta);
-                      if (biometria.peso && eta && altezza) {
-                        const payload = { 
-                          nome_utente: utenteCorrente, 
-                          eta: Number(eta), 
-                          altezza: Number(altezza), 
-                          peso: Number(biometria.peso), 
-                          circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: nuovaDieta, autore: protocolloAutore, metabolismoBloccato } }, 
-                          data: new Date().toISOString() 
-                        };
-                        await supabase.from("check_utente").insert([payload]);
-                      }
-                    }}
-                    className={`text-[10px] font-bold px-2 py-1 rounded uppercase ${(protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) ? 'bg-white/10 backdrop-blur-md border border-white/10 text-neutral-500 border-white/20' : (protocolloAttivo === 'Shred' ? 'bg-teal-500 border-teal-500' : 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white border-orange-500')} text-white outline-none cursor-pointer text-center appearance-none transition-opacity bg-transparent border`}
-                  >
-                  <option value="Equilibrata" className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)]">⚖️ Equilibrata</option>
-                  <option value="Keto" className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)]">🥩 Keto</option>
-                  <option value="LowCarb" className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)]">🥑 Low Carb</option>
-                  <option value="Zona" className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)]">🧩 Zona</option>
-                  <option value="HighCarb" className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)]">🍚 High Carb</option>
-                </select>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-[9px] bg-[#050f14] border border-white/10 text-neutral-400 px-2 py-1 rounded">BMR: <AnimatedCounter value={bmr} /> Kcal</span>
-                <span className="text-[9px] bg-[#050f14] border border-white/10 text-neutral-400 px-2 py-1 rounded">TDEE: <AnimatedCounter value={baseTdee} /> Kcal</span>
-                <span className="text-[9px] bg-emerald-950 border border-emerald-900 text-lime-300 font-bold px-2 py-1 rounded flex-1 text-center">INTAKE: <AnimatedCounter value={actualIntakeKcal} /> Kcal</span>
-              </div>
-            </div>
-            
-            {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
-               <div className="mt-4 p-3 bg-yellow-950/20 border border-yellow-600/50 rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                     <span className="text-[10px] font-black text-yellow-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
-                     <span className="text-xs font-bold text-white">{Math.round(actualIntakeKcal * 0.2)} Kcal</span>
-                  </div>
-                  <div className="w-full bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] h-2 rounded-full overflow-hidden flex">
-                     <div className="bg-emerald-500 h-full w-[80%]"></div>
-                     <div className="bg-yellow-500 h-full w-[20%]"></div>
-                  </div>
-                  <p className="text-[9px] text-neutral-400 mt-2">Puoi destinare il 20% delle tue calorie odierne a cibi sfiziosi, senza sensi di colpa e restando nei target!</p>
-               </div>
-            )}
-
-            {isDataLoading ? (
-               <div className="space-y-3 mt-4">
-                 <Skeleton className="h-24 w-full" />
-                 <Skeleton className="h-24 w-full" />
-                 <Skeleton className="h-24 w-full" />
-               </div>
-            ) : (
-              <div className="space-y-3 mt-4">
-              {generaTimelineDieta().map((blocco, idx) => {
-                if (blocco.isIntra) {
-                  return (
-                    <div key={`intra-${idx}`} className="p-4 rounded-lg border bg-emerald-950/20 border-emerald-900/50">
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-xs uppercase font-black text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] block tracking-widest">{blocco.titolo}</span>
-                        <span className="text-[10px] font-bold text-lime-300 bg-orange-900/30 px-1.5 py-0.5 rounded"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
-                      </div>
-                      <p className="font-medium text-xs text-neutral-200 whitespace-pre-wrap">{blocco.descrizione}</p>
-                    </div>
-                  );
-                }
-                const cat = blocco.idCategoria as keyof typeof dbAlimenti;
-                const isPW = cat === 'PostWorkout';
-                const itemScelto = dbAlimenti[cat]?.[pastiSelezionati[cat]] || {nome:"", baseCarbo:0, pro:0, fat:0, dettaglioGrammi:()=>""};
-                const finalCho = finalMeals[cat].cho, finalPro = finalMeals[cat].pro, finalFat = finalMeals[cat].fat;
-                const pastoKcal = Math.round((finalCho * 4) + (finalPro * 4) + (finalFat * 9));
-                const isCustom = pastiCustom[cat].attivo;
-
-                return (
-                  <div key={`${cat}-${idx}`} className={`p-3 rounded-lg border ${isPW ? 'bg-emerald-950/20 border-emerald-900/50' : 'bg-[#050f14] border-white/10'}`}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isPW ? 'text-emerald-500' : 'text-teal-400'}`}>{blocco.titoloUI}</span>
-                      <div className="flex gap-2">
-                        {!isCustom ? (
-                          <>
-                            <button onClick={() => toggleCustomMeal(cat)} className="text-[9px] bg-white/10 backdrop-blur-md border border-white/10 hover:bg-neutral-700 text-neutral-400 px-2 py-1 rounded font-bold uppercase transition-all">Custom</button>
-                            <button onClick={() => apriSwapAlimento(cat)} className="text-[9px] bg-white/10 backdrop-blur-md border border-white/10 hover:bg-neutral-700 px-2 py-1 rounded font-bold uppercase text-neutral-300 transition-all">Swap</button>
-                          </>
-                        ) : (
-                           <button onClick={() => resetCustomMeal(cat)} className="text-[9px] bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded font-bold uppercase transition-all">🗑️ Rimuovi</button>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {isCustom ? (
-                       <div className="mt-2 bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] p-2 rounded border border-orange-500/50">
-                         <div className="flex gap-2 mb-2">
-                            <input type="text" placeholder="Es. 35g Plumcake" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-[#050f14] border border-white/20 p-1.5 text-xs text-white rounded outline-none" />
-                            <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className="bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white hover:bg-lime-400 text-white px-3 rounded text-xs font-bold disabled:opacity-50">🪄</button>
-                         </div>
-                         <div className="flex gap-2">
-                            <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase block">Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className="w-full bg-[#050f14] p-1 text-xs text-white rounded outline-none" /></div>
-                            <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase block">Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className="w-full bg-[#050f14] p-1 text-xs text-white rounded outline-none" /></div>
-                            <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase block">Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className="w-full bg-[#050f14] p-1 text-xs text-white rounded outline-none" /></div>
-                         </div>
-                       </div>
-                    ) : (
-                       <>
-                         <p className="font-semibold text-[13px] text-white leading-tight mt-2">{itemScelto.nome}</p>
-                         <div className="mt-2 bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] p-2 rounded border border-white/10">
-                           {finalCho === 0 && finalPro === 0 ? <p className="text-[11px] text-red-500 font-mono font-bold">Pasto azzerato (sgarro).</p> : <p className="text-[11px] text-neutral-300 font-mono">{itemScelto.dettaglioGrammi(finalCho, finalPro, finalFat)}</p>}
-                         </div>
-                       </>
-                    )}
-                    <div className="mt-2 flex justify-between items-center px-1">
-                       <span className="text-[10px] text-neutral-400 font-mono">CHO: <strong className="text-lime-300">{finalCho}g</strong></span>
-                       <span className="text-[10px] text-neutral-400 font-mono">PRO: <strong>{finalPro}g</strong></span>
-                       <span className="text-[10px] text-neutral-400 font-mono">FAT: <strong>{finalFat}g</strong></span>
-                       <span className={`text-[10px] font-black ${isPW ? 'text-emerald-500' : 'text-white'}`}><AnimatedCounter value={pastoKcal} /> KCAL</span>
-                    </div>
-                  </div>
-                );
-              })}
-              </div>
-            )}
-          </section>
-        </div>
-
-        {/* COLONNA DESTRA: Allenamento Dinamico */}
-        <div className="flex flex-col gap-6 lg:col-span-5">
-          <section className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/10 p-5 rounded-xl shadow-lg flex flex-col h-[85vh]">
-            <div className="flex justify-between items-center mb-4 border-b border-white/20 pb-3">
-              <h2 className="text-lg font-bold text-white">Allenamento {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
-              <div className="flex gap-1">
-                <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaStorico && !vistaGraficiCarichi ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white' : 'bg-white/10 backdrop-blur-md border border-white/10 text-neutral-300 hover:bg-neutral-700'}`}>
-                  {vistaStorico && !vistaGraficiCarichi ? 'Torna' : 'Storico'}
-                </button>
-                <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-2 py-1.5 text-[9px] uppercase font-bold rounded-md transition-all ${vistaGraficiCarichi ? 'bg-teal-500 text-white' : 'bg-white/10 backdrop-blur-md border border-white/10 text-neutral-300 hover:bg-neutral-700'}`}>
-                  📈 Grafici
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
+          
+          {/* COLONNA SINISTRA: Telemetria & Coach IA */}
+          <div className="flex flex-col gap-6 lg:col-span-3">
+            <section className={UI.card + " p-6 flex flex-col"}>
+              <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-3">
+                <h2 className="text-lg font-semibold tracking-wide text-white">Telemetria</h2>
+                <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={UI.btnSecondary + " !py-1.5 !px-3"}>
+                  {vistaTelemetria === 'STORICO' ? 'Form' : 'Storico'}
                 </button>
               </div>
-            </div>
 
-            {!vistaStorico ? (
-              <>
-                <div className="bg-[#050f14] p-3 rounded-lg border border-white/10 mb-4 flex justify-between items-center">
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Tempo Stimato</span>
-                    <p className="text-sm font-bold text-white flex items-center gap-2">⏱️ ~{calcolaTempoScheda()} min <span className="text-[9px] text-neutral-400 font-normal">(Recuperi inclusi)</span></p>
-                  </div>
-                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-3 py-1.5 text-[10px] uppercase font-bold rounded-lg ${fastWorkout ? 'bg-red-600 text-white' : 'bg-white/10 backdrop-blur-md border border-white/10 text-neutral-400'}`}>
-                    {fastWorkout ? '⚡ Fast Mode' : 'Taglia Tempi'}
-                  </button>
-                </div>
+              {isDataLoading ? (
+                 <div className="space-y-4">
+                   <Skeleton className="h-12 w-full" />
+                   <Skeleton className="h-24 w-full" />
+                   <Skeleton className="h-64 w-full" />
+                 </div>
+              ) : vistaTelemetria === 'FORM' ? (
+                 <div className="space-y-5">
+                   <div>
+                     <p className={UI.label}>Misure Base</p>
+                     <div className="grid grid-cols-2 gap-3">
+                       {misureBase.map((m) => (
+                           <div key={m.id} className="bg-black/20 p-3 rounded-2xl border border-white/5 shadow-inner">
+                             <label className="text-[9px] text-neutral-400 uppercase font-semibold flex justify-between tracking-wider">{m.label} <span className="text-neutral-600">{m.unit}</span></label>
+                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-white outline-none focus:text-emerald-400 mt-1" placeholder="-" />
+                           </div>
+                       ))}
+                     </div>
+                   </div>
+                   
+                   <div>
+                     <p className={UI.label}>BIA (Opzionale)</p>
+                     <div className="grid grid-cols-2 gap-3">
+                       {misureBIA.map((m) => (
+                           <div key={m.id} className="bg-black/20 p-3 rounded-2xl border border-white/5 shadow-inner">
+                             <label className="text-[9px] text-neutral-400 uppercase font-semibold flex justify-between tracking-wider">{m.label} <span className="text-neutral-600">{m.unit}</span></label>
+                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-teal-400 outline-none focus:text-white mt-1" placeholder="-" />
+                           </div>
+                       ))}
+                     </div>
+                   </div>
 
-                <div className="mb-4">
-                  <p className="text-[10px] uppercase font-bold text-neutral-500 mb-2">Giorno:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {giorniSettimana.map((gg: string) => (
-                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 min-w-[60px] ${giornoCalendario === gg ? 'bg-neutral-700 text-white border-b-2 border-white' : 'bg-[#050f14] text-neutral-500'}`}>{gg}</button>
-                    ))}
-                  </div>
-                </div>
+                   <div className="pt-2">
+                      <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
+                   </div>
 
-                <HumanHeatmap scheda={schedaAttiva} />
-                <div className="mb-4 flex gap-2">
-                  {['Spinta', 'Tirata', 'Gambe'].map((sch: string) => (
-                    <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-3 py-2 text-xs font-bold rounded-md flex-1 ${schedaAttiva === sch ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white shadow-lg' : 'bg-[#050f14] text-neutral-500'}`}>{sch.toUpperCase()}</button>
-                  ))}
-                </div>
-
-                {isDataLoading ? (
-                 <div className="flex-1 space-y-4">
-                    <Skeleton className="h-32 w-full" />
-                    <Skeleton className="h-32 w-full" />
+                   <button onClick={valutaCheckFisico} className={UI.btnPrimary + " mt-2 !py-3"}>Salva Algoritmo</button>
                  </div>
               ) : (
-                 <div className="flex-1 overflow-y-auto pr-2 space-y-4">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {dbDinamico[schedaAttiva].esercizi.map((es: any) => {
-                    const nomeAttuale = eserciziModificati[es.id] || es.nome;
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const altEs = es.alternative.find((a: any) => a.nome === nomeAttuale);
-                    const currentEx = altEs || es;
-                    
-                    const ultimoCarico = getUltimoCarico(es.id);
-                    const numeroSetTarget = getNumeroSet(es.fase);
-                    const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#3b82f6' : '#ef4444');
-                    
-                    const animType = currentEx.anim || "chest_barbell_flat"; 
-                    
-                    let repMostrate = es.rep;
-                    if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
+                 <div className="flex-1 overflow-y-auto space-y-4 pr-1 max-h-[600px] custom-scrollbar">
+                   {storicoMisure.length === 0 ? <p className="text-[11px] text-neutral-500 italic text-center p-6 bg-black/20 rounded-2xl border border-white/5 shadow-inner">Nessun dato registrato.</p> : (
+                      storicoMisure.map((mis: any) => {
+                         const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
+                         return (
+                           <div key={mis.id} className={UI.glassPanel + " flex flex-col gap-3"}>
+                              <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                                 <p className="text-[11px] font-bold text-emerald-400 tracking-widest">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
+                                 <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-300 text-[10px] uppercase font-bold tracking-wider transition-colors">🗑️</button>
+                              </div>
+                              <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[10px] text-neutral-300 font-medium">
+                                 <p className="bg-black/20 p-1.5 rounded-lg shadow-inner">Peso: <strong className="text-white float-right">{mis.peso || '-'}kg</strong></p>
+                                 <p className="bg-black/20 p-1.5 rounded-lg shadow-inner">Petto: <strong className="text-white float-right">{circ.petto || '-'}cm</strong></p>
+                                 <p className="bg-black/20 p-1.5 rounded-lg shadow-inner">Spalle: <strong className="text-white float-right">{circ.spalle || '-'}cm</strong></p>
+                                 <p className="bg-black/20 p-1.5 rounded-lg shadow-inner">Braccia: <strong className="text-white float-right">{circ.braccia || '-'}cm</strong></p>
+                                 <p className="bg-black/20 p-1.5 rounded-lg shadow-inner">Gambe: <strong className="text-white float-right">{circ.gambe || '-'}cm</strong></p>
+                                 <p className="bg-black/20 p-1.5 rounded-lg shadow-inner">Glutei: <strong className="text-white float-right">{circ.glutei || '-'}cm</strong></p>
+                                 <p className="bg-teal-900/20 p-1.5 rounded-lg shadow-inner text-teal-400">Vita: <strong className="text-white float-right">{circ.vita || '-'}cm</strong></p>
+                                 <p className="bg-emerald-900/20 p-1.5 rounded-lg shadow-inner text-emerald-400">BIA: <strong className="text-white float-right">{circ.bodyFat || '-'}%</strong></p>
+                              </div>
+                           </div>
+                         );
+                      })
+                   )}
+                 </div>
+              )}
+            </section>
 
+            <section className={UI.card + " p-6 flex flex-col h-[450px]"}>
+              <h2 className="text-base font-semibold text-white border-b border-white/5 pb-3 mb-4 flex items-center gap-3 tracking-wide">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span> A.I. Coach
+              </h2>
+              <div className="flex-1 overflow-y-auto space-y-4 p-4 bg-black/20 shadow-inner rounded-2xl border border-white/5 mb-4 custom-scrollbar">
+                {chatLog.map((msg, i) => (
+                  <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                    <span className={`text-[9px] uppercase font-bold tracking-widest mb-1.5 ${msg.role === 'user' ? 'text-neutral-500 pr-2' : 'text-teal-400 pl-2'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
+                    <div className={`p-3.5 rounded-2xl text-[13px] leading-relaxed max-w-[90%] shadow-md ${msg.role === 'user' ? 'bg-white/10 backdrop-blur-md text-white rounded-tr-sm border border-white/5' : 'bg-gradient-to-br from-emerald-900/30 to-teal-900/20 border border-emerald-500/20 text-neutral-200 rounded-tl-sm'}`}>{msg.text}</div>
+                  </div>
+                ))}
+                {isTyping && <div className="text-[10px] text-emerald-400 font-medium tracking-widest pl-2 animate-pulse">Elaborazione in corso...</div>}
+                <div ref={chatEndRef} />
+              </div>
+              
+              {fileAllegato && (
+                <div className="flex items-center gap-2 mb-3 p-2.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 w-fit shadow-lg">
+                  <span className="text-xs text-lime-300 font-medium truncate max-w-[180px]">📎 {fileAllegato.nome}</span>
+                  <button onClick={() => setFileAllegato(null)} className="text-red-400 font-bold ml-2 hover:text-red-300">&times;</button>
+                </div>
+              )}
+              <div className="flex gap-2 relative">
+                <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
+                <button onClick={() => fileInputRef.current?.click()} className={UI.btnSecondary + " !px-4"}>📎</button>
+                <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega pasto..." className={UI.input + " !rounded-2xl"} />
+                <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className={UI.btnPrimary + " !w-auto !px-5 disabled:opacity-50 disabled:hover:translate-y-0"}>→</button>
+              </div>
+            </section>
+          </div>
+
+          {/* COLONNA CENTRALE: Turni & Nutrizione */}
+          <div className="flex flex-col gap-6 lg:col-span-4">
+            <section className={UI.card + " p-6"}>
+              <div className="flex justify-between items-center mb-5 border-b border-white/5 pb-3">
+                <h2 className="text-lg font-semibold tracking-wide text-white">Incastro Turni</h2>
+                <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-black/20 text-xs text-emerald-400 font-semibold p-2 rounded-xl border border-white/10 outline-none focus:border-teal-500 transition-colors">
+                  <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
+                </select>
+              </div>
+              <div className="space-y-4">
+                <div className="bg-black/20 p-4 rounded-2xl border border-white/5 shadow-inner">
+                  <span className="text-[10px] text-teal-400 uppercase font-bold tracking-widest mb-3 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
+                  <div className="flex space-x-4">
+                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm font-medium text-white p-2 border-b border-white/10 outline-none focus:border-emerald-500 transition-colors" />
+                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm font-medium text-white p-2 border-b border-white/10 outline-none focus:border-emerald-500 transition-colors" />
+                  </div>
+                </div>
+                {tipoTurno === 'spezzato' && (
+                  <div className="bg-black/20 p-4 rounded-2xl border border-white/5 shadow-inner">
+                    <span className="text-[10px] text-teal-400 uppercase font-bold tracking-widest mb-3 block">Pomeriggio (Lavoro)</span>
+                    <div className="flex space-x-4">
+                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm font-medium text-white p-2 border-b border-white/10 outline-none focus:border-emerald-500 transition-colors" />
+                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm font-medium text-white p-2 border-b border-white/10 outline-none focus:border-emerald-500 transition-colors" />
+                    </div>
+                  </div>
+                )}
+                <div className="pt-4 mt-2">
+                  <div className="flex justify-between items-center mb-4 bg-white/[0.02] p-3 rounded-2xl border border-white/5">
+                     <span className="text-[10px] text-neutral-300 uppercase font-bold tracking-widest">Digiuno Intermittente 16:8</span>
+                     <button onClick={() => setDigiuno(!digiuno)} className={`w-12 h-6 rounded-full relative transition-colors shadow-inner ${digiuno ? 'bg-emerald-500' : 'bg-black/40 border border-white/10'}`}>
+                        <div className={`w-4 h-4 bg-white rounded-full absolute top-[3px] transition-transform shadow-md ${digiuno ? 'translate-x-7' : 'translate-x-1'}`}></div>
+                     </button>
+                  </div>
+                  <span className={UI.label}>Collocazione Allenamento</span>
+                  <div className="flex space-x-3 bg-black/20 p-1.5 rounded-2xl border border-white/5 shadow-inner">
+                    <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-md text-white' : 'text-neutral-500 hover:text-white'}`}>Mattina</button>
+                    {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-md text-white' : 'text-neutral-500 hover:text-white'}`}>Pausa</button>}
+                    <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-md text-white' : 'text-neutral-500 hover:text-white'}`}>Sera</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className={UI.card + " p-6"}>
+              <div className="flex flex-col border-b border-white/5 pb-4 mb-5">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-lg font-semibold tracking-wide text-white">Timeline Nutrizionale</h2>
+                  <div className="flex gap-2 items-center">
+                    {protocolloAutore === 'Gerardo Calvo (Reset Ormonale)' && (
+                       <button 
+                         onClick={() => {
+                            const current = gerardoCarbOverride !== null ? gerardoCarbOverride : [150, 250, 350][giorniSettimana.indexOf(giornoCalendario) % 3];
+                            const next = current === 150 ? 250 : (current === 250 ? 350 : 150);
+                            setGerardoCarbOverride(next);
+                         }}
+                         className="text-[9px] bg-white/5 border border-purple-500/50 text-purple-300 px-3 py-1.5 rounded-xl font-bold uppercase tracking-widest transition-all hover:bg-purple-500/20"
+                       >
+                         🔄 Ciclo: {targetCho}g
+                       </button>
+                    )}
+                    <select 
+                      value={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo') ? 'Equilibrata' : tipoDieta} 
+                      disabled={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')}
+                      onChange={async (e) => {
+                        const nuovaDieta = e.target.value;
+                        setTipoDieta(nuovaDieta);
+                        if (biometria.peso && eta && altezza) {
+                          const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: nuovaDieta, autore: protocolloAutore, metabolismoBloccato } }, data: new Date().toISOString() };
+                          await supabase.from("check_utente").insert([payload]);
+                        }
+                      }}
+                      className={`text-[9px] font-bold px-3 py-1.5 rounded-xl uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-sm ${
+                        (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
+                          ? 'bg-black/30 text-neutral-500 border border-white/5' 
+                          : (protocolloAttivo === 'Shred' ? 'bg-teal-500/20 text-teal-300 border border-teal-500/50' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50')
+                      }`}
+                    >
+                    <option value="Equilibrata" className="bg-[#0b1319]">⚖️ Equilibrata</option>
+                    <option value="Keto" className="bg-[#0b1319]">🥩 Keto</option>
+                    <option value="LowCarb" className="bg-[#0b1319]">🥑 Low Carb</option>
+                    <option value="Zona" className="bg-[#0b1319]">🧩 Zona</option>
+                    <option value="HighCarb" className="bg-[#0b1319]">🍚 High Carb</option>
+                  </select>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-2">
+                  <div className="flex-1 bg-black/20 border border-white/5 rounded-2xl p-2 text-center shadow-inner">
+                     <span className="text-[8px] text-neutral-500 uppercase tracking-widest block mb-0.5">BMR</span>
+                     <span className="text-xs text-white font-semibold"><AnimatedCounter value={bmr} /></span>
+                  </div>
+                  <div className="flex-1 bg-black/20 border border-white/5 rounded-2xl p-2 text-center shadow-inner">
+                     <span className="text-[8px] text-neutral-500 uppercase tracking-widest block mb-0.5">TDEE</span>
+                     <span className="text-xs text-white font-semibold"><AnimatedCounter value={baseTdee} /></span>
+                  </div>
+                  <div className="flex-[1.5] bg-gradient-to-br from-emerald-900/40 to-teal-900/20 border border-emerald-500/30 rounded-2xl p-2 text-center shadow-lg">
+                     <span className="text-[8px] text-emerald-400 uppercase tracking-widest block mb-0.5">INTAKE TARGET</span>
+                     <span className="text-sm text-lime-300 font-bold"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
+                  </div>
+                </div>
+              </div>
+              
+              {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
+                 <div className="mb-5 p-4 bg-gradient-to-r from-yellow-900/30 to-amber-900/10 border border-yellow-500/30 rounded-2xl shadow-lg">
+                    <div className="flex justify-between items-center mb-2">
+                       <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
+                       <span className="text-sm font-bold text-white"><AnimatedCounter value={Math.round(actualIntakeKcal * 0.2)} /> Kcal</span>
+                    </div>
+                    <div className="w-full bg-black/40 h-2.5 rounded-full overflow-hidden flex shadow-inner mt-2">
+                       <div className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-[80%]"></div>
+                       <div className="bg-gradient-to-r from-yellow-400 to-amber-500 h-full w-[20%] shadow-[0_0_10px_#fbbf24]"></div>
+                    </div>
+                    <p className="text-[10px] text-yellow-200/60 font-medium mt-3 leading-relaxed">Puoi destinare il 20% delle tue calorie odierne a cibi sfiziosi, senza sensi di colpa e restando nei target!</p>
+                 </div>
+              )}
+
+              {isDataLoading ? (
+                 <div className="space-y-4">
+                   <Skeleton className="h-28 w-full" />
+                   <Skeleton className="h-32 w-full" />
+                   <Skeleton className="h-32 w-full" />
+                 </div>
+              ) : (
+                <div className="space-y-4">
+                {generaTimelineDieta().map((blocco, idx) => {
+                  if (blocco.isIntra) {
                     return (
-                      <div key={`${es.id}-${nomeAttuale}`} className="bg-[#050f14] p-4 rounded-xl border border-white/10 relative overflow-hidden">
-                        <div className={`absolute top-0 left-0 w-1 h-full`} style={{backgroundColor: phaseColor}}></div>
-                        <div className="pl-2">
-                          <div className="flex justify-between items-start">
-                            <span className="text-[10px] uppercase font-black" style={{color: phaseColor}}>{es.fase}</span>
-                            <button onClick={() => apriSwapEsercizio(es)} className="text-[10px] bg-white/10 backdrop-blur-md border border-white/10 text-neutral-400 px-2 py-1 rounded font-bold uppercase hover:text-white transition-colors">Swap</button>
-                          </div>
-                          <div className="flex items-center gap-4 mt-2">
-                            <MediaVisualizer animKey={animType} color={phaseColor} />
-                            <div className="flex-1">
-                               <h3 className="font-bold text-sm text-white">{nomeAttuale}</h3>
-                               <p className="text-[10px] text-neutral-400 italic mt-1 leading-relaxed bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] p-2 rounded border border-white/10">{currentEx.dettaglio}</p>
+                      <div key={`intra-${idx}`} className="p-5 rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-900/20 to-transparent shadow-lg relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></div>
+                        <div className="flex justify-between items-start mb-3">
+                          <span className="text-[11px] uppercase font-bold text-emerald-400 tracking-widest">{blocco.titolo}</span>
+                          <span className="text-[9px] font-bold text-teal-200 bg-teal-900/40 px-2 py-1 rounded-lg border border-teal-500/30 shadow-sm"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
+                        </div>
+                        <p className="font-medium text-xs text-neutral-300 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
+                      </div>
+                    );
+                  }
+                  const cat = blocco.idCategoria as keyof typeof dbAlimenti;
+                  const isPW = cat === 'PostWorkout';
+                  const itemScelto = dbAlimenti[cat]?.[pastiSelezionati[cat]] || {nome:"", baseCarbo:0, pro:0, fat:0, dettaglioGrammi:()=>""};
+                  const finalCho = finalMeals[cat].cho, finalPro = finalMeals[cat].pro, finalFat = finalMeals[cat].fat;
+                  const pastoKcal = Math.round((finalCho * 4) + (finalPro * 4) + (finalFat * 9));
+                  const isCustom = pastiCustom[cat].attivo;
+
+                  return (
+                    <div key={`${cat}-${idx}`} className={`${UI.glassPanel} ${isPW ? 'border-teal-500/30 bg-teal-900/10' : ''}`}>
+                      <div className="flex justify-between items-center mb-3">
+                        <span className={`text-[10px] uppercase font-bold tracking-widest ${isPW ? 'text-teal-400' : 'text-neutral-400'}`}>{blocco.titoloUI}</span>
+                        <div className="flex gap-2">
+                          {!isCustom ? (
+                            <>
+                              <button onClick={() => toggleCustomMeal(cat)} className="text-[9px] bg-white/5 hover:bg-white/10 text-neutral-300 px-2.5 py-1.5 rounded-xl font-semibold uppercase tracking-wider transition-all border border-white/5">Custom</button>
+                              <button onClick={() => apriSwapAlimento(cat)} className="text-[9px] bg-white/10 hover:bg-white/20 text-white px-2.5 py-1.5 rounded-xl font-semibold uppercase tracking-wider transition-all border border-white/10 shadow-sm">Swap</button>
+                            </>
+                          ) : (
+                             <button onClick={() => resetCustomMeal(cat)} className="text-[9px] bg-red-500/20 hover:bg-red-500/40 text-red-300 px-2.5 py-1.5 rounded-xl font-semibold uppercase tracking-wider transition-all border border-red-500/30">🗑️ Reset</button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {isCustom ? (
+                         <div className="mt-3 bg-black/30 p-3.5 rounded-2xl border border-emerald-500/30 shadow-inner">
+                           <div className="flex gap-3 mb-3">
+                              <input type="text" placeholder="Es. 35g Plumcake" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " !p-2 !text-xs !bg-black/50"} />
+                              <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !p-2 !text-xs !rounded-xl disabled:opacity-50"}>🪄 AI</button>
+                           </div>
+                           <div className="flex gap-3">
+                              <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase font-bold tracking-widest block mb-1">Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " !p-2 !text-xs !bg-black/50 text-center"} /></div>
+                              <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase font-bold tracking-widest block mb-1">Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " !p-2 !text-xs !bg-black/50 text-center"} /></div>
+                              <div className="flex-1"><span className="text-[8px] text-neutral-500 uppercase font-bold tracking-widest block mb-1">Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " !p-2 !text-xs !bg-black/50 text-center"} /></div>
+                           </div>
+                         </div>
+                      ) : (
+                         <div className="bg-black/20 p-3.5 rounded-2xl border border-white/5 shadow-inner mt-2">
+                           <p className="font-semibold text-sm text-white mb-2">{itemScelto.nome}</p>
+                           {finalCho === 0 && finalPro === 0 ? <p className="text-[11px] text-red-400 font-mono bg-red-900/20 p-2 rounded-lg inline-block">Pasto azzerato (Sgarro o Digiuno).</p> : <p className="text-[11px] text-teal-100/70 font-mono leading-relaxed">{itemScelto.dettaglioGrammi(finalCho, finalPro, finalFat)}</p>}
+                         </div>
+                      )}
+                      <div className="mt-4 flex justify-between items-center px-2">
+                         <div className="flex gap-3 sm:gap-4">
+                           <span className="text-[10px] text-neutral-400 font-medium tracking-wide">C <strong className="text-lime-300 font-bold ml-1 text-xs">{finalCho}g</strong></span>
+                           <span className="text-[10px] text-neutral-400 font-medium tracking-wide">P <strong className="text-white font-bold ml-1 text-xs">{finalPro}g</strong></span>
+                           <span className="text-[10px] text-neutral-400 font-medium tracking-wide">F <strong className="text-white font-bold ml-1 text-xs">{finalFat}g</strong></span>
+                         </div>
+                         <span className={`text-[11px] font-black tracking-widest px-3 py-1.5 rounded-xl shadow-inner border border-white/5 bg-black/40 ${isPW ? 'text-teal-400' : 'text-white'}`}><AnimatedCounter value={pastoKcal} /> KCAL</span>
+                      </div>
+                    </div>
+                  );
+                })}
+                </div>
+              )}
+            </section>
+          </div>
+
+          {/* COLONNA DESTRA: Allenamento Dinamico */}
+          <div className="flex flex-col gap-6 lg:col-span-5">
+            <section className={UI.card + " p-6 flex flex-col h-[85vh]"}>
+              <div className="flex justify-between items-center mb-5 border-b border-white/5 pb-3">
+                <h2 className="text-lg font-semibold tracking-wide text-white">Programma {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
+                <div className="flex gap-2 bg-black/20 p-1 rounded-xl border border-white/5 shadow-inner">
+                  <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-3 py-1.5 text-[9px] uppercase font-bold tracking-widest rounded-lg transition-all ${vistaStorico && !vistaGraficiCarichi ? 'bg-white/10 text-white shadow-md' : 'text-neutral-500 hover:text-white'}`}>
+                    {vistaStorico && !vistaGraficiCarichi ? 'Oggi' : 'Storico'}
+                  </button>
+                  <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-3 py-1.5 text-[9px] uppercase font-bold tracking-widest rounded-lg transition-all ${vistaGraficiCarichi ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30' : 'text-neutral-500 hover:text-white'}`}>
+                    Grafici
+                  </button>
+                </div>
+              </div>
+
+              {!vistaStorico ? (
+                <>
+                  <div className="bg-black/20 p-4 rounded-2xl border border-white/5 mb-5 flex justify-between items-center shadow-inner">
+                    <div>
+                      <span className="text-[9px] uppercase font-bold text-neutral-500 tracking-widest block mb-1">Durata Stimata</span>
+                      <p className="text-sm font-semibold text-white flex items-center gap-2">⏱️ ~<AnimatedCounter value={calcolaTempoScheda()} /> min <span className="text-[9px] text-neutral-500 font-medium ml-1">(Recuperi inclusi)</span></p>
+                    </div>
+                    <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-4 py-2 text-[9px] font-bold uppercase tracking-widest rounded-xl transition-all shadow-md ${fastWorkout ? 'bg-gradient-to-r from-red-500 to-rose-400 text-white border-none' : 'bg-white/5 border border-white/10 text-neutral-300 hover:bg-white/10'}`}>
+                      {fastWorkout ? '⚡ Fast Mode ON' : 'Taglia Tempi'}
+                    </button>
+                  </div>
+
+                  <div className="mb-5">
+                    <p className={UI.label}>Giorno di Allenamento</p>
+                    <div className="flex flex-wrap gap-2">
+                      {giorniSettimana.map((gg: string) => (
+                        <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-3 py-2 text-xs font-semibold rounded-xl flex-1 min-w-[60px] transition-all ${giornoCalendario === gg ? 'bg-white/15 text-white shadow-md border border-white/20' : 'bg-black/20 text-neutral-500 border border-transparent hover:text-neutral-300'}`}>{gg}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <HumanHeatmap scheda={schedaAttiva} />
+                  
+                  <div className="mb-5 flex gap-2 bg-black/20 p-1.5 rounded-2xl border border-white/5 shadow-inner">
+                    {['Spinta', 'Tirata', 'Gambe'].map((sch: string) => (
+                      <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl flex-1 transition-all ${schedaAttiva === sch ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 shadow-[0_4px_15px_rgba(16,185,129,0.3)] text-white' : 'text-neutral-500 hover:text-white'}`}>{sch}</button>
+                    ))}
+                  </div>
+
+                  {isDataLoading ? (
+                   <div className="flex-1 space-y-4 custom-scrollbar pr-2">
+                      <Skeleton className="h-40 w-full" />
+                      <Skeleton className="h-40 w-full" />
+                   </div>
+                ) : (
+                   <div className="flex-1 overflow-y-auto pr-3 space-y-5 custom-scrollbar">
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {dbDinamico[schedaAttiva].esercizi.map((es: any) => {
+                      const nomeAttuale = eserciziModificati[es.id] || es.nome;
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const altEs = es.alternative.find((a: any) => a.nome === nomeAttuale);
+                      const currentEx = altEs || es;
+                      
+                      const ultimoCarico = getUltimoCarico(es.id);
+                      const numeroSetTarget = getNumeroSet(es.fase);
+                      const phaseColor = es.fase.includes('Fase 1') ? '#10b981' : (es.fase.includes('Fase 2') ? '#0ea5e9' : '#f43f5e'); // Emerald, Sky, Rose
+                      
+                      const animType = currentEx.anim || "chest_barbell_flat"; 
+                      
+                      let repMostrate = es.rep;
+                      if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
+
+                      return (
+                        <div key={`${es.id}-${nomeAttuale}`} className={`${UI.glassPanel} relative overflow-hidden group`}>
+                          <div className={`absolute top-0 left-0 w-1.5 h-full opacity-80`} style={{backgroundColor: phaseColor, boxShadow: `0 0 12px ${phaseColor}`}}></div>
+                          <div className="pl-3">
+                            <div className="flex justify-between items-start mb-1">
+                              <span className="text-[9px] uppercase font-bold tracking-widest" style={{color: phaseColor}}>{es.fase}</span>
+                              <button onClick={() => apriSwapEsercizio(es)} className={UI.btnSecondary + " !py-1 !px-2.5 opacity-0 group-hover:opacity-100"}>Swap</button>
                             </div>
-                          </div>
-                          <p className="text-[10px] font-bold px-2 py-1 mt-3 rounded border w-fit bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] text-neutral-300 border-white/20">{repMostrate}</p>
-                          <div className="mt-4 pt-3 border-t border-white/10">
-                            <div className="flex justify-between items-center mb-2">
-                              <span className="text-[9px] uppercase font-bold text-neutral-500">Target Ultima: <span className="text-lime-300">{ultimoCarico ? `${ultimoCarico} kg` : '-'}</span></span>
+                            <div className="flex items-center gap-5 mt-2">
+                              <div className="bg-black/30 p-2 rounded-xl shadow-inner border border-white/5"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
+                              <div className="flex-1">
+                                 <h3 className="font-semibold text-sm text-white mb-1.5">{nomeAttuale}</h3>
+                                 <p className="text-[10px] text-teal-100/60 leading-relaxed font-medium line-clamp-2">{currentEx.dettaglio}</p>
+                              </div>
                             </div>
-                            <div className="flex gap-2">
-                              {Array.from({ length: numeroSetTarget }).map((_, i) => (
-                                <div key={i} className="flex-1">
-                                  <label className="text-[8px] text-neutral-500 uppercase block text-center mb-1">Set {i+1}</label>
-                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-orange-500/30 p-2 rounded text-xs text-center text-white font-bold outline-none focus:border-orange-500" placeholder="-" />
-                                </div>
-                              ))}
+                            <div className="mt-4 flex items-center justify-between">
+                               <p className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-black/30 text-white border border-white/5 shadow-inner tracking-wide">{repMostrate}</p>
+                               {ultimoCarico !== '0' && <span className="text-[9px] font-bold text-neutral-400 bg-white/5 px-2 py-1 rounded-md border border-white/5">Ultima: <span className="text-lime-300 ml-1">{ultimoCarico}kg</span></span>}
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-white/5">
+                              <div className="flex gap-3">
+                                {Array.from({ length: numeroSetTarget }).map((_, i) => (
+                                  <div key={i} className="flex-1 relative">
+                                    <label className="text-[8px] text-neutral-500 uppercase font-bold tracking-widest block text-center mb-1.5">Set {i+1}</label>
+                                    <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-black/40 border border-white/10 shadow-[inset_2px_2px_6px_rgba(0,0,0,0.5)] p-2.5 rounded-xl text-xs text-center text-white font-bold outline-none focus:border-emerald-500 focus:bg-black/60 transition-all placeholder:text-neutral-700" placeholder="-" />
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-              <button onClick={salvaSessione} className="w-full mt-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_20px_rgba(16,185,129,0.4)] border-none text-white text-white font-bold uppercase tracking-widest text-sm rounded-lg shadow-lg shrink-0 hover:bg-lime-400 transition-all">Salva Database</button>
+                      );
+                    })}
+                  </div>
+                )}
+                <button onClick={salvaSessione} className={UI.btnPrimary + " mt-5 !py-4"}>SALVA SESSIONE</button>
               </>
             ) : vistaGraficiCarichi ? (
-              <div className="flex-1 overflow-y-auto space-y-4">
-                 <div className="bg-[#050f14] p-4 rounded-xl border border-white/10">
-                   <label className="text-[10px] text-neutral-400 font-bold uppercase block mb-2">Seleziona Esercizio:</label>
-                   <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className="w-full bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] text-white text-xs p-2 rounded border border-white/20 outline-none mb-4">
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar">
+                 <div className={UI.glassPanel}>
+                   <label className={UI.label}>Seleziona Esercizio</label>
+                   <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className={UI.input + " mb-4"}>
                      {Object.values(baseDbAllenamento).flatMap(g => g.esercizi).map(es => (<option key={es.id} value={es.id}>{eserciziModificati[es.id] || es.nome}</option>))}
                    </select>
                    <SvgLineChart data={getDataGraficoEsercizio()} label={Object.values(baseDbAllenamento).flatMap(g => g.esercizi).find(e => e.id === esercizioGraficoSelezionato)?.nome || "Esercizio"} />
                  </div>
               </div>
             ) : (
-              <div className="flex-1 overflow-y-auto space-y-4">
-                {storicoSessioni.length === 0 ? <div className="text-center p-10 text-neutral-500 border border-dashed border-white/10 rounded-xl">Nessuna sessione salvata.</div> : (
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar">
+                {storicoSessioni.length === 0 ? <p className="text-[11px] text-neutral-500 italic text-center p-6 bg-black/20 rounded-2xl border border-white/5 shadow-inner">Nessuna sessione salvata.</p> : (
                   [...storicoSessioni].reverse().map((sess) => (
-                    <div key={sess.oraId} className="bg-[#050f14] p-4 rounded-xl border border-white/10">
-                      <span className="font-bold text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.6)] block">{sess.giorno} - Scheda {sess.scheda}</span>
-                      <span className="text-[10px] text-neutral-400 font-mono mb-2 block">{sess.data}</span>
-                      <div className="space-y-2 text-xs">
+                    <div key={sess.oraId} className={UI.glassPanel}>
+                      <span className="font-bold text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.4)] block text-sm tracking-wide">{sess.giorno} - Scheda {sess.scheda}</span>
+                      <span className="text-[10px] text-neutral-500 font-medium mb-4 block tracking-widest mt-1">{sess.data}</span>
+                      <div className="space-y-2.5">
                         {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
-                          <div key={idEs} className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] p-2 rounded flex justify-between items-center gap-2">
-                            <span className="text-neutral-400 truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                            <span className="font-bold text-white bg-[#050f14] px-2 py-1 rounded">{pesoStr as string} kg</span>
+                          <div key={idEs} className="bg-black/20 shadow-inner p-3 rounded-xl flex justify-between items-center gap-3 border border-white/5">
+                            <span className="text-neutral-300 text-xs font-medium truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
+                            <span className="font-bold text-lime-300 bg-[#071318] px-3 py-1.5 rounded-lg border border-white/5 shadow-md text-xs">{pesoStr as string} kg</span>
                           </div>
                         ))}
                       </div>
@@ -1589,19 +1636,19 @@ ${saluteW}` };
 
       {/* --- MODALI SWAP --- */}
       {modalEsercizio && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/20 rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-              <h3 className="font-bold text-lg text-white">Sostituisci Esercizio</h3>
-              <button onClick={() => setModalEsercizio(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
+        <div className="fixed inset-0 bg-[#071318]/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className={UI.card + " w-full max-w-md p-6 relative"}>
+            <div className="flex justify-between items-center mb-5 border-b border-white/10 pb-3">
+              <h3 className="font-semibold text-lg text-white tracking-wide">Sostituisci Esercizio</h3>
+              <button onClick={() => setModalEsercizio(false)} className="text-neutral-500 hover:text-white text-2xl transition-colors">&times;</button>
             </div>
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {esercizioDaCambiare.alternative.map((alt: any, i: number) => (
-                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-4 bg-[#050f14] border border-white/10 rounded-lg hover:border-orange-500/50 group transition-all">
-                  <p className="font-bold text-sm text-white group-hover:text-lime-300">{alt.nome}</p>
-                  <p className="text-[10px] text-neutral-500 mt-1 uppercase font-bold mb-2">{alt.note}</p>
-                  <p className="text-[10px] text-neutral-400 leading-snug">{alt.dettaglio}</p>
+                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-4 bg-black/30 border border-white/5 shadow-inner rounded-2xl hover:border-emerald-500/50 group transition-all">
+                  <p className="font-semibold text-sm text-white group-hover:text-emerald-400 transition-colors">{alt.nome}</p>
+                  <p className="text-[10px] text-teal-200/50 mt-1.5 uppercase font-bold tracking-widest mb-2">{alt.note}</p>
+                  <p className="text-[11px] text-neutral-400 leading-relaxed font-medium">{alt.dettaglio}</p>
                 </button>
               ))}
             </div>
@@ -1610,25 +1657,25 @@ ${saluteW}` };
       )}
 
       {modalAlimento && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/20 rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-              <h3 className="font-bold text-lg text-white">Sostituisci Pasto</h3>
-              <button onClick={() => setModalAlimento(false)} className="text-neutral-500 hover:text-white text-xl">&times;</button>
+        <div className="fixed inset-0 bg-[#071318]/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className={UI.card + " w-full max-w-md p-6 relative"}>
+            <div className="flex justify-between items-center mb-5 border-b border-white/10 pb-3">
+              <h3 className="font-semibold text-lg text-white tracking-wide">Sostituisci Pasto</h3>
+              <button onClick={() => setModalAlimento(false)} className="text-neutral-500 hover:text-white text-2xl transition-colors">&times;</button>
             </div>
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
               {/* @ts-ignore */}
               {dbAlimenti[categoriaDaCambiare].map((alt, i) => {
                  const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
                  const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
                  return (
-                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-[#050f14] border border-white/10 rounded-lg hover:border-emerald-500/50 group transition-all">
-                    <div className="flex justify-between items-start">
-                      <p className="font-bold text-sm text-white group-hover:text-emerald-400">{alt.nome}</p>
-                      <span className="text-[10px] bg-white/10 backdrop-blur-md border border-white/10 text-white px-1.5 py-0.5 rounded font-bold ml-2">{swapKcal} Kcal</span>
+                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-4 bg-black/30 border border-white/5 shadow-inner rounded-2xl hover:border-teal-500/50 group transition-all">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-semibold text-sm text-white group-hover:text-teal-400 transition-colors pr-2">{alt.nome}</p>
+                      <span className="text-[10px] bg-white/10 backdrop-blur-md border border-white/5 text-white px-2 py-1 rounded-lg font-bold tracking-widest shrink-0">{swapKcal} Kcal</span>
                     </div>
-                    <p className="text-[11px] text-neutral-500 mt-1 font-mono">CHO: {macroCho}g | PRO: {alt.pro}g | FAT: {alt.fat}g</p>
-                    <p className="text-[10px] text-neutral-400 mt-2 p-1.5 bg-white/5 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.1)] border border-white/10 rounded">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
+                    <p className="text-[10px] text-neutral-400 font-bold tracking-widest bg-black/40 inline-block px-2 py-1 rounded-md mb-3">C {macroCho}g <span className="mx-1 text-neutral-600">|</span> P {alt.pro}g <span className="mx-1 text-neutral-600">|</span> F {alt.fat}g</p>
+                    <p className="text-[11px] text-neutral-300 font-medium leading-relaxed bg-white/5 p-2 rounded-xl border border-white/5">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
                   </button>
                  );
               })}
@@ -1636,6 +1683,14 @@ ${saluteW}` };
           </div>
         </div>
       )}
-    </main>
+      </main>
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(16,185,129,0.5); }
+      `}} />
+    </div>
   );
 }
