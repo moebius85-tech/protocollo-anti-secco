@@ -29,30 +29,30 @@ const UI = {
 
 const baseDbAllenamento = {
   Spinta: { focus: "SPINTA (Petto, Spalle, Tricipiti)", esercizi: [
-    { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi fino a sfiorare il petto e spingi verso l'alto.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
-    { id: "e3", nome: "Panca inclinata manubri", anim: "chest_db_incline", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci clavicolari.", alternative: [{ nome: "Panca inclinata bilanciere", anim: "chest_barbell_incline", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata." }, { nome: "Chest Press Inclinata", anim: "chest_machine_incline", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata." }] },
-    { id: "e4", nome: "Chest press", anim: "chest_machine_flat", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale.", alternative: [{ nome: "Pectoral Machine", anim: "chest_pec_deck", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti." }, { nome: "Croci cavi seduto", anim: "chest_cable_seated", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro." }] },
-    { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti.", alternative: [{ nome: "Croci cavi piana", anim: "chest_cable_flat", note: "Tensione continua", dettaglio: "CAVI: Dai cavi bassi." }, { nome: "Pec Deck (Fly)", anim: "chest_pec_deck", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck." }] },
-    { id: "e18", nome: "Lento avanti manubri", anim: "shoulder_db_seated", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Seduto a 90°. Parti con i manubri alle orecchie e spingi dritto.", alternative: [{ nome: "Military Press", anim: "shoulder_military", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi." }, { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale." }] },
-    { id: "e20", nome: "Alzate laterali cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso.", alternative: [{ nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi." }, { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi." }] },
-    { id: "e22", nome: "Panca stretta", anim: "tricep_close_grip", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa stretta. Gomiti incollati al busto e spingi in alto.", alternative: [{ nome: "French Press", anim: "tricep_french_press", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso." }, { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "LIBERO/ZAVORRA: Scendi piegando le braccia." }] },
-    { id: "e27", nome: "Push down corda", anim: "tricep_pushdown", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità.", alternative: [{ nome: "Push down sbarra", anim: "tricep_pushdown", note: "Carico maggiore", dettaglio: "CAVI: Sbarra dritta." }, { nome: "Estensioni nuca", anim: "tricep_overhead", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi dietro la testa." }] }
+    { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
+    { id: "e3", nome: "Panca inclinata manubri", anim: "chest_db_incline", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°.", alternative: [{ nome: "Panca inclinata bilanciere", anim: "chest_barbell_incline", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata." }, { nome: "Chest Press Inclinata", anim: "chest_machine_incline", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata." }] },
+    { id: "e4", nome: "Chest press", anim: "chest_machine_flat", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato.", alternative: [{ nome: "Pectoral Machine", anim: "chest_pec_deck", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti." }, { nome: "Croci cavi seduto", anim: "chest_cable_seated", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro." }] },
+    { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana.", alternative: [{ nome: "Croci cavi piana", anim: "chest_cable_flat", note: "Tensione continua", dettaglio: "CAVI: Dai cavi bassi." }, { nome: "Pec Deck (Fly)", anim: "chest_pec_deck", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck." }] },
+    { id: "e18", nome: "Lento avanti manubri", anim: "shoulder_db_seated", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Seduto a 90°.", alternative: [{ nome: "Military Press", anim: "shoulder_military", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi." }, { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale." }] },
+    { id: "e20", nome: "Alzate laterali cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente.", alternative: [{ nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi." }, { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi." }] },
+    { id: "e22", nome: "Panca stretta", anim: "tricep_close_grip", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa stretta.", alternative: [{ nome: "French Press", anim: "tricep_french_press", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso." }, { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "LIBERO/ZAVORRA: Scendi piegando le braccia." }] },
+    { id: "e27", nome: "Push down corda", anim: "tricep_pushdown", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso.", alternative: [{ nome: "Push down sbarra", anim: "tricep_pushdown", note: "Carico maggiore", dettaglio: "CAVI: Sbarra dritta." }, { nome: "Estensioni nuca", anim: "tricep_overhead", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi dietro la testa." }] }
   ]},
   Tirata: { focus: "TIRATA (Schiena, Bicipiti)", esercizi: [
-    { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il corpo verso l'alto.", alternative: [{ nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono." }, { nome: "Lat Machine Triang.", anim: "back_pulldown_triangle", note: "Focus centrale", dettaglio: "MACCHINARIO: Triangolo presa stretta." }] },
-    { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico.", alternative: [{ nome: "Rematore Manubrio", anim: "back_row_db", note: "Unilaterale", dettaglio: "MANUBRI: In appoggio su panca." }, { nome: "Rematore T-Bar", anim: "back_t_bar", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira." }] },
-    { id: "e9", nome: "Pulley seduto", anim: "back_pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto, tira la maniglia verso l'addome basso.", alternative: [{ nome: "Chest Supported", anim: "back_chest_supported", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Petto in appoggio." }, { nome: "Seal Row", anim: "back_seal_row", note: "Puro isolamento", dettaglio: "BILANCIERE: Sdraiato prono su panca." }] },
-    { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover_cable", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: Cavo alto con sbarra. Spingi verso le cosce.", alternative: [{ nome: "Pullover Macchina", anim: "back_pullover_cable", note: "Tensione continua", dettaglio: "MACCHINARIO: Macchina specifica." }, { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Di traverso su panca." }] },
-    { id: "e23", nome: "Curl bilanciere EZ", anim: "bicep_barbell", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE EZ: In piedi. Solleva verso le spalle.", alternative: [{ nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: Fletti un braccio alla volta." }, { nome: "Curl Cavo Basso", anim: "bicep_cable_bar", note: "Tensione continua", dettaglio: "CAVI: Cavo basso con sbarra corta." }] },
-    { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso. Presa a martello.", alternative: [{ nome: "Curl Inclinata", anim: "bicep_incline_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°." }, { nome: "Spider Curl", anim: "bicep_spider_curl", note: "Picco bicipite", dettaglio: "BILANCIERE: Petto in appoggio." }] }
+    { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra.", alternative: [{ nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono." }, { nome: "Lat Machine Triang.", anim: "back_pulldown_triangle", note: "Focus centrale", dettaglio: "MACCHINARIO: Triangolo presa stretta." }] },
+    { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°.", alternative: [{ nome: "Rematore Manubrio", anim: "back_row_db", note: "Unilaterale", dettaglio: "MANUBRI: In appoggio su panca." }, { nome: "Rematore T-Bar", anim: "back_t_bar", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira." }] },
+    { id: "e9", nome: "Pulley seduto", anim: "back_pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto, tira la maniglia.", alternative: [{ nome: "Chest Supported", anim: "back_chest_supported", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Petto in appoggio." }, { nome: "Seal Row", anim: "back_seal_row", note: "Puro isolamento", dettaglio: "BILANCIERE: Sdraiato prono su panca." }] },
+    { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover_cable", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: Cavo alto con sbarra.", alternative: [{ nome: "Pullover Macchina", anim: "back_pullover_cable", note: "Tensione continua", dettaglio: "MACCHINARIO: Macchina specifica." }, { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Di traverso su panca." }] },
+    { id: "e23", nome: "Curl bilanciere EZ", anim: "bicep_barbell", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE EZ: In piedi.", alternative: [{ nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: Fletti un braccio alla volta." }, { nome: "Curl Cavo Basso", anim: "bicep_cable_bar", note: "Tensione continua", dettaglio: "CAVI: Cavo basso con sbarra corta." }] },
+    { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso.", alternative: [{ nome: "Curl Inclinata", anim: "bicep_incline_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°." }, { nome: "Spider Curl", anim: "bicep_spider_curl", note: "Picco bicipite", dettaglio: "BILANCIERE: Petto in appoggio." }] }
   ]},
   Gambe: { focus: "GAMBE E POLPACCI", esercizi: [
-    { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo.", alternative: [{ nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori." }, { nome: "Hack Squat Libero", anim: "leg_hack_barbell", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe." }, { nome: "Hack Squat Macchina", anim: "leg_hack_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Focus spinta." }] },
-    { id: "e12", nome: "Hack squat", anim: "leg_hack_machine", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena. Scendi e spingi su.", alternative: [{ nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana." }, { nome: "Belt Squat", anim: "leg_belt_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi." }] },
+    { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi.", alternative: [{ nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori." }, { nome: "Hack Squat Libero", anim: "leg_hack_barbell", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe." }, { nome: "Hack Squat Macchina", anim: "leg_hack_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Focus spinta." }] },
+    { id: "e12", nome: "Hack squat", anim: "leg_hack_machine", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena.", alternative: [{ nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana." }, { nome: "Belt Squat", anim: "leg_belt_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi." }] },
     { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Scendi portando le ginocchia verso il petto.", alternative: [{ nome: "Affondi Manubri", anim: "leg_lunge", note: "Equilibrio", dettaglio: "MANUBRI: In camminata o sul posto." }, { nome: "Bulgarian Squat", anim: "leg_bulgarian", note: "Unilaterale", dettaglio: "MANUBRI: Piede posteriore su panca." }] },
-    { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Distendi le gambe strizzando forte i quadricipiti.", alternative: [{ nome: "Sissy Squat", anim: "leg_sissy_squat", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci e lasciati cadere." }, { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto." }] },
-    { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Scivola lungo le cosce spingendo il sedere indietro.", alternative: [{ nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte." }, { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto." }] },
-    { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo.", alternative: [{ nome: "Leg Curl Seduto", anim: "leg_curl_seduto", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola il bicipite femorale." }, { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto." }] },
+    { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Distendi le gambe strizzando forte i quadricipiti.", alternative: [{ nome: "Sissy Squat", anim: "leg_sissy_squat", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci." }, { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto." }] },
+    { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Scivola lungo le cosce.", alternative: [{ nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte." }, { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto." }] },
+    { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei.", alternative: [{ nome: "Leg Curl Seduto", anim: "leg_curl_seduto", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola il bicipite femorale." }, { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto." }] },
     { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine.", alternative: [{ nome: "Calf Press", anim: "leg_calf_press", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press." }, { nome: "Calf Seduto", anim: "leg_calf_seated", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, solleva i talloni." }] }
   ]}
 };
@@ -148,7 +148,7 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
 
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   if (!data || data.length === 0) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Dati insufficienti.</p>;
-  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Un solo dato. Esegui un&apos;altra sessione.</p>;
+  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Un solo dato.</p>;
   const maxVal = Math.max(...data);
   const minVal = Math.min(...data);
   const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
@@ -226,7 +226,6 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
     </div>
   );
 };
-
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -519,9 +518,7 @@ export default function Home() {
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
           setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
-          responseText += `
-
-✨ Macro calcolati per ${match[1]}!`;
+          responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
     } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore." }]); }
@@ -552,9 +549,7 @@ export default function Home() {
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
       else { 
-        alert(`Sistema Aggiornato.
-TDEE Ricalcolato per regime: ${tipoDieta}
-Obiettivo: ${protocolloAttivo}`); 
+        alert(`Sistema Aggiornato.\nTDEE Ricalcolato per regime: ${tipoDieta}\nObiettivo: ${protocolloAttivo}`); 
         caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
       } 
     } else { alert("Peso, Età e Altezza sono obbligatori."); }
@@ -705,44 +700,21 @@ Obiettivo: ${protocolloAttivo}`);
 
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
     let preW = "";
-    if (quandoTiAlleni === 'sera') { preW = `1️⃣ PRE-WORKOUT:
-• L-Citrullina: 6-8g
-• Ashwagandha: 500mg`; } 
-    else { preW = `1️⃣ PRE-WORKOUT:
-• Caffeina: 200mg
-• L-Citrullina: 6g`; }
-    if (protocolloAttivo === 'Shred') preW += `
-• ALC: 1.5g`;
+    if (quandoTiAlleni === 'sera') { preW = `1️⃣ PRE-WORKOUT:\n• L-Citrullina: 6-8g\n• Ashwagandha: 500mg`; } 
+    else { preW = `1️⃣ PRE-WORKOUT:\n• Caffeina: 200mg\n• L-Citrullina: 6g`; }
+    if (protocolloAttivo === 'Shred') preW += `\n• ALC: 1.5g`;
 
     let intraW = "2️⃣ INTRA-WORKOUT:";
-    if (activeDieta === 'Keto') { intraW += `
-• Elettroliti
-• MCT Oil: 10g
-• EAA: 15g
-• ❌ ZERO Carboidrati`; } 
-    else if (activeDieta === 'LowCarb') { intraW += `
-• Ciclodestrine: ${intraCho}g
-• EAA: 15g`; } 
-    else { intraW += `
-• Ciclodestrine: ${intraCho}g
-• EAA: 15g
-• Creatina: 5g`; }
+    if (activeDieta === 'Keto') { intraW += `\n• Elettroliti\n• MCT Oil: 10g\n• EAA: 15g\n• ❌ ZERO Carboidrati`; } 
+    else if (activeDieta === 'LowCarb') { intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g`; } 
+    else { intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g\n• Creatina: 5g`; }
 
     let saluteW = "3️⃣ SALUTE:";
-    if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') { saluteW += `
-• Omega-3: 2-3g
-• Multivitaminico`; } 
-    else { saluteW += `
-• Omega-3: 1g
-• Vitamina D3 + K2`; }
+    if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') { saluteW += `\n• Omega-3: 2-3g\n• Multivitaminico`; } 
+    else { saluteW += `\n• Omega-3: 1g\n• Vitamina D3 + K2`; }
 
-    const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}
-
-${intraW}
-
-${saluteW}` };
-    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.
-• Acqua, Caffè amaro, Tè.` };
+    const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
+    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.\n• Acqua, Caffè amaro, Tè.` };
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t: any[] = [];
@@ -769,7 +741,6 @@ ${saluteW}` };
     }
     return t;
   };
-
   if (appState === 'HOME') {
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
@@ -934,7 +905,7 @@ ${saluteW}` };
                      </select>
                    </div>
                    
-                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#c1c9d2,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
@@ -942,11 +913,11 @@ ${saluteW}` };
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -1113,17 +1084,17 @@ ${saluteW}` };
                   <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
                 </select>
               </div>
-              <div className="space-y-5">
-                <div className={UI.panelInset + " !p-4"}>
-                  <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-3 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
+              <div className="space-y-6">
+                <div className={UI.panelInset}>
+                  <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
                   <div className="flex space-x-4">
                     <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                     <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                   </div>
                 </div>
                 {tipoTurno === 'spezzato' && (
-                  <div className={UI.panelInset + " !p-4"}>
-                    <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-3 block">Pomeriggio (Lavoro)</span>
+                  <div className={UI.panelInset}>
+                    <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
                     <div className="flex space-x-4">
                       <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                       <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
@@ -1147,7 +1118,7 @@ ${saluteW}` };
               </div>
             </section>
 
-            <section className={UI.card + " p-7"}>
+            <section className={UI.card}>
               <div className="flex flex-col mb-8">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Piano Nutrizionale</h2>
@@ -1192,11 +1163,11 @@ ${saluteW}` };
                 <div className="flex gap-4 mt-2">
                   <div className={UI.panelInset + " flex-1 text-center !p-3"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
-                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
+                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
                   </div>
                   <div className={UI.panelInset + " flex-1 text-center !p-3"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
-                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
+                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
                   </div>
                   <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-3 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
                      <span className="text-[9px] text-cyan-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
@@ -1426,7 +1397,7 @@ ${saluteW}` };
                         {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
                           <div key={idEs} className="bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl flex justify-between items-center gap-4">
                             <span className="text-slate-600 text-[13px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-md text-sm">{pesoStr as string} kg</span>
+                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-sm">{pesoStr as string} kg</span>
                           </div>
                         ))}
                       </div>
