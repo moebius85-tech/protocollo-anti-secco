@@ -19,10 +19,10 @@ const UI = {
   card: `${colorBg} ${shadowOutset} rounded-[2rem] p-5 sm:p-6 lg:p-8`,
   panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem] p-5`,
   panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem] p-5`,
-  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
+  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-600 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
   btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(6,182,212,0.3)] hover:shadow-[0_12px_20px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none cursor-pointer`,
   btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-cyan-500 py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px] cursor-pointer`,
-  label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1",
+  label: "text-[10px] text-slate-400 uppercase font-bold tracking-widest block mb-2 px-1",
   pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)] cursor-pointer`,
   pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-cyan-500 cursor-pointer`
 };
@@ -63,7 +63,7 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
       <svg width="110" height="170" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
          <defs>
             <linearGradient id="gradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
-               <stop offset="0%" stopColor="#22d3ee" /><stop offset="100%" stopColor="#3b82f6" />
+               <stop offset="0%" stopColor="#00c6ff" /><stop offset="100%" stopColor="#0072ff" />
             </linearGradient>
          </defs>
          <circle cx="50" cy="20" r="14" fill="#E0E5EC" stroke={getActive('head')} strokeWidth="4" className="transition-all duration-700" />
@@ -92,12 +92,12 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   const points = data.map((val, i) => `${padding + (i / (data.length - 1)) * (width - padding * 2)},${height - padding - ((val - minVal) / range) * (height - padding * 2)}`).join(" ");
   return (
     <div className={UI.panelInset + " mt-4 p-4"}>
-       <span className={UI.label + " !text-cyan-500 mb-4"}>{label} - Trend</span>
+       <span className={UI.label + " !text-[#00c6ff] mb-4"}>{label} - Trend</span>
        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-md">
-          <polyline points={points} fill="none" stroke="#0ea5e9" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={points} fill="none" stroke="#00c6ff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           {data.map((val, i) => {
             const x = padding + (i / (data.length - 1)) * (width - padding * 2); const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
-            return <g key={i}><circle cx={x} cy={y} r="5" fill="#E0E5EC" stroke="#0ea5e9" strokeWidth="3" /><text x={x} y={y - 12} fill="#64748b" fontSize="11" textAnchor="middle" fontWeight="bold">{val}</text></g>;
+            return <g key={i}><circle cx={x} cy={y} r="5" fill="#E0E5EC" stroke="#00c6ff" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>;
           })}
        </svg>
     </div>
@@ -114,7 +114,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
   const sections = [ { label: 'BMI', val: bmi, color: '#c084fc', angle: 0 }, { label: 'BMR', val: bmr > 0 ? bmr : '-', color: '#38bdf8', angle: 60 }, { label: 'MUSCOLO', val: mm > 0 ? `${mm}%` : '-', color: '#60a5fa', angle: 120 }, { label: 'ACQUA', val: bw > 0 ? `${bw}%` : '-', color: '#a855f7', angle: 180 }, { label: 'GRASSO', val: bf > 0 ? `${bf}%` : '-', color: '#818cf8', angle: 240 }, { label: 'PESO', val: w > 0 ? w : '-', color: '#94a3b8', angle: 300 } ];
   
   return (
-    <div className={UI.panelInset + " relative w-full max-w-[280px] mx-auto h-[320px] flex items-center justify-center overflow-hidden mt-6 !p-0"}>
+    <div className={UI.panelInset + " relative w-full max-w-[320px] mx-auto h-[350px] flex items-center justify-center overflow-hidden mt-6 !p-0"}>
        <svg viewBox="0 0 500 500" className="w-full h-full drop-shadow-md z-10 p-6">
           <g transform="translate(250, 250) rotate(-120)">
              {sections.map((sec, i) => <circle key={i} cx="0" cy="0" r={radius} fill="none" stroke={sec.color} strokeWidth={strokeW} strokeDasharray={`${seg - 8} ${c}`} strokeDashoffset={-(i * seg)} className="opacity-90 hover:opacity-100 transition-opacity cursor-pointer" strokeLinecap="round" />)}
@@ -123,7 +123,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              const pos = getLabelPos(sec.angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
-                 <text x={pos.x} y={pos.y - 10} fill="#475569" fontSize="16" textAnchor="middle" fontWeight="bold" className="tracking-widest" style={{textShadow: "0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8)"}}>{sec.label}</text>
+                 <text x={pos.x} y={pos.y - 12} fill="#475569" fontSize="16" textAnchor="middle" fontWeight="bold" className="tracking-widest" style={{textShadow: "0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8)"}}>{sec.label}</text>
                  <text x={pos.x} y={pos.y + 16} fill="#1e293b" fontSize="32" textAnchor="middle" fontWeight="900" style={{textShadow: "0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8)"}}>{sec.val}</text>
                </g>
              )
@@ -135,7 +135,6 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
     </div>
   );
 };
-
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -522,14 +521,13 @@ export default function Home() {
     }
     return t;
   };
-
   if (appState === 'HOME') {
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
         <div className={UI.card + " w-full max-w-md z-10 anim-pop"} style={{animationDelay: '0.1s'}}>
            <div className="flex justify-center items-center mb-8">
               <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
-                OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-black drop-shadow-sm">FIT</span>
+                OMNI<span className="text-[#00c6ff] drop-shadow-sm font-black">FIT</span>
               </h1>
            </div>
            
@@ -538,7 +536,7 @@ export default function Home() {
                  <div className="flex justify-between items-center mb-2 px-2">
                    <label className={UI.label + " !mb-0 !px-0"}>1. Seleziona Atleta</label>
                    {utenteCorrente !== "Leonardo" && (
-                     <button onClick={eliminaAtleta} className="text-[9px] bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-600 px-3 py-1.5 rounded-full font-bold uppercase transition-all">🗑️ Elimina</button>
+                     <button onClick={eliminaAtleta} className="text-[9px] bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-600 px-3 py-1.5 rounded-full font-bold uppercase transition-all">🗑️ Elimina</button>
                    )}
                  </div>
                  <select value={utenteCorrente} onChange={e => setUtenteCorrente(e.target.value)} className={UI.input}>
@@ -732,7 +730,7 @@ export default function Home() {
         <div>
           <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-2 block transition-all bg-[#E0E5EC] px-4 py-2 rounded-full shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">⬅️ Torna alla Home</button>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
-            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00c6ff] to-[#0072ff] font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
           </h1>
         </div>
         <div className="text-right">
@@ -796,7 +794,7 @@ export default function Home() {
                     <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
                  </div>
 
-                 <button onClick={valutaCheckFisico} className="w-full mt-4 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold uppercase tracking-widest p-4 rounded-2xl shadow-[0_8px_15px_rgba(6,182,212,0.3)] hover:shadow-[0_12px_20px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer anim-pop" style={{animationDelay: '0.6s'}}>Salva Dati</button>
+                 <button onClick={valutaCheckFisico} className="w-full mt-4 bg-gradient-to-r from-[#00c6ff] to-[#0072ff] text-white font-bold uppercase tracking-widest p-4 rounded-2xl shadow-[0_8px_15px_rgba(0,198,255,0.3)] hover:shadow-[0_12px_20px_rgba(0,198,255,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer anim-pop" style={{animationDelay: '0.6s'}}>Salva Dati</button>
                </div>
             ) : (
                <div className="flex-1 overflow-y-auto space-y-5 pr-2 max-h-[600px] custom-scrollbar relative z-10">
@@ -810,14 +808,14 @@ export default function Home() {
                                <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] px-2.5 py-1.5 rounded-full active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">🗑️</button>
                             </div>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Peso</span> <strong className="text-slate-600 text-xs">{mis.peso || '-'}kg</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Petto</span> <strong className="text-slate-600 text-xs">{circ.petto || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Spalle</span> <strong className="text-slate-600 text-xs">{circ.spalle || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600 text-xs">{circ.braccia || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600 text-xs">{circ.gambe || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600 text-xs">{circ.glutei || '-'}cm</strong></p>
-                               <p className="bg-cyan-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-cyan-600 flex justify-between items-center"><span>Vita</span> <strong className="text-cyan-600 text-xs">{circ.vita || '-'}cm</strong></p>
-                               <p className="bg-blue-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-blue-600 flex justify-between items-center"><span>BIA</span> <strong className="text-blue-600 text-xs">{circ.bodyFat || '-'}%</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Peso</span> <strong className="text-slate-600">{mis.peso || '-'}kg</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Petto</span> <strong className="text-slate-600">{circ.petto || '-'}cm</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Spalle</span> <strong className="text-slate-600">{circ.spalle || '-'}cm</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600">{circ.braccia || '-'}cm</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600">{circ.gambe || '-'}cm</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600">{circ.glutei || '-'}cm</strong></p>
+                               <p className="bg-cyan-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-cyan-600 flex justify-between items-center"><span>Vita</span> <strong className="text-cyan-600">{circ.vita || '-'}cm</strong></p>
+                               <p className="bg-blue-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-blue-600 flex justify-between items-center"><span>BIA</span> <strong className="text-blue-600">{circ.bodyFat || '-'}%</strong></p>
                             </div>
                          </div>
                        );
@@ -835,7 +833,7 @@ export default function Home() {
               {chatLog.map((msg, i) => (
                 <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} anim-pop`} style={{animationDelay: `${0.1 * i}s`}}>
                   <span className={`text-[9px] uppercase font-black tracking-widest mb-2 ${msg.role === 'user' ? 'text-slate-400 pr-2' : 'text-[#00c6ff] pl-2'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
-                  <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#E0E5EC] text-slate-600 rounded-tr-sm' : 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-tl-sm shadow-[0_8px_15px_rgba(6,182,212,0.3)]'}`}>{msg.text}</div>
+                  <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#E0E5EC] text-slate-600 rounded-tr-sm' : 'bg-gradient-to-br from-[#00c6ff] to-[#0072ff] text-white rounded-tl-sm shadow-[0_8px_15px_rgba(0,198,255,0.3)]'}`}>{msg.text}</div>
                 </div>
               ))}
               {isTyping && <div className="text-[10px] text-[#00c6ff] font-bold tracking-widest pl-2 animate-pulse mt-2">Elaborazione in corso...</div>}
@@ -851,8 +849,8 @@ export default function Home() {
             <div className="flex gap-3 relative">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
               <button onClick={() => fileInputRef.current?.click()} className="bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-500 hover:text-[#00c6ff] px-5 py-3.5 rounded-full transition-all border-none cursor-pointer">📎</button>
-              <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega..." className="flex-1 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-5 py-3.5 rounded-full text-[13px] text-slate-600 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none" />
-              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold px-7 rounded-full shadow-[0_8px_15px_rgba(6,182,212,0.3)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 transition-all border-none cursor-pointer">→</button>
+              <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega..." className="flex-1 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-5 py-3.5 rounded-full text-[13px] text-slate-600 outline-none focus:ring-2 focus:ring-[#00c6ff]/40 transition-all font-semibold placeholder:text-slate-400 border-none" />
+              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-gradient-to-r from-[#00c6ff] to-[#0072ff] text-white font-bold px-7 rounded-full shadow-[0_8px_15px_rgba(0,198,255,0.3)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 transition-all border-none cursor-pointer">→</button>
             </div>
           </section>
         </div>
@@ -860,39 +858,39 @@ export default function Home() {
         {/* COLONNA CENTRALE: Turni & Nutrizione */}
         <div className="flex flex-col gap-8 lg:col-span-4">
           <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop" style={{animationDelay: '0.4s'}}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-rose-400 opacity-80"></div>
             
             <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-200/50 pt-2">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Incastro Turni</h2>
-              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-[#00c6ff] font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none border-none cursor-pointer">
+              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-orange-500 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none border-none cursor-pointer">
                 <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
               </select>
             </div>
             <div className="space-y-6">
               <div className="bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] p-5 rounded-[1.5rem]">
-                <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
+                <span className="text-[10px] text-orange-500 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
                 <div className="flex space-x-5">
                   <div className="flex-1 relative">
                     <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Inizio</span>
-                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-[#00c6ff] transition-colors text-center" />
+                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-orange-400 transition-colors text-center" />
                   </div>
                   <div className="flex-1 relative">
                     <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Fine</span>
-                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-[#00c6ff] transition-colors text-center" />
+                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-orange-400 transition-colors text-center" />
                   </div>
                 </div>
               </div>
               {tipoTurno === 'spezzato' && (
                 <div className="bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] p-5 rounded-[1.5rem]">
-                  <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
+                  <span className="text-[10px] text-orange-500 uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
                   <div className="flex space-x-5">
                     <div className="flex-1 relative">
                       <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Inizio</span>
-                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-[#00c6ff] transition-colors text-center" />
+                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-orange-400 transition-colors text-center" />
                     </div>
                     <div className="flex-1 relative">
                       <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Fine</span>
-                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-[#00c6ff] transition-colors text-center" />
+                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-orange-400 transition-colors text-center" />
                     </div>
                   </div>
                 </div>
@@ -900,26 +898,26 @@ export default function Home() {
               <div className="pt-2 mt-4 border-t border-slate-200/50">
                 <div className="flex justify-between items-center mb-8 bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff]">
                    <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Digiuno Intermittente 16:8</span>
-                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer ${digiuno ? 'bg-gradient-to-r from-cyan-400 to-blue-500' : 'bg-slate-300'}`}>
+                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer ${digiuno ? 'bg-gradient-to-r from-orange-400 to-rose-400' : 'bg-slate-300'}`}>
                       <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
                    </button>
                 </div>
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 block px-1">Collocazione Allenamento</span>
                 <div className="flex space-x-3 bg-[#E0E5EC] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#a3b1c6,inset_-5px_-5px_10px_#ffffff]">
-                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-[#00c6ff] bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
-                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-[#00c6ff] bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
-                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-[#00c6ff] bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
+                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
+                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
+                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
                 </div>
               </div>
             </div>
           </section>
 
           <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop" style={{animationDelay: '0.5s'}}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-rose-400 opacity-80"></div>
             
             <div className="flex flex-col mb-8 pt-2">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Piano Nutrizionale</h2>
+                <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Piano Nutrizionale</h2>
                 <div className="flex gap-2 items-center">
                   {protocolloAutore === 'Gerardo Calvo (Reset Ormonale)' && (
                      <button 
@@ -928,7 +926,7 @@ export default function Home() {
                           const next = current === 150 ? 250 : (current === 250 ? 350 : 150);
                           setGerardoCarbOverride(next);
                        }}
-                       className="text-[9px] bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-purple-500 px-4 py-2.5 rounded-full font-black uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer"
+                       className="text-[9px] bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-rose-500 px-4 py-2.5 rounded-full font-black uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer"
                      >
                        🔄 Ciclo: {targetCho}g
                      </button>
@@ -947,7 +945,7 @@ export default function Home() {
                     className={`text-[9px] font-black px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] border-none ${
                       (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
                         ? 'bg-[#E0E5EC] text-slate-400' 
-                        : `bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_8px_15px_rgba(6,182,212,0.25)] text-white`
+                        : `bg-gradient-to-r from-orange-400 to-rose-400 shadow-[0_8px_15px_rgba(249,115,22,0.25)] text-white`
                     }`}
                   >
                   <option value="Equilibrata" className="bg-[#E0E5EC] text-slate-700">⚖️ Equilibrata</option>
@@ -961,14 +959,14 @@ export default function Home() {
               <div className="flex gap-4 mt-2">
                 <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex-1 text-center p-4 rounded-[1.5rem]">
                    <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
-                   <span className="text-[13px] text-slate-600 font-bold"><AnimatedCounter value={bmr} /></span>
+                   <span className="text-[14px] text-slate-600 font-bold"><AnimatedCounter value={bmr} /></span>
                 </div>
                 <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex-1 text-center p-4 rounded-[1.5rem]">
                    <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
-                   <span className="text-[13px] text-slate-600 font-bold"><AnimatedCounter value={baseTdee} /></span>
+                   <span className="text-[14px] text-slate-600 font-bold"><AnimatedCounter value={baseTdee} /></span>
                 </div>
-                <div className={`flex-[1.5] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(6,182,212,0.3)] flex flex-col justify-center`}>
-                   <span className="text-[9px] text-cyan-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
+                <div className={`flex-[1.5] bg-gradient-to-br from-orange-400 to-rose-400 rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(249,115,22,0.3)] flex flex-col justify-center`}>
+                   <span className="text-[9px] text-rose-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
                    <span className="text-[18px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
                 </div>
               </div>
@@ -981,7 +979,7 @@ export default function Home() {
                      <span className="text-sm font-bold text-slate-600"><AnimatedCounter value={Math.round(actualIntakeKcal * 0.2)} /> Kcal</span>
                   </div>
                   <div className="w-full bg-[#E0E5EC] h-3 rounded-full overflow-hidden flex shadow-[inset_2px_2px_5px_#a3b1c6]">
-                     <div className={`bg-gradient-to-r from-cyan-400 to-blue-500 h-full w-[80%]`}></div>
+                     <div className={`bg-gradient-to-r from-orange-400 to-rose-400 h-full w-[80%]`}></div>
                      <div className="bg-gradient-to-r from-amber-400 to-yellow-500 h-full w-[20%] shadow-[0_0_12px_#fbbf24]"></div>
                   </div>
                   <p className="text-[10px] text-slate-500 font-bold tracking-wide mt-4 leading-relaxed">Puoi destinare il 20% delle tue calorie odierne a cibi sfiziosi, senza sensi di colpa e restando nei target!</p>
@@ -999,11 +997,11 @@ export default function Home() {
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
                   return (
-                    <div key={`intra-${idx}`} className={`bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] bg-gradient-to-br from-cyan-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
-                      <div className="absolute top-0 left-0 w-2 h-full bg-[#00c6ff]"></div>
+                    <div key={`intra-${idx}`} className={`bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                      <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
                       <div className="flex justify-between items-start mb-4">
-                        <span className="text-xs uppercase font-black text-[#00c6ff] tracking-widest">{blocco.titolo}</span>
-                        <span className="text-[10px] font-black text-white bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-2 rounded-full shadow-md"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
+                        <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
+                        <span className="text-[10px] font-black text-white bg-gradient-to-r from-orange-400 to-rose-400 px-4 py-2 rounded-full shadow-md"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
                       </div>
                       <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
                     </div>
@@ -1017,14 +1015,14 @@ export default function Home() {
                 const isCustom = pastiCustom[cat].attivo;
 
                 return (
-                  <div key={`${cat}-${idx}`} className={`bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] p-6 rounded-3xl ${isPW ? 'ring-2 ring-cyan-300/50' : ''} anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                  <div key={`${cat}-${idx}`} className={`bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] p-6 rounded-3xl ${isPW ? 'ring-2 ring-rose-300/50' : ''} anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
                     <div className="flex justify-between items-center mb-5">
-                      <span className={`text-[12px] uppercase font-black tracking-widest ${isPW ? 'text-[#0072ff]' : 'text-slate-400'}`}>{blocco.titoloUI}</span>
+                      <span className={`text-[12px] uppercase font-black tracking-widest ${isPW ? 'text-rose-500' : 'text-slate-400'}`}>{blocco.titoloUI}</span>
                       <div className="flex gap-3">
                         {!isCustom ? (
                           <>
-                            <button onClick={() => toggleCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-500 hover:text-[#00c6ff] px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Custom</button>
-                            <button onClick={() => apriSwapAlimento(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-[#00c6ff] hover:text-[#0072ff] px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Swap</button>
+                            <button onClick={() => toggleCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Custom</button>
+                            <button onClick={() => apriSwapAlimento(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-orange-500 hover:text-rose-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Swap</button>
                           </>
                         ) : (
                            <button onClick={() => resetCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">🗑️ Reset</button>
@@ -1033,8 +1031,8 @@ export default function Home() {
                     </div>
                     
                     {isCustom ? (
-                       <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(6,182,212,0.2)] relative overflow-hidden`}>
-                         <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[#00c6ff] to-[#0072ff]"></div>
+                       <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+                         <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
                          <div className="flex gap-4 mb-4 ml-2">
                             <input type="text" placeholder="Es. 35g Plumcake" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50"} />
                             <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-6 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>🪄 AI</button>
@@ -1046,8 +1044,8 @@ export default function Home() {
                          </div>
                        </div>
                     ) : (
-                       <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(6,182,212,0.2)] relative overflow-hidden`}>
-                         <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-[#00c6ff] to-[#0072ff]"></div>
+                       <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+                         <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
                          <p className="font-bold text-[15px] text-slate-700 mb-3 ml-2 relative z-10">{itemScelto.nome}</p>
                          {finalCho === 0 && finalPro === 0 ? <p className="text-[11px] text-red-500 font-bold bg-red-50 p-3 rounded-xl inline-block shadow-sm relative z-10 ml-2">Pasto azzerato (Sgarro o Digiuno).</p> : <p className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2">{itemScelto.dettaglioGrammi(finalCho, finalPro, finalFat)}</p>}
                        </div>
@@ -1055,12 +1053,12 @@ export default function Home() {
                     
                     <div className="mt-5 flex justify-between items-center gap-4">
                        <div className={`flex-1 flex justify-between items-center ${UI.panelInset} !px-6 !py-3`}>
-                         <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">C</span><span className="text-sm font-bold text-[#00c6ff]">{finalCho}g</span></div>
-                         <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">P</span><span className="text-sm font-bold text-slate-600">{finalPro}g</span></div>
-                         <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">F</span><span className="text-sm font-bold text-slate-600">{finalFat}g</span></div>
+                         <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">C</span><span className="text-[15px] font-black text-orange-500">{finalCho}g</span></div>
+                         <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">P</span><span className="text-[15px] font-bold text-slate-600">{finalPro}g</span></div>
+                         <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">F</span><span className="text-[15px] font-bold text-slate-600">{finalFat}g</span></div>
                        </div>
                        <div className={`${UI.panelOutset} !px-6 !py-2.5 flex flex-col items-center justify-center shrink-0`}>
-                          <span className={`text-[15px] font-bold leading-none ${isPW ? 'text-[#0072ff]' : 'text-slate-600'}`}><AnimatedCounter value={pastoKcal} /></span>
+                          <span className={`text-[15px] font-bold leading-none ${isPW ? 'text-rose-500' : 'text-slate-600'}`}><AnimatedCounter value={pastoKcal} /></span>
                           <span className="text-[9px] font-bold text-slate-400 tracking-widest mt-1">KCAL</span>
                        </div>
                     </div>
@@ -1080,10 +1078,10 @@ export default function Home() {
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 pt-2 shrink-0">
               <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Programma {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
               <div className="flex gap-3 bg-[#E0E5EC] p-1.5 rounded-full shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]">
-                <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaStorico && !vistaGraficiCarichi ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-[#00c6ff]'}`}>
+                <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaStorico && !vistaGraficiCarichi ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-cyan-500'}`}>
                   {vistaStorico && !vistaGraficiCarichi ? 'Oggi' : 'Storico'}
                 </button>
-                <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaGraficiCarichi ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.4)]' : 'text-slate-500 hover:text-[#00c6ff]'}`}>
+                <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaGraficiCarichi ? 'bg-gradient-to-r from-purple-400 to-purple-500 text-white shadow-[0_4px_10px_rgba(168,85,247,0.4)]' : 'text-slate-500 hover:text-cyan-500'}`}>
                   Grafici
                 </button>
               </div>
@@ -1096,7 +1094,7 @@ export default function Home() {
                     <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest block mb-1.5">Durata Stimata</span>
                     <p className="text-[16px] font-bold text-slate-600 flex items-center gap-2">⏱️ ~<AnimatedCounter value={calcolaTempoScheda()} /> min <span className="text-[10px] text-slate-400 font-bold ml-1">(Recuperi incl.)</span></p>
                   </div>
-                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 border-none cursor-pointer shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] ${fastWorkout ? 'bg-gradient-to-r from-red-400 to-rose-500 text-white shadow-[0_8px_15px_rgba(244,63,94,0.3)]' : 'bg-[#E0E5EC] text-slate-500 hover:text-[#00c6ff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff]'}`}>
+                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 border-none cursor-pointer shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] ${fastWorkout ? 'bg-gradient-to-br from-red-400 to-rose-500 text-white shadow-[0_8px_15px_rgba(244,63,94,0.3)]' : 'bg-[#E0E5EC] text-slate-500 hover:text-cyan-500 active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff]'}`}>
                     {fastWorkout ? '⚡ Fast Mode' : 'Taglia Tempi'}
                   </button>
                 </div>
@@ -1105,7 +1103,7 @@ export default function Home() {
                   <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-3 px-1">Giorno di Allenamento</p>
                   <div className="grid grid-cols-3 gap-3">
                     {giorniSettimana.map((gg: string) => (
-                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`py-3 text-[12px] rounded-[1rem] transition-all duration-300 border-none cursor-pointer shadow-sm ${giornoCalendario === gg ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-slate-500 font-bold hover:text-[#00c6ff]'}`}>{gg}</button>
+                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`py-3 text-[12px] rounded-[1rem] transition-all duration-300 border-none cursor-pointer shadow-sm ${giornoCalendario === gg ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-slate-500 font-bold hover:text-cyan-500'}`}>{gg}</button>
                     ))}
                   </div>
                 </div>
@@ -1136,7 +1134,7 @@ export default function Home() {
                     
                     const ultimoCarico = getUltimoCarico(es.id);
                     const numeroSetTarget = getNumeroSet(es.fase);
-                    const phaseColor = es.fase.includes('Fase 1') ? '#00c6ff' : (es.fase.includes('Fase 2') ? '#8b5cf6' : '#f43f5e'); 
+                    const phaseColor = es.fase.includes('Fase 1') ? '#0ea5e9' : (es.fase.includes('Fase 2') ? '#8b5cf6' : '#f43f5e'); 
                     
                     const animType = currentEx.anim || "chest_barbell_flat"; 
                     
@@ -1149,27 +1147,27 @@ export default function Home() {
                         <div className="pl-4">
                           <div className="flex justify-between items-start mb-3">
                             <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
-                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-400 hover:text-[#00c6ff] px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer opacity-0 group-hover:opacity-100">Swap</button>
+                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-400 hover:text-cyan-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer opacity-0 group-hover:opacity-100">Swap</button>
                           </div>
                           
                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 mt-4">
                             <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
                             <div className="flex-1 w-full min-w-0 text-center sm:text-left">
-                               <h3 className="font-bold text-[16px] text-slate-700 mb-2 truncate">{nomeAttuale}</h3>
+                               <h3 className="font-bold text-[15px] sm:text-[16px] text-slate-700 mb-2 truncate">{nomeAttuale}</h3>
                                <p className="text-[12px] sm:text-[11px] text-slate-500 leading-relaxed font-semibold">{currentEx.dettaglio}</p>
                             </div>
                           </div>
 
                           <div className="mt-6 flex items-center justify-between bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl border border-white/40">
                              <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-slate-600 tracking-widest">{repMostrate}</p>
-                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-400 px-3 py-2 bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] rounded-xl uppercase tracking-widest">Ultima: <span className="text-[#00c6ff] ml-1 text-[14px] font-black">{ultimoCarico}kg</span></span>}
+                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-400 px-3 py-2 bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] rounded-xl uppercase tracking-widest">Ultima: <span className="text-cyan-500 ml-1 text-[14px] font-black">{ultimoCarico}kg</span></span>}
                           </div>
                           <div className="mt-6 pt-5 border-t border-slate-200/50">
                             <div className="flex gap-4">
                               {Array.from({ length: numeroSetTarget }).map((_, i) => (
                                 <div key={i} className="flex-1 relative">
                                   <label className="text-[9px] text-slate-400 uppercase font-black tracking-widest block text-center mb-2.5">Set {i+1}</label>
-                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black text-[#00c6ff] outline-none focus:ring-2 focus:ring-[#00c6ff]/50 transition-all border-none appearance-none" placeholder="-" />
+                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black text-cyan-600 outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all border-none appearance-none" placeholder="-" />
                                 </div>
                               ))}
                             </div>
@@ -1197,7 +1195,7 @@ export default function Home() {
               {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessuna sessione salvata.</p> : (
                 [...storicoSessioni].reverse().map((sess) => (
                   <div key={sess.oraId} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-6 rounded-[1.5rem]">
-                    <span className="font-bold text-[#00c6ff] drop-shadow-sm block text-[14px] tracking-wide uppercase">{sess.giorno} - Scheda {sess.scheda}</span>
+                    <span className="font-bold text-cyan-500 drop-shadow-sm block text-[14px] tracking-wide uppercase">{sess.giorno} - Scheda {sess.scheda}</span>
                     <span className="text-[10px] text-slate-400 font-bold mb-5 block tracking-widest mt-1">{sess.data}</span>
                     <div className="space-y-4">
                       {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
