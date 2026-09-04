@@ -129,7 +129,13 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              )
           })}
           <g transform="translate(250, 250) scale(1.1) translate(-250, -250)">
-             <path d="M250,130 C240,130 238,140 238,145 C238,152 242,155 247,158 C235,163 225,175 222,190 C217,205 212,240 212,240 L220,245 C220,245 230,205 235,195 C235,230 233,260 233,260 L238,350 L245,350 L245,260 L255,260 L255,350 L262,350 L267,260 C267,260 265,230 265,195 C270,205 280,245 280,245 L288,240 C288,240 283,195 278,190 C275,175 265,163 253,158 C258,155 262,152 262,145 C262,140 260,130 250,130 Z" fill="url(#gradPrimary)" stroke="#fff" strokeWidth="6"/>
+             <defs>
+               <linearGradient id="gradIndigo" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#818cf8" />
+                  <stop offset="100%" stopColor="#4f46e5" />
+               </linearGradient>
+             </defs>
+             <path d="M250,130 C240,130 238,140 238,145 C238,152 242,155 247,158 C235,163 225,175 222,190 C217,205 212,240 212,240 L220,245 C220,245 230,205 235,195 C235,230 233,260 233,260 L238,350 L245,350 L245,260 L255,260 L255,350 L262,350 L267,260 C267,260 265,230 265,195 C270,205 280,245 280,245 L288,240 C288,240 283,195 278,190 C275,175 265,163 253,158 C258,155 262,152 262,145 C262,140 260,130 250,130 Z" fill="url(#gradIndigo)" stroke="#fff" strokeWidth="6"/>
           </g>
        </svg>
     </div>
@@ -750,10 +756,10 @@ export default function Home() {
         {/* COLONNA SINISTRA: Telemetria & Coach IA */}
         <div className="flex flex-col gap-8 lg:col-span-3">
           <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex flex-col relative overflow-hidden anim-pop" style={{animationDelay: '0.2s'}}>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#00c6ff]/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 relative z-10">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Telemetria</h2>
-              <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={`px-4 py-2 text-[9px] font-bold uppercase tracking-widest rounded-full transition-all border-none cursor-pointer shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] ${vistaTelemetria === 'STORICO' ? 'text-[#00c6ff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]' : 'text-slate-500 hover:text-[#00c6ff]'}`}>
+              <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={`px-4 py-2 text-[9px] font-bold uppercase tracking-widest rounded-full transition-all border-none cursor-pointer shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] ${vistaTelemetria === 'STORICO' ? 'text-indigo-500 active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]' : 'text-slate-500 hover:text-indigo-500'}`}>
                 {vistaTelemetria === 'STORICO' ? 'Torna al Form' : 'Vedi Storico'}
               </button>
             </div>
@@ -767,24 +773,24 @@ export default function Home() {
             ) : vistaTelemetria === 'FORM' ? (
                <div className="space-y-6 relative z-10">
                  <div className="anim-pop" style={{animationDelay: '0.3s'}}>
-                   <p className="text-[10px] text-[#00c6ff] uppercase font-bold tracking-widest block mb-3 px-1">Misure Base</p>
+                   <p className="text-[10px] text-indigo-500 uppercase font-bold tracking-widest block mb-3 px-1">Misure Base</p>
                    <div className="grid grid-cols-2 gap-4">
                      {misureBase.map((m) => (
                          <div key={m.id} className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-3.5 rounded-2xl">
                            <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-2">{m.label} <span className="text-slate-400/50">{m.unit}</span></label>
-                           <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-600 outline-none focus:text-[#00c6ff] transition-colors text-center appearance-none" placeholder="-" />
+                           <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-600 outline-none focus:text-indigo-500 transition-colors text-center appearance-none" placeholder="-" />
                          </div>
                      ))}
                    </div>
                  </div>
                  
                  <div className="anim-pop" style={{animationDelay: '0.4s'}}>
-                   <p className="text-[10px] text-[#00c6ff] uppercase font-bold tracking-widest block mb-3 px-1 mt-4">BIA (Opzionale)</p>
+                   <p className="text-[10px] text-indigo-500 uppercase font-bold tracking-widest block mb-3 px-1 mt-4">BIA (Opzionale)</p>
                    <div className="grid grid-cols-2 gap-4">
                      {misureBIA.map((m) => (
                          <div key={m.id} className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-3.5 rounded-2xl">
                            <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-2">{m.label} <span className="text-slate-400/50">{m.unit}</span></label>
-                           <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-[#00c6ff] outline-none focus:text-[#0072ff] transition-colors text-center appearance-none" placeholder="-" />
+                           <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-indigo-500 outline-none focus:text-indigo-600 transition-colors text-center appearance-none" placeholder="-" />
                          </div>
                      ))}
                    </div>
@@ -794,7 +800,7 @@ export default function Home() {
                     <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
                  </div>
 
-                 <button onClick={valutaCheckFisico} className="w-full mt-4 bg-gradient-to-r from-[#00c6ff] to-[#0072ff] text-white font-bold uppercase tracking-widest p-4 rounded-2xl shadow-[0_8px_15px_rgba(0,198,255,0.3)] hover:shadow-[0_12px_20px_rgba(0,198,255,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer anim-pop" style={{animationDelay: '0.6s'}}>Salva Dati</button>
+                 <button onClick={valutaCheckFisico} className="w-full mt-4 bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-bold uppercase tracking-widest p-4 rounded-2xl shadow-[0_8px_15px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer anim-pop" style={{animationDelay: '0.6s'}}>Salva Dati</button>
                </div>
             ) : (
                <div className="flex-1 overflow-y-auto space-y-5 pr-2 max-h-[600px] custom-scrollbar relative z-10">
@@ -804,18 +810,18 @@ export default function Home() {
                        return (
                          <div key={mis.id} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex flex-col gap-4 p-5 rounded-[1.5rem] anim-pop" style={{animationDelay: `${0.2 + idx * 0.1}s`}}>
                             <div className="flex justify-between items-center mb-2 border-b border-slate-200/50 pb-3">
-                               <p className="text-[11px] font-bold text-[#00c6ff] tracking-widest bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
+                               <p className="text-[11px] font-bold text-indigo-500 tracking-widest bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
                                <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] px-2.5 py-1.5 rounded-full active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">🗑️</button>
                             </div>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Peso</span> <strong className="text-slate-600">{mis.peso || '-'}kg</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Petto</span> <strong className="text-slate-600">{circ.petto || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Spalle</span> <strong className="text-slate-600">{circ.spalle || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600">{circ.braccia || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600">{circ.gambe || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600">{circ.glutei || '-'}cm</strong></p>
-                               <p className="bg-cyan-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-cyan-600 flex justify-between items-center"><span>Vita</span> <strong className="text-cyan-600">{circ.vita || '-'}cm</strong></p>
-                               <p className="bg-blue-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-blue-600 flex justify-between items-center"><span>BIA</span> <strong className="text-blue-600">{circ.bodyFat || '-'}%</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Peso</span> <strong className="text-slate-600 text-xs">{mis.peso || '-'}kg</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Petto</span> <strong className="text-slate-600 text-xs">{circ.petto || '-'}cm</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Spalle</span> <strong className="text-slate-600 text-xs">{circ.spalle || '-'}cm</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600 text-xs">{circ.braccia || '-'}cm</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600 text-xs">{circ.gambe || '-'}cm</strong></p>
+                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600 text-xs">{circ.glutei || '-'}cm</strong></p>
+                               <p className="bg-indigo-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-indigo-600 flex justify-between items-center"><span>Vita</span> <strong className="text-indigo-600 text-xs">{circ.vita || '-'}cm</strong></p>
+                               <p className="bg-purple-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-purple-600 flex justify-between items-center"><span>BIA</span> <strong className="text-purple-600 text-xs">{circ.bodyFat || '-'}%</strong></p>
                             </div>
                          </div>
                        );
@@ -858,39 +864,39 @@ export default function Home() {
         {/* COLONNA CENTRALE: Turni & Nutrizione */}
         <div className="flex flex-col gap-8 lg:col-span-4">
           <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop" style={{animationDelay: '0.4s'}}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-rose-400 opacity-80"></div>
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lime-400 to-green-500 opacity-80"></div>
             
             <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-200/50 pt-2">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Incastro Turni</h2>
-              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-orange-500 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none border-none cursor-pointer">
+              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-green-500 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none border-none cursor-pointer">
                 <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
               </select>
             </div>
             <div className="space-y-6">
               <div className="bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] p-5 rounded-[1.5rem]">
-                <span className="text-[10px] text-orange-500 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
+                <span className="text-[10px] text-green-500 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
                 <div className="flex space-x-5">
                   <div className="flex-1 relative">
                     <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Inizio</span>
-                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-orange-400 transition-colors text-center" />
+                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-green-400 transition-colors text-center" />
                   </div>
                   <div className="flex-1 relative">
                     <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Fine</span>
-                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-orange-400 transition-colors text-center" />
+                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-green-400 transition-colors text-center" />
                   </div>
                 </div>
               </div>
               {tipoTurno === 'spezzato' && (
                 <div className="bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] p-5 rounded-[1.5rem]">
-                  <span className="text-[10px] text-orange-500 uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
+                  <span className="text-[10px] text-green-500 uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
                   <div className="flex space-x-5">
                     <div className="flex-1 relative">
                       <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Inizio</span>
-                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-orange-400 transition-colors text-center" />
+                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-green-400 transition-colors text-center" />
                     </div>
                     <div className="flex-1 relative">
                       <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Fine</span>
-                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-orange-400 transition-colors text-center" />
+                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-green-400 transition-colors text-center" />
                     </div>
                   </div>
                 </div>
@@ -898,15 +904,15 @@ export default function Home() {
               <div className="pt-2 mt-4 border-t border-slate-200/50">
                 <div className="flex justify-between items-center mb-8 bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff]">
                    <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Digiuno Intermittente 16:8</span>
-                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer ${digiuno ? 'bg-gradient-to-r from-orange-400 to-rose-400' : 'bg-slate-300'}`}>
+                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer ${digiuno ? 'bg-gradient-to-r from-lime-400 to-green-500' : 'bg-slate-300'}`}>
                       <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
                    </button>
                 </div>
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 block px-1">Collocazione Allenamento</span>
                 <div className="flex space-x-3 bg-[#E0E5EC] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#a3b1c6,inset_-5px_-5px_10px_#ffffff]">
-                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
-                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
-                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
+                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-lime-400 to-green-500 text-white shadow-[0_4px_10px_rgba(34,197,94,0.3)]' : 'text-slate-500 hover:text-green-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
+                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-lime-400 to-green-500 text-white shadow-[0_4px_10px_rgba(34,197,94,0.3)]' : 'text-slate-500 hover:text-green-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
+                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-lime-400 to-green-500 text-white shadow-[0_4px_10px_rgba(34,197,94,0.3)]' : 'text-slate-500 hover:text-green-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
                 </div>
               </div>
             </div>
