@@ -7,29 +7,27 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtx
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// ==========================================
-// STILI NEUMORPHISM (Ispirati all'immagine 1 e 3)
-// ==========================================
-const colorBg = "bg-[#E0E5EC]"; // Sfondo morbido grigio-azzurro chiaro
+const colorBg = "bg-[#E0E5EC]";
 const shadowOutset = "shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff]";
 const shadowInset = "shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff]";
 const shadowOutsetSm = "shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff]";
 const shadowInsetSm = "shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]";
+const gradPrimary = "bg-gradient-to-r from-cyan-400 to-blue-500"; 
 
 const UI = {
   bg: colorBg,
   card: `${colorBg} ${shadowOutset} rounded-[2rem] p-5 sm:p-6 lg:p-8`,
   panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem] p-5`,
   panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem] p-5`,
-  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-blue-400/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
-  btnPrimary: `bg-gradient-to-br from-blue-400 to-cyan-400 shadow-[0_8px_15px_rgba(56,189,248,0.3)] hover:shadow-[0_12px_20px_rgba(56,189,248,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none cursor-pointer`,
+  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
+  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(6,182,212,0.3)] hover:shadow-[0_12px_20px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none cursor-pointer`,
   btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-cyan-500 py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px] cursor-pointer`,
   label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1",
-  pillActive: `bg-gradient-to-br from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(56,189,248,0.3)] cursor-pointer`,
+  pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)] cursor-pointer`,
   pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-cyan-500 cursor-pointer`
 };
 
-const baseDbAllenamento={Spinta:{focus:"SPINTA (Petto, Spalle, Tricipiti)",esercizi:[{id:"e1",nome:"Panca piana bilanciere",anim:"chest_barbell_flat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Disteso su panca piana.",alternative:[{nome:"Chest Press Convergente",anim:"chest_machine_flat",note:"Stesso asse di spinta",dettaglio:"MACCHINARIO: Siediti in appoggio."},{nome:"Panca piana manubri",anim:"chest_db_flat",note:"Maggiore ROM",dettaglio:"MANUBRI: Disteso su panca piana."}]},{id:"e3",nome:"Panca inclinata manubri",anim:"chest_db_incline",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Panca a 30-45°.",alternative:[{nome:"Panca inclinata bilanciere",anim:"chest_barbell_incline",note:"Focus forza",dettaglio:"BILANCIERE: Panca inclinata."},{nome:"Chest Press Inclinata",anim:"chest_machine_incline",note:"Tensione costante",dettaglio:"MACCHINARIO: Usa la variante inclinata."}]},{id:"e4",nome:"Chest press",anim:"chest_machine_flat",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Esercizio guidato per isolare il pettorale.",alternative:[{nome:"Pectoral Machine",anim:"chest_pec_deck",note:"Isolamento sternale",dettaglio:"MACCHINARIO: Tieni i gomiti alti."},{nome:"Croci cavi seduto",anim:"chest_cable_seated",note:"Picco di tensione",dettaglio:"CAVI: Posiziona una panca al centro."}]},{id:"e5",nome:"Croci ai manubri",anim:"chest_flye_db",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MANUBRI: Panca piana.",alternative:[{nome:"Croci cavi piana",anim:"chest_cable_flat",note:"Tensione continua",dettaglio:"CAVI: Dai cavi bassi."},{nome:"Pec Deck (Fly)",anim:"chest_pec_deck",note:"Pump controllato",dettaglio:"MACCHINARIO: Usa il pec deck."}]},{id:"e18",nome:"Lento avanti manubri",anim:"shoulder_db_seated",fase:"Fase 1: Forza Spalle",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Seduto a 90°.",alternative:[{nome:"Military Press",anim:"shoulder_military",note:"Carico massimo",dettaglio:"BILANCIERE: In piedi."},{nome:"Shoulder Press",anim:"shoulder_machine",note:"Spinta guidata",dettaglio:"MACCHINARIO: Esercizio di spinta verticale."}]},{id:"e20",nome:"Alzate laterali cavi",anim:"lateral_cable",fase:"Fase 3: Pump Spalle",rep:"3-4 serie, 10-12 rep | Rec: 45 sec",dettaglio:"CAVI: Tira il cavo lateralmente dal basso.",alternative:[{nome:"Alzate manubri",anim:"lateral_db",note:"Focus classico",dettaglio:"MANUBRI: In piedi."},{nome:"Alzate macchina",anim:"lateral_machine",note:"No compensazioni",dettaglio:"MACCHINARIO: Isola i deltoidi."}]},{id:"e22",nome:"Panca stretta",anim:"tricep_close_grip",fase:"Fase 1: Forza Tricipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE: Presa stretta.",alternative:[{nome:"French Press",anim:"tricep_french_press",note:"Stretch capo lungo",dettaglio:"BILANCIERE EZ: Disteso."},{nome:"Dips parallele",anim:"tricep_dips",note:"Catena chiusa",dettaglio:"LIBERO/ZAVORRA: Scendi piegando le braccia."}]},{id:"e27",nome:"Push down corda",anim:"tricep_pushdown",fase:"Fase 3: Pump Tricipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Spingi verso il basso e apri le estremità.",alternative:[{nome:"Push down sbarra",anim:"tricep_pushdown",note:"Carico maggiore",dettaglio:"CAVI: Sbarra dritta."},{nome:"Estensioni nuca",anim:"tricep_overhead",note:"Enfasi capo lungo",dettaglio:"CAVI: Dai cavi bassi dietro la testa."}]}]},Tirata:{focus:"TIRATA (Schiena, Bicipiti)",esercizi:[{id:"e6",nome:"Trazioni",anim:"back_pullup",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"CORPO LIBERO: Appeso alla sbarra.",alternative:[{nome:"Lat Machine Larga",anim:"back_pulldown",note:"Carichi modulabili",dettaglio:"MACCHINARIO: Presa larga prono."},{nome:"Lat Machine Triang.",anim:"back_pulldown_triangle",note:"Focus centrale",dettaglio:"MACCHINARIO: Triangolo presa stretta."}]},{id:"e7",nome:"Rematore bilanciere",anim:"back_row_barbell",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Busto a 45°.",alternative:[{nome:"Rematore Manubrio",anim:"back_row_db",note:"Unilaterale",dettaglio:"MANUBRI: In appoggio su panca."},{nome:"Rematore T-Bar",anim:"back_t_bar",note:"Tirata esplosiva",dettaglio:"MACCHINARIO: Afferra il T-Bar e tira."}]},{id:"e9",nome:"Pulley seduto",anim:"back_pulley",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"CAVI: Seduto, tira la maniglia.",alternative:[{nome:"Chest Supported",anim:"back_chest_supported",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Petto in appoggio."},{nome:"Seal Row",anim:"back_seal_row",note:"Puro isolamento",dettaglio:"BILANCIERE: Sdraiato prono su panca."}]},{id:"e10",nome:"Pullover ai cavi",anim:"back_pullover_cable",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"CAVI: Cavo alto con sbarra.",alternative:[{nome:"Pullover Macchina",anim:"back_pullover_cable",note:"Tensione continua",dettaglio:"MACCHINARIO: Macchina specifica."},{nome:"Pullover Manubrio",anim:"back_pullover_db",note:"Stretch toracico",dettaglio:"MANUBRI: Di traverso su panca."}]},{id:"e23",nome:"Curl bilanciere EZ",anim:"bicep_barbell",fase:"Fase 1: Forza Bicipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE EZ: In piedi.",alternative:[{nome:"Curl Manubri Alt.",anim:"bicep_db",note:"Lavoro unilaterale",dettaglio:"MANUBRI: Fletti un braccio alla volta."},{nome:"Curl Cavo Basso",anim:"bicep_cable_bar",note:"Tensione continua",dettaglio:"CAVI: Cavo basso con sbarra corta."}]},{id:"e26",nome:"Curl cavi corda",anim:"bicep_cable",fase:"Fase 3: Pump Bicipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Fune al cavo basso.",alternative:[{nome:"Curl Inclinata",anim:"bicep_incline_db",note:"Stretch capo lungo",dettaglio:"MANUBRI: Seduto su panca a 45°."},{nome:"Spider Curl",anim:"bicep_spider_curl",note:"Picco bicipite",dettaglio:"BILANCIERE: Petto in appoggio."}]}]},Gambe:{focus:"GAMBE E POLPACCI",esercizi:[{id:"e11",nome:"Squat bilanciere",anim:"leg_squat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Sui trapezi.",alternative:[{nome:"Front Squat",anim:"leg_squat",note:"Focus quadricipite",dettaglio:"BILANCIERE: Appoggiato sulle clavicole anteriori."},{nome:"Hack Squat Libero",anim:"leg_hack_barbell",note:"Carico posteriore",dettaglio:"BILANCIERE: Bilanciere dietro le gambe."},{nome:"Hack Squat Macchina",anim:"leg_hack_machine",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Focus spinta."}]},{id:"e12",nome:"Hack squat",anim:"leg_hack_machine",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MACCHINARIO: Poggia schiena.",alternative:[{nome:"Leg Press 45°",anim:"leg_press",note:"Isolamento pressa",dettaglio:"MACCHINARIO: Piedi bassi e stretti sulla pedana."},{nome:"Belt Squat",anim:"leg_belt_squat",note:"Zero stress lombare",dettaglio:"MACCHINARIO: Cintura pesata ai fianchi."}]},{id:"e14",nome:"Pressa 45°",anim:"leg_press",fase:"Fase 2: Connessione",rep:"4-5 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Scendi portando le ginocchia verso il petto.",alternative:[{nome:"Affondi Manubri",anim:"leg_lunge",note:"Equilibrio",dettaglio:"MANUBRI: In camminata o sul posto."},{nome:"Bulgarian Squat",anim:"leg_bulgarian",note:"Unilaterale",dettaglio:"MANUBRI: Piede posteriore su panca."}]},{id:"e15",nome:"Leg extension",anim:"leg_extension",fase:"Fase 3: Pump Quad",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Distendi le gambe.",alternative:[{nome:"Sissy Squat",anim:"leg_sissy_squat",note:"Bodyweight stretch",dettaglio:"CORPO LIBERO: Blocca i polpacci."},{nome:"Step-up controllato",anim:"leg_lunge",note:"Lavoro concentrico",dettaglio:"MANUBRI: Sali su un box alto."}]},{id:"e13",nome:"Stacco rumeno",anim:"leg_deadlift",fase:"Fase 2: Conn. Femorali",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"BILANCIERE: Scivola lungo le cosce.",alternative:[{nome:"Stacco Gambe Tese",anim:"leg_deadlift",note:"Stretch puro",dettaglio:"BILANCIERE: Ginocchia dritte."},{nome:"Good Morning",anim:"leg_deadlift",note:"Catena posteriore",dettaglio:"BILANCIERE: Sui trapezi."}]},{id:"e16",nome:"Leg curl sdraiato",anim:"leg_curl",fase:"Fase 3: Pump Femorali",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Prono, porta i talloni ai glutei.",alternative:[{nome:"Leg Curl Seduto",anim:"leg_curl_seduto",note:"Isolamento femorale",dettaglio:"MACCHINARIO: Isola il bicipite femorale."},{nome:"Glute Ham Raise",anim:"leg_curl",note:"Catena chiusa",dettaglio:"MACCHINARIO: Solleva il busto."}]},{id:"e17",nome:"Calf in piedi",anim:"leg_calf",fase:"Fase 3: Pump",rep:"3-4 serie, 20 rep | Rec: 45 sec",dettaglio:"LIBERO/MACCHINA: Scendi al massimo.",alternative:[{nome:"Calf Press",anim:"leg_calf_press",note:"Sovraccarico",dettaglio:"MACCHINARIO: Usa la Leg Press."},{nome:"Calf Seduto",anim:"leg_calf_seated",note:"Focus Soleo",dettaglio:"MACCHINARIO: Seduto, solleva i talloni."}]}]}};
+const baseDbAllenamento={Spinta:{focus:"SPINTA (Petto, Spalle, Tricipiti)",esercizi:[{id:"e1",nome:"Panca piana bilanciere",anim:"chest_barbell_flat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Disteso su panca piana.",alternative:[{nome:"Chest Press Convergente",anim:"chest_machine_flat",note:"Stesso asse di spinta",dettaglio:"MACCHINARIO: Siediti in appoggio."},{nome:"Panca piana manubri",anim:"chest_db_flat",note:"Maggiore ROM",dettaglio:"MANUBRI: Disteso su panca piana."}]},{id:"e3",nome:"Panca inclinata manubri",anim:"chest_db_incline",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Panca a 30-45°.",alternative:[{nome:"Panca inclinata bilanciere",anim:"chest_barbell_incline",note:"Focus forza",dettaglio:"BILANCIERE: Panca inclinata."},{nome:"Chest Press Inclinata",anim:"chest_machine_incline",note:"Tensione costante",dettaglio:"MACCHINARIO: Usa la variante inclinata."}]},{id:"e4",nome:"Chest press",anim:"chest_machine_flat",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Esercizio guidato per isolare il pettorale.",alternative:[{nome:"Pectoral Machine",anim:"chest_pec_deck",note:"Isolamento sternale",dettaglio:"MACCHINARIO: Tieni i gomiti alti."},{nome:"Croci cavi seduto",anim:"chest_cable_seated",note:"Picco di tensione",dettaglio:"CAVI: Posiziona una panca al centro."}]},{id:"e5",nome:"Croci ai manubri",anim:"chest_flye_db",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MANUBRI: Panca piana.",alternative:[{nome:"Croci cavi piana",anim:"chest_cable_flat",note:"Tensione continua",dettaglio:"CAVI: Dai cavi bassi."},{nome:"Pec Deck (Fly)",anim:"chest_pec_deck",note:"Pump controllato",dettaglio:"MACCHINARIO: Usa il pec deck."}]},{id:"e18",nome:"Lento avanti manubri",anim:"shoulder_db_seated",fase:"Fase 1: Forza Spalle",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Seduto a 90°.",alternative:[{nome:"Military Press",anim:"shoulder_military",note:"Carico massimo",dettaglio:"BILANCIERE: In piedi."},{nome:"Shoulder Press",anim:"shoulder_machine",note:"Spinta guidata",dettaglio:"MACCHINARIO: Esercizio di spinta verticale."}]},{id:"e20",nome:"Alzate laterali cavi",anim:"lateral_cable",fase:"Fase 3: Pump Spalle",rep:"3-4 serie, 10-12 rep | Rec: 45 sec",dettaglio:"CAVI: Tira il cavo lateralmente dal basso.",alternative:[{nome:"Alzate manubri",anim:"lateral_db",note:"Focus classico",dettaglio:"MANUBRI: In piedi."},{nome:"Alzate macchina",anim:"lateral_machine",note:"No compensazioni",dettaglio:"MACCHINARIO: Isola i deltoidi."}]},{id:"e22",nome:"Panca stretta",anim:"tricep_close_grip",fase:"Fase 1: Forza Tricipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE: Presa stretta.",alternative:[{nome:"French Press",anim:"tricep_french_press",note:"Stretch capo lungo",dettaglio:"BILANCIERE EZ: Disteso."},{nome:"Dips parallele",anim:"tricep_dips",note:"Catena chiusa",dettaglio:"LIBERO/ZAVORRA: Scendi piegando le braccia."}]},{id:"e27",nome:"Push down corda",anim:"tricep_pushdown",fase:"Fase 3: Pump Tricipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Spingi verso il basso e apri le estremità.",alternative:[{nome:"Push down sbarra",anim:"tricep_pushdown",note:"Carico maggiore",dettaglio:"CAVI: Sbarra dritta."},{nome:"Estensioni nuca",anim:"tricep_overhead",note:"Enfasi capo lungo",dettaglio:"CAVI: Dai cavi bassi dietro la testa."}]}]},Tirata:{focus:"TIRATA (Schiena, Bicipiti)",esercizi:[{id:"e6",nome:"Trazioni",anim:"back_pullup",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"CORPO LIBERO: Appeso alla sbarra.",alternative:[{nome:"Lat Machine Larga",anim:"back_pulldown",note:"Carichi modulabili",dettaglio:"MACCHINARIO: Presa larga prono."},{nome:"Lat Machine Triang.",anim:"back_pulldown_triangle",note:"Focus centrale",dettaglio:"MACCHINARIO: Triangolo presa stretta."}]},{id:"e7",nome:"Rematore bilanciere",anim:"back_row_barbell",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Busto a 45°.",alternative:[{nome:"Rematore Manubrio",anim:"back_row_db",note:"Unilaterale",dettaglio:"MANUBRI: In appoggio su panca."},{nome:"Rematore T-Bar",anim:"back_t_bar",note:"Tirata esplosiva",dettaglio:"MACCHINARIO: Afferra il T-Bar e tira."}]},{id:"e9",nome:"Pulley seduto",anim:"back_pulley",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"CAVI: Seduto, tira la maniglia.",alternative:[{nome:"Chest Supported",anim:"back_chest_supported",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Petto in appoggio."},{nome:"Seal Row",anim:"back_seal_row",note:"Puro isolamento",dettaglio:"BILANCIERE: Sdraiato prono su panca."}]},{id:"e10",nome:"Pullover ai cavi",anim:"back_pullover_cable",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"CAVI: Cavo alto con sbarra.",alternative:[{nome:"Pullover Macchina",anim:"back_pullover_cable",note:"Tensione continua",dettaglio:"MACCHINARIO: Macchina specifica."},{nome:"Pullover Manubrio",anim:"back_pullover_db",note:"Stretch toracico",dettaglio:"MANUBRI: Di traverso su panca."}]},{id:"e23",nome:"Curl bilanciere EZ",anim:"bicep_barbell",fase:"Fase 1: Forza Bicipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE EZ: In piedi.",alternative:[{nome:"Curl Manubri Alt.",anim:"bicep_db",note:"Lavoro unilaterale",dettaglio:"MANUBRI: Fletti un braccio alla volta."},{nome:"Curl Cavo Basso",anim:"bicep_cable_bar",note:"Tensione continua",dettaglio:"CAVI: Cavo basso con sbarra corta."}]},{id:"e26",nome:"Curl cavi corda",anim:"bicep_cable",fase:"Fase 3: Pump Bicipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Fune al cavo basso.",alternative:[{nome:"Curl Inclinata",anim:"bicep_incline_db",note:"Stretch capo lungo",dettaglio:"MANUBRI: Seduto su panca a 45°."},{nome:"Spider Curl",anim:"bicep_spider_curl",note:"Picco bicipite",dettaglio:"BILANCIERE: Petto in appoggio."}]}]},Gambe:{focus:"GAMBE E POLPACCI",esercizi:[{id:"e11",nome:"Squat bilanciere",anim:"leg_squat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Sui trapezi.",alternative:[{nome:"Front Squat",anim:"leg_squat",note:"Focus quadricipite",dettaglio:"BILANCIERE: Appoggiato sulle clavicole anteriori."},{nome:"Hack Squat Libero",anim:"leg_hack_barbell",note:"Carico posteriore",dettaglio:"BILANCIERE: Bilanciere dietro le gambe."},{nome:"Hack Squat Macchina",anim:"leg_hack_machine",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Focus spinta."}]},{id:"e12",nome:"Hack squat",anim:"leg_hack_machine",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MACCHINARIO: Poggia schiena.",alternative:[{nome:"Leg Press 45°",anim:"leg_press",note:"Isolamento pressa",dettaglio:"MACCHINARIO: Piedi bassi e stretti."},{nome:"Belt Squat",anim:"leg_belt_squat",note:"Zero stress lombare",dettaglio:"MACCHINARIO: Cintura pesata ai fianchi."}]},{id:"e14",nome:"Pressa 45°",anim:"leg_press",fase:"Fase 2: Connessione",rep:"4-5 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Scendi portando le ginocchia verso il petto.",alternative:[{nome:"Affondi Manubri",anim:"leg_lunge",note:"Equilibrio",dettaglio:"MANUBRI: In camminata o sul posto."},{nome:"Bulgarian Squat",anim:"leg_bulgarian",note:"Unilaterale",dettaglio:"MANUBRI: Piede posteriore su panca."}]},{id:"e15",nome:"Leg extension",anim:"leg_extension",fase:"Fase 3: Pump Quad",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Distendi le gambe.",alternative:[{nome:"Sissy Squat",anim:"leg_sissy_squat",note:"Bodyweight stretch",dettaglio:"CORPO LIBERO: Blocca i polpacci."},{nome:"Step-up controllato",anim:"leg_lunge",note:"Lavoro concentrico",dettaglio:"MANUBRI: Sali su un box alto."}]},{id:"e13",nome:"Stacco rumeno",anim:"leg_deadlift",fase:"Fase 2: Conn. Femorali",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"BILANCIERE: Scivola lungo le cosce.",alternative:[{nome:"Stacco Gambe Tese",anim:"leg_deadlift",note:"Stretch puro",dettaglio:"BILANCIERE: Ginocchia dritte."},{nome:"Good Morning",anim:"leg_deadlift",note:"Catena posteriore",dettaglio:"BILANCIERE: Sui trapezi."}]},{id:"e16",nome:"Leg curl sdraiato",anim:"leg_curl",fase:"Fase 3: Pump Femorali",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Prono, porta i talloni ai glutei.",alternative:[{nome:"Leg Curl Seduto",anim:"leg_curl_seduto",note:"Isolamento femorale",dettaglio:"MACCHINARIO: Isola il bicipite femorale."},{nome:"Glute Ham Raise",anim:"leg_curl",note:"Catena chiusa",dettaglio:"MACCHINARIO: Solleva il busto."}]},{id:"e17",nome:"Calf in piedi",anim:"leg_calf",fase:"Fase 3: Pump",rep:"3-4 serie, 20 rep | Rec: 45 sec",dettaglio:"LIBERO/MACCHINA: Scendi al massimo.",alternative:[{nome:"Calf Press",anim:"leg_calf_press",note:"Sovraccarico",dettaglio:"MACCHINARIO: Usa la Leg Press."},{nome:"Calf Seduto",anim:"leg_calf_seated",note:"Focus Soleo",dettaglio:"MACCHINARIO: Seduto, solleva i talloni."}]}]}};
 const dbAlimenti={Pasto1:[{nome:"Avena + Whey + Burro",baseCarbo:12,pro:35,fat:15,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro`},{nome:"Pancakes avena + Albume",baseCarbo:14,pro:30,fat:10,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro`},{nome:"Uova intere + Segale + Avocado",baseCarbo:10,pro:25,fat:22,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova • ${Math.round(f*6)}g Avocado`}],Pasto2:[{nome:"Riso Basmati + Pollo + Olio EVO",baseCarbo:20,pro:40,fat:12,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Pollo • ${f}g Olio`},{nome:"Pasta di Semola + Carne Magra",baseCarbo:20,pro:45,fat:10,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato • ${f}g Olio`},{nome:"Patate dolci + Salmone",baseCarbo:16,pro:40,fat:20,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*4.5)}g Patate • ${Math.round(p*4.5)}g Salmone`}],Pasto3:[{nome:"Yogurt Greco + Mandorle",baseCarbo:5,pro:20,fat:15,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle`},{nome:"Fiocchi di latte + Burro",baseCarbo:4,pro:25,fat:18,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*8)}g Fiocchi Latte • ${f}g Burro Arachidi`},{nome:"Parmigiano + Wasa",baseCarbo:8,pro:16,fat:14,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*3)}g Parmigiano • ${Math.round(c*1.5)}g Wasa`}],PostWorkout:[{nome:"Crema di Riso + Whey",baseCarbo:16,pro:35,fat:1,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate`},{nome:"Corn Flakes + Whey",baseCarbo:16,pro:35,fat:1,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate`},{nome:"Gallette + Bresaola",baseCarbo:15,pro:30,fat:3,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola`}]};
 const misureBase = [{ id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" }, { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" }, { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }];
 const misureBIA = [{ id: 'vita', label: "Circ. Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa", unit: "%" }, { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Musc.", unit: "%" }];
@@ -88,7 +86,7 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
 
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   if (!data || data.length === 0) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Dati insufficienti.</p>;
-  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Un solo dato. Esegui un&apos;altra sessione.</p>;
+  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Un solo dato.</p>;
   const maxVal = Math.max(...data); const minVal = Math.min(...data); const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
   const width = 300, height = 100, padding = 20;
   const points = data.map((val, i) => `${padding + (i / (data.length - 1)) * (width - padding * 2)},${height - padding - ((val - minVal) / range) * (height - padding * 2)}`).join(" ");
@@ -137,6 +135,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
     </div>
   );
 };
+
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -169,11 +168,9 @@ export default function Home() {
   const [fastWorkout, setFastWorkout] = useState(false);
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
   const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string[]>>({});
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoSessioni, setStoricoSessioni] = useState<any[]>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
   const [modalEsercizio, setModalEsercizio] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
@@ -186,7 +183,6 @@ export default function Home() {
   const [fileAllegato, setFileAllegato] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
   const [vistaTelemetria, setVistaTelemetria] = useState<'FORM' | 'STORICO'>('FORM');
   const [vistaGraficiCarichi, setVistaGraficiCarichi] = useState(false);
@@ -244,7 +240,8 @@ export default function Home() {
     if (confirm(`Eliminare definitivamente ${utenteCorrente}?`)) {
       await supabase.from("check_utente").delete().eq("nome_utente", utenteCorrente);
       await supabase.from("storico_allenamenti").delete().eq("nome_utente", utenteCorrente);
-      setListaAtleti(prev => prev.filter(a => a !== utenteCorrente)); setUtenteCorrente("Leonardo");
+      setListaAtleti(prev => prev.filter(a => a !== utenteCorrente));
+      setUtenteCorrente("Leonardo");
     }
   };
 
@@ -262,7 +259,6 @@ export default function Home() {
 
      Object.keys(plan).forEach(sch => {
         let methodCycleGerardo = 0; 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
            if (protocolloAutore === 'Gerardo Calvo (Reset Ormonale)') {
                if (methodCycleGerardo === 0) ex.rep = "7x10 | Rec: 30 sec (15RM)";
@@ -312,7 +308,6 @@ export default function Home() {
     setLoadingWizard(true);
     try {
       const contesto = `Sei un Coach IA. Analizza: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Dieta: ${datiWizard.dieta}. Fornisci un verdetto.`;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: "Analizza il mio profilo.", context: contesto }; const files = [];
       if (fotoPartenza) files.push({ data: fotoPartenza.data, mimeType: fotoPartenza.mimeType, label: "Partenza" });
       if (fotoArrivo) files.push({ data: fotoArrivo.data, mimeType: fotoArrivo.mimeType, label: "Obiettivo" });
@@ -336,7 +331,6 @@ export default function Home() {
     setChatLog(prev => [...prev, { role: 'user', text: fileAllegato ? `📎 [${fileAllegato.nome}] ${msg}` : msg }]);
     setInputChat(""); setFileAllegato(null); setIsTyping(true);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: msg, context: `SEI IL COACH IA. Utente: ${utenteCorrente}. Estrai Macro e scrivi alla fine: [MAGIC_MACRO | PASTO_TARGET | cho | pro | fat | NOME]` };
       if (fileAllegato) payload.file = { data: fileAllegato.data, mimeType: fileAllegato.mimeType };
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -353,7 +347,7 @@ export default function Home() {
   };
 
   const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
-    if(!nomeCibo.trim()) return alert("Inserisci il nome.");
+    if(!nomeCibo.trim()) return alert("Inserisci il nome del sgarro.");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
     try {
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Utente: "${nomeCibo}". Calcola macro. Restituisci SOLO: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo}]` }) });
@@ -361,7 +355,7 @@ export default function Home() {
       const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
         updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString()); updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString()); updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString()); updateCustomMeal(cat, 'nome', match[5].trim());
-      } else { alert("Non riconosciuto."); }
+      } else { alert("Non riconosciuto. Risposta: " + data.reply); }
     } catch(e) { console.log(e); alert("Errore di rete."); }
     setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
   };
@@ -373,7 +367,7 @@ export default function Home() {
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
       else { alert(`Sistema Aggiornato.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); } 
-    } else { alert("Peso, Età e Altezza sono obbligatori."); }
+    } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
   };
 
   const eliminaMisurazione = async (id: string) => { if(confirm("Eliminare misurazione?")) { await supabase.from("check_utente").delete().eq("id", id); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); } };
@@ -402,6 +396,15 @@ export default function Home() {
   const apriSwapAlimento = (categoria: string) => { setCategoriaDaCambiare(categoria as keyof typeof dbAlimenti); setModalAlimento(true); };
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
 
+  const getDataGraficoEsercizio = () => {
+    const dataPoints: number[] = [];
+    storicoSessioni.forEach(sess => {
+      if (sess.carichi[esercizioGraficoSelezionato]) {
+        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
+      }
+    });
+    return dataPoints;
+  };
   const pesoNum = Number(biometria.peso) || 80;
   const bmr = Math.round((10 * pesoNum) + (6.25 * (Number(altezza)||175)) - (5 * (Number(eta)||41)) + 5);
   let activityMult = 1.2;
@@ -460,7 +463,6 @@ export default function Home() {
   targetCho = Math.max(targetCho, intraCho); targetFat = Math.max(targetFat, intraFat); targetPro = Math.max(targetPro, intraPro);
   const activeCategories = digiuno ? ['Pasto2', 'Pasto3', 'PostWorkout'] : ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'];
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const originalMeals: Record<string, any> = {};
   activeCategories.forEach(cat => { const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]]; if(item) { originalMeals[cat] = { cho: item.baseCarbo, pro: item.pro, fat: item.fat }; } });
 
@@ -471,7 +473,6 @@ export default function Home() {
   });
 
   const remainingCho = Math.max(0, targetCho - customCho - intraCho); const remainingPro = Math.max(0, targetPro - customPro - intraPro); const remainingFat = Math.max(0, targetFat - customFat - intraFat);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const finalMeals: Record<string, any> = {};
   activeCategories.forEach(cat => {
      if(pastiCustom[cat].attivo) { finalMeals[cat] = { cho: Number(pastiCustom[cat].cho) || 0, pro: Number(pastiCustom[cat].pro) || 0, fat: Number(pastiCustom[cat].fat) || 0 }; } 
@@ -507,7 +508,6 @@ export default function Home() {
     const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
     const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.\n• Acqua, Caffè amaro, Tè.` };
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t: any[] = [];
     if (quandoTiAlleni === 'mattina') {
         if (digiuno) t.push(bloccoDigiuno); t.push(bloccoIntra); t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' });
@@ -520,16 +520,6 @@ export default function Home() {
         t.push(bloccoIntra); t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' });
     }
     return t;
-  };
-
-  const getDataGraficoEsercizio = () => {
-    const dataPoints: number[] = [];
-    storicoSessioni.forEach(sess => {
-      if (sess.carichi[esercizioGraficoSelezionato]) {
-        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
-      }
-    });
-    return dataPoints;
   };
 
   if (appState === 'HOME') {
@@ -607,7 +597,7 @@ export default function Home() {
                  </select>
               </div>
               
-              <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#c1c9d2,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+              <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                  <input type="checkbox" id="metabolismoMain" checked={metabolismoBloccato} onChange={async (e) => {
                     const bloccato = e.target.checked;
                     setMetabolismoBloccato(bloccato);
@@ -696,7 +686,7 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#c1c9d2,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
@@ -704,11 +694,11 @@ export default function Home() {
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -761,9 +751,7 @@ export default function Home() {
         {/* COLONNA SINISTRA: Telemetria & Coach IA */}
         <div className="flex flex-col gap-8 lg:col-span-3">
           <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex flex-col relative overflow-hidden">
-            {/* Lieve riflesso per non farlo sembrare piatto */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-200/20 rounded-full blur-3xl pointer-events-none"></div>
-
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 relative z-10">
               <h2 className="text-lg font-black tracking-widest text-slate-700 uppercase">Telemetria</h2>
               <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={`px-4 py-2 text-[9px] font-bold uppercase tracking-widest rounded-full transition-all shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] ${vistaTelemetria === 'STORICO' ? 'text-indigo-500 active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]' : 'text-slate-500 hover:text-indigo-500'}`}>
@@ -807,7 +795,7 @@ export default function Home() {
                     <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
                  </div>
 
-                 <button onClick={valutaCheckFisico} className="w-full mt-4 bg-gradient-to-r from-indigo-400 to-purple-400 text-white font-bold uppercase tracking-widest p-4 rounded-2xl shadow-[0_8px_15px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all">Salva Dati</button>
+                 <button onClick={valutaCheckFisico} className="w-full mt-4 bg-gradient-to-r from-indigo-400 to-purple-400 text-white font-bold uppercase tracking-widest p-4 rounded-2xl shadow-[0_8px_15px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_20px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all border-none">Salva Dati</button>
                </div>
             ) : (
                <div className="flex-1 overflow-y-auto space-y-5 pr-2 max-h-[600px] custom-scrollbar relative z-10">
@@ -856,14 +844,14 @@ export default function Home() {
             {fileAllegato && (
               <div className="flex items-center gap-2 mb-4 p-3 bg-[#E0E5EC] shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] rounded-2xl w-fit">
                 <span className="text-xs text-blue-600 font-black tracking-widest truncate max-w-[180px]">📎 {fileAllegato.nome}</span>
-                <button onClick={() => setFileAllegato(null)} className="text-slate-400 hover:text-red-500 font-bold ml-3 transition-colors">&times;</button>
+                <button onClick={() => setFileAllegato(null)} className="text-slate-400 hover:text-red-500 font-bold ml-3 transition-colors border-none">&times;</button>
               </div>
             )}
             <div className="flex gap-3 relative">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
-              <button onClick={() => fileInputRef.current?.click()} className="bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-500 hover:text-blue-500 px-5 py-3.5 rounded-full transition-all">📎</button>
+              <button onClick={() => fileInputRef.current?.click()} className="bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-500 hover:text-blue-500 px-5 py-3.5 rounded-full transition-all border-none">📎</button>
               <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega..." className="flex-1 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-5 py-3.5 rounded-full text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-blue-400/40 transition-all font-semibold placeholder:text-slate-400 border-none" />
-              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white font-bold px-7 rounded-full shadow-[0_8px_15px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 transition-all">→</button>
+              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white font-bold px-7 rounded-full shadow-[0_8px_15px_rgba(56,189,248,0.3)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 transition-all border-none">→</button>
             </div>
           </section>
         </div>
@@ -875,13 +863,13 @@ export default function Home() {
             
             <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-200/50 pt-2">
               <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Incastro Turni</h2>
-              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-orange-500 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none">
+              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-orange-500 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none border-none">
                 <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
               </select>
             </div>
             <div className="space-y-6">
               <div className="bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] p-5 rounded-[1.5rem]">
-                <span className="text-[10px] text-orange-500 uppercase font-black tracking-widest mb-4 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
+                <span className="text-[10px] text-orange-500 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
                 <div className="flex space-x-5">
                   <div className="flex-1 relative">
                     <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Inizio</span>
@@ -911,15 +899,15 @@ export default function Home() {
               <div className="pt-2 mt-4 border-t border-slate-200/50">
                 <div className="flex justify-between items-center mb-8 bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff]">
                    <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Digiuno Intermittente 16:8</span>
-                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] ${digiuno ? 'bg-gradient-to-r from-orange-400 to-rose-400' : 'bg-slate-300'}`}>
+                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer ${digiuno ? 'bg-gradient-to-r from-orange-400 to-rose-400' : 'bg-slate-300'}`}>
                       <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
                    </button>
                 </div>
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 block px-1">Collocazione Allenamento</span>
                 <div className="flex space-x-3 bg-[#E0E5EC] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#a3b1c6,inset_-5px_-5px_10px_#ffffff]">
-                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
-                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
-                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
+                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
+                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
+                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'text-slate-500 hover:text-orange-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
                 </div>
               </div>
             </div>
@@ -939,7 +927,7 @@ export default function Home() {
                           const next = current === 150 ? 250 : (current === 250 ? 350 : 150);
                           setGerardoCarbOverride(next);
                        }}
-                       className="text-[9px] bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-rose-500 px-4 py-2.5 rounded-full font-black uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]"
+                       className="text-[9px] bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-rose-500 px-4 py-2.5 rounded-full font-black uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer"
                      >
                        🔄 Ciclo: {targetCho}g
                      </button>
@@ -955,7 +943,7 @@ export default function Home() {
                         await supabase.from("check_utente").insert([payload]);
                       }
                     }}
-                    className={`text-[9px] font-black px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] ${
+                    className={`text-[9px] font-black px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] border-none ${
                       (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
                         ? 'bg-[#E0E5EC] text-slate-400' 
                         : `bg-gradient-to-r from-orange-400 to-rose-400 shadow-[0_8px_15px_rgba(249,115,22,0.25)] text-white`
@@ -1034,11 +1022,11 @@ export default function Home() {
                       <div className="flex gap-3">
                         {!isCustom ? (
                           <>
-                            <button onClick={() => toggleCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]">Custom</button>
-                            <button onClick={() => apriSwapAlimento(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-orange-500 hover:text-rose-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]">Swap</button>
+                            <button onClick={() => toggleCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Custom</button>
+                            <button onClick={() => apriSwapAlimento(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-orange-500 hover:text-rose-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Swap</button>
                           </>
                         ) : (
-                           <button onClick={() => resetCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]">🗑️ Reset</button>
+                           <button onClick={() => resetCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">🗑️ Reset</button>
                         )}
                       </div>
                     </div>
@@ -1046,13 +1034,13 @@ export default function Home() {
                     {isCustom ? (
                        <div className={`bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] mt-2 p-5 rounded-3xl`}>
                          <div className="flex gap-4 mb-5">
-                            <input type="text" placeholder="Es. 35g Plumcake" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] px-4 py-3 rounded-xl text-[13px] text-slate-700 outline-none font-semibold" />
-                            <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className="bg-gradient-to-r from-orange-400 to-rose-400 text-white font-bold uppercase tracking-widest rounded-xl px-6 flex items-center justify-center shadow-md disabled:opacity-50">🪄 AI</button>
+                            <input type="text" placeholder="Es. 35g Plumcake" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] px-4 py-3 rounded-xl text-[13px] text-slate-700 outline-none font-semibold border-none" />
+                            <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className="bg-gradient-to-r from-orange-400 to-rose-400 text-white font-bold uppercase tracking-widest rounded-xl px-6 flex items-center justify-center shadow-md disabled:opacity-50 border-none cursor-pointer">🪄 AI</button>
                          </div>
                          <div className="flex gap-4">
-                            <div className="flex-1"><span className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center">Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] px-2 py-3 rounded-xl text-[13px] text-slate-700 outline-none font-black text-center" /></div>
-                            <div className="flex-1"><span className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center">Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] px-2 py-3 rounded-xl text-[13px] text-slate-700 outline-none font-black text-center" /></div>
-                            <div className="flex-1"><span className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center">Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] px-2 py-3 rounded-xl text-[13px] text-slate-700 outline-none font-black text-center" /></div>
+                            <div className="flex-1"><span className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center">Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] px-2 py-3 rounded-xl text-[13px] text-slate-700 outline-none font-black text-center border-none" /></div>
+                            <div className="flex-1"><span className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center">Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] px-2 py-3 rounded-xl text-[13px] text-slate-700 outline-none font-black text-center border-none" /></div>
+                            <div className="flex-1"><span className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center">Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] px-2 py-3 rounded-xl text-[13px] text-slate-700 outline-none font-black text-center border-none" /></div>
                          </div>
                        </div>
                     ) : (
@@ -1083,16 +1071,16 @@ export default function Home() {
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
         <div className="flex flex-col gap-8 lg:col-span-5">
-          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col h-[900px] lg:h-[calc(100vh-6rem)] relative overflow-hidden">
+          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1">
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
 
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 pt-2 shrink-0">
               <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Programma {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
               <div className="flex gap-3 bg-[#E0E5EC] p-1.5 rounded-full shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]">
-                <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 ${vistaStorico && !vistaGraficiCarichi ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-cyan-500'}`}>
+                <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaStorico && !vistaGraficiCarichi ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-cyan-500'}`}>
                   {vistaStorico && !vistaGraficiCarichi ? 'Oggi' : 'Storico'}
                 </button>
-                <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 ${vistaGraficiCarichi ? 'bg-gradient-to-br from-purple-400 to-purple-500 text-white shadow-[0_4px_10px_rgba(168,85,247,0.4)]' : 'text-slate-500 hover:text-cyan-500'}`}>
+                <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaGraficiCarichi ? 'bg-gradient-to-br from-purple-400 to-purple-500 text-white shadow-[0_4px_10px_rgba(168,85,247,0.4)]' : 'text-slate-500 hover:text-cyan-500'}`}>
                   Grafici
                 </button>
               </div>
@@ -1105,7 +1093,7 @@ export default function Home() {
                     <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest block mb-1.5">Durata Stimata</span>
                     <p className="text-[16px] font-black text-slate-800 flex items-center gap-2">⏱️ ~<AnimatedCounter value={calcolaTempoScheda()} /> min <span className="text-[10px] text-slate-400 font-bold ml-1">(Recuperi incl.)</span></p>
                   </div>
-                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] ${fastWorkout ? 'bg-gradient-to-br from-red-400 to-rose-500 text-white border-none shadow-[0_8px_15px_rgba(244,63,94,0.3)]' : 'bg-[#E0E5EC] text-slate-500 hover:text-cyan-500 active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff]'}`}>
+                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 border-none cursor-pointer shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] ${fastWorkout ? 'bg-gradient-to-br from-red-400 to-rose-500 text-white shadow-[0_8px_15px_rgba(244,63,94,0.3)]' : 'bg-[#E0E5EC] text-slate-500 hover:text-cyan-500 active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff]'}`}>
                     {fastWorkout ? '⚡ Fast Mode' : 'Taglia Tempi'}
                   </button>
                 </div>
@@ -1114,7 +1102,7 @@ export default function Home() {
                   <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-3 px-1">Giorno di Allenamento</p>
                   <div className="flex space-x-3 overflow-x-auto pb-4 custom-scrollbar">
                     {giorniSettimana.map((gg: string) => (
-                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-5 py-3.5 text-[12px] rounded-[1.2rem] whitespace-nowrap transition-all duration-300 ${giornoCalendario === gg ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-slate-500 font-bold hover:text-cyan-500'}`}>{gg}</button>
+                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`px-5 py-3.5 text-[12px] rounded-[1.2rem] whitespace-nowrap transition-all duration-300 border-none cursor-pointer ${giornoCalendario === gg ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-slate-500 font-bold hover:text-cyan-500'}`}>{gg}</button>
                     ))}
                   </div>
                 </div>
@@ -1125,12 +1113,12 @@ export default function Home() {
                 
                 <div className="mb-6 flex gap-4 bg-[#E0E5EC] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#a3b1c6,inset_-5px_-5px_10px_#ffffff] shrink-0">
                   {['Spinta', 'Tirata', 'Gambe'].map((sch: string) => (
-                    <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-5 py-4 text-[11px] font-black uppercase tracking-widest rounded-[1.5rem] flex-1 transition-all duration-300 ${schedaAttiva === sch ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-400 hover:text-slate-700'}`}>{sch}</button>
+                    <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-5 py-4 text-[11px] font-black uppercase tracking-widest rounded-[1.5rem] flex-1 transition-all duration-300 border-none cursor-pointer ${schedaAttiva === sch ? 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-400 hover:text-slate-700'}`}>{sch}</button>
                   ))}
                 </div>
 
                 {isDataLoading ? (
-                 <div className="flex-1 space-y-6 custom-scrollbar pr-2 overflow-hidden">
+                 <div className="flex-1 space-y-6 custom-scrollbar pr-2 overflow-y-auto min-h-0">
                     <Skeleton className="h-48 w-full" />
                     <Skeleton className="h-48 w-full" />
                  </div>
@@ -1158,7 +1146,7 @@ export default function Home() {
                         <div className="pl-4">
                           <div className="flex justify-between items-start mb-3">
                             <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
-                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-400 hover:text-cyan-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] opacity-0 group-hover:opacity-100">Swap</button>
+                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-400 hover:text-cyan-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer opacity-0 group-hover:opacity-100">Swap</button>
                           </div>
                           <div className="flex items-center gap-5 mt-4">
                             <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-4 rounded-[1.2rem]"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
@@ -1190,7 +1178,7 @@ export default function Home() {
               <button onClick={salvaSessione} className="w-full mt-6 py-5 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-black uppercase tracking-widest text-[16px] rounded-2xl shadow-[0_8px_20px_rgba(6,182,212,0.3)] shrink-0 hover:shadow-[0_12px_25px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer">SALVA SESSIONE</button>
             </>
           ) : vistaGraficiCarichi ? (
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar min-h-0">
                <div className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-6 rounded-[1.5rem]">
                  <label className="text-[10px] text-slate-400 font-bold uppercase block mb-3 px-1 tracking-widest">Seleziona Esercizio:</label>
                  <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-700 text-[13px] font-bold p-4 rounded-2xl border-none outline-none mb-6 appearance-none">
@@ -1200,7 +1188,7 @@ export default function Home() {
                </div>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar min-h-0">
               {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessuna sessione salvata.</p> : (
                 [...storicoSessioni].reverse().map((sess) => (
                   <div key={sess.oraId} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-6 rounded-[1.5rem]">
@@ -1230,12 +1218,12 @@ export default function Home() {
         <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative">
           <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
             <h3 className="font-black text-2xl uppercase tracking-widest text-slate-700">Sostituisci Esercizio</h3>
-            <button onClick={() => setModalEsercizio(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors">&times;</button>
+            <button onClick={() => setModalEsercizio(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none cursor-pointer">&times;</button>
           </div>
           <div className="space-y-5 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {esercizioDaCambiare.alternative.map((alt: any, i: number) => (
-              <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-6 bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] rounded-[2rem] hover:shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] group transition-all duration-300">
+              <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-6 bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] rounded-[2rem] hover:shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] group transition-all duration-300 border-none cursor-pointer">
                 <p className="font-black text-[16px] text-slate-700 group-hover:text-cyan-500 transition-colors drop-shadow-sm">{alt.nome}</p>
                 <p className="text-[10px] text-cyan-600 mt-2.5 uppercase font-black tracking-widest mb-3">{alt.note}</p>
                 <p className="text-[12px] text-slate-500 leading-relaxed font-bold">{alt.dettaglio}</p>
@@ -1251,7 +1239,7 @@ export default function Home() {
         <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative">
           <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
             <h3 className="font-black text-2xl uppercase tracking-widest text-slate-700">Sostituisci Pasto</h3>
-            <button onClick={() => setModalAlimento(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors">&times;</button>
+            <button onClick={() => setModalAlimento(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none cursor-pointer">&times;</button>
           </div>
           <div className="space-y-5 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
             {/* @ts-ignore */}
@@ -1259,7 +1247,7 @@ export default function Home() {
                const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
                const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
                return (
-                <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-6 bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] rounded-[2rem] hover:shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] group transition-all duration-300">
+                <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-6 bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] rounded-[2rem] hover:shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] group transition-all duration-300 border-none cursor-pointer">
                   <div className="flex justify-between items-start mb-4">
                     <p className="font-black text-[15px] text-slate-700 group-hover:text-orange-500 transition-colors pr-2 leading-snug">{alt.nome}</p>
                     <span className="text-[10px] bg-[#E0E5EC] shadow-[inset_2px_2px_5px_#a3b1c6,inset_-2px_-2px_5px_#ffffff] text-orange-600 px-3.5 py-2 rounded-xl font-black tracking-widest shrink-0">{swapKcal} Kcal</span>
@@ -1273,13 +1261,6 @@ export default function Home() {
         </div>
       </div>
     )}
-    
-    <style dangerouslySetInnerHTML={{__html: `
-      .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-      .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); }
-    `}} />
   </main>
 </div>
 );
