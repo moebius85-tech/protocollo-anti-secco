@@ -8,10 +8,10 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const colorBg = "bg-[#eef2f6]";
-const shadowOutset = "shadow-[8px_8px_16px_#c1c9d2,-8px_-8px_16px_#ffffff]";
-const shadowInset = "shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff]";
-const shadowOutsetSm = "shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff]";
-const shadowInsetSm = "shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff]";
+const shadowOutset = "shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff]";
+const shadowInset = "shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff]";
+const shadowOutsetSm = "shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff]";
+const shadowInsetSm = "shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff]";
 const gradPrimary = "bg-gradient-to-r from-[#4facfe] to-[#00f2fe]";
 
 const UI = {
@@ -31,6 +31,7 @@ const baseDbAllenamento={Spinta:{focus:"SPINTA (Petto, Spalle, Tricipiti)",eserc
 const dbAlimenti={Pasto1:[{nome:"Avena + Whey + Burro",baseCarbo:12,pro:35,fat:15,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro`},{nome:"Pancakes avena + Albume",baseCarbo:14,pro:30,fat:10,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro`},{nome:"Uova intere + Segale + Avocado",baseCarbo:10,pro:25,fat:22,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova • ${Math.round(f*6)}g Avocado`}],Pasto2:[{nome:"Riso Basmati + Pollo + Olio EVO",baseCarbo:20,pro:40,fat:12,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Pollo • ${f}g Olio`},{nome:"Pasta di Semola + Carne Magra",baseCarbo:20,pro:45,fat:10,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato • ${f}g Olio`},{nome:"Patate dolci + Salmone",baseCarbo:16,pro:40,fat:20,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*4.5)}g Patate • ${Math.round(p*4.5)}g Salmone`}],Pasto3:[{nome:"Yogurt Greco + Mandorle",baseCarbo:5,pro:20,fat:15,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle`},{nome:"Fiocchi di latte + Burro",baseCarbo:4,pro:25,fat:18,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*8)}g Fiocchi Latte • ${f}g Burro Arachidi`},{nome:"Parmigiano + Wasa",baseCarbo:8,pro:16,fat:14,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*3)}g Parmigiano • ${Math.round(c*1.5)}g Wasa`}],PostWorkout:[{nome:"Crema di Riso + Whey",baseCarbo:16,pro:35,fat:1,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate`},{nome:"Corn Flakes + Whey",baseCarbo:16,pro:35,fat:1,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate`},{nome:"Gallette + Bresaola",baseCarbo:15,pro:30,fat:3,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola`}]};
 const misureBase = [{ id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" }, { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" }, { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }];
 const misureBIA = [{ id: 'vita', label: "Circ. Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa", unit: "%" }, { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Musc.", unit: "%" }];
+
 const AnimatedCounter = ({ value, suffix = "" }: { value: number, suffix?: string }) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -129,7 +130,6 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
     </div>
   );
 };
-
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -350,7 +350,7 @@ export default function Home() {
   };
 
   const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
-    if(!nomeCibo.trim()) return alert("Inserisci il nome del sgarro.");
+    if(!nomeCibo.trim()) return alert("Inserisci il nome.");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
     try {
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Utente: "${nomeCibo}". Calcola macro. Restituisci SOLO: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo}]` }) });
@@ -358,7 +358,7 @@ export default function Home() {
       const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
         updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString()); updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString()); updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString()); updateCustomMeal(cat, 'nome', match[5].trim());
-      } else { alert("Non riconosciuto. Risposta: " + data.reply); }
+      } else { alert("Non riconosciuto."); }
     } catch(e) { console.log(e); alert("Errore di rete."); }
     setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
   };
@@ -519,7 +519,7 @@ export default function Home() {
     }
     return t;
   };
- if (appState === 'HOME') {
+  if (appState === 'HOME') {
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
         <div className={UI.card + " w-full max-w-md z-10"}>
@@ -606,7 +606,7 @@ export default function Home() {
                  <label htmlFor="metabolismoMain" className="text-[11px] text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
               </div>
 
-              <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className={UI.btnPrimary + " mt-8 w-full"}>
+              <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className={UI.btnPrimary + " mt-8"}>
                  ACCEDI AL SISTEMA
               </button>
            </div>
@@ -683,7 +683,7 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#c1c9d2,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
@@ -691,11 +691,11 @@ export default function Home() {
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -945,9 +945,9 @@ export default function Home() {
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
                      <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
                   </div>
-                  <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
+                  <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-3 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
                      <span className="text-[9px] text-cyan-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
-                     <span className="text-[16px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
+                     <span className="text-[15px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
                   </div>
                 </div>
               </div>
@@ -1186,6 +1186,7 @@ export default function Home() {
 
       </div>
 
+      {/* --- MODALI SWAP --- */}
       {modalEsercizio && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
           <div className={UI.card + " w-full max-w-md p-8 relative"}>
@@ -1242,5 +1243,6 @@ export default function Home() {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); }
       `}} />
     </main>
+  </div>
   );
 }
