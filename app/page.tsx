@@ -9,28 +9,28 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// STILI GLOBALI (LIGHT NEUMORPHISM - SOFT UI)
+// STILI GLOBALI (PURE SOFT NEUMORPHISM)
 // ==========================================
-const colorBg = "bg-[#e8eef3]";
-const shadowOutset = "shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff]";
-const shadowInset = "shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff]";
-const shadowOutsetSm = "shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff]";
-const shadowInsetSm = "shadow-[inset_2px_2px_4px_#c1c9d2,inset_-2px_-2px_4px_#ffffff]";
-const gradPrimary = "bg-gradient-to-r from-[#00c6ff] to-[#0072ff]"; 
+const colorBg = "bg-[#eef2f6]";
+const shadowOutset = "shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff]";
+const shadowInset = "shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff]";
+const shadowOutsetSm = "shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff]";
+const shadowInsetSm = "shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff]";
+const gradPrimary = "bg-gradient-to-r from-[#4facfe] to-[#00f2fe]"; 
 
 const UI = {
   bg: colorBg,
-  card: `${colorBg} ${shadowOutset} rounded-[2rem]`,
-  panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem]`,
-  panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem]`,
-  input: `w-full ${colorBg} ${shadowInset} px-5 py-3.5 rounded-full text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-[#00c6ff]/30 transition-all font-bold placeholder:text-slate-400 border-none appearance-none`,
-  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(0,114,255,0.25)] hover:shadow-[0_12px_20px_rgba(0,114,255,0.35)] hover:-translate-y-0.5 transition-all duration-300 text-white font-black uppercase tracking-widest rounded-full py-4 px-6 flex items-center justify-center border-none`,
-  btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-[#0072ff] py-2 px-4 rounded-full font-bold uppercase tracking-widest transition-all duration-200 text-[10px]`,
-  label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-2",
+  card: `${colorBg} ${shadowOutset} rounded-[2rem] p-6 lg:p-8`,
+  panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem] p-5`,
+  panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem] p-5`,
+  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-[#4facfe]/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
+  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(79,172,254,0.3)] hover:shadow-[0_12px_20px_rgba(79,172,254,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none`,
+  btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-[#00f2fe] py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px]`,
+  label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1",
   textTitle: "text-slate-700",
   textBody: "text-slate-500",
-  pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(0,114,255,0.3)]`,
-  pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-[#0072ff]`
+  pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(79,172,254,0.3)]`,
+  pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-[#00f2fe]`
 };
 
 // ==========================================
@@ -40,7 +40,7 @@ const baseDbAllenamento = {
   Spinta: {
     focus: "SPINTA (Petto, Spalle, Tricipiti)",
     esercizi: [
-      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi fino a sfiorare il petto e spingi verso l'alto con forza.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
+      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi fino a sfiorare il petto e spingi verso l'alto.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
       { id: "e3", nome: "Panca inclinata manubri", anim: "chest_db_incline", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci clavicolari.", alternative: [{ nome: "Panca inclinata bilanciere", anim: "chest_barbell_incline", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata." }, { nome: "Chest Press Inclinata", anim: "chest_machine_incline", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata." }] },
       { id: "e4", nome: "Chest press", anim: "chest_machine_flat", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale.", alternative: [{ nome: "Pectoral Machine", anim: "chest_pec_deck", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti." }, { nome: "Croci cavi seduto", anim: "chest_cable_seated", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro." }] },
       { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti.", alternative: [{ nome: "Croci cavi piana", anim: "chest_cable_flat", note: "Tensione continua", dettaglio: "CAVI: Dai cavi bassi." }, { nome: "Pec Deck (Fly)", anim: "chest_pec_deck", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck." }] },
@@ -64,12 +64,12 @@ const baseDbAllenamento = {
   Gambe: {
     focus: "GAMBE E POLPACCI",
     esercizi: [
-      { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo.", alternative: [{ nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori." }, { nome: "Hack Squat Libero", anim: "leg_hack_barbell", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe." }, { nome: "Hack Squat Macchina", anim: "leg_hack_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Focus spinta senza pesare sulla colonna." }] },
+      { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo.", alternative: [{ nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori." }, { nome: "Hack Squat Libero", anim: "leg_hack_barbell", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe." }, { nome: "Hack Squat Macchina", anim: "leg_hack_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Focus spinta." }] },
       { id: "e12", nome: "Hack squat", anim: "leg_hack_machine", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena. Scendi e spingi su.", alternative: [{ nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana." }, { nome: "Belt Squat", anim: "leg_belt_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi." }] },
       { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Scendi portando le ginocchia verso il petto.", alternative: [{ nome: "Affondi Manubri", anim: "leg_lunge", note: "Equilibrio", dettaglio: "MANUBRI: In camminata o sul posto." }, { nome: "Bulgarian Squat", anim: "leg_bulgarian", note: "Unilaterale", dettaglio: "MANUBRI: Piede posteriore su panca." }] },
       { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Distendi le gambe strizzando forte i quadricipiti.", alternative: [{ nome: "Sissy Squat", anim: "leg_sissy_squat", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci e lasciati cadere." }, { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto." }] },
       { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Scivola lungo le cosce spingendo il sedere indietro.", alternative: [{ nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte." }, { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto." }] },
-      { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo.", alternative: [{ nome: "Leg Curl Seduto", anim: "leg_curl_seduto", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola il bicipite femorale." }, { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto usando i femorali." }] },
+      { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo.", alternative: [{ nome: "Leg Curl Seduto", anim: "leg_curl_seduto", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola il bicipite femorale." }, { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto." }] },
       { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine.", alternative: [{ nome: "Calf Press", anim: "leg_calf_press", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press." }, { nome: "Calf Seduto", anim: "leg_calf_seated", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, solleva i talloni." }] }
     ]
   }
@@ -77,19 +77,19 @@ const baseDbAllenamento = {
 
 const dbAlimenti = {
   Pasto1: [
-    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro Arachidi` },
-    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: 30, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro Arachidi (sopra)` },
-    { nome: "Uova intere + Pane segale + Avocado", baseCarbo: 10, pro: 25, fat: 22, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova Intere • ${Math.round(f*6)}g Avocado` }
+    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro` },
+    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: 30, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro` },
+    { nome: "Uova intere + Pane segale + Avocado", baseCarbo: 10, pro: 25, fat: 22, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova • ${Math.round(f*6)}g Avocado` }
   ],
   Pasto2: [
-    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Petto Pollo • ${f}g Olio EVO` },
-    { nome: "Pasta di Semola + Carne Magra (Manzo)", baseCarbo: 20, pro: 45, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato Magro • ${f}g Olio EVO` },
-    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: 40, fat: 20, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate Dolci • ${Math.round(p*4.5)}g Salmone • Grassi dal pesce` }
+    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Pollo • ${f}g Olio` },
+    { nome: "Pasta di Semola + Carne Magra", baseCarbo: 20, pro: 45, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato • ${f}g Olio` },
+    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: 40, fat: 20, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate • ${Math.round(p*4.5)}g Salmone` }
   ],
   Pasto3: [
     { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: 20, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle` },
-    { nome: "Fiocchi di latte + Burro di arachidi", baseCarbo: 4, pro: 25, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*8)}g Fiocchi Latte Magri • ${f}g Burro Arachidi` },
-    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: 16, fat: 14, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*3)}g Parmigiano 30 Mesi • ${Math.round(c*1.5)}g Fette Wasa` }
+    { nome: "Fiocchi di latte + Burro arachidi", baseCarbo: 4, pro: 25, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*8)}g Fiocchi Latte • ${f}g Burro Arachidi` },
+    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: 16, fat: 14, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*3)}g Parmigiano • ${Math.round(c*1.5)}g Wasa` }
   ],
   PostWorkout: [
     { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate` },
@@ -141,15 +141,15 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
     return '#c1c9d2'; 
   };
   return (
-    <div className={`${UI.panelInset} w-full flex justify-center py-6 mb-5`}>
+    <div className={`${UI.panelInset} w-full flex justify-center py-6 mb-5 relative`}>
       <svg width="120" height="180" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
          <defs>
             <linearGradient id="gradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
-               <stop offset="0%" stopColor="#00c6ff" />
-               <stop offset="100%" stopColor="#0072ff" />
+               <stop offset="0%" stopColor="#4facfe" />
+               <stop offset="100%" stopColor="#00f2fe" />
             </linearGradient>
          </defs>
-         <circle cx="50" cy="20" r="12" fill="#e8eef3" stroke={getActive('head')} strokeWidth="3" className="transition-all duration-700" />
+         <circle cx="50" cy="20" r="12" fill="#eef2f6" stroke={getActive('head')} strokeWidth="3" className="transition-all duration-700" />
          <path d="M30 40 Q50 35 70 40 L75 60 L25 60 Z" fill={getActive('chest')} className="transition-colors duration-700" />
          <circle cx="25" cy="45" r="8" fill={getActive('shoulders')} className="transition-colors duration-700" />
          <circle cx="75" cy="45" r="8" fill={getActive('shoulders')} className="transition-colors duration-700" />
@@ -168,8 +168,8 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
 };
 
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
-  if (!data || data.length === 0) return <p className="text-[10px] text-slate-400 italic">Dati insufficienti.</p>;
-  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic">Un solo dato. Esegui un&apos;altra sessione.</p>;
+  if (!data || data.length === 0) return <p className="text-[10px] text-slate-400 italic font-medium p-4">Dati insufficienti.</p>;
+  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-medium p-4">Un solo dato. Esegui un&apos;altra sessione.</p>;
   const maxVal = Math.max(...data);
   const minVal = Math.min(...data);
   const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
@@ -177,15 +177,15 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   const points = data.map((val, i) => `${padding + (i / (data.length - 1)) * (width - padding * 2)},${height - padding - ((val - minVal) / range) * (height - padding * 2)}`).join(" ");
 
   return (
-    <div className={UI.panelInset + " mt-4"}>
-       <span className={UI.label + " !text-[#00c6ff]"}>{label} - Trend</span>
+    <div className={UI.panelInset + " mt-4 p-4"}>
+       <span className={UI.label + " !text-[#00c6ff] mb-4"}>{label} - Trend</span>
        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-md">
-          <polyline points={points} fill="none" stroke="#0072ff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={points} fill="none" stroke="#00c6ff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           {data.map((val, i) => {
             const x = padding + (i / (data.length - 1)) * (width - padding * 2);
             const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
             return (
-              <g key={i}><circle cx={x} cy={y} r="4" fill="#e8eef3" stroke="#00c6ff" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>
+              <g key={i}><circle cx={x} cy={y} r="5" fill="#eef2f6" stroke="#00c6ff" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>
             );
           })}
        </svg>
@@ -216,7 +216,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
 
   const sections = [
     { label: 'BMI', val: bmi, color: '#c084fc', angle: 0 },           
-    { label: 'BMR', val: bmr > 0 ? bmr : '-', color: '#22d3ee', angle: 60 },  
+    { label: 'BMR', val: bmr > 0 ? bmr : '-', color: '#4facfe', angle: 60 },  
     { label: 'MUSCOLO', val: mm > 0 ? `${mm}%` : '-', color: '#60a5fa', angle: 120 },  
     { label: 'ACQUA', val: bw > 0 ? `${bw}%` : '-', color: '#a855f7', angle: 180 }, 
     { label: 'GRASSO', val: bf > 0 ? `${bf}%` : '-', color: '#38bdf8', angle: 240 }, 
@@ -235,7 +235,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              const pos = getLabelPos(sec.angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
-                 <text x={pos.x} y={pos.y - 8} fill="#64748b" fontSize="12" textAnchor="middle" fontWeight="bold" className="tracking-widest">{sec.label}</text>
+                 <text x={pos.x} y={pos.y - 8} fill="#829ab1" fontSize="11" textAnchor="middle" fontWeight="bold" className="tracking-widest">{sec.label}</text>
                  <text x={pos.x} y={pos.y + 14} fill="#334155" fontSize="22" textAnchor="middle" fontWeight="900">{sec.val}</text>
                </g>
              )
@@ -295,7 +295,6 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   
-  const [messaggioDieta, setMessaggioDieta] = useState("In attesa di analisi biometrica...");
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({
     Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
@@ -768,37 +767,35 @@ export default function Home() {
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
     let preW = "";
     if (quandoTiAlleni === 'sera') {
-      preW = `1️⃣ PRE-WORKOUT (Stim-Free per riposo notturno):
-• L-Citrullina: 6-8g (Vasodilatazione e Pump)
-• Arginina AKG: 3g
-• Ashwagandha KSM-66: 500mg`;
+      preW = `1️⃣ PRE-WORKOUT (Stim-Free):
+• L-Citrullina: 6-8g (Pump)
+• Ashwagandha: 500mg`;
     } else {
-      preW = `1️⃣ PRE-WORKOUT (Focus & Energia):
-• Caffeina: 200mg (Stimolante SNC)
-• L-Citrullina: 6g (Pump)
-• L-Tirosina: 1g (Focus mentale)`;
+      preW = `1️⃣ PRE-WORKOUT (Focus):
+• Caffeina: 200mg
+• L-Citrullina: 6g (Pump)`;
     }
 
-    if (protocolloAttivo === 'Shred') preW += `\n• Acetil L-Carnitina (ALC): 1.5g`;
+    if (protocolloAttivo === 'Shred') preW += `\n• ALC: 1.5g`;
 
     let intraW = "2️⃣ INTRA-WORKOUT:";
     if (activeDieta === 'Keto') {
-      intraW += `\n• Elettroliti (Fondamentali in Keto!)\n• MCT Oil: 10g (Energia immediata)\n• EAA: 15g\n• ❌ ZERO Carboidrati`;
+      intraW += `\n• Elettroliti\n• MCT Oil: 10g\n• EAA: 15g`;
     } else if (activeDieta === 'LowCarb') {
-      intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g\n• Glutammina: 3g`;
+      intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g`;
     } else {
-      intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g\n• Creatina Monoidrato: 5g`;
+      intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g\n• Creatina: 5g`;
     }
 
-    let saluteW = "3️⃣ BASE SALUTE (Ai pasti):";
+    let saluteW = "3️⃣ SALUTE:";
     if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') {
-       saluteW += `\n• Omega-3: 2-3g\n• Multivitaminico alto dosaggio`;
+       saluteW += `\n• Omega-3: 2-3g\n• Multivitaminico`;
     } else {
        saluteW += `\n• Omega-3: 1g\n• Vitamina D3 + K2`;
     }
 
     const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
-    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra di digiuno: 16 ore.\n• Consentiti: Acqua, Caffè amaro, Tè verde.\n• Le calorie della colazione sono state spalmate.` };
+    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.\n• Acqua, Caffè amaro, Tè.` };
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t: any[] = [];
@@ -840,11 +837,11 @@ export default function Home() {
 
   if (appState === 'HOME') {
     return (
-      <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
-        <div className={UI.card + " w-full max-w-md z-10 p-8"}>
+      <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden`}>
+        <div className={UI.card + " w-full max-w-md z-10"}>
            <div className="flex justify-center items-center mb-8">
-              <h1 className="text-4xl font-black tracking-tighter uppercase text-center flex-1 text-slate-400">
-                OMNI<span className="text-[#00c6ff] drop-shadow-sm">FIT</span>
+              <h1 className="text-4xl font-light tracking-widest uppercase text-center flex-1 text-slate-700">
+                OMNI<span className={UI.textHighlight + " font-black"}>FIT</span>
               </h1>
            </div>
            
@@ -853,14 +850,14 @@ export default function Home() {
                  <div className="flex justify-between items-center mb-2 px-2">
                    <label className={UI.label + " !mb-0 !px-0"}>1. Seleziona Atleta</label>
                    {utenteCorrente !== "Leonardo" && (
-                     <button onClick={eliminaAtleta} className="text-[9px] bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-600 px-3 py-1.5 rounded-full font-bold uppercase transition-all">🗑️ Elimina</button>
+                     <button onClick={eliminaAtleta} className="text-[9px] bg-red-100 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1 rounded-full font-bold uppercase transition-all shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1)]">🗑️ Elimina</button>
                    )}
                  </div>
                  <select value={utenteCorrente} onChange={e => setUtenteCorrente(e.target.value)} className={UI.input}>
                     {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
                  </select>
                  <div className="mt-4 flex justify-center">
-                   <button onClick={() => setModalWizard(true)} className={UI.btnSecondary + " w-full"}>+ Crea Nuovo Profilo A.I.</button>
+                   <button onClick={() => setModalWizard(true)} className={UI.btnSecondary + " w-full !text-[#00c6ff]"}>+ Crea Nuovo Profilo A.I.</button>
                  </div>
               </div>
 
@@ -913,7 +910,7 @@ export default function Home() {
                  </select>
               </div>
               
-              <div className="bg-[#e8eef3] shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+              <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                  <input type="checkbox" id="metabolismoMain" checked={metabolismoBloccato} onChange={async (e) => {
                     const bloccato = e.target.checked;
                     setMetabolismoBloccato(bloccato);
@@ -921,8 +918,8 @@ export default function Home() {
                       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore, metabolismoBloccato: bloccato } }, data: new Date().toISOString() };
                       await supabase.from("check_utente").insert([payload]);
                     }
-                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-md shadow-inner" />
-                 <label htmlFor="metabolismoMain" className="text-[11px] text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
+                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-full shadow-inner" />
+                 <label htmlFor="metabolismoMain" className="text-xs text-slate-600 font-bold tracking-wide cursor-pointer">Soffri di Stallo Metabolico?</label>
               </div>
 
               <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className={UI.btnPrimary + " mt-8"}>
@@ -933,9 +930,9 @@ export default function Home() {
 
         {modalWizard && (
           <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-            <div className={UI.card + " w-full max-w-lg p-8 relative"}>
-               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-5 right-6 text-slate-400 hover:text-slate-600 font-black text-2xl transition-colors">&times;</button>
-               <h3 className={`font-black text-2xl uppercase tracking-widest mb-8 text-[#00c6ff] drop-shadow-sm`}>Nuova Profilazione</h3>
+            <div className={UI.card + " w-full max-w-lg relative overflow-hidden"}>
+               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 font-bold text-2xl transition-colors">&times;</button>
+               <h3 className={`font-light text-2xl uppercase tracking-widest mb-8 text-slate-700`}>Nuova Profilazione</h3>
                
                {stepWizard === 1 && (
                  <div className="space-y-6">
@@ -1002,19 +999,19 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#e8eef3] shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
-                     <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
+                     <label htmlFor="metabolismo" className="text-xs text-slate-600 font-bold tracking-wide cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
 
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -1046,16 +1043,16 @@ export default function Home() {
         
         <header className="mb-10 pb-6 flex justify-between items-center">
           <div>
-            <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
+            <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#eef2f6] shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-slate-400 drop-shadow-sm">
-              OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-300 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+              OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-400 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
             </h1>
           </div>
           <div className="text-right">
             <span className="text-[9px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
             <div className="flex flex-col items-end gap-2.5">
-               <span className="text-sm font-black text-slate-700 bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
-               <div className="flex gap-2 bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
+               <span className="text-sm font-black text-slate-700 bg-[#eef2f6] shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+               <div className="flex gap-2 bg-[#eef2f6] shadow-[3px_3px_6px_#d1d9e6,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
                   <span className="text-[9px] font-black text-[#00c6ff] uppercase tracking-widest">{tipoDieta}</span>
                   {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
                </div>
@@ -1067,9 +1064,9 @@ export default function Home() {
           
           {/* COLONNA SINISTRA: Telemetria & Coach IA */}
           <div className="flex flex-col gap-8 lg:col-span-3">
-            <section className={UI.card + " p-7 flex flex-col"}>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-black tracking-widest text-slate-700 uppercase">Telemetria</h2>
+            <section className={UI.card + " flex flex-col"}>
+              <div className="flex justify-between items-center mb-6 pb-2">
+                <h2 className="text-lg font-bold tracking-wide text-slate-700">Telemetria</h2>
                 <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={UI.btnSecondary + " !py-2 !px-4"}>
                   {vistaTelemetria === 'STORICO' ? 'Form' : 'Storico'}
                 </button>
@@ -1087,9 +1084,9 @@ export default function Home() {
                      <p className={UI.label}>Misure Base</p>
                      <div className="grid grid-cols-2 gap-4">
                        {misureBase.map((m) => (
-                           <div key={m.id} className={UI.panelInset + " !p-4"}>
-                             <label className="text-[9px] text-slate-400 uppercase font-bold flex justify-between tracking-widest mb-2">{m.label} <span className="text-slate-300">{m.unit}</span></label>
-                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-black text-slate-700 outline-none focus:text-[#00c6ff] transition-colors text-center" placeholder="-" />
+                           <div key={m.id} className={UI.panelInset + " !p-3.5"}>
+                             <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-1">{m.label} <span className="text-slate-400">{m.unit}</span></label>
+                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-800 outline-none focus:text-[#00c6ff] transition-colors" placeholder="-" />
                            </div>
                        ))}
                      </div>
@@ -1099,40 +1096,40 @@ export default function Home() {
                      <p className={UI.label}>BIA (Opzionale)</p>
                      <div className="grid grid-cols-2 gap-4">
                        {misureBIA.map((m) => (
-                           <div key={m.id} className={UI.panelInset + " !p-4"}>
-                             <label className="text-[9px] text-slate-400 uppercase font-bold flex justify-between tracking-widest mb-2">{m.label} <span className="text-slate-300">{m.unit}</span></label>
-                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-black text-[#00c6ff] outline-none focus:text-[#0072ff] transition-colors text-center" placeholder="-" />
+                           <div key={m.id} className={UI.panelInset + " !p-3.5"}>
+                             <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-1">{m.label} <span className="text-slate-400">{m.unit}</span></label>
+                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-[#00c6ff] outline-none focus:text-[#0072ff] transition-colors" placeholder="-" />
                            </div>
                        ))}
                      </div>
                    </div>
 
-                   <div className="pt-4">
+                   <div className="pt-2">
                       <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
                    </div>
 
-                   <button onClick={valutaCheckFisico} className={UI.btnPrimary + " mt-6"}>Salva Dati</button>
+                   <button onClick={valutaCheckFisico} className={UI.btnPrimary + " mt-4"}>Salva Algoritmo</button>
                  </div>
               ) : (
                  <div className="flex-1 overflow-y-auto space-y-5 pr-2 max-h-[600px] custom-scrollbar">
-                   {storicoMisure.length === 0 ? <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#e8eef3] shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessun dato registrato.</p> : (
+                   {storicoMisure.length === 0 ? <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#eef2f6] shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessun dato registrato.</p> : (
                       storicoMisure.map((mis: any) => {
                          const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
                          return (
-                           <div key={mis.id} className={UI.panelOutset + " flex flex-col gap-4 !p-6"}>
-                              <div className="flex justify-between items-center mb-2">
-                                 <p className="text-[11px] font-black text-[#00c6ff] tracking-widest bg-[#e8eef3] shadow-[inset_2px_2px_4px_#c1c9d2,inset_-2px_-2px_4px_#ffffff] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
-                                 <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-black tracking-wider transition-colors shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-3 py-1.5 rounded-full">🗑️</button>
+                           <div key={mis.id} className={UI.panelOutset + " flex flex-col gap-4"}>
+                              <div className="flex justify-between items-center pb-2">
+                                 <p className="text-[11px] font-bold text-[#00c6ff] tracking-widest">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
+                                 <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] px-2.5 py-1.5 rounded-full">🗑️</button>
                               </div>
-                              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Peso</span> <strong className="text-slate-700">{mis.peso || '-'}kg</strong></p>
-                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Petto</span> <strong className="text-slate-700">{circ.petto || '-'}cm</strong></p>
-                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Spalle</span> <strong className="text-slate-700">{circ.spalle || '-'}cm</strong></p>
-                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Braccia</span> <strong className="text-slate-700">{circ.braccia || '-'}cm</strong></p>
-                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Gambe</span> <strong className="text-slate-700">{circ.gambe || '-'}cm</strong></p>
-                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Glutei</span> <strong className="text-slate-700">{circ.glutei || '-'}cm</strong></p>
-                                 <p className="bg-cyan-50 shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-cyan-600 flex justify-between"><span>Vita</span> <strong className="text-cyan-600">{circ.vita || '-'}cm</strong></p>
-                                 <p className="bg-blue-50 shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-blue-600 flex justify-between"><span>BIA</span> <strong className="text-blue-600">{circ.bodyFat || '-'}%</strong></p>
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold">
+                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Peso: <strong className="text-slate-800 float-right">{mis.peso || '-'}kg</strong></p>
+                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Petto: <strong className="text-slate-800 float-right">{circ.petto || '-'}cm</strong></p>
+                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Spalle: <strong className="text-slate-800 float-right">{circ.spalle || '-'}cm</strong></p>
+                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Braccia: <strong className="text-slate-800 float-right">{circ.braccia || '-'}cm</strong></p>
+                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Gambe: <strong className="text-slate-800 float-right">{circ.gambe || '-'}cm</strong></p>
+                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Glutei: <strong className="text-slate-800 float-right">{circ.glutei || '-'}cm</strong></p>
+                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl text-[#00c6ff]">Vita: <strong className="text-[#00c6ff] float-right">{circ.vita || '-'}cm</strong></p>
+                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl text-[#0072ff]">BIA: <strong className="text-[#0072ff] float-right">{circ.bodyFat || '-'}%</strong></p>
                               </div>
                            </div>
                          );
@@ -1142,31 +1139,31 @@ export default function Home() {
               )}
             </section>
 
-            <section className={UI.card + " p-7 flex flex-col h-[480px]"}>
-              <h2 className="text-base font-black tracking-widest uppercase text-slate-700 mb-6 flex items-center gap-3">
+            <section className={UI.card + " flex flex-col h-[480px]"}>
+              <h2 className="text-base font-bold text-slate-800 pb-2 mb-4 flex items-center gap-3 tracking-wide">
                 <span className="w-3 h-3 rounded-full bg-[#00c6ff] animate-pulse shadow-[0_0_10px_#00c6ff]"></span> A.I. Coach
               </h2>
-              <div className="flex-1 overflow-y-auto space-y-4 p-5 bg-[#e8eef3] shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff] rounded-[2rem] mb-6 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto space-y-4 p-5 bg-[#eef2f6] shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff] rounded-3xl mb-5 custom-scrollbar">
                 {chatLog.map((msg, i) => (
                   <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                    <span className={`text-[9px] uppercase font-black tracking-widest mb-2 ${msg.role === 'user' ? 'text-slate-400 pr-2' : 'text-[#00c6ff] pl-2'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
-                    <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#c1c9d2,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#e8eef3] text-slate-700 rounded-tr-sm' : 'bg-gradient-to-br from-[#00c6ff] to-[#0072ff] text-white rounded-tl-sm shadow-[0_8px_15px_rgba(0,114,255,0.3)]'}`}>{msg.text}</div>
+                    <span className={`text-[9px] uppercase font-bold tracking-widest mb-2 ${msg.role === 'user' ? 'text-slate-400 pr-2' : 'text-[#00c6ff] pl-2'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
+                    <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#d1d9e6,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#eef2f6] text-slate-700 rounded-tr-sm' : 'bg-gradient-to-br from-[#00c6ff] to-[#0072ff] text-white rounded-tl-sm shadow-[0_8px_15px_rgba(0,114,255,0.3)]'}`}>{msg.text}</div>
                   </div>
                 ))}
-                {isTyping && <div className="text-[10px] text-[#00c6ff] font-bold tracking-widest pl-2 animate-pulse mt-2">Elaborazione...</div>}
+                {isTyping && <div className="text-[10px] text-[#00c6ff] font-bold tracking-widest pl-2 animate-pulse mt-2">Elaborazione in corso...</div>}
                 <div ref={chatEndRef} />
               </div>
               
               {fileAllegato && (
-                <div className="flex items-center gap-2 mb-4 p-3 bg-[#e8eef3] shadow-[4px_4px_10px_#c1c9d2,-4px_-4px_10px_#ffffff] rounded-2xl w-fit">
-                  <span className="text-xs text-[#0072ff] font-black tracking-widest truncate max-w-[180px]">📎 {fileAllegato.nome}</span>
-                  <button onClick={() => setFileAllegato(null)} className="text-slate-400 hover:text-red-500 font-bold ml-3 transition-colors">&times;</button>
+                <div className="flex items-center gap-2 mb-3 p-3 bg-[#eef2f6] shadow-[4px_4px_10px_#d1d9e6,-4px_-4px_10px_#ffffff] rounded-2xl w-fit">
+                  <span className="text-xs text-[#0072ff] font-bold truncate max-w-[180px]">📎 {fileAllegato.nome}</span>
+                  <button onClick={() => setFileAllegato(null)} className="text-slate-400 hover:text-red-500 font-bold ml-2 transition-colors">&times;</button>
                 </div>
               )}
               <div className="flex gap-3 relative">
                 <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
-                <button onClick={() => fileInputRef.current?.click()} className={UI.btnSecondary + " !px-5 !py-3.5 !rounded-full shadow-[6px_6px_14px_#c1c9d2,-6px_-6px_14px_#ffffff]"}>📎</button>
-                <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega..." className={UI.input} />
+                <button onClick={() => fileInputRef.current?.click()} className={UI.btnSecondary + " !px-5 !py-3.5 !rounded-full shadow-[6px_6px_14px_#d1d9e6,-6px_-6px_14px_#ffffff]"}>📎</button>
+                <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega pasto..." className={UI.input} />
                 <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className={UI.btnPrimary + " !w-auto !px-7 !rounded-full disabled:opacity-50 disabled:hover:translate-y-0"}>→</button>
               </div>
             </section>
@@ -1174,51 +1171,51 @@ export default function Home() {
 
           {/* COLONNA CENTRALE: Turni & Nutrizione */}
           <div className="flex flex-col gap-8 lg:col-span-4">
-            <section className={UI.card + " p-7"}>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Incastro Turni</h2>
-                <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#e8eef3] text-xs text-[#00c6ff] font-black uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] appearance-none">
+            <section className={UI.card}>
+              <div className="flex justify-between items-center mb-6 pb-2">
+                <h2 className="text-lg font-bold tracking-wide text-slate-800">Incastro Turni</h2>
+                <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#eef2f6] text-xs text-[#00c6ff] font-bold py-2.5 px-4 rounded-full outline-none focus:ring-2 focus:ring-[#00c6ff]/50 transition-all shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff] appearance-none">
                   <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
                 </select>
               </div>
-              <div className="space-y-6">
-                <div className={UI.panelInset}>
-                  <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
+              <div className="space-y-5">
+                <div className={UI.panelInset + " !p-4"}>
+                  <span className="text-[10px] text-[#00c6ff] uppercase font-bold tracking-widest mb-3 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
                   <div className="flex space-x-4">
-                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
-                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
+                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm font-bold text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
+                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm font-bold text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                   </div>
                 </div>
                 {tipoTurno === 'spezzato' && (
-                  <div className={UI.panelInset}>
-                    <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
+                  <div className={UI.panelInset + " !p-4"}>
+                    <span className="text-[10px] text-[#00c6ff] uppercase font-bold tracking-widest mb-3 block">Pomeriggio (Lavoro)</span>
                     <div className="flex space-x-4">
-                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
-                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
+                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm font-bold text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
+                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm font-bold text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                     </div>
                   </div>
                 )}
-                <div className="pt-4 mt-4">
-                  <div className="flex justify-between items-center mb-8 bg-[#e8eef3] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#c1c9d2,-6px_-6px_14px_#ffffff]">
-                     <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Digiuno Intermittente 16:8</span>
-                     <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] ${digiuno ? 'bg-[#00c6ff]' : 'bg-slate-300'}`}>
+                <div className="pt-4 mt-2">
+                  <div className="flex justify-between items-center mb-6 bg-[#eef2f6] p-4 rounded-2xl shadow-[6px_6px_14px_#d1d9e6,-6px_-6px_14px_#ffffff]">
+                     <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Digiuno Intermittente 16:8</span>
+                     <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.1)] ${digiuno ? 'bg-[#00c6ff]' : 'bg-slate-300'}`}>
                         <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
                      </button>
                   </div>
                   <span className={UI.label}>Collocazione Allenamento</span>
-                  <div className="flex space-x-3 bg-[#e8eef3] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#c1c9d2,inset_-5px_-5px_10px_#ffffff]">
-                    <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'mattina' ? UI.pillActive : UI.pillInactive}`}>Mattina</button>
-                    {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'pausa' ? UI.pillActive : UI.pillInactive}`}>Pausa</button>}
-                    <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'sera' ? UI.pillActive : UI.pillInactive}`}>Sera</button>
+                  <div className="flex space-x-3 bg-[#eef2f6] p-2 rounded-[2rem] shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff]">
+                    <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-3.5 text-[10px] uppercase tracking-wider rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'mattina' ? UI.pillActive : UI.pillInactive}`}>Mattina</button>
+                    {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-3.5 text-[10px] uppercase tracking-wider rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'pausa' ? UI.pillActive : UI.pillInactive}`}>Pausa</button>}
+                    <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-3.5 text-[10px] uppercase tracking-wider rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'sera' ? UI.pillActive : UI.pillInactive}`}>Sera</button>
                   </div>
                 </div>
               </div>
             </section>
 
-            <section className={UI.card + " p-7"}>
-              <div className="flex flex-col mb-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Piano Nutrizionale</h2>
+            <section className={UI.card}>
+              <div className="flex flex-col mb-6">
+                <div className="flex justify-between items-center mb-5">
+                  <h2 className="text-lg font-bold tracking-wide text-slate-800">Piano Nutrizionale</h2>
                   <div className="flex gap-2 items-center">
                     {protocolloAutore === 'Gerardo Calvo (Reset Ormonale)' && (
                        <button 
@@ -1227,7 +1224,7 @@ export default function Home() {
                             const next = current === 150 ? 250 : (current === 250 ? 350 : 150);
                             setGerardoCarbOverride(next);
                          }}
-                         className="text-[9px] bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] text-purple-500 px-4 py-2.5 rounded-full font-black uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#c1c9d2,inset_-2px_-2px_4px_#ffffff]"
+                         className="text-[9px] bg-[#eef2f6] shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] text-purple-500 px-4 py-2.5 rounded-full font-bold uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#d1d9e6,inset_-2px_-2px_4px_#ffffff]"
                        >
                          🔄 Ciclo: {targetCho}g
                        </button>
@@ -1243,47 +1240,47 @@ export default function Home() {
                           await supabase.from("check_utente").insert([payload]);
                         }
                       }}
-                      className={`text-[9px] font-black px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all ${
+                      className={`text-[9px] font-bold px-5 py-2.5 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#d1d9e6,-6px_-6px_12px_#ffffff] ${
                         (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
-                          ? 'bg-[#e8eef3] shadow-[inset_2px_2px_5px_#c1c9d2,inset_-2px_-2px_5px_#ffffff] text-slate-400' 
-                          : `${gradPrimary} shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-white`
+                          ? 'bg-[#eef2f6] text-slate-400' 
+                          : `${gradPrimary} shadow-[0_8px_15px_rgba(0,114,255,0.25)] text-white`
                       }`}
                     >
-                    <option value="Equilibrata" className="bg-[#e8eef3] text-slate-700">⚖️ Equilibrata</option>
-                    <option value="Keto" className="bg-[#e8eef3] text-slate-700">🥩 Keto</option>
-                    <option value="LowCarb" className="bg-[#e8eef3] text-slate-700">🥑 Low Carb</option>
-                    <option value="Zona" className="bg-[#e8eef3] text-slate-700">🧩 Zona</option>
-                    <option value="HighCarb" className="bg-[#e8eef3] text-slate-700">🍚 High Carb</option>
+                    <option value="Equilibrata" className="bg-[#eef2f6] text-slate-700">⚖️ Equilibrata</option>
+                    <option value="Keto" className="bg-[#eef2f6] text-slate-700">🥩 Keto</option>
+                    <option value="LowCarb" className="bg-[#eef2f6] text-slate-700">🥑 Low Carb</option>
+                    <option value="Zona" className="bg-[#eef2f6] text-slate-700">🧩 Zona</option>
+                    <option value="HighCarb" className="bg-[#eef2f6] text-slate-700">🍚 High Carb</option>
                   </select>
                   </div>
                 </div>
-                <div className="flex gap-4">
-                  <div className={UI.panelInset + " flex-1 text-center !p-4"}>
+                <div className="flex gap-4 mt-2">
+                  <div className={UI.panelInset + " flex-1 text-center !p-3"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
-                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
+                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
                   </div>
-                  <div className={UI.panelInset + " flex-1 text-center !p-4"}>
+                  <div className={UI.panelInset + " flex-1 text-center !p-3"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
-                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
+                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
                   </div>
-                  <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
+                  <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-3 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
                      <span className="text-[9px] text-cyan-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
-                     <span className="text-[16px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
+                     <span className="text-[15px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
                   </div>
                 </div>
               </div>
               
               {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
                  <div className={UI.panelOutset + " mb-8 bg-amber-50"}>
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-3">
                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
                        <span className="text-sm font-black text-slate-800"><AnimatedCounter value={Math.round(actualIntakeKcal * 0.2)} /> Kcal</span>
                     </div>
-                    <div className="w-full bg-[#e8eef3] h-3 rounded-full overflow-hidden flex shadow-[inset_2px_2px_5px_#c1c9d2] mt-3">
+                    <div className="w-full bg-[#eef2f6] h-3 rounded-full overflow-hidden flex shadow-[inset_2px_2px_5px_#c1c9d2] mt-3">
                        <div className={`${gradPrimary} h-full w-[80%]`}></div>
                        <div className="bg-gradient-to-r from-amber-400 to-orange-500 h-full w-[20%] shadow-[0_0_12px_#fbbf24]"></div>
                     </div>
-                    <p className="text-[10px] text-slate-500 font-bold tracking-wide mt-4 leading-relaxed">Puoi destinare il 20% delle tue calorie odierne a cibi sfiziosi, senza sensi di colpa e restando nei target!</p>
+                    <p className="text-[10px] text-slate-500 font-semibold mt-4 leading-relaxed">Puoi destinare il 20% delle tue calorie odierne a cibi sfiziosi, senza sensi di colpa e restando nei target!</p>
                  </div>
               )}
 
@@ -1371,14 +1368,14 @@ export default function Home() {
 
           {/* COLONNA DESTRA: Allenamento Dinamico */}
           <div className="flex flex-col gap-8 lg:col-span-5">
-            <section className={UI.card + " p-7 flex flex-col h-[85vh]"}>
-              <div className="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
-                <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Programma {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
-                <div className="flex gap-3 bg-[#e8eef3] p-1.5 rounded-full shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff]">
+            <section className={UI.card + " flex flex-col h-[85vh]"}>
+              <div className="flex justify-between items-center mb-6 pb-4">
+                <h2 className="text-lg font-bold tracking-wide text-slate-800">Programma {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
+                <div className="flex gap-3 bg-[#eef2f6] p-1.5 rounded-full shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff]">
                   <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 ${vistaStorico && !vistaGraficiCarichi ? UI.pillActive : 'text-slate-500 hover:text-[#00c6ff]'}`}>
                     {vistaStorico && !vistaGraficiCarichi ? 'Oggi' : 'Storico'}
                   </button>
-                  <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 ${vistaGraficiCarichi ? 'bg-purple-500 text-white shadow-[0_4px_10px_rgba(168,85,247,0.4)]' : 'text-slate-500 hover:text-[#00c6ff]'}`}>
+                  <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 ${vistaGraficiCarichi ? 'bg-gradient-to-r from-purple-400 to-purple-500 text-white shadow-[0_4px_10px_rgba(168,85,247,0.4)]' : 'text-slate-500 hover:text-[#00c6ff]'}`}>
                     Grafici
                   </button>
                 </div>
@@ -1391,7 +1388,7 @@ export default function Home() {
                       <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest block mb-1.5">Durata Stimata</span>
                       <p className="text-[15px] font-black text-slate-800 flex items-center gap-2">⏱️ ~<AnimatedCounter value={calcolaTempoScheda()} /> min <span className="text-[10px] text-slate-400 font-bold ml-1">(Recuperi incl.)</span></p>
                     </div>
-                    <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-[6px_6px_14px_#c1c9d2,-6px_-6px_14px_#ffffff] ${fastWorkout ? 'bg-gradient-to-r from-red-400 to-rose-500 text-white border-none' : 'bg-[#e8eef3] text-slate-500 hover:text-[#00c6ff] hover:shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff]'}`}>
+                    <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-[6px_6px_14px_#d1d9e6,-6px_-6px_14px_#ffffff] ${fastWorkout ? 'bg-gradient-to-r from-red-400 to-rose-500 text-white border-none' : 'bg-[#eef2f6] text-slate-500 hover:text-[#00c6ff] hover:shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff]'}`}>
                       {fastWorkout ? '⚡ Fast Mode' : 'Taglia Tempi'}
                     </button>
                   </div>
@@ -1407,7 +1404,7 @@ export default function Home() {
 
                   <HumanHeatmap scheda={schedaAttiva} />
                   
-                  <div className="mb-6 flex gap-4 bg-[#e8eef3] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#c1c9d2,inset_-5px_-5px_10px_#ffffff]">
+                  <div className="mb-6 flex gap-4 bg-[#eef2f6] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff]">
                     {['Spinta', 'Tirata', 'Gambe'].map((sch: string) => (
                       <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-5 py-4 text-[11px] font-black uppercase tracking-widest rounded-[1.5rem] flex-1 transition-all duration-300 ${schedaAttiva === sch ? UI.pillActive : 'text-slate-400 hover:text-slate-600'}`}>{sch}</button>
                     ))}
@@ -1451,9 +1448,9 @@ export default function Home() {
                                  <p className="text-[11px] text-slate-500 leading-relaxed font-bold line-clamp-2">{currentEx.dettaglio}</p>
                               </div>
                             </div>
-                            <div className="mt-6 flex items-center justify-between bg-[#e8eef3] p-3.5 rounded-2xl shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff]">
-                               <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] text-slate-600 tracking-widest">{repMostrate}</p>
-                               {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-400 px-3 py-2 bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] rounded-xl uppercase tracking-widest">Ultima: <span className="text-[#00c6ff] ml-1 text-[13px] font-black">{ultimoCarico}kg</span></span>}
+                            <div className="mt-6 flex items-center justify-between bg-[#eef2f6] p-3.5 rounded-2xl shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff]">
+                               <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[#eef2f6] shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] text-slate-600 tracking-widest">{repMostrate}</p>
+                               {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-400 px-3 py-2 bg-[#eef2f6] shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] rounded-xl uppercase tracking-widest">Ultima: <span className="text-[#00c6ff] ml-1 text-[13px] font-black">{ultimoCarico}kg</span></span>}
                             </div>
                             <div className="mt-6 pt-5 border-t border-slate-200">
                               <div className="flex gap-4">
@@ -1485,16 +1482,16 @@ export default function Home() {
               </div>
             ) : (
               <div className="flex-1 overflow-y-auto space-y-5 pr-2 custom-scrollbar">
-                {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[#e8eef3] shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessuna sessione salvata.</p> : (
+                {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-medium text-center p-8 bg-[#eef2f6] shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessuna sessione salvata.</p> : (
                   [...storicoSessioni].reverse().map((sess) => (
                     <div key={sess.oraId} className={UI.panelOutset + " !p-6"}>
                       <span className="font-black text-[#00c6ff] drop-shadow-sm block text-[15px] tracking-wide uppercase">{sess.giorno} - Scheda {sess.scheda}</span>
-                      <span className="text-[11px] text-slate-400 font-bold mb-5 block tracking-widest mt-2">{sess.data}</span>
+                      <span className="text-[11px] text-slate-400 font-bold mb-5 block tracking-widest mt-1.5">{sess.data}</span>
                       <div className="space-y-4">
                         {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
-                          <div key={idEs} className="bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl flex justify-between items-center gap-4">
+                          <div key={idEs} className="bg-[#eef2f6] shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl flex justify-between items-center gap-4">
                             <span className="text-slate-600 text-[13px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-sm">{pesoStr as string} kg</span>
+                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-md text-sm">{pesoStr as string} kg</span>
                           </div>
                         ))}
                       </div>
@@ -1519,7 +1516,7 @@ export default function Home() {
             <div className="space-y-5 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {esercizioDaCambiare.alternative.map((alt: any, i: number) => (
-                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-6 bg-[#e8eef3] shadow-[6px_6px_14px_#c1c9d2,-6px_-6px_14px_#ffffff] rounded-[2rem] hover:shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff] group transition-all duration-300">
+                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-6 bg-[#eef2f6] shadow-[6px_6px_14px_#d1d9e6,-6px_-6px_14px_#ffffff] rounded-[2rem] hover:shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff] group transition-all duration-300">
                   <p className="font-black text-[16px] text-slate-700 group-hover:text-[#00c6ff] transition-colors drop-shadow-sm">{alt.nome}</p>
                   <p className="text-[10px] text-[#0072ff] mt-2.5 uppercase font-black tracking-widest mb-3">{alt.note}</p>
                   <p className="text-[12px] text-slate-500 leading-relaxed font-bold">{alt.dettaglio}</p>
@@ -1543,13 +1540,13 @@ export default function Home() {
                  const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
                  const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
                  return (
-                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-6 bg-[#e8eef3] shadow-[6px_6px_14px_#c1c9d2,-6px_-6px_14px_#ffffff] rounded-[2rem] hover:shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff] group transition-all duration-300">
+                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-6 bg-[#eef2f6] shadow-[6px_6px_14px_#d1d9e6,-6px_-6px_14px_#ffffff] rounded-[2rem] hover:shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff] group transition-all duration-300">
                     <div className="flex justify-between items-start mb-4">
                       <p className="font-black text-[15px] text-slate-700 group-hover:text-[#0072ff] transition-colors pr-2 leading-snug">{alt.nome}</p>
-                      <span className="text-[10px] bg-[#e8eef3] shadow-[inset_2px_2px_5px_#c1c9d2,inset_-2px_-2px_5px_#ffffff] text-[#0072ff] px-3.5 py-2 rounded-xl font-black tracking-widest shrink-0">{swapKcal} Kcal</span>
+                      <span className="text-[10px] bg-[#eef2f6] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-[#0072ff] px-3.5 py-2 rounded-xl font-black tracking-widest shrink-0">{swapKcal} Kcal</span>
                     </div>
                     <p className="text-[10px] text-slate-500 font-black tracking-widest bg-white/50 inline-block px-4 py-2 rounded-xl mb-4 shadow-sm">C <span className="text-[#00c6ff]">{macroCho}g</span> <span className="mx-2 text-slate-300">|</span> P <span className="text-slate-800">{alt.pro}g</span> <span className="mx-2 text-slate-300">|</span> F <span className="text-slate-800">{alt.fat}g</span></p>
-                    <p className="text-[12px] text-slate-600 font-bold leading-relaxed bg-[#e8eef3] p-4 rounded-2xl shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff]">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
+                    <p className="text-[12px] text-slate-600 font-bold leading-relaxed bg-[#eef2f6] p-4 rounded-2xl shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff]">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
                   </button>
                  );
               })}
