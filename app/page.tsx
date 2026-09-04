@@ -297,6 +297,9 @@ export default function Home() {
      });
      return plan;
   };
+
+  const dbDinamico = generaAllenamentoDinamico();
+  
   const gestisciCaricamentoPartenza = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFotoPartenza({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
   const gestisciCaricamentoArrivo = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFotoArrivo({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
   const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFileAllegato({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
