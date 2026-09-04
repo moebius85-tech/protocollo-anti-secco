@@ -873,30 +873,30 @@ export default function Home() {
               </select>
             </div>
             <div className="space-y-6">
-              <div className="bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] p-5 rounded-[1.5rem]">
-                <span className="text-[10px] text-green-500 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
+              <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.7)] backdrop-blur-md p-5 rounded-[1.5rem]">
+                <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
                 <div className="flex space-x-5">
                   <div className="flex-1 relative">
-                    <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Inizio</span>
-                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-green-400 transition-colors text-center" />
+                    <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-2 left-2 rounded-full shadow-sm">Inizio</span>
+                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                   </div>
                   <div className="flex-1 relative">
-                    <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Fine</span>
-                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-green-400 transition-colors text-center" />
+                    <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-2 left-2 rounded-full shadow-sm">Fine</span>
+                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                   </div>
                 </div>
               </div>
               {tipoTurno === 'spezzato' && (
-                <div className="bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] p-5 rounded-[1.5rem]">
-                  <span className="text-[10px] text-green-500 uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
+                <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.7)] backdrop-blur-md p-5 rounded-[1.5rem]">
+                  <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
                   <div className="flex space-x-5">
                     <div className="flex-1 relative">
-                      <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Inizio</span>
-                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-green-400 transition-colors text-center" />
+                      <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-2 left-2 rounded-full shadow-sm">Inizio</span>
+                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                     </div>
                     <div className="flex-1 relative">
-                      <span className="text-[8px] text-slate-400 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-1 left-2">Fine</span>
-                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-transparent text-sm font-bold text-slate-600 p-2 border-b-2 border-slate-300 outline-none focus:border-green-400 transition-colors text-center" />
+                      <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-2 left-2 rounded-full shadow-sm">Fine</span>
+                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                     </div>
                   </div>
                 </div>
@@ -1134,13 +1134,15 @@ export default function Home() {
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {dbDinamico[schedaAttiva].esercizi.map((es: any, idx: number) => {
                     const nomeAttuale = eserciziModificati[es.id] || es.nome;
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const altEs = es.alternative.find((a: any) => a.nome === nomeAttuale);
                     const currentEx = altEs || es;
                     
                     const ultimoCarico = getUltimoCarico(es.id);
                     const numeroSetTarget = getNumeroSet(es.fase);
+                    
+                    // Colori e Tinte Trasparenti per l'intera Card
                     const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#0ea5e9' : '#ef4444'); 
+                    const phaseTint = es.fase.includes('Fase 1') ? 'bg-orange-400/15 border border-orange-400/30' : (es.fase.includes('Fase 2') ? 'bg-cyan-400/15 border border-cyan-400/30' : 'bg-red-400/15 border border-red-400/30');
                     
                     const animType = currentEx.anim || "chest_barbell_flat"; 
                     
@@ -1148,32 +1150,32 @@ export default function Home() {
                     if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
 
                     return (
-                      <div key={`${es.id}-${nomeAttuale}`} className={`bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
-                        <div className={`absolute top-0 left-0 w-2 h-full opacity-90`} style={{backgroundColor: phaseColor}}></div>
-                        <div className="pl-4">
+                      <div key={`${es.id}-${nomeAttuale}`} className={`${phaseTint} backdrop-blur-md shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
+                        <div className="pl-1">
                           <div className="flex justify-between items-start mb-3">
                             <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
-                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-400 hover:text-cyan-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer opacity-0 group-hover:opacity-100">Swap</button>
+                            <button onClick={() => apriSwapEsercizio(es)} className="bg-white/40 shadow-[3px_3px_6px_rgba(163,177,198,0.5),-3px_-3px_6px_rgba(255,255,255,0.8)] text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_rgba(163,177,198,0.5)] border-none cursor-pointer opacity-0 group-hover:opacity-100">Swap</button>
                           </div>
                           
                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 mt-4">
-                            <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
+                            <div className="bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0 border border-white/40"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
                             <div className="flex-1 w-full min-w-0 text-center sm:text-left">
-                               <h3 className="font-bold text-[15px] sm:text-[16px] text-slate-700 mb-2 truncate">{nomeAttuale}</h3>
-                               <p className="text-[12px] sm:text-[11px] text-slate-500 leading-relaxed font-semibold">{currentEx.dettaglio}</p>
+                               <h3 className="font-bold text-[16px] text-slate-700 mb-2 truncate">{nomeAttuale}</h3>
+                               <p className="text-[12px] sm:text-[11px] text-slate-600 leading-relaxed font-semibold">{currentEx.dettaglio}</p>
                             </div>
                           </div>
 
-                          <div className="mt-6 flex items-center justify-between bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl border border-white/40">
-                             <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-slate-600 tracking-widest">{repMostrate}</p>
-                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-400 px-3 py-2 bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] rounded-xl uppercase tracking-widest">Ultima: <span className="text-cyan-500 ml-1 text-[14px] font-black">{ultimoCarico}kg</span></span>}
+                          <div className="mt-6 flex items-center justify-between bg-white/30 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-2xl border border-white/50">
+                             <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-white/50 shadow-[2px_2px_4px_rgba(163,177,198,0.4)] text-slate-600 tracking-widest">{repMostrate}</p>
+                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-500 px-3 py-2 bg-white/50 shadow-[2px_2px_4px_rgba(163,177,198,0.4)] rounded-xl uppercase tracking-widest">Ultima: <span className="ml-1 text-[14px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>}
                           </div>
-                          <div className="mt-6 pt-5 border-t border-slate-200/50">
+                          
+                          <div className="mt-6 pt-5 border-t border-slate-400/20">
                             <div className="flex gap-4">
                               {Array.from({ length: numeroSetTarget }).map((_, i) => (
                                 <div key={i} className="flex-1 relative">
-                                  <label className="text-[9px] text-slate-400 uppercase font-black tracking-widest block text-center mb-2.5">Set {i+1}</label>
-                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black text-cyan-600 outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all border-none appearance-none" placeholder="-" />
+                                  <label className="text-[9px] text-slate-500 uppercase font-bold tracking-widest block text-center mb-2.5">Set {i+1}</label>
+                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none" style={{color: phaseColor}} placeholder="-" />
                                 </div>
                               ))}
                             </div>
