@@ -3,14 +3,10 @@ import { useState, useEffect, useRef } from 'react';
 import { createClient } from "@supabase/supabase-js";
 import { MediaVisualizer } from './animations';
 
-// Configurazione Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtxfkahzyduq.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// ==========================================
-// STILI GLOBALI (LIGHT NEUMORPHISM - SOFT UI)
-// ==========================================
 const colorBg = "bg-[#e8eef3]";
 const shadowOutset = "shadow-[8px_8px_16px_#c1c9d2,-8px_-8px_16px_#ffffff]";
 const shadowInset = "shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff]";
@@ -31,89 +27,15 @@ const UI = {
   pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-[#00c6ff]`
 };
 
-// ==========================================
-// 1. DATABASE ALLENAMENTO MASTER
-// ==========================================
-const baseDbAllenamento = {
-  Spinta: {
-    focus: "SPINTA (Petto, Spalle, Tricipiti)",
-    esercizi: [
-      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi fino a sfiorare il petto e spingi verso l'alto con forza.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
-      { id: "e3", nome: "Panca inclinata manubri", anim: "chest_db_incline", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci clavicolari.", alternative: [{ nome: "Panca inclinata bilanciere", anim: "chest_barbell_incline", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata." }, { nome: "Chest Press Inclinata", anim: "chest_machine_incline", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata." }] },
-      { id: "e4", nome: "Chest press", anim: "chest_machine_flat", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale.", alternative: [{ nome: "Pectoral Machine", anim: "chest_pec_deck", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti." }, { nome: "Croci cavi seduto", anim: "chest_cable_seated", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro." }] },
-      { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti.", alternative: [{ nome: "Croci cavi piana", anim: "chest_cable_flat", note: "Tensione continua", dettaglio: "CAVI: Dai cavi bassi." }, { nome: "Pec Deck (Fly)", anim: "chest_pec_deck", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck." }] },
-      { id: "e18", nome: "Lento avanti manubri", anim: "shoulder_db_seated", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Seduto a 90°. Parti con i manubri alle orecchie e spingi dritto.", alternative: [{ nome: "Military Press", anim: "shoulder_military", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi." }, { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale." }] },
-      { id: "e20", nome: "Alzate laterali cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso.", alternative: [{ nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi." }, { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi." }] },
-      { id: "e22", nome: "Panca stretta", anim: "tricep_close_grip", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa stretta. Gomiti incollati al busto e spingi in alto.", alternative: [{ nome: "French Press", anim: "tricep_french_press", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso." }, { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "LIBERO/ZAVORRA: Scendi piegando le braccia." }] },
-      { id: "e27", nome: "Push down corda", anim: "tricep_pushdown", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità.", alternative: [{ nome: "Push down sbarra", anim: "tricep_pushdown", note: "Carico maggiore", dettaglio: "CAVI: Sbarra dritta." }, { nome: "Estensioni nuca", anim: "tricep_overhead", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi dietro la testa." }] }
-    ]
-  },
-  Tirata: {
-    focus: "TIRATA (Schiena, Bicipiti)",
-    esercizi: [
-      { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra.", alternative: [{ nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono." }, { nome: "Lat Machine Triang.", anim: "back_pulldown_triangle", note: "Focus centrale", dettaglio: "MACCHINARIO: Triangolo presa stretta." }] },
-      { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico.", alternative: [{ nome: "Rematore Manubrio", anim: "back_row_db", note: "Unilaterale", dettaglio: "MANUBRI: In appoggio su panca." }, { nome: "Rematore T-Bar", anim: "back_t_bar", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira." }] },
-      { id: "e9", nome: "Pulley seduto", anim: "back_pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto, tira la maniglia.", alternative: [{ nome: "Chest Supported", anim: "back_chest_supported", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Petto in appoggio." }, { nome: "Seal Row", anim: "back_seal_row", note: "Puro isolamento", dettaglio: "BILANCIERE: Sdraiato prono su panca." }] },
-      { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover_cable", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: Cavo alto con sbarra.", alternative: [{ nome: "Pullover Macchina", anim: "back_pullover_cable", note: "Tensione continua", dettaglio: "MACCHINARIO: Macchina specifica." }, { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Di traverso su panca." }] },
-      { id: "e23", nome: "Curl bilanciere EZ", anim: "bicep_barbell", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE EZ: In piedi. Solleva verso le spalle.", alternative: [{ nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: Fletti un braccio alla volta." }, { nome: "Curl Cavo Basso", anim: "bicep_cable_bar", note: "Tensione continua", dettaglio: "CAVI: Cavo basso con sbarra corta." }] },
-      { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso.", alternative: [{ nome: "Curl Inclinata", anim: "bicep_incline_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°." }, { nome: "Spider Curl", anim: "bicep_spider_curl", note: "Picco bicipite", dettaglio: "BILANCIERE: Petto in appoggio." }] }
-    ]
-  },
-  Gambe: {
-    focus: "GAMBE E POLPACCI",
-    esercizi: [
-      { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi.", alternative: [{ nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori." }, { nome: "Hack Squat Libero", anim: "leg_hack_barbell", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe." }, { nome: "Hack Squat Macchina", anim: "leg_hack_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Focus spinta." }] },
-      { id: "e12", nome: "Hack squat", anim: "leg_hack_machine", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena.", alternative: [{ nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana." }, { nome: "Belt Squat", anim: "leg_belt_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi." }] },
-      { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Scendi portando le ginocchia verso il petto.", alternative: [{ nome: "Affondi Manubri", anim: "leg_lunge", note: "Equilibrio", dettaglio: "MANUBRI: In camminata o sul posto." }, { nome: "Bulgarian Squat", anim: "leg_bulgarian", note: "Unilaterale", dettaglio: "MANUBRI: Piede posteriore su panca." }] },
-      { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Distendi le gambe.", alternative: [{ nome: "Sissy Squat", anim: "leg_sissy_squat", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci." }, { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto." }] },
-      { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Scivola lungo le cosce.", alternative: [{ nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte." }, { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto." }] },
-      { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei.", alternative: [{ nome: "Leg Curl Seduto", anim: "leg_curl_seduto", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola il bicipite femorale." }, { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto." }] },
-      { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine.", alternative: [{ nome: "Calf Press", anim: "leg_calf_press", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press." }, { nome: "Calf Seduto", anim: "leg_calf_seated", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, solleva i talloni." }] }
-    ]
-  }
-};
+const baseDbAllenamento={Spinta:{focus:"SPINTA (Petto, Spalle, Tricipiti)",esercizi:[{id:"e1",nome:"Panca piana bilanciere",anim:"chest_barbell_flat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Disteso su panca piana.",alternative:[{nome:"Chest Press Convergente",anim:"chest_machine_flat",note:"Stesso asse di spinta",dettaglio:"MACCHINARIO: Siediti in appoggio."},{nome:"Panca piana manubri",anim:"chest_db_flat",note:"Maggiore ROM",dettaglio:"MANUBRI: Disteso su panca piana."}]},{id:"e3",nome:"Panca inclinata manubri",anim:"chest_db_incline",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Panca a 30-45°.",alternative:[{nome:"Panca inclinata bilanciere",anim:"chest_barbell_incline",note:"Focus forza",dettaglio:"BILANCIERE: Panca inclinata."},{nome:"Chest Press Inclinata",anim:"chest_machine_incline",note:"Tensione costante",dettaglio:"MACCHINARIO: Usa la variante inclinata."}]},{id:"e4",nome:"Chest press",anim:"chest_machine_flat",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Esercizio guidato per isolare il pettorale.",alternative:[{nome:"Pectoral Machine",anim:"chest_pec_deck",note:"Isolamento sternale",dettaglio:"MACCHINARIO: Tieni i gomiti alti."},{nome:"Croci cavi seduto",anim:"chest_cable_seated",note:"Picco di tensione",dettaglio:"CAVI: Posiziona una panca al centro."}]},{id:"e5",nome:"Croci ai manubri",anim:"chest_flye_db",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MANUBRI: Panca piana.",alternative:[{nome:"Croci cavi piana",anim:"chest_cable_flat",note:"Tensione continua",dettaglio:"CAVI: Dai cavi bassi."},{nome:"Pec Deck (Fly)",anim:"chest_pec_deck",note:"Pump controllato",dettaglio:"MACCHINARIO: Usa il pec deck."}]},{id:"e18",nome:"Lento avanti manubri",anim:"shoulder_db_seated",fase:"Fase 1: Forza Spalle",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Seduto a 90°.",alternative:[{nome:"Military Press",anim:"shoulder_military",note:"Carico massimo",dettaglio:"BILANCIERE: In piedi."},{nome:"Shoulder Press",anim:"shoulder_machine",note:"Spinta guidata",dettaglio:"MACCHINARIO: Esercizio di spinta verticale."}]},{id:"e20",nome:"Alzate laterali cavi",anim:"lateral_cable",fase:"Fase 3: Pump Spalle",rep:"3-4 serie, 10-12 rep | Rec: 45 sec",dettaglio:"CAVI: Tira il cavo lateralmente dal basso.",alternative:[{nome:"Alzate manubri",anim:"lateral_db",note:"Focus classico",dettaglio:"MANUBRI: In piedi."},{nome:"Alzate macchina",anim:"lateral_machine",note:"No compensazioni",dettaglio:"MACCHINARIO: Isola i deltoidi."}]},{id:"e22",nome:"Panca stretta",anim:"tricep_close_grip",fase:"Fase 1: Forza Tricipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE: Presa stretta.",alternative:[{nome:"French Press",anim:"tricep_french_press",note:"Stretch capo lungo",dettaglio:"BILANCIERE EZ: Disteso."},{nome:"Dips parallele",anim:"tricep_dips",note:"Catena chiusa",dettaglio:"LIBERO/ZAVORRA: Scendi piegando le braccia."}]},{id:"e27",nome:"Push down corda",anim:"tricep_pushdown",fase:"Fase 3: Pump Tricipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Spingi verso il basso e apri le estremità.",alternative:[{nome:"Push down sbarra",anim:"tricep_pushdown",note:"Carico maggiore",dettaglio:"CAVI: Sbarra dritta."},{nome:"Estensioni nuca",anim:"tricep_overhead",note:"Enfasi capo lungo",dettaglio:"CAVI: Dai cavi bassi dietro la testa."}]}]},Tirata:{focus:"TIRATA (Schiena, Bicipiti)",esercizi:[{id:"e6",nome:"Trazioni",anim:"back_pullup",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"CORPO LIBERO: Appeso alla sbarra, tira il corpo verso l'alto.",alternative:[{nome:"Lat Machine Larga",anim:"back_pulldown",note:"Carichi modulabili",dettaglio:"MACCHINARIO: Presa larga prono."},{nome:"Lat Machine Triang.",anim:"back_pulldown_triangle",note:"Focus centrale",dettaglio:"MACCHINARIO: Triangolo presa stretta."}]},{id:"e7",nome:"Rematore bilanciere",anim:"back_row_barbell",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Busto a 45°.",alternative:[{nome:"Rematore Manubrio",anim:"back_row_db",note:"Unilaterale",dettaglio:"MANUBRI: In appoggio su panca."},{nome:"Rematore T-Bar",anim:"back_t_bar",note:"Tirata esplosiva",dettaglio:"MACCHINARIO: Afferra il T-Bar e tira."}]},{id:"e9",nome:"Pulley seduto",anim:"back_pulley",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"CAVI: Seduto, tira la maniglia verso l'addome basso.",alternative:[{nome:"Chest Supported",anim:"back_chest_supported",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Petto in appoggio."},{nome:"Seal Row",anim:"back_seal_row",note:"Puro isolamento",dettaglio:"BILANCIERE: Sdraiato prono su panca."}]},{id:"e10",nome:"Pullover ai cavi",anim:"back_pullover_cable",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"CAVI: Cavo alto con sbarra.",alternative:[{nome:"Pullover Macchina",anim:"back_pullover_cable",note:"Tensione continua",dettaglio:"MACCHINARIO: Macchina specifica."},{nome:"Pullover Manubrio",anim:"back_pullover_db",note:"Stretch toracico",dettaglio:"MANUBRI: Di traverso su panca."}]},{id:"e23",nome:"Curl bilanciere EZ",anim:"bicep_barbell",fase:"Fase 1: Forza Bicipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE EZ: In piedi. Solleva verso le spalle.",alternative:[{nome:"Curl Manubri Alt.",anim:"bicep_db",note:"Lavoro unilaterale",dettaglio:"MANUBRI: Fletti un braccio alla volta."},{nome:"Curl Cavo Basso",anim:"bicep_cable_bar",note:"Tensione continua",dettaglio:"CAVI: Cavo basso con sbarra corta."}]},{id:"e26",nome:"Curl cavi corda",anim:"bicep_cable",fase:"Fase 3: Pump Bicipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Fune al cavo basso.",alternative:[{nome:"Curl Inclinata",anim:"bicep_incline_db",note:"Stretch capo lungo",dettaglio:"MANUBRI: Seduto su panca a 45°."},{nome:"Spider Curl",anim:"bicep_spider_curl",note:"Picco bicipite",dettaglio:"BILANCIERE: Petto in appoggio."}]}]},Gambe:{focus:"GAMBE E POLPACCI",esercizi:[{id:"e11",nome:"Squat bilanciere",anim:"leg_squat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Sui trapezi. Scendi sotto il parallelo.",alternative:[{nome:"Front Squat",anim:"leg_squat",note:"Focus quadricipite",dettaglio:"BILANCIERE: Appoggiato sulle clavicole anteriori."},{nome:"Hack Squat Libero",anim:"leg_hack_barbell",note:"Carico posteriore",dettaglio:"BILANCIERE: Bilanciere dietro le gambe."},{nome:"Hack Squat Macchina",anim:"leg_hack_machine",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Focus spinta."}]},{id:"e12",nome:"Hack squat",anim:"leg_hack_machine",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MACCHINARIO: Poggia schiena.",alternative:[{nome:"Leg Press 45°",anim:"leg_press",note:"Isolamento pressa",dettaglio:"MACCHINARIO: Piedi bassi e stretti."},{nome:"Belt Squat",anim:"leg_belt_squat",note:"Zero stress lombare",dettaglio:"MACCHINARIO: Cintura pesata ai fianchi."}]},{id:"e14",nome:"Pressa 45°",anim:"leg_press",fase:"Fase 2: Connessione",rep:"4-5 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Scendi portando le ginocchia verso il petto.",alternative:[{nome:"Affondi Manubri",anim:"leg_lunge",note:"Equilibrio",dettaglio:"MANUBRI: In camminata o sul posto."},{nome:"Bulgarian Squat",anim:"leg_bulgarian",note:"Unilaterale",dettaglio:"MANUBRI: Piede posteriore su panca."}]},{id:"e15",nome:"Leg extension",anim:"leg_extension",fase:"Fase 3: Pump Quad",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Distendi le gambe.",alternative:[{nome:"Sissy Squat",anim:"leg_sissy_squat",note:"Bodyweight stretch",dettaglio:"CORPO LIBERO: Blocca i polpacci e lasciati cadere."},{nome:"Step-up controllato",anim:"leg_lunge",note:"Lavoro concentrico",dettaglio:"MANUBRI: Sali su un box alto."}]},{id:"e13",nome:"Stacco rumeno",anim:"leg_deadlift",fase:"Fase 2: Conn. Femorali",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"BILANCIERE: Scivola lungo le cosce.",alternative:[{nome:"Stacco Gambe Tese",anim:"leg_deadlift",note:"Stretch puro",dettaglio:"BILANCIERE: Ginocchia dritte."},{nome:"Good Morning",anim:"leg_deadlift",note:"Catena posteriore",dettaglio:"BILANCIERE: Sui trapezi."}]},{id:"e16",nome:"Leg curl sdraiato",anim:"leg_curl",fase:"Fase 3: Pump Femorali",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Prono, porta i talloni ai glutei.",alternative:[{nome:"Leg Curl Seduto",anim:"leg_curl_seduto",note:"Isolamento femorale",dettaglio:"MACCHINARIO: Isola il bicipite femorale."},{nome:"Glute Ham Raise",anim:"leg_curl",note:"Catena chiusa",dettaglio:"MACCHINARIO: Solleva il busto."}]},{id:"e17",nome:"Calf in piedi",anim:"leg_calf",fase:"Fase 3: Pump",rep:"3-4 serie, 20 rep | Rec: 45 sec",dettaglio:"LIBERO/MACCHINA: Scendi al massimo.",alternative:[{nome:"Calf Press",anim:"leg_calf_press",note:"Sovraccarico",dettaglio:"MACCHINARIO: Usa la Leg Press."},{nome:"Calf Seduto",anim:"leg_calf_seated",note:"Focus Soleo",dettaglio:"MACCHINARIO: Seduto, solleva i talloni."}]}]}};
+const dbAlimenti={Pasto1:[{nome:"Avena + Whey + Burro",baseCarbo:12,pro:35,fat:15,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro`},{nome:"Pancakes avena + Albume",baseCarbo:14,pro:30,fat:10,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro`},{nome:"Uova intere + Segale + Avocado",baseCarbo:10,pro:25,fat:22,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova • ${Math.round(f*6)}g Avocado`}],Pasto2:[{nome:"Riso Basmati + Pollo + Olio EVO",baseCarbo:20,pro:40,fat:12,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Pollo • ${f}g Olio`},{nome:"Pasta di Semola + Carne Magra",baseCarbo:20,pro:45,fat:10,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato • ${f}g Olio`},{nome:"Patate dolci + Salmone",baseCarbo:16,pro:40,fat:20,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*4.5)}g Patate • ${Math.round(p*4.5)}g Salmone`}],Pasto3:[{nome:"Yogurt Greco + Mandorle",baseCarbo:5,pro:20,fat:15,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle`},{nome:"Fiocchi di latte + Burro arachidi",baseCarbo:4,pro:25,fat:18,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*8)}g Fiocchi Latte • ${f}g Burro Arachidi`},{nome:"Parmigiano (50g) + Fette Wasa",baseCarbo:8,pro:16,fat:14,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*3)}g Parmigiano • ${Math.round(c*1.5)}g Wasa`}],PostWorkout:[{nome:"Crema di Riso + Whey",baseCarbo:16,pro:35,fat:1,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate`},{nome:"Corn Flakes + Whey",baseCarbo:16,pro:35,fat:1,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate`},{nome:"Gallette di riso + Bresaola",baseCarbo:15,pro:30,fat:3,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola`}]};
+const misureBase = [{ id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" }, { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" }, { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }];
+const misureBIA = [{ id: 'vita', label: "Circ. Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa", unit: "%" }, { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Musc.", unit: "%" }];
 
-const dbAlimenti = {
-  Pasto1: [
-    { nome: "Avena + Whey + Burro", baseCarbo: 12, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro` },
-    { nome: "Pancakes avena + Albume", baseCarbo: 14, pro: 30, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro` },
-    { nome: "Uova intere + Segale + Avocado", baseCarbo: 10, pro: 25, fat: 22, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova • ${Math.round(f*6)}g Avocado` }
-  ],
-  Pasto2: [
-    { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Pollo • ${f}g Olio` },
-    { nome: "Pasta di Semola + Carne Magra", baseCarbo: 20, pro: 45, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato • ${f}g Olio` },
-    { nome: "Patate dolci + Salmone", baseCarbo: 16, pro: 40, fat: 20, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate • ${Math.round(p*4.5)}g Salmone` }
-  ],
-  Pasto3: [
-    { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: 20, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle` },
-    { nome: "Fiocchi di latte + Burro arachidi", baseCarbo: 4, pro: 25, fat: 18, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*8)}g Fiocchi Latte • ${f}g Burro Arachidi` },
-    { nome: "Parmigiano (50g) + Fette Wasa", baseCarbo: 8, pro: 16, fat: 14, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*3)}g Parmigiano • ${Math.round(c*1.5)}g Wasa` }
-  ],
-  PostWorkout: [
-    { nome: "Crema di Riso + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate` },
-    { nome: "Corn Flakes + Whey Isolate", baseCarbo: 16, pro: 35, fat: 1, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate` },
-    { nome: "Gallette di riso + Bresaola", baseCarbo: 15, pro: 30, fat: 3, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola` }
-  ]
-};
-
-const misureBase = [
-  { id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" },
-  { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" },
-  { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }
-];
-const misureBIA = [
-  { id: 'vita', label: "Circ. Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa", unit: "%" },
-  { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Musc.", unit: "%" }
-];
-
-// ==========================================
-// COMPONENTI UI NEUMORFICI
-// ==========================================
 const AnimatedCounter = ({ value, suffix = "" }: { value: number, suffix?: string }) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    let start = 0;
-    const end = value;
+    let start = 0; const end = value;
     if (start === end) { setCount(end); return; }
     let startTimestamp: number | null = null;
     const step = (timestamp: number) => {
@@ -127,9 +49,7 @@ const AnimatedCounter = ({ value, suffix = "" }: { value: number, suffix?: strin
   return <span>{count}{suffix}</span>;
 };
 
-const Skeleton = ({ className }: { className: string }) => (
-  <div className={`animate-pulse ${UI.panelInset} ${className}`}></div>
-);
+const Skeleton = ({ className }: { className: string }) => (<div className={`animate-pulse ${UI.panelInset} ${className}`}></div>);
 
 const HumanHeatmap = ({ scheda }: { scheda: string }) => {
   const getActive = (part: string) => {
@@ -143,8 +63,7 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
       <svg width="120" height="180" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
          <defs>
             <linearGradient id="gradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
-               <stop offset="0%" stopColor="#00c6ff" />
-               <stop offset="100%" stopColor="#0072ff" />
+               <stop offset="0%" stopColor="#00c6ff" /><stop offset="100%" stopColor="#0072ff" />
             </linearGradient>
          </defs>
          <circle cx="50" cy="20" r="12" fill="#e8eef3" stroke={getActive('head')} strokeWidth="3" className="transition-all duration-700" />
@@ -167,13 +86,10 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
 
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   if (!data || data.length === 0) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Dati insufficienti.</p>;
-  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Un solo dato. Esegui un&apos;altra sessione.</p>;
-  const maxVal = Math.max(...data);
-  const minVal = Math.min(...data);
-  const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
+  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Un solo dato.</p>;
+  const maxVal = Math.max(...data); const minVal = Math.min(...data); const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
   const width = 300, height = 100, padding = 20;
   const points = data.map((val, i) => `${padding + (i / (data.length - 1)) * (width - padding * 2)},${height - padding - ((val - minVal) / range) * (height - padding * 2)}`).join(" ");
-
   return (
     <div className={UI.panelInset + " mt-4 p-4"}>
        <span className={UI.label + " !text-[#00c6ff] mb-4"}>{label} - Trend</span>
@@ -182,9 +98,7 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
           {data.map((val, i) => {
             const x = padding + (i / (data.length - 1)) * (width - padding * 2);
             const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
-            return (
-              <g key={i}><circle cx={x} cy={y} r="5" fill="#e8eef3" stroke="#00c6ff" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>
-            );
+            return <g key={i}><circle cx={x} cy={y} r="5" fill="#e8eef3" stroke="#00c6ff" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>;
           })}
        </svg>
     </div>
@@ -192,42 +106,25 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
 };
 
 const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, string>, altezza: number | "", eta: number | "" }) => {
-  const w = Number(data.peso) || 0;
-  const h = Number(altezza) || 0;
-  const a = Number(eta) || 0;
-  const bf = Number(data.bodyFat) || 0;
-  const bw = Number(data.bodyWater) || 0;
-  const mm = Number(data.muscleMass) || 0;
-
+  const w = Number(data.peso) || 0; const h = Number(altezza) || 0; const a = Number(eta) || 0;
+  const bf = Number(data.bodyFat) || 0; const bw = Number(data.bodyWater) || 0; const mm = Number(data.muscleMass) || 0;
   const bmi = (w > 0 && h > 0) ? (w / Math.pow(h / 100, 2)).toFixed(1) : '0';
   const bmr = (w > 0 && h > 0 && a > 0) ? Math.round((10 * w) + (6.25 * h) - (5 * a) + 5) : 0;
-
-  const radius = 160; 
-  const strokeW = 55;
-  const c = 2 * Math.PI * radius;
-  const seg = c / 6;
-
+  const radius = 160; const strokeW = 55; const c = 2 * Math.PI * radius; const seg = c / 6;
   const getLabelPos = (angleDeg: number) => {
     const rad = (angleDeg - 90) * Math.PI / 180;
     return { x: 250 + radius * Math.cos(rad), y: 250 + radius * Math.sin(rad) };
   };
-
   const sections = [
-    { label: 'BMI', val: bmi, color: '#c084fc', angle: 0 },           
-    { label: 'BMR', val: bmr > 0 ? bmr : '-', color: '#4facfe', angle: 60 },  
-    { label: 'MUSCOLO', val: mm > 0 ? `${mm}%` : '-', color: '#60a5fa', angle: 120 },  
-    { label: 'ACQUA', val: bw > 0 ? `${bw}%` : '-', color: '#a855f7', angle: 180 }, 
-    { label: 'GRASSO', val: bf > 0 ? `${bf}%` : '-', color: '#38bdf8', angle: 240 }, 
-    { label: 'PESO', val: w > 0 ? w : '-', color: '#94a3b8', angle: 300 }        
+    { label: 'BMI', val: bmi, color: '#c084fc', angle: 0 }, { label: 'BMR', val: bmr > 0 ? bmr : '-', color: '#4facfe', angle: 60 },  
+    { label: 'MUSCOLO', val: mm > 0 ? `${mm}%` : '-', color: '#60a5fa', angle: 120 }, { label: 'ACQUA', val: bw > 0 ? `${bw}%` : '-', color: '#a855f7', angle: 180 }, 
+    { label: 'GRASSO', val: bf > 0 ? `${bf}%` : '-', color: '#38bdf8', angle: 240 }, { label: 'PESO', val: w > 0 ? w : '-', color: '#94a3b8', angle: 300 }        
   ];
-
   return (
     <div className={UI.panelInset + " relative w-full max-w-md mx-auto h-[380px] flex items-center justify-center overflow-hidden mt-6 !p-0"}>
        <svg viewBox="0 0 500 500" className="w-full h-full drop-shadow-md z-10 p-4">
           <g transform="translate(250, 250) rotate(-120)">
-             {sections.map((sec, i) => (
-                <circle key={i} cx="0" cy="0" r={radius} fill="none" stroke={sec.color} strokeWidth={strokeW} strokeDasharray={`${seg - 4} ${c}`} strokeDashoffset={-(i * seg)} className="opacity-90 hover:opacity-100 transition-opacity cursor-pointer" strokeLinecap="round" />
-             ))}
+             {sections.map((sec, i) => <circle key={i} cx="0" cy="0" r={radius} fill="none" stroke={sec.color} strokeWidth={strokeW} strokeDasharray={`${seg - 4} ${c}`} strokeDashoffset={-(i * seg)} className="opacity-90 hover:opacity-100 transition-opacity cursor-pointer" strokeLinecap="round" />)}
           </g>
           {sections.map((sec, i) => {
              const pos = getLabelPos(sec.angle);
@@ -249,28 +146,21 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
-  
   const [listaAtleti, setListaAtleti] = useState<string[]>(["Leonardo"]);
   const [utenteCorrente, setUtenteCorrente] = useState("Leonardo");
   const [protocolloAttivo, setProtocolloAttivo] = useState("Massa");
-  
   const [tipoDieta, setTipoDieta] = useState("Equilibrata");
   const [protocolloAutore, setProtocolloAutore] = useState("Nessuno");
   const [metabolismoBloccato, setMetabolismoBloccato] = useState(false);
-  
   const [eta, setEta] = useState<number | "">(41);
   const [altezza, setAltezza] = useState<number | "">(175);
   const [stileVita, setStileVita] = useState("Attivo (es. Vendita al dettaglio, in piedi)");
   const [biometria, setBiometria] = useState<Record<string, string>>({ peso: '', petto: '', spalle: '', braccia: '', gambe: '', glutei: '', vita: '', bodyFat: '', bodyWater: '', muscleMass: '' });
-  
   const [tipoTurno, setTipoTurno] = useState('spezzato');
-  const [inizio1, setInizio1] = useState('');
-  const [fine1, setFine1] = useState('');
-  const [inizio2, setInizio2] = useState('');
-  const [fine2, setFine2] = useState('');
+  const [inizio1, setInizio1] = useState(''); const [fine1, setFine1] = useState('');
+  const [inizio2, setInizio2] = useState(''); const [fine2, setFine2] = useState('');
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
   const [digiuno, setDigiuno] = useState(false); 
-  
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
   const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred', dieta: 'Equilibrata', autore: 'Nessuno', metabolismoBloccato: false });
@@ -279,21 +169,18 @@ export default function Home() {
   const [rispostaWizard, setRispostaWizard] = useState("");
   const [loadingWizard, setLoadingWizard] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(false);
-  
   const [giornoCalendario, setGiornoCalendario] = useState("Lunedì"); 
   const [gerardoCarbOverride, setGerardoCarbOverride] = useState<number | null>(null); 
   const [schedaAttiva, setSchedaAttiva] = useState<"Spinta"|"Tirata"|"Gambe">("Spinta"); 
   const [fastWorkout, setFastWorkout] = useState(false);
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
   const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string[]>>({});
-  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoSessioni, setStoricoSessioni] = useState<any[]>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
   const [modalEsercizio, setModalEsercizio] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
-  
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({
     Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' },
@@ -302,14 +189,12 @@ export default function Home() {
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
   const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
-
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Scrivimi cosa hai mangiato per stimare i macro!' }]);
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [fileAllegato, setFileAllegato] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
   const [vistaTelemetria, setVistaTelemetria] = useState<'FORM' | 'STORICO'>('FORM');
@@ -318,14 +203,8 @@ export default function Home() {
 
   const calcolaTempoScheda = () => fastWorkout ? 45 : 75;
 
-  useEffect(() => {
-    if (tipoTurno === 'diretto' && quandoTiAlleni === 'pausa') setQuandoTiAlleni('sera');
-  }, [tipoTurno, quandoTiAlleni]);
-
-  useEffect(() => {
-    setGerardoCarbOverride(null);
-  }, [giornoCalendario]);
-
+  useEffect(() => { if (tipoTurno === 'diretto' && quandoTiAlleni === 'pausa') setQuandoTiAlleni('sera'); }, [tipoTurno, quandoTiAlleni]);
+  useEffect(() => { setGerardoCarbOverride(null); }, [giornoCalendario]);
   useEffect(() => {
     async function fetchAtleti() {
       const { data } = await supabase.from("check_utente").select("nome_utente");
@@ -339,13 +218,8 @@ export default function Home() {
   }, []);
 
   const caricaProfilo = async (nomeAtleta: string, objScelto: string, dietaScelta: string) => {
-    setUtenteCorrente(nomeAtleta);
-    setProtocolloAttivo(objScelto);
-    setTipoDieta(dietaScelta);
-    
-    if (nomeAtleta === "Leonardo") {
-      setEta(41); setAltezza(175); setStileVita("Attivo (es. Vendita al dettaglio, in piedi)"); setTipoTurno("spezzato");
-    }
+    setUtenteCorrente(nomeAtleta); setProtocolloAttivo(objScelto); setTipoDieta(dietaScelta);
+    if (nomeAtleta === "Leonardo") { setEta(41); setAltezza(175); setStileVita("Attivo (es. Vendita al dettaglio, in piedi)"); setTipoTurno("spezzato"); }
 
     const { data } = await supabase.from("check_utente").select("*").eq("nome_utente", nomeAtleta).order("data", { ascending: false });
     if (data && data.length > 0) {
@@ -354,11 +228,7 @@ export default function Home() {
         if(nomeAtleta !== "Leonardo") setEta(validRec.eta || "");
         if(nomeAtleta !== "Leonardo") setAltezza(validRec.altezza || "");
         const circ = typeof validRec.circonferenze === 'string' ? JSON.parse(validRec.circonferenze) : (validRec.circonferenze || {});
-        setBiometria({ 
-          peso: validRec.peso?.toString() || '', petto: circ.petto || '', spalle: circ.spalle || '', 
-          braccia: circ.braccia || '', gambe: circ.gambe || '', glutei: circ.glutei || '', 
-          vita: circ.vita || '', bodyFat: circ.bodyFat || '', bodyWater: circ.bodyWater || '', muscleMass: circ.muscleMass || ''
-        });
+        setBiometria({ peso: validRec.peso?.toString() || '', petto: circ.petto || '', spalle: circ.spalle || '', braccia: circ.braccia || '', gambe: circ.gambe || '', glutei: circ.glutei || '', vita: circ.vita || '', bodyFat: circ.bodyFat || '', bodyWater: circ.bodyWater || '', muscleMass: circ.muscleMass || '' });
         if(circ.profilo?.stileVita) setStileVita(circ.profilo.stileVita);
         if(circ.profilo?.dieta) setTipoDieta(circ.profilo.dieta);
         if(circ.profilo?.autore) setProtocolloAutore(circ.profilo.autore);
@@ -372,15 +242,10 @@ export default function Home() {
 
     const resSess = await supabase.from("storico_allenamenti").select("*").eq("nome_utente", nomeAtleta).order("data", { ascending: true });
     if (resSess.data) {
-      setStoricoSessioni(resSess.data.map(d => ({
-        data: new Date(d.data).toLocaleDateString('it-IT'), giorno: d.giornata.split(" - ")[0], scheda: d.giornata.split(" - ")[1],
-        carichi: typeof d.dettagli_esercizi === 'string' ? JSON.parse(d.dettagli_esercizi) : d.dettagli_esercizi, oraId: new Date(d.data).getTime()
-      })));
+      setStoricoSessioni(resSess.data.map(d => ({ data: new Date(d.data).toLocaleDateString('it-IT'), giorno: d.giornata.split(" - ")[0], scheda: d.giornata.split(" - ")[1], carichi: typeof d.dettagli_esercizi === 'string' ? JSON.parse(d.dettagli_esercizi) : d.dettagli_esercizi, oraId: new Date(d.data).getTime() })));
     } else { setStoricoSessioni([]); }
     
-    setIsDataLoading(true);
-    setAppState('PROTOCOL');
-    setTimeout(() => setIsDataLoading(false), 800);
+    setIsDataLoading(true); setAppState('PROTOCOL'); setTimeout(() => setIsDataLoading(false), 800);
   };
 
   const eliminaAtleta = async () => {
@@ -395,56 +260,35 @@ export default function Home() {
 
   const generaAllenamentoDinamico = () => {
      const plan = JSON.parse(JSON.stringify(baseDbAllenamento)); 
-
-     const isOver40 = Number(eta) > 40;
-     const isShred = protocolloAttivo === 'Shred';
-     const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("Fisico");
-     
-     const fatNum = Number(biometria.bodyFat) || 0;
-     const pesoNum = Number(biometria.peso) || 0;
-     const highFat = fatNum > 15;
-     
+     const isOver40 = Number(eta) > 40; const isShred = protocolloAttivo === 'Shred'; const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("Fisico");
+     const fatNum = Number(biometria.bodyFat) || 0; const pesoNum = Number(biometria.peso) || 0; const highFat = fatNum > 15;
      const activeDieta = (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) ? 'Equilibrata' : tipoDieta;
-     const isKetoOrLowCarb = activeDieta === 'Keto' || activeDieta === 'LowCarb';
-     const isOverweightMechanically = fatNum > 20 || pesoNum > 95;
-     const needsLumbarProtection = isOver40 && stileVita.includes("Fisico");
+     const isKetoOrLowCarb = activeDieta === 'Keto' || activeDieta === 'LowCarb'; const isOverweightMechanically = fatNum > 20 || pesoNum > 95; const needsLumbarProtection = isOver40 && stileVita.includes("Fisico");
 
      const swapToAlternative = (ex: any, partialName: string) => {
         const alt = ex.alternative.find((a: any) => a.nome.toLowerCase().includes(partialName.toLowerCase()));
-        if (alt) {
-            ex.nome = alt.nome;
-            ex.anim = alt.anim;
-            ex.dettaglio = alt.dettaglio;
-        }
+        if (alt) { ex.nome = alt.nome; ex.anim = alt.anim; ex.dettaglio = alt.dettaglio; }
      };
 
      Object.keys(plan).forEach(sch => {
         let methodCycleGerardo = 0; 
-        
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
-           
            if (protocolloAutore === 'Gerardo Calvo (Reset Ormonale)') {
                if (methodCycleGerardo === 0) ex.rep = "7x10 | Rec: 30 sec (15RM)";
                else if (methodCycleGerardo === 1) ex.rep = "5x5 | Rec: 90 sec (Neurale)";
                else ex.rep = "3x10 (5 N + 5 Ecc) | Rec: 60s";
                methodCycleGerardo = (methodCycleGerardo + 1) % 3;
-           } 
-           else if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)') {
+           } else if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)') {
                ex.rep = "3x8-10 | Rec: 90s (NO Cedimento)";
                if (!eserciziModificati[ex.id]) {
                    if (ex.id === "e11") swapToAlternative(ex, "Hack Squat Macchina");
                    if (ex.id === "e1") swapToAlternative(ex, "Chest Press Convergente");
                }
-           }
-           else {
+           } else {
                if (isShred || highFat) {
-                  ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep"); 
-                  ex.rep = ex.rep.replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie");
-                  ex.rep = ex.rep.replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
-               } else if (isOver40 && isHeavyJob) {
-                  ex.rep = ex.rep.replace("4-5 serie", "3-4 serie"); 
-               }
+                  ex.rep = ex.rep.replace("4-6 rep", "8-10 rep").replace("6-8 rep", "10-12 rep").replace("4-5 serie", "2-3 serie").replace("3-4 serie", "2 serie").replace("Rec: 1.5 min", "Rec: 2 min").replace("Rec: 45 sec", "Rec: 1 min");
+               } else if (isOver40 && isHeavyJob) { ex.rep = ex.rep.replace("4-5 serie", "3-4 serie"); }
     
                if (!eserciziModificati[ex.id]) { 
                    if (isOverweightMechanically) {
@@ -470,56 +314,30 @@ export default function Home() {
 
   const dbDinamico = generaAllenamentoDinamico();
 
-  const gestisciCaricamentoPartenza = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => { setFotoPartenza({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); };
-    reader.readAsDataURL(file);
-  };
-
-  const gestisciCaricamentoArrivo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => { setFotoArrivo({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); };
-    reader.readAsDataURL(file);
-  };
+  const gestisciCaricamentoPartenza = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFotoPartenza({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
+  const gestisciCaricamentoArrivo = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFotoArrivo({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
+  const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFileAllegato({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
 
   const analizzaObiettivoWizard = async () => {
     setLoadingWizard(true);
     try {
       const contesto = `Sei un Coach IA. Analizza: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Dieta: ${datiWizard.dieta}. Fornisci un verdetto.`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payload: any = { message: "Analizza il mio profilo.", context: contesto };
-      const files = [];
+      const payload: any = { message: "Analizza il mio profilo.", context: contesto }; const files = [];
       if (fotoPartenza) files.push({ data: fotoPartenza.data, mimeType: fotoPartenza.mimeType, label: "Partenza" });
       if (fotoArrivo) files.push({ data: fotoArrivo.data, mimeType: fotoArrivo.mimeType, label: "Obiettivo" });
       if (files.length > 0) payload.files = files; 
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      const data = await response.json();
-      setRispostaWizard(data.reply);
-      setStepWizard(3);
-    } catch (e) {
-      console.log(e); setRispostaWizard("Errore di rete. Riprova."); setStepWizard(3);
-    }
+      const data = await response.json(); setRispostaWizard(data.reply); setStepWizard(3);
+    } catch (e) { console.log(e); setRispostaWizard("Errore di rete. Riprova."); setStepWizard(3); }
     setLoadingWizard(false);
   };
 
   const salvaProfiloWizard = async () => {
     const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo, dieta: (datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo')) ? 'Equilibrata' : datiWizard.dieta, autore: datiWizard.autore, metabolismoBloccato: datiWizard.metabolismoBloccato } }, data: new Date().toISOString() };
     await supabase.from("check_utente").insert([payload]);
-    setListaAtleti(prev => [...prev, datiWizard.nome]);
-    setModalWizard(false); setStepWizard(1);
+    setListaAtleti(prev => [...prev, datiWizard.nome]); setModalWizard(false); setStepWizard(1);
     caricaProfilo(datiWizard.nome, datiWizard.obiettivo, datiWizard.dieta);
-  };
-
-  const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => { setFileAllegato({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); };
-    reader.readAsDataURL(file);
   };
 
   const inviaMessaggioIA = async () => {
@@ -532,8 +350,7 @@ export default function Home() {
       const payload: any = { message: msg, context: `SEI IL COACH IA. Utente: ${utenteCorrente}. Estrai Macro e scrivi alla fine: [MAGIC_MACRO | PASTO_TARGET | cho | pro | fat | NOME]` };
       if (fileAllegato) payload.file = { data: fileAllegato.data, mimeType: fileAllegato.mimeType };
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      const data = await response.json();
-      let responseText = data.reply;
+      const data = await response.json(); let responseText = data.reply;
       const match = responseText.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
@@ -553,10 +370,7 @@ export default function Home() {
       const data = await response.json();
       const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
-        updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString());
-        updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString());
-        updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString());
-        updateCustomMeal(cat, 'nome', match[5].trim());
+        updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString()); updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString()); updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString()); updateCustomMeal(cat, 'nome', match[5].trim());
       } else { alert("Non riconosciuto."); }
     } catch(e) { console.log(e); alert("Errore di rete."); }
     setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
@@ -568,10 +382,7 @@ export default function Home() {
       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore, metabolismoBloccato } }, data: new Date().toISOString() };
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
-      else { 
-        alert(`Sistema Aggiornato.\nTDEE Ricalcolato per regime: ${tipoDieta}\nObiettivo: ${protocolloAttivo}`); 
-        caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
-      } 
+      else { alert(`Sistema Aggiornato.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); } 
     } else { alert("Peso, Età e Altezza sono obbligatori."); }
   };
 
@@ -587,19 +398,17 @@ export default function Home() {
     await supabase.from("storico_allenamenti").insert([payload]);
     setCarichiAttuali({}); alert(`Sessione salvata.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta);
   };
+  
   const toggleCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true } }));
   const resetCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { attivo: false, cho: '', pro: '', fat: '', nome: '' } }));
   const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat'|'nome', value: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], [field]: value } }));
-  
   const apriSwapEsercizio = (es: any) => { 
     const nomeAttuale = eserciziModificati[es.id] || es.nome;
     const tutteLeOpzioni = [ { nome: es.nome, anim: es.anim, dettaglio: es.dettaglio, note: "Originale" }, ...es.alternative ];
     const opzioniDisponibili = tutteLeOpzioni.filter(opt => opt.nome !== nomeAttuale);
-    setEsercizioDaCambiare({ id: es.id, nomeAttuale: nomeAttuale, alternative: opzioniDisponibili }); 
-    setModalEsercizio(true); 
+    setEsercizioDaCambiare({ id: es.id, nomeAttuale: nomeAttuale, alternative: opzioniDisponibili }); setModalEsercizio(true); 
   };
   const confermaSwapEsercizio = (nuovoNome: string) => { setEserciziModificati({ ...eserciziModificati, [esercizioDaCambiare.id]: nuovoNome }); setModalEsercizio(false); };
-  
   const apriSwapAlimento = (categoria: string) => { setCategoriaDaCambiare(categoria as keyof typeof dbAlimenti); setModalAlimento(true); };
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
 
@@ -610,30 +419,19 @@ export default function Home() {
   if (stileVita.includes("Attivo")) activityMult = 1.4;
   if (stileVita.includes("Fisico")) activityMult = 1.6;
   if (tipoTurno === "spezzato") activityMult += 0.05; 
-  
   let baseTdee = Math.round(bmr * activityMult);
-
   let settimaneDiReverse = 0;
   if (storicoMisure.length > 0) {
       const primaMisura = new Date(storicoMisure[storicoMisure.length - 1].data);
       const oggi = new Date();
-      const diffMs = oggi.getTime() - primaMisura.getTime();
-      settimaneDiReverse = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 7));
+      settimaneDiReverse = Math.floor((oggi.getTime() - primaMisura.getTime()) / (1000 * 60 * 60 * 24 * 7));
   }
-
   const grassoStimato = Number(biometria.bodyFat) || 0;
-  
-  if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)' || metabolismoBloccato) {
-      baseTdee = baseTdee + (settimaneDiReverse * 100);
-  } else if (protocolloAttivo === 'Shred') {
-      baseTdee = Math.round(baseTdee * 0.80); 
-  } else if (protocolloAttivo === 'Massa') {
-      if (grassoStimato > 15 || pesoNum > 85) { baseTdee = Math.round(baseTdee * 1.05); } 
-      else { baseTdee = Math.round(baseTdee * 1.15); }
-  }
+  if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)' || metabolismoBloccato) { baseTdee = baseTdee + (settimaneDiReverse * 100); } 
+  else if (protocolloAttivo === 'Shred') { baseTdee = Math.round(baseTdee * 0.80); } 
+  else if (protocolloAttivo === 'Massa') { if (grassoStimato > 15 || pesoNum > 85) { baseTdee = Math.round(baseTdee * 1.05); } else { baseTdee = Math.round(baseTdee * 1.15); } }
 
   const tdee = baseTdee;
-
   let targetPro = pesoNum * 2.2;
   if (protocolloAttivo === 'Shred') targetPro = pesoNum * 2.5;
 
@@ -671,36 +469,24 @@ export default function Home() {
   if (protocolloAttivo === 'Shred') moltiplicatoreCarbo = 2.5; else if (protocolloAttivo === 'Ricomposizione') moltiplicatoreCarbo = 4;
 
   targetCho = Math.max(targetCho, intraCho); targetFat = Math.max(targetFat, intraFat); targetPro = Math.max(targetPro, intraPro);
-
   const activeCategories = digiuno ? ['Pasto2', 'Pasto3', 'PostWorkout'] : ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'];
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const originalMeals: Record<string, any> = {};
-  activeCategories.forEach(cat => {
-     const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]];
-     if(item) { originalMeals[cat] = { cho: item.baseCarbo, pro: item.pro, fat: item.fat }; }
-  });
+  activeCategories.forEach(cat => { const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]]; if(item) { originalMeals[cat] = { cho: item.baseCarbo, pro: item.pro, fat: item.fat }; } });
 
   let customCho = 0, customPro = 0, customFat = 0, sumNonCustomOrigCho = 0, sumNonCustomOrigPro = 0, sumNonCustomOrigFat = 0;
   activeCategories.forEach(cat => {
-     if(pastiCustom[cat].attivo) {
-        customCho += Number(pastiCustom[cat].cho) || 0; customPro += Number(pastiCustom[cat].pro) || 0; customFat += Number(pastiCustom[cat].fat) || 0;
-     } else if(originalMeals[cat]) {
-        sumNonCustomOrigCho += activeDieta === 'Keto' ? 1 : originalMeals[cat].cho; 
-        sumNonCustomOrigPro += originalMeals[cat].pro; sumNonCustomOrigFat += originalMeals[cat].fat;
-     }
+     if(pastiCustom[cat].attivo) { customCho += Number(pastiCustom[cat].cho) || 0; customPro += Number(pastiCustom[cat].pro) || 0; customFat += Number(pastiCustom[cat].fat) || 0; } 
+     else if(originalMeals[cat]) { sumNonCustomOrigCho += activeDieta === 'Keto' ? 1 : originalMeals[cat].cho; sumNonCustomOrigPro += originalMeals[cat].pro; sumNonCustomOrigFat += originalMeals[cat].fat; }
   });
 
-  const remainingCho = Math.max(0, targetCho - customCho - intraCho);
-  const remainingPro = Math.max(0, targetPro - customPro - intraPro);
-  const remainingFat = Math.max(0, targetFat - customFat - intraFat);
-
+  const remainingCho = Math.max(0, targetCho - customCho - intraCho); const remainingPro = Math.max(0, targetPro - customPro - intraPro); const remainingFat = Math.max(0, targetFat - customFat - intraFat);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const finalMeals: Record<string, any> = {};
   activeCategories.forEach(cat => {
-     if(pastiCustom[cat].attivo) {
-        finalMeals[cat] = { cho: Number(pastiCustom[cat].cho) || 0, pro: Number(pastiCustom[cat].pro) || 0, fat: Number(pastiCustom[cat].fat) || 0 };
-     } else if(originalMeals[cat]) {
+     if(pastiCustom[cat].attivo) { finalMeals[cat] = { cho: Number(pastiCustom[cat].cho) || 0, pro: Number(pastiCustom[cat].pro) || 0, fat: Number(pastiCustom[cat].fat) || 0 }; } 
+     else if(originalMeals[cat]) {
         const origC = activeDieta === 'Keto' ? 1 : originalMeals[cat].cho;
         finalMeals[cat] = {
            cho: sumNonCustomOrigCho > 0 ? Math.round(remainingCho * (origC / sumNonCustomOrigCho)) : 0,
@@ -711,11 +497,7 @@ export default function Home() {
   });
 
   let actualCho = intraCho + customCho, actualPro = intraPro + customPro, actualFat = intraFat + customFat;
-  activeCategories.forEach(cat => {
-     if(!pastiCustom[cat].attivo && finalMeals[cat]) {
-        actualCho += finalMeals[cat].cho; actualPro += finalMeals[cat].pro; actualFat += finalMeals[cat].fat;
-     }
-  });
+  activeCategories.forEach(cat => { if(!pastiCustom[cat].attivo && finalMeals[cat]) { actualCho += finalMeals[cat].cho; actualPro += finalMeals[cat].pro; actualFat += finalMeals[cat].fat; } });
   const actualIntakeKcal = Math.round((actualCho * 4) + (actualPro * 4) + (actualFat * 9));
 
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
@@ -738,26 +520,15 @@ export default function Home() {
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t: any[] = [];
-    
     if (quandoTiAlleni === 'mattina') {
-        if (digiuno) t.push(bloccoDigiuno);
-        t.push(bloccoIntra);
-        t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' });
-        if (!digiuno) t.push({ idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' });
-        t.push({ idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' });
-        t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna' });
+        if (digiuno) t.push(bloccoDigiuno); t.push(bloccoIntra); t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' });
+        if (!digiuno) t.push({ idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' }); t.push({ idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }); t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna' });
     } else if (quandoTiAlleni === 'pausa') {
-        if (digiuno) t.push(bloccoDigiuno); else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' });
-        t.push(bloccoIntra);
-        t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Pausa)' });
-        t.push({ idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' });
-        t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna' });
+        if (digiuno) t.push(bloccoDigiuno); else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' }); t.push(bloccoIntra); t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Pausa)' });
+        t.push({ idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' }); t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna' });
     } else {
-        if (digiuno) t.push(bloccoDigiuno); else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' });
-        t.push({ idCategoria: 'Pasto2', titoloUI: 'Pranzo' });
-        t.push({ idCategoria: 'Pasto3', titoloUI: 'Spuntino' });
-        t.push(bloccoIntra);
-        t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' });
+        if (digiuno) t.push(bloccoDigiuno); else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' }); t.push({ idCategoria: 'Pasto2', titoloUI: 'Pranzo' }); t.push({ idCategoria: 'Pasto3', titoloUI: 'Spuntino' });
+        t.push(bloccoIntra); t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' });
     }
     return t;
   };
@@ -926,7 +697,7 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#c1c9d2,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
@@ -934,11 +705,11 @@ export default function Home() {
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -972,7 +743,7 @@ export default function Home() {
           <div>
             <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-slate-400 drop-shadow-sm">
-              OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-300 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+              OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-400 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
             </h1>
           </div>
           <div className="text-right">
@@ -1184,11 +955,11 @@ export default function Home() {
                 <div className="flex gap-4 mt-2">
                   <div className={UI.panelInset + " flex-1 text-center !p-3"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
-                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
+                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
                   </div>
                   <div className={UI.panelInset + " flex-1 text-center !p-3"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
-                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
+                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
                   </div>
                   <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-3 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
                      <span className="text-[9px] text-cyan-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
@@ -1418,7 +1189,7 @@ export default function Home() {
                         {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
                           <div key={idEs} className="bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl flex justify-between items-center gap-4">
                             <span className="text-slate-600 text-[13px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-md text-sm">{pesoStr as string} kg</span>
+                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-sm">{pesoStr as string} kg</span>
                           </div>
                         ))}
                       </div>
@@ -1488,6 +1259,7 @@ export default function Home() {
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); }
       `}} />
-    </div>
+    </main>
+  </div>
   );
 }
