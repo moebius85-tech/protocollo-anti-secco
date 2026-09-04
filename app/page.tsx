@@ -9,13 +9,13 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ==========================================
-// STILI GLOBALI (LIGHT NEUMORPHISM - SOFT UI)
+// STILI GLOBALI (PURE SOFT NEUMORPHISM)
 // ==========================================
 const colorBg = "bg-[#e8eef3]";
-const shadowOutset = "shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff]";
-const shadowInset = "shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff]";
-const shadowOutsetSm = "shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff]";
-const shadowInsetSm = "shadow-[inset_2px_2px_4px_#c1c9d2,inset_-2px_-2px_4px_#ffffff]";
+const shadowOutset = "shadow-[8px_8px_16px_#c1c9d2,-8px_-8px_16px_#ffffff]";
+const shadowInset = "shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff]";
+const shadowOutsetSm = "shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff]";
+const shadowInsetSm = "shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff]";
 const gradPrimary = "bg-gradient-to-r from-[#00c6ff] to-[#0072ff]"; 
 
 const UI = {
@@ -23,14 +23,14 @@ const UI = {
   card: `${colorBg} ${shadowOutset} rounded-[2rem] p-6 lg:p-8`,
   panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem] p-5`,
   panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem] p-5`,
-  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-full text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-[#00c6ff]/30 transition-all font-bold placeholder:text-slate-400 border-none appearance-none`,
-  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(0,114,255,0.25)] hover:shadow-[0_12px_20px_rgba(0,114,255,0.35)] hover:-translate-y-0.5 transition-all duration-300 text-white font-black uppercase tracking-widest rounded-full py-4 px-6 w-full flex items-center justify-center border-none`,
-  btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-[#0072ff] py-2 px-4 rounded-full font-bold uppercase tracking-widest transition-all duration-200 text-[10px]`,
-  label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-2",
+  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-[#00c6ff]/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
+  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(0,114,255,0.3)] hover:shadow-[0_12px_20px_rgba(0,114,255,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none`,
+  btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-[#00c6ff] py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px]`,
+  label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1",
   textTitle: "text-slate-700",
   textBody: "text-slate-500",
   pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(0,114,255,0.3)]`,
-  pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-[#0072ff]`
+  pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-[#00c6ff]`
 };
 
 // ==========================================
@@ -40,7 +40,7 @@ const baseDbAllenamento = {
   Spinta: {
     focus: "SPINTA (Petto, Spalle, Tricipiti)",
     esercizi: [
-      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi fino a sfiorare il petto e spingi verso l'alto con forza.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
+      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi fino a sfiorare il petto e spingi verso l'alto.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
       { id: "e3", nome: "Panca inclinata manubri", anim: "chest_db_incline", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci clavicolari.", alternative: [{ nome: "Panca inclinata bilanciere", anim: "chest_barbell_incline", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata." }, { nome: "Chest Press Inclinata", anim: "chest_machine_incline", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata." }] },
       { id: "e4", nome: "Chest press", anim: "chest_machine_flat", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale.", alternative: [{ nome: "Pectoral Machine", anim: "chest_pec_deck", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti." }, { nome: "Croci cavi seduto", anim: "chest_cable_seated", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro." }] },
       { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti.", alternative: [{ nome: "Croci cavi piana", anim: "chest_cable_flat", note: "Tensione continua", dettaglio: "CAVI: Dai cavi bassi." }, { nome: "Pec Deck (Fly)", anim: "chest_pec_deck", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck." }] },
@@ -168,8 +168,8 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
 };
 
 const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
-  if (!data || data.length === 0) return <p className="text-[10px] text-slate-400 italic font-medium p-4">Dati insufficienti.</p>;
-  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-medium p-4">Un solo dato. Esegui un&apos;altra sessione.</p>;
+  if (!data || data.length === 0) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Dati insufficienti.</p>;
+  if (data.length === 1) return <p className="text-[10px] text-slate-400 italic font-bold p-4 text-center">Un solo dato. Esegui un&apos;altra sessione.</p>;
   const maxVal = Math.max(...data);
   const minVal = Math.min(...data);
   const range = maxVal - minVal === 0 ? 10 : maxVal - minVal;
@@ -180,12 +180,12 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
     <div className={UI.panelInset + " mt-4 p-4"}>
        <span className={UI.label + " !text-[#00c6ff] mb-4"}>{label} - Trend</span>
        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-md">
-          <polyline points={points} fill="none" stroke="#0072ff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={points} fill="none" stroke="#00c6ff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           {data.map((val, i) => {
             const x = padding + (i / (data.length - 1)) * (width - padding * 2);
             const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
             return (
-              <g key={i}><circle cx={x} cy={y} r="4" fill="#e8eef3" stroke="#00c6ff" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>
+              <g key={i}><circle cx={x} cy={y} r="5" fill="#e8eef3" stroke="#00c6ff" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>
             );
           })}
        </svg>
@@ -216,7 +216,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
 
   const sections = [
     { label: 'BMI', val: bmi, color: '#c084fc', angle: 0 },           
-    { label: 'BMR', val: bmr > 0 ? bmr : '-', color: '#22d3ee', angle: 60 },  
+    { label: 'BMR', val: bmr > 0 ? bmr : '-', color: '#4facfe', angle: 60 },  
     { label: 'MUSCOLO', val: mm > 0 ? `${mm}%` : '-', color: '#60a5fa', angle: 120 },  
     { label: 'ACQUA', val: bw > 0 ? `${bw}%` : '-', color: '#a855f7', angle: 180 }, 
     { label: 'GRASSO', val: bf > 0 ? `${bf}%` : '-', color: '#38bdf8', angle: 240 }, 
@@ -235,7 +235,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              const pos = getLabelPos(sec.angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
-                 <text x={pos.x} y={pos.y - 8} fill="#64748b" fontSize="12" textAnchor="middle" fontWeight="bold" className="tracking-widest">{sec.label}</text>
+                 <text x={pos.x} y={pos.y - 8} fill="#829ab1" fontSize="11" textAnchor="middle" fontWeight="bold" className="tracking-widest">{sec.label}</text>
                  <text x={pos.x} y={pos.y + 14} fill="#334155" fontSize="22" textAnchor="middle" fontWeight="900">{sec.val}</text>
                </g>
              )
@@ -825,6 +825,16 @@ export default function Home() {
     return t;
   };
 
+  const getDataGraficoEsercizio = () => {
+    const dataPoints: number[] = [];
+    storicoSessioni.forEach(sess => {
+      if (sess.carichi[esercizioGraficoSelezionato]) {
+        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
+      }
+    });
+    return dataPoints;
+  };
+
   if (appState === 'HOME') {
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
@@ -840,7 +850,7 @@ export default function Home() {
                  <div className="flex justify-between items-center mb-2 px-2">
                    <label className={UI.label + " !mb-0 !px-0"}>1. Seleziona Atleta</label>
                    {utenteCorrente !== "Leonardo" && (
-                     <button onClick={eliminaAtleta} className="text-[9px] bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-600 px-3 py-1.5 rounded-full font-bold uppercase transition-all">🗑️ Elimina</button>
+                     <button onClick={eliminaAtleta} className="text-[9px] bg-red-100 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1 rounded-full font-bold uppercase transition-all shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1)]">🗑️ Elimina</button>
                    )}
                  </div>
                  <select value={utenteCorrente} onChange={e => setUtenteCorrente(e.target.value)} className={UI.input}>
@@ -909,7 +919,7 @@ export default function Home() {
                       await supabase.from("check_utente").insert([payload]);
                     }
                  }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-full shadow-inner" />
-                 <label htmlFor="metabolismoMain" className="text-xs text-slate-600 font-bold tracking-wide cursor-pointer">Soffri di Stallo Metabolico?</label>
+                 <label htmlFor="metabolismoMain" className="text-xs text-slate-600 font-bold tracking-wide cursor-pointer uppercase">Stallo Metabolico?</label>
               </div>
 
               <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className={UI.btnPrimary + " mt-8"}>
@@ -989,19 +999,19 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
-                     <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
+                     <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-wide cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
 
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -1033,16 +1043,16 @@ export default function Home() {
         
         <header className="mb-10 pb-6 flex justify-between items-center">
           <div>
-            <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
+            <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-slate-400 drop-shadow-sm">
-              OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-300 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+              OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-400 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
             </h1>
           </div>
           <div className="text-right">
             <span className="text-[9px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
             <div className="flex flex-col items-end gap-2.5">
-               <span className="text-sm font-black text-slate-700 bg-[#e8eef3] shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
-               <div className="flex gap-2 bg-[#e8eef3] shadow-[3px_3px_6px_#d1d9e6,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
+               <span className="text-sm font-black text-slate-700 bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+               <div className="flex gap-2 bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
                   <span className="text-[9px] font-black text-[#00c6ff] uppercase tracking-widest">{tipoDieta}</span>
                   {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
                </div>
