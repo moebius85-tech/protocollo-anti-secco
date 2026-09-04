@@ -583,9 +583,6 @@ export default function Home() {
   const apriSwapAlimento = (categoria: string) => { setCategoriaDaCambiare(categoria as keyof typeof dbAlimenti); setModalAlimento(true); };
   const confermaSwapAlimento = (index: number) => { setPastiSelezionati({ ...pastiSelezionati, [categoriaDaCambiare]: index }); setModalAlimento(false); };
 
-  // ==========================================
-  // MOTORE MACRO DINAMICO AVANZATO
-  // ==========================================
   const pesoNum = Number(biometria.peso) || 80;
   const bmr = Math.round((10 * pesoNum) + (6.25 * (Number(altezza)||175)) - (5 * (Number(eta)||41)) + 5);
   
@@ -745,6 +742,16 @@ export default function Home() {
     return t;
   };
 
+  const getDataGraficoEsercizio = () => {
+    const dataPoints: number[] = [];
+    storicoSessioni.forEach(sess => {
+      if (sess.carichi[esercizioGraficoSelezionato]) {
+        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
+      }
+    });
+    return dataPoints;
+  };
+
   if (appState === 'HOME') {
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
@@ -820,7 +827,7 @@ export default function Home() {
                  </select>
               </div>
               
-              <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#c1c9d2,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+              <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                  <input type="checkbox" id="metabolismoMain" checked={metabolismoBloccato} onChange={async (e) => {
                     const bloccato = e.target.checked;
                     setMetabolismoBloccato(bloccato);
@@ -828,8 +835,8 @@ export default function Home() {
                       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore, metabolismoBloccato: bloccato } }, data: new Date().toISOString() };
                       await supabase.from("check_utente").insert([payload]);
                     }
-                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-md shadow-inner" />
-                 <label htmlFor="metabolismoMain" className="text-[11px] text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
+                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-full shadow-inner" />
+                 <label htmlFor="metabolismoMain" className="text-xs text-slate-600 font-bold tracking-wide cursor-pointer uppercase">Stallo Metabolico?</label>
               </div>
 
               <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className={UI.btnPrimary + " mt-8"}>
@@ -909,7 +916,7 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
@@ -917,11 +924,11 @@ export default function Home() {
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -953,7 +960,7 @@ export default function Home() {
         
         <header className="mb-10 pb-6 flex justify-between items-center">
           <div>
-            <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
+            <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-slate-400 drop-shadow-sm">
               OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-300 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
             </h1>
@@ -961,8 +968,8 @@ export default function Home() {
           <div className="text-right">
             <span className="text-[9px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
             <div className="flex flex-col items-end gap-2.5">
-               <span className="text-sm font-black text-slate-700 bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
-               <div className="flex gap-2 bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
+               <span className="text-sm font-black text-slate-700 bg-[#e8eef3] shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+               <div className="flex gap-2 bg-[#e8eef3] shadow-[3px_3px_6px_#d1d9e6,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
                   <span className="text-[9px] font-black text-[#00c6ff] uppercase tracking-widest">{tipoDieta}</span>
                   {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
                </div>
@@ -1028,8 +1035,8 @@ export default function Home() {
                          return (
                            <div key={mis.id} className={UI.panelOutset + " flex flex-col gap-4 !p-6"}>
                               <div className="flex justify-between items-center mb-2">
-                                 <p className="text-[11px] font-black text-[#00c6ff] tracking-widest bg-[#e8eef3] shadow-[inset_2px_2px_4px_#c1c9d2,inset_-2px_-2px_4px_#ffffff] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
-                                 <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-black tracking-wider transition-colors shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-3 py-1.5 rounded-full">🗑️</button>
+                                 <p className="text-[11px] font-bold text-[#00c6ff] tracking-widest">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
+                                 <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-2.5 py-1.5 rounded-full">🗑️</button>
                               </div>
                               <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
                                  <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Peso</span> <strong className="text-slate-700">{mis.peso || '-'}kg</strong></p>
@@ -1401,7 +1408,7 @@ export default function Home() {
                         {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
                           <div key={idEs} className="bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl flex justify-between items-center gap-4">
                             <span className="text-slate-600 text-[13px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-md text-sm">{pesoStr as string} kg</span>
+                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-sm">{pesoStr as string} kg</span>
                           </div>
                         ))}
                       </div>
