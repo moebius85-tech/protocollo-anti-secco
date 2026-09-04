@@ -3,14 +3,10 @@ import { useState, useEffect, useRef } from 'react';
 import { createClient } from "@supabase/supabase-js";
 import { MediaVisualizer } from './animations';
 
-// Configurazione Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtxfkahzyduq.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// ==========================================
-// STILI GLOBALI (PURE SOFT NEUMORPHISM)
-// ==========================================
 const colorBg = "bg-[#e8eef3]";
 const shadowOutset = "shadow-[8px_8px_16px_#c1c9d2,-8px_-8px_16px_#ffffff]";
 const shadowInset = "shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff]";
@@ -23,68 +19,54 @@ const UI = {
   card: `${colorBg} ${shadowOutset} rounded-[2rem] p-6 lg:p-8`,
   panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem] p-5`,
   panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem] p-5`,
-  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-[#00c6ff]/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
+  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-full text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-[#00c6ff]/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
   btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(0,114,255,0.3)] hover:shadow-[0_12px_20px_rgba(0,114,255,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none`,
   btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-[#00c6ff] py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px]`,
   label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1",
-  textTitle: "text-slate-700",
-  textBody: "text-slate-500",
   pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(0,114,255,0.3)]`,
   pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-[#00c6ff]`
 };
 
-// ==========================================
-// 1. DATABASE ALLENAMENTO MASTER
-// ==========================================
 const baseDbAllenamento = {
-  Spinta: {
-    focus: "SPINTA (Petto, Spalle, Tricipiti)",
-    esercizi: [
-      { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi fino a sfiorare il petto e spingi verso l'alto.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
-      { id: "e3", nome: "Panca inclinata manubri", anim: "chest_db_incline", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci clavicolari.", alternative: [{ nome: "Panca inclinata bilanciere", anim: "chest_barbell_incline", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata." }, { nome: "Chest Press Inclinata", anim: "chest_machine_incline", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata." }] },
-      { id: "e4", nome: "Chest press", anim: "chest_machine_flat", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale.", alternative: [{ nome: "Pectoral Machine", anim: "chest_pec_deck", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti." }, { nome: "Croci cavi seduto", anim: "chest_cable_seated", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro." }] },
-      { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti.", alternative: [{ nome: "Croci cavi piana", anim: "chest_cable_flat", note: "Tensione continua", dettaglio: "CAVI: Dai cavi bassi." }, { nome: "Pec Deck (Fly)", anim: "chest_pec_deck", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck." }] },
-      { id: "e18", nome: "Lento avanti manubri", anim: "shoulder_db_seated", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Seduto a 90°. Parti con i manubri alle orecchie e spingi dritto.", alternative: [{ nome: "Military Press", anim: "shoulder_military", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi." }, { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale." }] },
-      { id: "e20", nome: "Alzate laterali cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso.", alternative: [{ nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi." }, { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi." }] },
-      { id: "e22", nome: "Panca stretta", anim: "tricep_close_grip", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa stretta. Gomiti incollati al busto e spingi in alto.", alternative: [{ nome: "French Press", anim: "tricep_french_press", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso." }, { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "LIBERO/ZAVORRA: Scendi piegando le braccia." }] },
-      { id: "e27", nome: "Push down corda", anim: "tricep_pushdown", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità.", alternative: [{ nome: "Push down sbarra", anim: "tricep_pushdown", note: "Carico maggiore", dettaglio: "CAVI: Sbarra dritta." }, { nome: "Estensioni nuca", anim: "tricep_overhead", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi dietro la testa." }] }
-    ]
-  },
-  Tirata: {
-    focus: "TIRATA (Schiena, Bicipiti)",
-    esercizi: [
-      { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il corpo verso l'alto.", alternative: [{ nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono." }, { nome: "Lat Machine Triang.", anim: "back_pulldown_triangle", note: "Focus centrale", dettaglio: "MACCHINARIO: Triangolo presa stretta." }] },
-      { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico.", alternative: [{ nome: "Rematore Manubrio", anim: "back_row_db", note: "Unilaterale", dettaglio: "MANUBRI: In appoggio su panca." }, { nome: "Rematore T-Bar", anim: "back_t_bar", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira." }] },
-      { id: "e9", nome: "Pulley seduto", anim: "back_pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto, tira la maniglia verso l'addome basso.", alternative: [{ nome: "Chest Supported", anim: "back_chest_supported", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Petto in appoggio." }, { nome: "Seal Row", anim: "back_seal_row", note: "Puro isolamento", dettaglio: "BILANCIERE: Sdraiato prono su panca." }] },
-      { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover_cable", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: Cavo alto con sbarra. Spingi verso le cosce.", alternative: [{ nome: "Pullover Macchina", anim: "back_pullover_cable", note: "Tensione continua", dettaglio: "MACCHINARIO: Macchina specifica." }, { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Di traverso su panca." }] },
-      { id: "e23", nome: "Curl bilanciere EZ", anim: "bicep_barbell", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE EZ: In piedi. Solleva verso le spalle.", alternative: [{ nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: Fletti un braccio alla volta." }, { nome: "Curl Cavo Basso", anim: "bicep_cable_bar", note: "Tensione continua", dettaglio: "CAVI: Cavo basso con sbarra corta." }] },
-      { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso. Presa a martello.", alternative: [{ nome: "Curl Inclinata", anim: "bicep_incline_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°." }, { nome: "Spider Curl", anim: "bicep_spider_curl", note: "Picco bicipite", dettaglio: "BILANCIERE: Petto in appoggio." }] }
-    ]
-  },
-  Gambe: {
-    focus: "GAMBE E POLPACCI",
-    esercizi: [
-      { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo.", alternative: [{ nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori." }, { nome: "Hack Squat Libero", anim: "leg_hack_barbell", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe." }, { nome: "Hack Squat Macchina", anim: "leg_hack_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Focus spinta." }] },
-      { id: "e12", nome: "Hack squat", anim: "leg_hack_machine", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena. Scendi e spingi su.", alternative: [{ nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana." }, { nome: "Belt Squat", anim: "leg_belt_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi." }] },
-      { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Scendi portando le ginocchia verso il petto.", alternative: [{ nome: "Affondi Manubri", anim: "leg_lunge", note: "Equilibrio", dettaglio: "MANUBRI: In camminata o sul posto." }, { nome: "Bulgarian Squat", anim: "leg_bulgarian", note: "Unilaterale", dettaglio: "MANUBRI: Piede posteriore su panca." }] },
-      { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Distendi le gambe strizzando forte i quadricipiti.", alternative: [{ nome: "Sissy Squat", anim: "leg_sissy_squat", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci e lasciati cadere." }, { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto." }] },
-      { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Scivola lungo le cosce spingendo il sedere indietro.", alternative: [{ nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte." }, { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto." }] },
-      { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo.", alternative: [{ nome: "Leg Curl Seduto", anim: "leg_curl_seduto", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola il bicipite femorale." }, { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto." }] },
-      { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine.", alternative: [{ nome: "Calf Press", anim: "leg_calf_press", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press." }, { nome: "Calf Seduto", anim: "leg_calf_seated", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, solleva i talloni." }] }
-    ]
-  }
+  Spinta: { focus: "SPINTA (Petto, Spalle, Tricipiti)", esercizi: [
+    { id: "e1", nome: "Panca piana bilanciere", anim: "chest_barbell_flat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Disteso su panca piana. Scendi fino a sfiorare il petto e spingi verso l'alto.", alternative: [{ nome: "Chest Press Convergente", anim: "chest_machine_flat", note: "Stesso asse di spinta", dettaglio: "MACCHINARIO: Siediti in appoggio." }, { nome: "Panca piana manubri", anim: "chest_db_flat", note: "Maggiore ROM", dettaglio: "MANUBRI: Disteso su panca piana." }] },
+    { id: "e3", nome: "Panca inclinata manubri", anim: "chest_db_incline", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Panca a 30-45°. Spingi i manubri verso l'alto concentrandoti sui fasci clavicolari.", alternative: [{ nome: "Panca inclinata bilanciere", anim: "chest_barbell_incline", note: "Focus forza", dettaglio: "BILANCIERE: Panca inclinata." }, { nome: "Chest Press Inclinata", anim: "chest_machine_incline", note: "Tensione costante", dettaglio: "MACCHINARIO: Usa la variante inclinata." }] },
+    { id: "e4", nome: "Chest press", anim: "chest_machine_flat", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Esercizio guidato per isolare il pettorale.", alternative: [{ nome: "Pectoral Machine", anim: "chest_pec_deck", note: "Isolamento sternale", dettaglio: "MACCHINARIO: Tieni i gomiti alti." }, { nome: "Croci cavi seduto", anim: "chest_cable_seated", note: "Picco di tensione", dettaglio: "CAVI: Posiziona una panca al centro." }] },
+    { id: "e5", nome: "Croci ai manubri", anim: "chest_flye_db", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MANUBRI: Panca piana. Allarga le braccia flettendo i gomiti.", alternative: [{ nome: "Croci cavi piana", anim: "chest_cable_flat", note: "Tensione continua", dettaglio: "CAVI: Dai cavi bassi." }, { nome: "Pec Deck (Fly)", anim: "chest_pec_deck", note: "Pump controllato", dettaglio: "MACCHINARIO: Usa il pec deck." }] },
+    { id: "e18", nome: "Lento avanti manubri", anim: "shoulder_db_seated", fase: "Fase 1: Forza Spalle", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MANUBRI: Seduto a 90°. Parti con i manubri alle orecchie e spingi dritto.", alternative: [{ nome: "Military Press", anim: "shoulder_military", note: "Carico massimo", dettaglio: "BILANCIERE: In piedi." }, { nome: "Shoulder Press", anim: "shoulder_machine", note: "Spinta guidata", dettaglio: "MACCHINARIO: Esercizio di spinta verticale." }] },
+    { id: "e20", nome: "Alzate laterali cavi", anim: "lateral_cable", fase: "Fase 3: Pump Spalle", rep: "3-4 serie, 10-12 rep | Rec: 45 sec", dettaglio: "CAVI: Tira il cavo lateralmente dal basso.", alternative: [{ nome: "Alzate manubri", anim: "lateral_db", note: "Focus classico", dettaglio: "MANUBRI: In piedi." }, { nome: "Alzate macchina", anim: "lateral_machine", note: "No compensazioni", dettaglio: "MACCHINARIO: Isola i deltoidi." }] },
+    { id: "e22", nome: "Panca stretta", anim: "tricep_close_grip", fase: "Fase 1: Forza Tricipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE: Presa stretta. Gomiti incollati al busto e spingi in alto.", alternative: [{ nome: "French Press", anim: "tricep_french_press", note: "Stretch capo lungo", dettaglio: "BILANCIERE EZ: Disteso." }, { nome: "Dips parallele", anim: "tricep_dips", note: "Catena chiusa", dettaglio: "LIBERO/ZAVORRA: Scendi piegando le braccia." }] },
+    { id: "e27", nome: "Push down corda", anim: "tricep_pushdown", fase: "Fase 3: Pump Tricipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Spingi verso il basso e apri le estremità.", alternative: [{ nome: "Push down sbarra", anim: "tricep_pushdown", note: "Carico maggiore", dettaglio: "CAVI: Sbarra dritta." }, { nome: "Estensioni nuca", anim: "tricep_overhead", note: "Enfasi capo lungo", dettaglio: "CAVI: Dai cavi bassi dietro la testa." }] }
+  ]},
+  Tirata: { focus: "TIRATA (Schiena, Bicipiti)", esercizi: [
+    { id: "e6", nome: "Trazioni", anim: "back_pullup", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "CORPO LIBERO: Appeso alla sbarra, tira il corpo verso l'alto.", alternative: [{ nome: "Lat Machine Larga", anim: "back_pulldown", note: "Carichi modulabili", dettaglio: "MACCHINARIO: Presa larga prono." }, { nome: "Lat Machine Triang.", anim: "back_pulldown_triangle", note: "Focus centrale", dettaglio: "MACCHINARIO: Triangolo presa stretta." }] },
+    { id: "e7", nome: "Rematore bilanciere", anim: "back_row_barbell", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Busto a 45°. Tira verso l'ombelico.", alternative: [{ nome: "Rematore Manubrio", anim: "back_row_db", note: "Unilaterale", dettaglio: "MANUBRI: In appoggio su panca." }, { nome: "Rematore T-Bar", anim: "back_t_bar", note: "Tirata esplosiva", dettaglio: "MACCHINARIO: Afferra il T-Bar e tira." }] },
+    { id: "e9", nome: "Pulley seduto", anim: "back_pulley", fase: "Fase 2: Connessione", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "CAVI: Seduto, tira la maniglia verso l'addome basso.", alternative: [{ nome: "Chest Supported", anim: "back_chest_supported", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Petto in appoggio." }, { nome: "Seal Row", anim: "back_seal_row", note: "Puro isolamento", dettaglio: "BILANCIERE: Sdraiato prono su panca." }] },
+    { id: "e10", nome: "Pullover ai cavi", anim: "back_pullover_cable", fase: "Fase 3: Pump", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "CAVI: Cavo alto con sbarra. Spingi verso le cosce.", alternative: [{ nome: "Pullover Macchina", anim: "back_pullover_cable", note: "Tensione continua", dettaglio: "MACCHINARIO: Macchina specifica." }, { nome: "Pullover Manubrio", anim: "back_pullover_db", note: "Stretch toracico", dettaglio: "MANUBRI: Di traverso su panca." }] },
+    { id: "e23", nome: "Curl bilanciere EZ", anim: "bicep_barbell", fase: "Fase 1: Forza Bicipiti", rep: "4-5 serie, 6-8 rep | Rec: 2 min", dettaglio: "BILANCIERE EZ: In piedi. Solleva verso le spalle.", alternative: [{ nome: "Curl Manubri Alt.", anim: "bicep_db", note: "Lavoro unilaterale", dettaglio: "MANUBRI: Fletti un braccio alla volta." }, { nome: "Curl Cavo Basso", anim: "bicep_cable_bar", note: "Tensione continua", dettaglio: "CAVI: Cavo basso con sbarra corta." }] },
+    { id: "e26", nome: "Curl cavi corda", anim: "bicep_cable", fase: "Fase 3: Pump Bicipiti", rep: "3-4 serie, 12-15 rep | Rec: 45 sec", dettaglio: "CAVI: Fune al cavo basso. Presa a martello.", alternative: [{ nome: "Curl Inclinata", anim: "bicep_incline_db", note: "Stretch capo lungo", dettaglio: "MANUBRI: Seduto su panca a 45°." }, { nome: "Spider Curl", anim: "bicep_spider_curl", note: "Picco bicipite", dettaglio: "BILANCIERE: Petto in appoggio." }] }
+  ]},
+  Gambe: { focus: "GAMBE E POLPACCI", esercizi: [
+    { id: "e11", nome: "Squat bilanciere", anim: "leg_squat", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "BILANCIERE: Sui trapezi. Scendi sotto il parallelo.", alternative: [{ nome: "Front Squat", anim: "leg_squat", note: "Focus quadricipite", dettaglio: "BILANCIERE: Appoggiato sulle clavicole anteriori." }, { nome: "Hack Squat Libero", anim: "leg_hack_barbell", note: "Carico posteriore", dettaglio: "BILANCIERE: Bilanciere dietro le gambe." }, { nome: "Hack Squat Macchina", anim: "leg_hack_machine", note: "Zero carico lombare", dettaglio: "MACCHINARIO: Focus spinta." }] },
+    { id: "e12", nome: "Hack squat", anim: "leg_hack_machine", fase: "Fase 1: Forza", rep: "4-5 serie, 4-6 rep | Rec: 2 min", dettaglio: "MACCHINARIO: Poggia schiena. Scendi e spingi su.", alternative: [{ nome: "Leg Press 45°", anim: "leg_press", note: "Isolamento pressa", dettaglio: "MACCHINARIO: Piedi bassi e stretti sulla pedana." }, { nome: "Belt Squat", anim: "leg_belt_squat", note: "Zero stress lombare", dettaglio: "MACCHINARIO: Cintura pesata ai fianchi." }] },
+    { id: "e14", nome: "Pressa 45°", anim: "leg_press", fase: "Fase 2: Connessione", rep: "4-5 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "MACCHINARIO: Scendi portando le ginocchia verso il petto.", alternative: [{ nome: "Affondi Manubri", anim: "leg_lunge", note: "Equilibrio", dettaglio: "MANUBRI: In camminata o sul posto." }, { nome: "Bulgarian Squat", anim: "leg_bulgarian", note: "Unilaterale", dettaglio: "MANUBRI: Piede posteriore su panca." }] },
+    { id: "e15", nome: "Leg extension", anim: "leg_extension", fase: "Fase 3: Pump Quad", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Distendi le gambe strizzando forte i quadricipiti.", alternative: [{ nome: "Sissy Squat", anim: "leg_sissy_squat", note: "Bodyweight stretch", dettaglio: "CORPO LIBERO: Blocca i polpacci e lasciati cadere." }, { nome: "Step-up controllato", anim: "leg_lunge", note: "Lavoro concentrico", dettaglio: "MANUBRI: Sali su un box alto." }] },
+    { id: "e13", nome: "Stacco rumeno", anim: "leg_deadlift", fase: "Fase 2: Conn. Femorali", rep: "3-4 serie, 10-12 rep | Rec: 1.5 min", dettaglio: "BILANCIERE: Scivola lungo le cosce spingendo il sedere indietro.", alternative: [{ nome: "Stacco Gambe Tese", anim: "leg_deadlift", note: "Stretch puro", dettaglio: "BILANCIERE: Ginocchia dritte." }, { nome: "Good Morning", anim: "leg_deadlift", note: "Catena posteriore", dettaglio: "BILANCIERE: Sui trapezi. Fletti il busto." }] },
+    { id: "e16", nome: "Leg curl sdraiato", anim: "leg_curl", fase: "Fase 3: Pump Femorali", rep: "3-4 serie, 15 rep | Rec: 45 sec", dettaglio: "MACCHINARIO: Prono, porta i talloni ai glutei in modo esplosivo.", alternative: [{ nome: "Leg Curl Seduto", anim: "leg_curl_seduto", note: "Isolamento femorale", dettaglio: "MACCHINARIO: Isola il bicipite femorale." }, { nome: "Glute Ham Raise", anim: "leg_curl", note: "Catena chiusa", dettaglio: "MACCHINARIO: Solleva il busto." }] },
+    { id: "e17", nome: "Calf in piedi", anim: "leg_calf", fase: "Fase 3: Pump", rep: "3-4 serie, 20 rep | Rec: 45 sec", dettaglio: "LIBERO/MACCHINA: Scendi al massimo stirando il tendine.", alternative: [{ nome: "Calf Press", anim: "leg_calf_press", note: "Sovraccarico", dettaglio: "MACCHINARIO: Usa la Leg Press." }, { nome: "Calf Seduto", anim: "leg_calf_seated", note: "Focus Soleo", dettaglio: "MACCHINARIO: Seduto, solleva i talloni." }] }
+  ]}
 };
 
 const dbAlimenti = {
   Pasto1: [
-    { nome: "Avena + Whey + Burro di Arachidi", baseCarbo: 12, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro` },
-    { nome: "Pancakes avena + Albume + Mirtilli", baseCarbo: 14, pro: 30, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro` },
-    { nome: "Uova intere + Pane segale + Avocado", baseCarbo: 10, pro: 25, fat: 22, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova • ${Math.round(f*6)}g Avocado` }
+    { nome: "Avena + Whey + Burro", baseCarbo: 12, pro: 35, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro` },
+    { nome: "Pancakes avena + Albume", baseCarbo: 14, pro: 30, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro` },
+    { nome: "Uova intere + Segale + Avocado", baseCarbo: 10, pro: 25, fat: 22, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova • ${Math.round(f*6)}g Avocado` }
   ],
   Pasto2: [
     { nome: "Riso Basmati + Pollo + Olio EVO", baseCarbo: 20, pro: 40, fat: 12, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Pollo • ${f}g Olio` },
     { nome: "Pasta di Semola + Carne Magra", baseCarbo: 20, pro: 45, fat: 10, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato • ${f}g Olio` },
-    { nome: "Patate dolci + Salmone selvaggio", baseCarbo: 16, pro: 40, fat: 20, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate • ${Math.round(p*4.5)}g Salmone` }
+    { nome: "Patate dolci + Salmone", baseCarbo: 16, pro: 40, fat: 20, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(c*4.5)}g Patate • ${Math.round(p*4.5)}g Salmone` }
   ],
   Pasto3: [
     { nome: "Yogurt Greco + Mandorle", baseCarbo: 5, pro: 20, fat: 15, dettaglioGrammi: (c:number, p:number, f:number) => `⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle` },
@@ -108,9 +90,6 @@ const misureBIA = [
   { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Musc.", unit: "%" }
 ];
 
-// ==========================================
-// COMPONENTI UI NEUMORFICI
-// ==========================================
 const AnimatedCounter = ({ value, suffix = "" }: { value: number, suffix?: string }) => {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -141,7 +120,7 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
     return '#c1c9d2'; 
   };
   return (
-    <div className={`${UI.panelInset} w-full flex justify-center py-6 mb-5`}>
+    <div className={`${UI.panelInset} w-full flex justify-center py-6 mb-5 relative`}>
       <svg width="120" height="180" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
          <defs>
             <linearGradient id="gradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -288,6 +267,7 @@ export default function Home() {
   const [fastWorkout, setFastWorkout] = useState(false);
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
   const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string[]>>({});
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoSessioni, setStoricoSessioni] = useState<any[]>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
@@ -385,7 +365,7 @@ export default function Home() {
   };
 
   const eliminaAtleta = async () => {
-    if (utenteCorrente === "Leonardo") { alert("Impossibile eliminare il Paziente Zero (Leonardo)."); return; }
+    if (utenteCorrente === "Leonardo") { alert("Impossibile eliminare il Paziente Zero."); return; }
     if (confirm(`Eliminare definitivamente ${utenteCorrente}?`)) {
       await supabase.from("check_utente").delete().eq("nome_utente", utenteCorrente);
       await supabase.from("storico_allenamenti").delete().eq("nome_utente", utenteCorrente);
@@ -490,7 +470,7 @@ export default function Home() {
   const analizzaObiettivoWizard = async () => {
     setLoadingWizard(true);
     try {
-      const contesto = `Sei un Coach IA. Analizza questo atleta: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Dieta preferita: ${datiWizard.dieta}. Valuta le foto allegate (Partenza e/o Obiettivo) per stimare la BIA attuale e il divario fisico con il target. Fornisci un verdetto indicando le settimane stimate per arrivarci.`;
+      const contesto = `Sei un Coach IA. Analizza: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Dieta: ${datiWizard.dieta}. Fornisci un verdetto.`;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: "Analizza il mio profilo.", context: contesto };
       const files = [];
@@ -547,7 +527,7 @@ export default function Home() {
   };
 
   const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
-    if(!nomeCibo.trim()) return alert("Inserisci il nome del sgarro.");
+    if(!nomeCibo.trim()) return alert("Inserisci il nome.");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
     try {
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Utente: "${nomeCibo}". Calcola macro. Restituisci SOLO: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo}]` }) });
@@ -558,7 +538,7 @@ export default function Home() {
         updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString());
         updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString());
         updateCustomMeal(cat, 'nome', match[5].trim());
-      } else { alert("Non riconosciuto. Risposta: " + data.reply); }
+      } else { alert("Non riconosciuto."); }
     } catch(e) { console.log(e); alert("Errore di rete."); }
     setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
   };
@@ -573,7 +553,7 @@ export default function Home() {
         alert(`Sistema Aggiornato.\nTDEE Ricalcolato per regime: ${tipoDieta}\nObiettivo: ${protocolloAttivo}`); 
         caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
       } 
-    } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
+    } else { alert("Peso, Età e Altezza sono obbligatori."); }
   };
 
   const eliminaMisurazione = async (id: string) => { if(confirm("Eliminare misurazione?")) { await supabase.from("check_utente").delete().eq("id", id); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); } };
@@ -594,10 +574,7 @@ export default function Home() {
   
   const apriSwapEsercizio = (es: any) => { 
     const nomeAttuale = eserciziModificati[es.id] || es.nome;
-    const tutteLeOpzioni = [
-      { nome: es.nome, anim: es.anim, dettaglio: es.dettaglio, note: "Esercizio Originale" },
-      ...es.alternative
-    ];
+    const tutteLeOpzioni = [ { nome: es.nome, anim: es.anim, dettaglio: es.dettaglio, note: "Originale" }, ...es.alternative ];
     const opzioniDisponibili = tutteLeOpzioni.filter(opt => opt.nome !== nomeAttuale);
     setEsercizioDaCambiare({ id: es.id, nomeAttuale: nomeAttuale, alternative: opzioniDisponibili }); 
     setModalEsercizio(true); 
@@ -635,11 +612,8 @@ export default function Home() {
   } else if (protocolloAttivo === 'Shred') {
       baseTdee = Math.round(baseTdee * 0.80); 
   } else if (protocolloAttivo === 'Massa') {
-      if (grassoStimato > 15 || pesoNum > 85) {
-          baseTdee = Math.round(baseTdee * 1.05); 
-      } else {
-          baseTdee = Math.round(baseTdee * 1.15); 
-      }
+      if (grassoStimato > 15 || pesoNum > 85) { baseTdee = Math.round(baseTdee * 1.05); } 
+      else { baseTdee = Math.round(baseTdee * 1.15); }
   }
 
   const tdee = baseTdee;
@@ -647,73 +621,40 @@ export default function Home() {
   let targetPro = pesoNum * 2.2;
   if (protocolloAttivo === 'Shred') targetPro = pesoNum * 2.5;
 
-  let targetCho = 0;
-  let targetFat = 0;
-  
+  let targetCho = 0; let targetFat = 0;
   const activeDieta = (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) ? 'Equilibrata' : tipoDieta;
 
   switch (activeDieta) {
-      case 'Keto':
-          targetCho = 30; 
-          targetPro = pesoNum * 2.5; 
-          targetFat = (tdee - (targetCho * 4) - (targetPro * 4)) / 9;
-          break;
-      case 'LowCarb':
-          targetCho = pesoNum * 1.5; 
-          targetPro = pesoNum * 2.5;
-          targetFat = (tdee - (targetCho * 4) - (targetPro * 4)) / 9;
-          break;
-      case 'Zona':
-          targetCho = (tdee * 0.40) / 4;
-          targetPro = (tdee * 0.30) / 4;
-          targetFat = (tdee * 0.30) / 9;
-          break;
-      case 'HighCarb':
-          targetFat = Math.max(pesoNum * 0.8, 40); 
-          targetPro = pesoNum * 2.0;
-          targetCho = (tdee - (targetFat * 9) - (targetPro * 4)) / 4;
-          break;
-      case 'Equilibrata':
-      default:
-          targetFat = pesoNum * 1.0;
-          targetCho = (tdee - (targetFat * 9) - (targetPro * 4)) / 4;
-          break;
+      case 'Keto': targetCho = 30; targetPro = pesoNum * 2.5; targetFat = (tdee - (targetCho * 4) - (targetPro * 4)) / 9; break;
+      case 'LowCarb': targetCho = pesoNum * 1.5; targetPro = pesoNum * 2.5; targetFat = (tdee - (targetCho * 4) - (targetPro * 4)) / 9; break;
+      case 'Zona': targetCho = (tdee * 0.40) / 4; targetPro = (tdee * 0.30) / 4; targetFat = (tdee * 0.30) / 9; break;
+      case 'HighCarb': targetFat = Math.max(pesoNum * 0.8, 40); targetPro = pesoNum * 2.0; targetCho = (tdee - (targetFat * 9) - (targetPro * 4)) / 4; break;
+      case 'Equilibrata': default: targetFat = pesoNum * 1.0; targetCho = (tdee - (targetFat * 9) - (targetPro * 4)) / 4; break;
   }
 
   if (protocolloAutore === 'Gerardo Calvo (Reset Ormonale)') {
       const hpo = Math.max((Number(altezza) || 175) - 100, 60);
-      targetPro = hpo * 2.2;
-      targetFat = 65; 
+      targetPro = hpo * 2.2; targetFat = 65; 
       const dayIndex = giorniSettimana.indexOf(giornoCalendario);
       const autoCarb = [150, 250, 350][dayIndex % 3] || 150;
       targetCho = gerardoCarbOverride !== null ? gerardoCarbOverride : autoCarb;
   } else if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)' || metabolismoBloccato) {
-      targetFat = 70;
-      targetPro = pesoNum * 1.8;
-      targetCho = Math.max(0, (tdee - (targetFat * 9) - (targetPro * 4)) / 4);
+      targetFat = 70; targetPro = pesoNum * 1.8; targetCho = Math.max(0, (tdee - (targetFat * 9) - (targetPro * 4)) / 4);
   }
 
   if (utenteCorrente === "Leonardo" && activeDieta === "Equilibrata" && protocolloAutore === "Nessuno") {
       const mult = protocolloAttivo === 'Shred' ? 2.5 : (protocolloAttivo === 'Massa' ? 5 : 4);
-      targetCho = pesoNum * mult;
-      targetPro = protocolloAttivo === 'Shred' ? (pesoNum * 2.5) : (pesoNum * 2.2);
-      targetFat = pesoNum * 1.0;
+      targetCho = pesoNum * mult; targetPro = protocolloAttivo === 'Shred' ? (pesoNum * 2.5) : (pesoNum * 2.2); targetFat = pesoNum * 1.0;
   }
 
   let intraCho = protocolloAttivo === 'Shred' ? Math.round(pesoNum * 0.3) : Math.round(pesoNum * 0.5);
-  if (activeDieta === 'Keto') intraCho = 0;
-  else if (activeDieta === 'LowCarb') intraCho = Math.round(pesoNum * 0.2);
+  if (activeDieta === 'Keto') intraCho = 0; else if (activeDieta === 'LowCarb') intraCho = Math.round(pesoNum * 0.2);
 
-  const intraPro = 15; 
-  const intraFat = 0;
-
+  const intraPro = 15; const intraFat = 0;
   let moltiplicatoreCarbo = 5;
-  if (protocolloAttivo === 'Shred') moltiplicatoreCarbo = 2.5;
-  else if (protocolloAttivo === 'Ricomposizione') moltiplicatoreCarbo = 4;
+  if (protocolloAttivo === 'Shred') moltiplicatoreCarbo = 2.5; else if (protocolloAttivo === 'Ricomposizione') moltiplicatoreCarbo = 4;
 
-  targetCho = Math.max(targetCho, intraCho);
-  targetFat = Math.max(targetFat, intraFat);
-  targetPro = Math.max(targetPro, intraPro);
+  targetCho = Math.max(targetCho, intraCho); targetFat = Math.max(targetFat, intraFat); targetPro = Math.max(targetPro, intraPro);
 
   const activeCategories = digiuno ? ['Pasto2', 'Pasto3', 'PostWorkout'] : ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'];
   
@@ -721,9 +662,7 @@ export default function Home() {
   const originalMeals: Record<string, any> = {};
   activeCategories.forEach(cat => {
      const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]];
-     if(item) {
-       originalMeals[cat] = { cho: item.baseCarbo, pro: item.pro, fat: item.fat };
-     }
+     if(item) { originalMeals[cat] = { cho: item.baseCarbo, pro: item.pro, fat: item.fat }; }
   });
 
   let customCho = 0, customPro = 0, customFat = 0, sumNonCustomOrigCho = 0, sumNonCustomOrigPro = 0, sumNonCustomOrigFat = 0;
@@ -732,8 +671,7 @@ export default function Home() {
         customCho += Number(pastiCustom[cat].cho) || 0; customPro += Number(pastiCustom[cat].pro) || 0; customFat += Number(pastiCustom[cat].fat) || 0;
      } else if(originalMeals[cat]) {
         sumNonCustomOrigCho += activeDieta === 'Keto' ? 1 : originalMeals[cat].cho; 
-        sumNonCustomOrigPro += originalMeals[cat].pro; 
-        sumNonCustomOrigFat += originalMeals[cat].fat;
+        sumNonCustomOrigPro += originalMeals[cat].pro; sumNonCustomOrigFat += originalMeals[cat].fat;
      }
   });
 
@@ -766,33 +704,18 @@ export default function Home() {
 
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
     let preW = "";
-    if (quandoTiAlleni === 'sera') {
-      preW = `1️⃣ PRE-WORKOUT (Stim-Free):
-• L-Citrullina: 6-8g (Pump)
-• Ashwagandha: 500mg`;
-    } else {
-      preW = `1️⃣ PRE-WORKOUT (Focus):
-• Caffeina: 200mg
-• L-Citrullina: 6g (Pump)`;
-    }
-
+    if (quandoTiAlleni === 'sera') { preW = `1️⃣ PRE-WORKOUT:\n• L-Citrullina: 6-8g\n• Ashwagandha: 500mg`; } 
+    else { preW = `1️⃣ PRE-WORKOUT:\n• Caffeina: 200mg\n• L-Citrullina: 6g`; }
     if (protocolloAttivo === 'Shred') preW += `\n• ALC: 1.5g`;
 
     let intraW = "2️⃣ INTRA-WORKOUT:";
-    if (activeDieta === 'Keto') {
-      intraW += `\n• Elettroliti\n• MCT Oil: 10g\n• EAA: 15g\n• ❌ ZERO Carboidrati`;
-    } else if (activeDieta === 'LowCarb') {
-      intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g`;
-    } else {
-      intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g\n• Creatina: 5g`;
-    }
+    if (activeDieta === 'Keto') { intraW += `\n• Elettroliti\n• MCT Oil: 10g\n• EAA: 15g\n• ❌ ZERO Carboidrati`; } 
+    else if (activeDieta === 'LowCarb') { intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g`; } 
+    else { intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g\n• Creatina: 5g`; }
 
     let saluteW = "3️⃣ SALUTE:";
-    if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') {
-       saluteW += `\n• Omega-3: 2-3g\n• Multivitaminico`;
-    } else {
-       saluteW += `\n• Omega-3: 1g\n• Vitamina D3 + K2`;
-    }
+    if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') { saluteW += `\n• Omega-3: 2-3g\n• Multivitaminico`; } 
+    else { saluteW += `\n• Omega-3: 1g\n• Vitamina D3 + K2`; }
 
     const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
     const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.\n• Acqua, Caffè amaro, Tè.` };
@@ -806,17 +729,15 @@ export default function Home() {
         t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' });
         if (!digiuno) t.push({ idCategoria: 'Pasto1', titoloUI: 'Pranzo / Pasto 1' });
         t.push({ idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' });
-        t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' });
+        t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna' });
     } else if (quandoTiAlleni === 'pausa') {
-        if (digiuno) t.push(bloccoDigiuno);
-        else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' });
+        if (digiuno) t.push(bloccoDigiuno); else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' });
         t.push(bloccoIntra);
         t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Pausa)' });
         t.push({ idCategoria: 'Pasto2', titoloUI: 'Cena / Pasto 2' });
-        t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna / Pasto 3' });
+        t.push({ idCategoria: 'Pasto3', titoloUI: 'Pre-nanna' });
     } else {
-        if (digiuno) t.push(bloccoDigiuno);
-        else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' });
+        if (digiuno) t.push(bloccoDigiuno); else t.push({ idCategoria: 'Pasto1', titoloUI: 'Colazione' });
         t.push({ idCategoria: 'Pasto2', titoloUI: 'Pranzo' });
         t.push({ idCategoria: 'Pasto3', titoloUI: 'Spuntino' });
         t.push(bloccoIntra);
@@ -850,7 +771,7 @@ export default function Home() {
                  <div className="flex justify-between items-center mb-2 px-2">
                    <label className={UI.label + " !mb-0 !px-0"}>1. Seleziona Atleta</label>
                    {utenteCorrente !== "Leonardo" && (
-                     <button onClick={eliminaAtleta} className="text-[9px] bg-red-100 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1 rounded-full font-bold uppercase transition-all shadow-[inset_2px_2px_4px_rgba(0,0,0,0.1)]">🗑️ Elimina</button>
+                     <button onClick={eliminaAtleta} className="text-[9px] bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-600 px-3 py-1.5 rounded-full font-bold uppercase transition-all">🗑️ Elimina</button>
                    )}
                  </div>
                  <select value={utenteCorrente} onChange={e => setUtenteCorrente(e.target.value)} className={UI.input}>
@@ -910,7 +831,7 @@ export default function Home() {
                  </select>
               </div>
               
-              <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+              <div className="bg-[#e8eef3] shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                  <input type="checkbox" id="metabolismoMain" checked={metabolismoBloccato} onChange={async (e) => {
                     const bloccato = e.target.checked;
                     setMetabolismoBloccato(bloccato);
@@ -918,8 +839,8 @@ export default function Home() {
                       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore, metabolismoBloccato: bloccato } }, data: new Date().toISOString() };
                       await supabase.from("check_utente").insert([payload]);
                     }
-                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-full shadow-inner" />
-                 <label htmlFor="metabolismoMain" className="text-xs text-slate-600 font-bold tracking-wide cursor-pointer uppercase">Stallo Metabolico?</label>
+                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-md shadow-inner" />
+                 <label htmlFor="metabolismoMain" className="text-[11px] text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
               </div>
 
               <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className={UI.btnPrimary + " mt-8"}>
@@ -931,8 +852,8 @@ export default function Home() {
         {modalWizard && (
           <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
             <div className={UI.card + " w-full max-w-lg relative overflow-hidden"}>
-               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 font-bold text-2xl transition-colors">&times;</button>
-               <h3 className={`font-light text-2xl uppercase tracking-widest mb-8 text-slate-700`}>Nuova Profilazione</h3>
+               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 font-black text-2xl transition-colors">&times;</button>
+               <h3 className={`font-black text-2xl uppercase tracking-widest mb-8 text-[#00c6ff] drop-shadow-sm`}>Nuova Profilazione</h3>
                
                {stepWizard === 1 && (
                  <div className="space-y-6">
@@ -999,19 +920,19 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#e8eef3] shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
-                     <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-wide cursor-pointer uppercase">Stallo Metabolico?</label>
+                     <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
 
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -1045,7 +966,7 @@ export default function Home() {
           <div>
             <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-slate-400 drop-shadow-sm">
-              OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-400 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+              OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-300 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
             </h1>
           </div>
           <div className="text-right">
@@ -1086,7 +1007,7 @@ export default function Home() {
                        {misureBase.map((m) => (
                            <div key={m.id} className={UI.panelInset + " !p-3.5"}>
                              <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-1">{m.label} <span className="text-slate-400">{m.unit}</span></label>
-                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-800 outline-none focus:text-[#00c6ff] transition-colors" placeholder="-" />
+                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-800 outline-none focus:text-[#00c6ff] transition-colors text-center" placeholder="-" />
                            </div>
                        ))}
                      </div>
@@ -1098,38 +1019,38 @@ export default function Home() {
                        {misureBIA.map((m) => (
                            <div key={m.id} className={UI.panelInset + " !p-3.5"}>
                              <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-1">{m.label} <span className="text-slate-400">{m.unit}</span></label>
-                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-[#00c6ff] outline-none focus:text-[#0072ff] transition-colors" placeholder="-" />
+                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-[#00c6ff] outline-none focus:text-[#0072ff] transition-colors text-center" placeholder="-" />
                            </div>
                        ))}
                      </div>
                    </div>
 
-                   <div className="pt-2">
+                   <div className="pt-4">
                       <SvgBodyCompositionWheel data={biometria} altezza={altezza} eta={eta} />
                    </div>
 
-                   <button onClick={valutaCheckFisico} className={UI.btnPrimary + " mt-4"}>Salva Algoritmo</button>
+                   <button onClick={valutaCheckFisico} className={UI.btnPrimary + " mt-6"}>Salva Dati</button>
                  </div>
               ) : (
                  <div className="flex-1 overflow-y-auto space-y-5 pr-2 max-h-[600px] custom-scrollbar">
-                   {storicoMisure.length === 0 ? <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#eef2f6] shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessun dato registrato.</p> : (
+                   {storicoMisure.length === 0 ? <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#e8eef3] shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessun dato registrato.</p> : (
                       storicoMisure.map((mis: any) => {
                          const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
                          return (
-                           <div key={mis.id} className={UI.panelOutset + " flex flex-col gap-4"}>
-                              <div className="flex justify-between items-center pb-2">
-                                 <p className="text-[11px] font-bold text-[#00c6ff] tracking-widest">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
-                                 <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] px-2.5 py-1.5 rounded-full">🗑️</button>
+                           <div key={mis.id} className={UI.panelOutset + " flex flex-col gap-4 !p-6"}>
+                              <div className="flex justify-between items-center mb-2">
+                                 <p className="text-[11px] font-black text-[#00c6ff] tracking-widest bg-[#e8eef3] shadow-[inset_2px_2px_4px_#c1c9d2,inset_-2px_-2px_4px_#ffffff] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
+                                 <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-black tracking-wider transition-colors shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-3 py-1.5 rounded-full">🗑️</button>
                               </div>
-                              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold">
-                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Peso: <strong className="text-slate-800 float-right">{mis.peso || '-'}kg</strong></p>
-                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Petto: <strong className="text-slate-800 float-right">{circ.petto || '-'}cm</strong></p>
-                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Spalle: <strong className="text-slate-800 float-right">{circ.spalle || '-'}cm</strong></p>
-                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Braccia: <strong className="text-slate-800 float-right">{circ.braccia || '-'}cm</strong></p>
-                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Gambe: <strong className="text-slate-800 float-right">{circ.gambe || '-'}cm</strong></p>
-                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl">Glutei: <strong className="text-slate-800 float-right">{circ.glutei || '-'}cm</strong></p>
-                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl text-[#00c6ff]">Vita: <strong className="text-[#00c6ff] float-right">{circ.vita || '-'}cm</strong></p>
-                                 <p className="bg-[#eef2f6] shadow-[inset_3px_3px_6px_#d1d9e6,inset_-3px_-3px_6px_#ffffff] p-2.5 rounded-xl text-[#0072ff]">BIA: <strong className="text-[#0072ff] float-right">{circ.bodyFat || '-'}%</strong></p>
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Peso</span> <strong className="text-slate-700">{mis.peso || '-'}kg</strong></p>
+                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Petto</span> <strong className="text-slate-700">{circ.petto || '-'}cm</strong></p>
+                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Spalle</span> <strong className="text-slate-700">{circ.spalle || '-'}cm</strong></p>
+                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Braccia</span> <strong className="text-slate-700">{circ.braccia || '-'}cm</strong></p>
+                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Gambe</span> <strong className="text-slate-700">{circ.gambe || '-'}cm</strong></p>
+                                 <p className="bg-[#e8eef3] shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between"><span>Glutei</span> <strong className="text-slate-700">{circ.glutei || '-'}cm</strong></p>
+                                 <p className="bg-cyan-50 shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-cyan-600 flex justify-between"><span>Vita</span> <strong className="text-cyan-600">{circ.vita || '-'}cm</strong></p>
+                                 <p className="bg-blue-50 shadow-[inset_3px_3px_6px_#c1c9d2,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-blue-600 flex justify-between"><span>BIA</span> <strong className="text-blue-600">{circ.bodyFat || '-'}%</strong></p>
                               </div>
                            </div>
                          );
@@ -1139,31 +1060,31 @@ export default function Home() {
               )}
             </section>
 
-            <section className={UI.card + " flex flex-col h-[480px]"}>
-              <h2 className="text-base font-bold text-slate-800 pb-2 mb-4 flex items-center gap-3 tracking-wide">
+            <section className={UI.card + " p-7 flex flex-col h-[480px]"}>
+              <h2 className="text-base font-black tracking-widest uppercase text-slate-700 mb-6 flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-[#00c6ff] animate-pulse shadow-[0_0_10px_#00c6ff]"></span> A.I. Coach
               </h2>
-              <div className="flex-1 overflow-y-auto space-y-4 p-5 bg-[#eef2f6] shadow-[inset_6px_6px_12px_#d1d9e6,inset_-6px_-6px_12px_#ffffff] rounded-3xl mb-5 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto space-y-4 p-5 bg-[#e8eef3] shadow-[inset_6px_6px_12px_#c1c9d2,inset_-6px_-6px_12px_#ffffff] rounded-[2rem] mb-6 custom-scrollbar">
                 {chatLog.map((msg, i) => (
                   <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                    <span className={`text-[9px] uppercase font-bold tracking-widest mb-2 ${msg.role === 'user' ? 'text-slate-400 pr-2' : 'text-[#00c6ff] pl-2'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
-                    <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#d1d9e6,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#eef2f6] text-slate-700 rounded-tr-sm' : 'bg-gradient-to-br from-[#00c6ff] to-[#0072ff] text-white rounded-tl-sm shadow-[0_8px_15px_rgba(0,114,255,0.3)]'}`}>{msg.text}</div>
+                    <span className={`text-[9px] uppercase font-black tracking-widest mb-2 ${msg.role === 'user' ? 'text-slate-400 pr-2' : 'text-[#00c6ff] pl-2'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
+                    <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#c1c9d2,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#e8eef3] text-slate-700 rounded-tr-sm' : 'bg-gradient-to-br from-[#00c6ff] to-[#0072ff] text-white rounded-tl-sm shadow-[0_8px_15px_rgba(0,114,255,0.3)]'}`}>{msg.text}</div>
                   </div>
                 ))}
-                {isTyping && <div className="text-[10px] text-[#00c6ff] font-bold tracking-widest pl-2 animate-pulse mt-2">Elaborazione in corso...</div>}
+                {isTyping && <div className="text-[10px] text-[#00c6ff] font-bold tracking-widest pl-2 animate-pulse mt-2">Elaborazione...</div>}
                 <div ref={chatEndRef} />
               </div>
               
               {fileAllegato && (
-                <div className="flex items-center gap-2 mb-3 p-3 bg-[#eef2f6] shadow-[4px_4px_10px_#d1d9e6,-4px_-4px_10px_#ffffff] rounded-2xl w-fit">
-                  <span className="text-xs text-[#0072ff] font-bold truncate max-w-[180px]">📎 {fileAllegato.nome}</span>
-                  <button onClick={() => setFileAllegato(null)} className="text-slate-400 hover:text-red-500 font-bold ml-2 transition-colors">&times;</button>
+                <div className="flex items-center gap-2 mb-4 p-3 bg-[#e8eef3] shadow-[4px_4px_10px_#c1c9d2,-4px_-4px_10px_#ffffff] rounded-2xl w-fit">
+                  <span className="text-xs text-[#0072ff] font-black tracking-widest truncate max-w-[180px]">📎 {fileAllegato.nome}</span>
+                  <button onClick={() => setFileAllegato(null)} className="text-slate-400 hover:text-red-500 font-bold ml-3 transition-colors">&times;</button>
                 </div>
               )}
               <div className="flex gap-3 relative">
                 <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
-                <button onClick={() => fileInputRef.current?.click()} className={UI.btnSecondary + " !px-5 !py-3.5 !rounded-full shadow-[6px_6px_14px_#d1d9e6,-6px_-6px_14px_#ffffff]"}>📎</button>
-                <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega pasto..." className={UI.input} />
+                <button onClick={() => fileInputRef.current?.click()} className={UI.btnSecondary + " !px-5 !py-3.5 !rounded-full shadow-[6px_6px_14px_#c1c9d2,-6px_-6px_14px_#ffffff]"}>📎</button>
+                <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega..." className={UI.input} />
                 <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className={UI.btnPrimary + " !w-auto !px-7 !rounded-full disabled:opacity-50 disabled:hover:translate-y-0"}>→</button>
               </div>
             </section>
@@ -1171,51 +1092,51 @@ export default function Home() {
 
           {/* COLONNA CENTRALE: Turni & Nutrizione */}
           <div className="flex flex-col gap-8 lg:col-span-4">
-            <section className={UI.card}>
-              <div className="flex justify-between items-center mb-6 pb-2">
-                <h2 className="text-lg font-bold tracking-wide text-slate-800">Incastro Turni</h2>
-                <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#eef2f6] text-xs text-[#00c6ff] font-bold py-2.5 px-4 rounded-full outline-none focus:ring-2 focus:ring-[#00c6ff]/50 transition-all shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff] appearance-none">
+            <section className={UI.card + " p-7"}>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Incastro Turni</h2>
+                <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#e8eef3] text-xs text-[#00c6ff] font-black uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] appearance-none">
                   <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
                 </select>
               </div>
-              <div className="space-y-5">
-                <div className={UI.panelInset + " !p-4"}>
-                  <span className="text-[10px] text-[#00c6ff] uppercase font-bold tracking-widest mb-3 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
+              <div className="space-y-6">
+                <div className={UI.panelInset}>
+                  <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
                   <div className="flex space-x-4">
-                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm font-bold text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
-                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm font-bold text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
+                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
+                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                   </div>
                 </div>
                 {tipoTurno === 'spezzato' && (
-                  <div className={UI.panelInset + " !p-4"}>
-                    <span className="text-[10px] text-[#00c6ff] uppercase font-bold tracking-widest mb-3 block">Pomeriggio (Lavoro)</span>
+                  <div className={UI.panelInset}>
+                    <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
                     <div className="flex space-x-4">
-                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm font-bold text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
-                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm font-bold text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
+                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
+                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                     </div>
                   </div>
                 )}
-                <div className="pt-4 mt-2">
-                  <div className="flex justify-between items-center mb-6 bg-[#eef2f6] p-4 rounded-2xl shadow-[6px_6px_14px_#d1d9e6,-6px_-6px_14px_#ffffff]">
-                     <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Digiuno Intermittente 16:8</span>
-                     <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.1)] ${digiuno ? 'bg-[#00c6ff]' : 'bg-slate-300'}`}>
+                <div className="pt-4 mt-4">
+                  <div className="flex justify-between items-center mb-8 bg-[#e8eef3] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#c1c9d2,-6px_-6px_14px_#ffffff]">
+                     <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Digiuno Intermittente 16:8</span>
+                     <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] ${digiuno ? 'bg-[#00c6ff]' : 'bg-slate-300'}`}>
                         <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
                      </button>
                   </div>
                   <span className={UI.label}>Collocazione Allenamento</span>
-                  <div className="flex space-x-3 bg-[#eef2f6] p-2 rounded-[2rem] shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff]">
-                    <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-3.5 text-[10px] uppercase tracking-wider rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'mattina' ? UI.pillActive : UI.pillInactive}`}>Mattina</button>
-                    {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-3.5 text-[10px] uppercase tracking-wider rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'pausa' ? UI.pillActive : UI.pillInactive}`}>Pausa</button>}
-                    <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-3.5 text-[10px] uppercase tracking-wider rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'sera' ? UI.pillActive : UI.pillInactive}`}>Sera</button>
+                  <div className="flex space-x-3 bg-[#e8eef3] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#c1c9d2,inset_-5px_-5px_10px_#ffffff]">
+                    <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'mattina' ? UI.pillActive : UI.pillInactive}`}>Mattina</button>
+                    {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'pausa' ? UI.pillActive : UI.pillInactive}`}>Pausa</button>}
+                    <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 ${quandoTiAlleni === 'sera' ? UI.pillActive : UI.pillInactive}`}>Sera</button>
                   </div>
                 </div>
               </div>
             </section>
 
-            <section className={UI.card}>
-              <div className="flex flex-col mb-6">
-                <div className="flex justify-between items-center mb-5">
-                  <h2 className="text-lg font-bold tracking-wide text-slate-800">Piano Nutrizionale</h2>
+            <section className={UI.card + " p-7"}>
+              <div className="flex flex-col mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Piano Nutrizionale</h2>
                   <div className="flex gap-2 items-center">
                     {protocolloAutore === 'Gerardo Calvo (Reset Ormonale)' && (
                        <button 
@@ -1224,7 +1145,7 @@ export default function Home() {
                             const next = current === 150 ? 250 : (current === 250 ? 350 : 150);
                             setGerardoCarbOverride(next);
                          }}
-                         className="text-[9px] bg-[#eef2f6] shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] text-purple-500 px-4 py-2.5 rounded-full font-bold uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#d1d9e6,inset_-2px_-2px_4px_#ffffff]"
+                         className="text-[9px] bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] text-purple-500 px-4 py-2.5 rounded-full font-black uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#c1c9d2,inset_-2px_-2px_4px_#ffffff]"
                        >
                          🔄 Ciclo: {targetCho}g
                        </button>
@@ -1240,32 +1161,32 @@ export default function Home() {
                           await supabase.from("check_utente").insert([payload]);
                         }
                       }}
-                      className={`text-[9px] font-bold px-5 py-2.5 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#d1d9e6,-6px_-6px_12px_#ffffff] ${
+                      className={`text-[9px] font-black px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all ${
                         (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
-                          ? 'bg-[#eef2f6] text-slate-400' 
-                          : `${gradPrimary} shadow-[0_8px_15px_rgba(0,114,255,0.25)] text-white`
+                          ? 'bg-[#e8eef3] shadow-[inset_2px_2px_5px_#c1c9d2,inset_-2px_-2px_5px_#ffffff] text-slate-400' 
+                          : `${gradPrimary} shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-white`
                       }`}
                     >
-                    <option value="Equilibrata" className="bg-[#eef2f6] text-slate-700">⚖️ Equilibrata</option>
-                    <option value="Keto" className="bg-[#eef2f6] text-slate-700">🥩 Keto</option>
-                    <option value="LowCarb" className="bg-[#eef2f6] text-slate-700">🥑 Low Carb</option>
-                    <option value="Zona" className="bg-[#eef2f6] text-slate-700">🧩 Zona</option>
-                    <option value="HighCarb" className="bg-[#eef2f6] text-slate-700">🍚 High Carb</option>
+                    <option value="Equilibrata" className="bg-[#e8eef3] text-slate-700">⚖️ Equilibrata</option>
+                    <option value="Keto" className="bg-[#e8eef3] text-slate-700">🥩 Keto</option>
+                    <option value="LowCarb" className="bg-[#e8eef3] text-slate-700">🥑 Low Carb</option>
+                    <option value="Zona" className="bg-[#e8eef3] text-slate-700">🧩 Zona</option>
+                    <option value="HighCarb" className="bg-[#e8eef3] text-slate-700">🍚 High Carb</option>
                   </select>
                   </div>
                 </div>
-                <div className="flex gap-4 mt-2">
-                  <div className={UI.panelInset + " flex-1 text-center !p-3"}>
+                <div className="flex gap-4">
+                  <div className={UI.panelInset + " flex-1 text-center !p-4"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
-                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
+                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
                   </div>
-                  <div className={UI.panelInset + " flex-1 text-center !p-3"}>
+                  <div className={UI.panelInset + " flex-1 text-center !p-4"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
-                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
+                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
                   </div>
-                  <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-3 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
+                  <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
                      <span className="text-[9px] text-cyan-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
-                     <span className="text-[15px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
+                     <span className="text-[16px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
                   </div>
                 </div>
               </div>
@@ -1276,7 +1197,7 @@ export default function Home() {
                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
                        <span className="text-sm font-black text-slate-800"><AnimatedCounter value={Math.round(actualIntakeKcal * 0.2)} /> Kcal</span>
                     </div>
-                    <div className="w-full bg-[#eef2f6] h-3 rounded-full overflow-hidden flex shadow-[inset_2px_2px_5px_#c1c9d2] mt-3">
+                    <div className="w-full bg-[#e8eef3] h-3 rounded-full overflow-hidden flex shadow-[inset_2px_2px_5px_#c1c9d2] mt-3">
                        <div className={`${gradPrimary} h-full w-[80%]`}></div>
                        <div className="bg-gradient-to-r from-amber-400 to-orange-500 h-full w-[20%] shadow-[0_0_12px_#fbbf24]"></div>
                     </div>
@@ -1299,9 +1220,9 @@ export default function Home() {
                         <div className="absolute top-0 left-0 w-2 h-full bg-[#00c6ff]"></div>
                         <div className="flex justify-between items-start mb-4">
                           <span className="text-xs uppercase font-black text-[#00c6ff] tracking-widest">{blocco.titolo}</span>
-                          <span className="text-[10px] font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-full shadow-md"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
+                          <span className="text-[10px] font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-full shadow-[0_4px_10px_rgba(0,114,255,0.3)]"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
                         </div>
-                        <p className="font-bold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
+                        <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
                       </div>
                     );
                   }
