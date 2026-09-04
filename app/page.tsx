@@ -519,6 +519,15 @@ export default function Home() {
     }
     return t;
   };
+  const getDataGraficoEsercizio = () => {
+    const dataPoints: number[] = [];
+    storicoSessioni.forEach(sess => {
+      if (sess.carichi[esercizioGraficoSelezionato]) {
+        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
+      }
+    });
+    return dataPoints;
+  };
   if (appState === 'HOME') {
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
