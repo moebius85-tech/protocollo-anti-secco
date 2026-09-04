@@ -19,7 +19,7 @@ const UI = {
   card: `${colorBg} ${shadowOutset} rounded-[2rem] p-6 lg:p-8`,
   panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem] p-5`,
   panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem] p-5`,
-  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-full text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-[#00c6ff]/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
+  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-[#00c6ff]/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
   btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(0,114,255,0.3)] hover:shadow-[0_12px_20px_rgba(0,114,255,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none`,
   btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-[#00c6ff] py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px]`,
   label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1",
@@ -226,7 +226,6 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
     </div>
   );
 };
-
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -746,16 +745,6 @@ export default function Home() {
     return t;
   };
 
-  const getDataGraficoEsercizio = () => {
-    const dataPoints: number[] = [];
-    storicoSessioni.forEach(sess => {
-      if (sess.carichi[esercizioGraficoSelezionato]) {
-        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
-      }
-    });
-    return dataPoints;
-  };
-
   if (appState === 'HOME') {
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
@@ -831,7 +820,7 @@ export default function Home() {
                  </select>
               </div>
               
-              <div className="bg-[#e8eef3] shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+              <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#c1c9d2,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                  <input type="checkbox" id="metabolismoMain" checked={metabolismoBloccato} onChange={async (e) => {
                     const bloccato = e.target.checked;
                     setMetabolismoBloccato(bloccato);
@@ -852,7 +841,7 @@ export default function Home() {
         {modalWizard && (
           <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
             <div className={UI.card + " w-full max-w-lg relative overflow-hidden"}>
-               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 font-black text-2xl transition-colors">&times;</button>
+               <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 font-bold text-2xl transition-colors">&times;</button>
                <h3 className={`font-black text-2xl uppercase tracking-widest mb-8 text-[#00c6ff] drop-shadow-sm`}>Nuova Profilazione</h3>
                
                {stepWizard === 1 && (
@@ -920,7 +909,7 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#e8eef3] shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
@@ -1007,7 +996,7 @@ export default function Home() {
                        {misureBase.map((m) => (
                            <div key={m.id} className={UI.panelInset + " !p-3.5"}>
                              <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-1">{m.label} <span className="text-slate-400">{m.unit}</span></label>
-                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-800 outline-none focus:text-[#00c6ff] transition-colors text-center" placeholder="-" />
+                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-800 outline-none focus:text-[#00c6ff] transition-colors" placeholder="-" />
                            </div>
                        ))}
                      </div>
@@ -1019,7 +1008,7 @@ export default function Home() {
                        {misureBIA.map((m) => (
                            <div key={m.id} className={UI.panelInset + " !p-3.5"}>
                              <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-1">{m.label} <span className="text-slate-400">{m.unit}</span></label>
-                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-[#00c6ff] outline-none focus:text-[#0072ff] transition-colors text-center" placeholder="-" />
+                             <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-[#00c6ff] outline-none focus:text-[#0072ff] transition-colors" placeholder="-" />
                            </div>
                        ))}
                      </div>
@@ -1161,10 +1150,10 @@ export default function Home() {
                           await supabase.from("check_utente").insert([payload]);
                         }
                       }}
-                      className={`text-[9px] font-black px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all ${
+                      className={`text-[9px] font-black px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#c1c9d2,-6px_-6px_12px_#ffffff] ${
                         (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
-                          ? 'bg-[#e8eef3] shadow-[inset_2px_2px_5px_#c1c9d2,inset_-2px_-2px_5px_#ffffff] text-slate-400' 
-                          : `${gradPrimary} shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-white`
+                          ? 'bg-[#e8eef3] text-slate-400' 
+                          : `${gradPrimary} shadow-[0_8px_15px_rgba(0,114,255,0.25)] text-white`
                       }`}
                     >
                     <option value="Equilibrata" className="bg-[#e8eef3] text-slate-700">⚖️ Equilibrata</option>
@@ -1175,18 +1164,18 @@ export default function Home() {
                   </select>
                   </div>
                 </div>
-                <div className="flex gap-4">
-                  <div className={UI.panelInset + " flex-1 text-center !p-4"}>
+                <div className="flex gap-4 mt-2">
+                  <div className={UI.panelInset + " flex-1 text-center !p-3"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
-                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
+                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={bmr} /></span>
                   </div>
-                  <div className={UI.panelInset + " flex-1 text-center !p-4"}>
+                  <div className={UI.panelInset + " flex-1 text-center !p-3"}>
                      <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
-                     <span className="text-[14px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
+                     <span className="text-[13px] text-slate-700 font-black"><AnimatedCounter value={baseTdee} /></span>
                   </div>
-                  <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
+                  <div className={`flex-[1.5] ${gradPrimary} rounded-3xl p-3 text-center shadow-[0_10px_20px_rgba(0,114,255,0.25)] flex flex-col justify-center`}>
                      <span className="text-[9px] text-cyan-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
-                     <span className="text-[16px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
+                     <span className="text-[15px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
                   </div>
                 </div>
               </div>
@@ -1220,9 +1209,9 @@ export default function Home() {
                         <div className="absolute top-0 left-0 w-2 h-full bg-[#00c6ff]"></div>
                         <div className="flex justify-between items-start mb-4">
                           <span className="text-xs uppercase font-black text-[#00c6ff] tracking-widest">{blocco.titolo}</span>
-                          <span className="text-[10px] font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-full shadow-[0_4px_10px_rgba(0,114,255,0.3)]"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
+                          <span className="text-[10px] font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-full shadow-md"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
                         </div>
-                        <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
+                        <p className="font-bold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
                       </div>
                     );
                   }
@@ -1412,7 +1401,7 @@ export default function Home() {
                         {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
                           <div key={idEs} className="bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl flex justify-between items-center gap-4">
                             <span className="text-slate-600 text-[13px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-sm">{pesoStr as string} kg</span>
+                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-md text-sm">{pesoStr as string} kg</span>
                           </div>
                         ))}
                       </div>
