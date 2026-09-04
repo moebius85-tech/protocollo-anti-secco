@@ -226,6 +226,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
     </div>
   );
 };
+
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -518,7 +519,9 @@ export default function Home() {
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
           setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
-          responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
+          responseText += `
+
+✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
     } catch (error) { console.log(error); setChatLog(prev => [...prev, { role: 'ai', text: "Errore." }]); }
@@ -549,7 +552,9 @@ export default function Home() {
       const { error } = await supabase.from("check_utente").insert([payload]);
       if (error) alert("Errore DB: " + error.message);
       else { 
-        alert(`Sistema Aggiornato.\nTDEE Ricalcolato per regime: ${tipoDieta}\nObiettivo: ${protocolloAttivo}`); 
+        alert(`Sistema Aggiornato.
+TDEE Ricalcolato per regime: ${tipoDieta}
+Obiettivo: ${protocolloAttivo}`); 
         caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); 
       } 
     } else { alert("Peso, Età e Altezza sono obbligatori."); }
@@ -700,21 +705,44 @@ export default function Home() {
 
   const generaTimelineDieta = (): Array<{ isIntra?: boolean; titolo?: string; descrizione?: string; idCategoria?: string; titoloUI?: string }> => {
     let preW = "";
-    if (quandoTiAlleni === 'sera') { preW = `1️⃣ PRE-WORKOUT:\n• L-Citrullina: 6-8g\n• Ashwagandha: 500mg`; } 
-    else { preW = `1️⃣ PRE-WORKOUT:\n• Caffeina: 200mg\n• L-Citrullina: 6g`; }
-    if (protocolloAttivo === 'Shred') preW += `\n• ALC: 1.5g`;
+    if (quandoTiAlleni === 'sera') { preW = `1️⃣ PRE-WORKOUT:
+• L-Citrullina: 6-8g
+• Ashwagandha: 500mg`; } 
+    else { preW = `1️⃣ PRE-WORKOUT:
+• Caffeina: 200mg
+• L-Citrullina: 6g`; }
+    if (protocolloAttivo === 'Shred') preW += `
+• ALC: 1.5g`;
 
     let intraW = "2️⃣ INTRA-WORKOUT:";
-    if (activeDieta === 'Keto') { intraW += `\n• Elettroliti\n• MCT Oil: 10g\n• EAA: 15g\n• ❌ ZERO Carboidrati`; } 
-    else if (activeDieta === 'LowCarb') { intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g`; } 
-    else { intraW += `\n• Ciclodestrine: ${intraCho}g\n• EAA: 15g\n• Creatina: 5g`; }
+    if (activeDieta === 'Keto') { intraW += `
+• Elettroliti
+• MCT Oil: 10g
+• EAA: 15g
+• ❌ ZERO Carboidrati`; } 
+    else if (activeDieta === 'LowCarb') { intraW += `
+• Ciclodestrine: ${intraCho}g
+• EAA: 15g`; } 
+    else { intraW += `
+• Ciclodestrine: ${intraCho}g
+• EAA: 15g
+• Creatina: 5g`; }
 
     let saluteW = "3️⃣ SALUTE:";
-    if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') { saluteW += `\n• Omega-3: 2-3g\n• Multivitaminico`; } 
-    else { saluteW += `\n• Omega-3: 1g\n• Vitamina D3 + K2`; }
+    if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') { saluteW += `
+• Omega-3: 2-3g
+• Multivitaminico`; } 
+    else { saluteW += `
+• Omega-3: 1g
+• Vitamina D3 + K2`; }
 
-    const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
-    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.\n• Acqua, Caffè amaro, Tè.` };
+    const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}
+
+${intraW}
+
+${saluteW}` };
+    const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.
+• Acqua, Caffè amaro, Tè.` };
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t: any[] = [];
@@ -740,16 +768,6 @@ export default function Home() {
         t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Sera)' });
     }
     return t;
-  };
-
-  const getDataGraficoEsercizio = () => {
-    const dataPoints: number[] = [];
-    storicoSessioni.forEach(sess => {
-      if (sess.carichi[esercizioGraficoSelezionato]) {
-        dataPoints.push(Math.max(...sess.carichi[esercizioGraficoSelezionato].split(' | ').map(Number)));
-      }
-    });
-    return dataPoints;
   };
 
   if (appState === 'HOME') {
@@ -827,7 +845,7 @@ export default function Home() {
                  </select>
               </div>
               
-              <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+              <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#c1c9d2,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                  <input type="checkbox" id="metabolismoMain" checked={metabolismoBloccato} onChange={async (e) => {
                     const bloccato = e.target.checked;
                     setMetabolismoBloccato(bloccato);
@@ -835,8 +853,8 @@ export default function Home() {
                       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore, metabolismoBloccato: bloccato } }, data: new Date().toISOString() };
                       await supabase.from("check_utente").insert([payload]);
                     }
-                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-full shadow-inner" />
-                 <label htmlFor="metabolismoMain" className="text-xs text-slate-600 font-bold tracking-wide cursor-pointer uppercase">Stallo Metabolico?</label>
+                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-md shadow-inner" />
+                 <label htmlFor="metabolismoMain" className="text-[11px] text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
               </div>
 
               <button onClick={() => caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta)} className={UI.btnPrimary + " mt-8"}>
@@ -916,7 +934,7 @@ export default function Home() {
                      </select>
                    </div>
                    
-                   <div className="bg-[#eef2f6] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[#e8eef3] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
@@ -924,11 +942,11 @@ export default function Home() {
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#eef2f6] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#e8eef3] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -960,7 +978,7 @@ export default function Home() {
         
         <header className="mb-10 pb-6 flex justify-between items-center">
           <div>
-            <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#d1d9e6,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
+            <button onClick={() => setAppState('HOME')} className="text-[9px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-4 block transition-all tracking-widest bg-[#e8eef3] shadow-[4px_4px_8px_#c1c9d2,-4px_-4px_8px_#ffffff] px-4 py-2.5 rounded-full">⬅️ Torna alla Home</button>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase text-slate-400 drop-shadow-sm">
               OMNI<span className="text-[#00c6ff]">COACH</span> <span className="text-slate-300 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
             </h1>
@@ -968,8 +986,8 @@ export default function Home() {
           <div className="text-right">
             <span className="text-[9px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
             <div className="flex flex-col items-end gap-2.5">
-               <span className="text-sm font-black text-slate-700 bg-[#e8eef3] shadow-[inset_4px_4px_8px_#d1d9e6,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
-               <div className="flex gap-2 bg-[#e8eef3] shadow-[3px_3px_6px_#d1d9e6,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
+               <span className="text-sm font-black text-slate-700 bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+               <div className="flex gap-2 bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
                   <span className="text-[9px] font-black text-[#00c6ff] uppercase tracking-widest">{tipoDieta}</span>
                   {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
                </div>
@@ -1088,24 +1106,24 @@ export default function Home() {
 
           {/* COLONNA CENTRALE: Turni & Nutrizione */}
           <div className="flex flex-col gap-8 lg:col-span-4">
-            <section className={UI.card + " p-7"}>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Incastro Turni</h2>
-                <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#e8eef3] text-xs text-[#00c6ff] font-black uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] appearance-none">
+            <section className={UI.card}>
+              <div className="flex justify-between items-center mb-6 pb-2">
+                <h2 className="text-lg font-bold tracking-wide text-slate-800">Incastro Turni</h2>
+                <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#e8eef3] text-xs text-[#00c6ff] font-bold py-2.5 px-4 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] appearance-none">
                   <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
                 </select>
               </div>
-              <div className="space-y-6">
-                <div className={UI.panelInset}>
-                  <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
+              <div className="space-y-5">
+                <div className={UI.panelInset + " !p-4"}>
+                  <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-3 block">{tipoTurno === 'diretto' ? 'Orario Continuato' : 'Mattina (Lavoro)'}</span>
                   <div className="flex space-x-4">
                     <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                     <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                   </div>
                 </div>
                 {tipoTurno === 'spezzato' && (
-                  <div className={UI.panelInset}>
-                    <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
+                  <div className={UI.panelInset + " !p-4"}>
+                    <span className="text-[10px] text-[#00c6ff] uppercase font-black tracking-widest mb-3 block">Pomeriggio (Lavoro)</span>
                     <div className="flex space-x-4">
                       <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
                       <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-1/2 bg-transparent text-sm font-black text-slate-700 p-2 border-b border-slate-300 outline-none focus:border-[#00c6ff] transition-colors" />
@@ -1115,7 +1133,7 @@ export default function Home() {
                 <div className="pt-4 mt-4">
                   <div className="flex justify-between items-center mb-8 bg-[#e8eef3] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#c1c9d2,-6px_-6px_14px_#ffffff]">
                      <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Digiuno Intermittente 16:8</span>
-                     <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] ${digiuno ? 'bg-[#00c6ff]' : 'bg-slate-300'}`}>
+                     <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.1)] ${digiuno ? 'bg-[#00c6ff]' : 'bg-slate-300'}`}>
                         <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
                      </button>
                   </div>
@@ -1408,7 +1426,7 @@ export default function Home() {
                         {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
                           <div key={idEs} className="bg-[#e8eef3] shadow-[inset_4px_4px_8px_#c1c9d2,inset_-4px_-4px_8px_#ffffff] p-4 rounded-2xl flex justify-between items-center gap-4">
                             <span className="text-slate-600 text-[13px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,114,255,0.3)] text-sm">{pesoStr as string} kg</span>
+                            <span className="font-black text-white bg-gradient-to-r from-[#00c6ff] to-[#0072ff] px-4 py-2 rounded-xl shadow-md text-sm">{pesoStr as string} kg</span>
                           </div>
                         ))}
                       </div>
