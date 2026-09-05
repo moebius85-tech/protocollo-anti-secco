@@ -1346,9 +1346,9 @@ export default function Home() {
               {/* PARTE BASSA: ESERCIZIO E INPUT SET */}
               <div className="bg-[#E0E5EC] shadow-[0_-8px_16px_rgba(163,177,198,0.3)] p-6 z-10 overflow-y-auto custom-scrollbar pb-safe sm:pb-8 rounded-t-[2.5rem] border-t border-white/50 shrink-0 flex-1">
                  
-                 {/* TITOLO ED ESERCIZIO CENTRATI (Risolve la deformazione a tubo) */}
-                 <div className="flex flex-col items-center justify-center text-center mb-6 gap-3">
-                   <div className="bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-[1.2rem] w-28 shrink-0 border border-white/40 flex items-center justify-center">
+                 {/* TITOLO ED ESERCIZIO CENTRATI (Forzati in un riquadro largo e schiacciato) */}
+                 <div className="flex flex-col items-center justify-center text-center mb-6 gap-4">
+                   <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-2 rounded-[1.2rem] w-36 h-32 shrink-0 border border-white/40 flex items-center justify-center overflow-hidden">
                      <MediaVisualizer animKey={currentEx.anim || "chest_barbell_flat"} color={phaseColor} />
                    </div>
                    <div>
