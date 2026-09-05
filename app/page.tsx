@@ -7,24 +7,25 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtx
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Tema principale Verde Mela
+const gradPrimary = "bg-gradient-to-r from-lime-400 to-emerald-500"; 
 const colorBg = "bg-[#E0E5EC]";
 const shadowOutset = "shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff]";
 const shadowInset = "shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff]";
 const shadowOutsetSm = "shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff]";
 const shadowInsetSm = "shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]";
-const gradPrimary = "bg-gradient-to-r from-cyan-400 to-blue-500"; 
 
 const UI = {
   bg: colorBg,
   card: `${colorBg} ${shadowOutset} rounded-[2rem] p-5 sm:p-6 lg:p-8`,
   panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem] p-5`,
   panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem] p-5`,
-  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
-  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(6,182,212,0.3)] hover:shadow-[0_12px_20px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none cursor-pointer`,
-  btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-cyan-500 py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px] cursor-pointer`,
+  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
+  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_12px_20px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none cursor-pointer`,
+  btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-emerald-500 py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px] cursor-pointer`,
   label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1",
-  pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)] cursor-pointer`,
-  pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-cyan-500 cursor-pointer`
+  pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(16,185,129,0.3)] cursor-pointer`,
+  pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-emerald-500 cursor-pointer`
 };
 
 const baseDbAllenamento={Spinta:{focus:"SPINTA (Petto, Spalle, Tricipiti)",esercizi:[{id:"e1",nome:"Panca piana bilanciere",anim:"chest_barbell_flat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Disteso su panca piana.",alternative:[{nome:"Chest Press Convergente",anim:"chest_machine_flat",note:"Stesso asse di spinta",dettaglio:"MACCHINARIO: Siediti in appoggio."},{nome:"Panca piana manubri",anim:"chest_db_flat",note:"Maggiore ROM",dettaglio:"MANUBRI: Disteso su panca piana."}]},{id:"e3",nome:"Panca inclinata manubri",anim:"chest_db_incline",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Panca a 30-45°.",alternative:[{nome:"Panca inclinata bilanciere",anim:"chest_barbell_incline",note:"Focus forza",dettaglio:"BILANCIERE: Panca inclinata."},{nome:"Chest Press Inclinata",anim:"chest_machine_incline",note:"Tensione costante",dettaglio:"MACCHINARIO: Usa la variante inclinata."}]},{id:"e4",nome:"Chest press",anim:"chest_machine_flat",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Esercizio guidato per isolare il pettorale.",alternative:[{nome:"Pectoral Machine",anim:"chest_pec_deck",note:"Isolamento sternale",dettaglio:"MACCHINARIO: Tieni i gomiti alti."},{nome:"Croci cavi seduto",anim:"chest_cable_seated",note:"Picco di tensione",dettaglio:"CAVI: Posiziona una panca al centro."}]},{id:"e5",nome:"Croci ai manubri",anim:"chest_flye_db",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MANUBRI: Panca piana.",alternative:[{nome:"Croci cavi piana",anim:"chest_cable_flat",note:"Tensione continua",dettaglio:"CAVI: Dai cavi bassi."},{nome:"Pec Deck (Fly)",anim:"chest_pec_deck",note:"Pump controllato",dettaglio:"MACCHINARIO: Usa il pec deck."}]},{id:"e18",nome:"Lento avanti manubri",anim:"shoulder_db_seated",fase:"Fase 1: Forza Spalle",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Seduto a 90°.",alternative:[{nome:"Military Press",anim:"shoulder_military",note:"Carico massimo",dettaglio:"BILANCIERE: In piedi."},{nome:"Shoulder Press",anim:"shoulder_machine",note:"Spinta guidata",dettaglio:"MACCHINARIO: Esercizio di spinta verticale."}]},{id:"e20",nome:"Alzate laterali cavi",anim:"lateral_cable",fase:"Fase 3: Pump Spalle",rep:"3-4 serie, 10-12 rep | Rec: 45 sec",dettaglio:"CAVI: Tira il cavo lateralmente dal basso.",alternative:[{nome:"Alzate manubri",anim:"lateral_db",note:"Focus classico",dettaglio:"MANUBRI: In piedi."},{nome:"Alzate macchina",anim:"lateral_machine",note:"No compensazioni",dettaglio:"MACCHINARIO: Isola i deltoidi."}]},{id:"e22",nome:"Panca stretta",anim:"tricep_close_grip",fase:"Fase 1: Forza Tricipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE: Presa stretta.",alternative:[{nome:"French Press",anim:"tricep_french_press",note:"Stretch capo lungo",dettaglio:"BILANCIERE EZ: Disteso."},{nome:"Dips parallele",anim:"tricep_dips",note:"Catena chiusa",dettaglio:"LIBERO/ZAVORRA: Scendi piegando le braccia."}]},{id:"e27",nome:"Push down corda",anim:"tricep_pushdown",fase:"Fase 3: Pump Tricipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Spingi verso il basso e apri le estremità.",alternative:[{nome:"Push down sbarra",anim:"tricep_pushdown",note:"Carico maggiore",dettaglio:"CAVI: Sbarra dritta."},{nome:"Estensioni nuca",anim:"tricep_overhead",note:"Enfasi capo lungo",dettaglio:"CAVI: Dai cavi bassi dietro la testa."}]}]},Tirata:{focus:"TIRATA (Schiena, Bicipiti)",esercizi:[{id:"e6",nome:"Trazioni",anim:"back_pullup",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"CORPO LIBERO: Appeso alla sbarra.",alternative:[{nome:"Lat Machine Larga",anim:"back_pulldown",note:"Carichi modulabili",dettaglio:"MACCHINARIO: Presa larga prono."},{nome:"Lat Machine Triang.",anim:"back_pulldown_triangle",note:"Focus centrale",dettaglio:"MACCHINARIO: Triangolo presa stretta."}]},{id:"e7",nome:"Rematore bilanciere",anim:"back_row_barbell",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Busto a 45°.",alternative:[{nome:"Rematore Manubrio",anim:"back_row_db",note:"Unilaterale",dettaglio:"MANUBRI: In appoggio su panca."},{nome:"Rematore T-Bar",anim:"back_t_bar",note:"Tirata esplosiva",dettaglio:"MACCHINARIO: Afferra il T-Bar e tira."}]},{id:"e9",nome:"Pulley seduto",anim:"back_pulley",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"CAVI: Seduto, tira la maniglia.",alternative:[{nome:"Chest Supported",anim:"back_chest_supported",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Petto in appoggio."},{nome:"Seal Row",anim:"back_seal_row",note:"Puro isolamento",dettaglio:"BILANCIERE: Sdraiato prono su panca."}]},{id:"e10",nome:"Pullover ai cavi",anim:"back_pullover_cable",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"CAVI: Cavo alto con sbarra.",alternative:[{nome:"Pullover Macchina",anim:"back_pullover_cable",note:"Tensione continua",dettaglio:"MACCHINARIO: Macchina specifica."},{nome:"Pullover Manubrio",anim:"back_pullover_db",note:"Stretch toracico",dettaglio:"MANUBRI: Di traverso su panca."}]},{id:"e23",nome:"Curl bilanciere EZ",anim:"bicep_barbell",fase:"Fase 1: Forza Bicipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE EZ: In piedi.",alternative:[{nome:"Curl Manubri Alt.",anim:"bicep_db",note:"Lavoro unilaterale",dettaglio:"MANUBRI: Fletti un braccio alla volta."},{nome:"Curl Cavo Basso",anim:"bicep_cable_bar",note:"Tensione continua",dettaglio:"CAVI: Cavo basso con sbarra corta."}]},{id:"e26",nome:"Curl cavi corda",anim:"bicep_cable",fase:"Fase 3: Pump Bicipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Fune al cavo basso.",alternative:[{nome:"Curl Inclinata",anim:"bicep_incline_db",note:"Stretch capo lungo",dettaglio:"MANUBRI: Seduto su panca a 45°."},{nome:"Spider Curl",anim:"bicep_spider_curl",note:"Picco bicipite",dettaglio:"BILANCIERE: Petto in appoggio."}]}]},Gambe:{focus:"GAMBE E POLPACCI",esercizi:[{id:"e11",nome:"Squat bilanciere",anim:"leg_squat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Sui trapezi.",alternative:[{nome:"Front Squat",anim:"leg_squat",note:"Focus quadricipite",dettaglio:"BILANCIERE: Appoggiato sulle clavicole anteriori."},{nome:"Hack Squat Libero",anim:"leg_hack_barbell",note:"Carico posteriore",dettaglio:"BILANCIERE: Bilanciere dietro le gambe."},{nome:"Hack Squat Macchina",anim:"leg_hack_machine",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Focus spinta."}]},{id:"e12",nome:"Hack squat",anim:"leg_hack_machine",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MACCHINARIO: Poggia schiena.",alternative:[{nome:"Leg Press 45°",anim:"leg_press",note:"Isolamento pressa",dettaglio:"MACCHINARIO: Piedi bassi e stretti sulla pedana."},{nome:"Belt Squat",anim:"leg_belt_squat",note:"Zero stress lombare",dettaglio:"MACCHINARIO: Cintura pesata ai fianchi."}]},{id:"e14",nome:"Pressa 45°",anim:"leg_press",fase:"Fase 2: Connessione",rep:"4-5 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Scendi portando le ginocchia verso il petto.",alternative:[{nome:"Affondi Manubri",anim:"leg_lunge",note:"Equilibrio",dettaglio:"MANUBRI: In camminata o sul posto."},{nome:"Bulgarian Squat",anim:"leg_bulgarian",note:"Unilaterale",dettaglio:"MANUBRI: Piede posteriore su panca."}]},{id:"e15",nome:"Leg extension",anim:"leg_extension",fase:"Fase 3: Pump Quad",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Distendi le gambe.",alternative:[{nome:"Sissy Squat",anim:"leg_sissy_squat",note:"Bodyweight stretch",dettaglio:"CORPO LIBERO: Blocca i polpacci."},{nome:"Step-up controllato",anim:"leg_lunge",note:"Lavoro concentrico",dettaglio:"MANUBRI: Sali su un box alto."}]},{id:"e13",nome:"Stacco rumeno",anim:"leg_deadlift",fase:"Fase 2: Conn. Femorali",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"BILANCIERE: Scivola lungo le cosce.",alternative:[{nome:"Stacco Gambe Tese",anim:"leg_deadlift",note:"Stretch puro",dettaglio:"BILANCIERE: Ginocchia dritte."},{nome:"Good Morning",anim:"leg_deadlift",note:"Catena posteriore",dettaglio:"BILANCIERE: Sui trapezi."}]},{id:"e16",nome:"Leg curl sdraiato",anim:"leg_curl",fase:"Fase 3: Pump Femorali",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Prono, porta i talloni ai glutei.",alternative:[{nome:"Leg Curl Seduto",anim:"leg_curl_seduto",note:"Isolamento femorale",dettaglio:"MACCHINARIO: Isola il bicipite femorale."},{nome:"Glute Ham Raise",anim:"leg_curl",note:"Catena chiusa",dettaglio:"MACCHINARIO: Solleva il busto."}]},{id:"e17",nome:"Calf in piedi",anim:"leg_calf",fase:"Fase 3: Pump",rep:"3-4 serie, 20 rep | Rec: 45 sec",dettaglio:"LIBERO/MACCHINA: Scendi al massimo.",alternative:[{nome:"Calf Press",anim:"leg_calf_press",note:"Sovraccarico",dettaglio:"MACCHINARIO: Usa la Leg Press."},{nome:"Calf Seduto",anim:"leg_calf_seated",note:"Focus Soleo",dettaglio:"MACCHINARIO: Seduto, solleva i talloni."}]}]}};
@@ -63,8 +64,8 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
       <svg width="120" height="180" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
          <defs>
             <linearGradient id="gradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
-               <stop offset="0%" stopColor="#00c6ff" />
-               <stop offset="100%" stopColor="#0072ff" />
+               <stop offset="0%" stopColor="#818cf8" />
+               <stop offset="100%" stopColor="#4f46e5" />
             </linearGradient>
          </defs>
          <circle cx="50" cy="20" r="12" fill="#1e293b" stroke={getActive('head')} strokeWidth="3" className="transition-all duration-700" />
@@ -93,12 +94,12 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
   const points = data.map((val, i) => `${padding + (i / (data.length - 1)) * (width - padding * 2)},${height - padding - ((val - minVal) / range) * (height - padding * 2)}`).join(" ");
   return (
     <div className={UI.panelInset + " mt-4 p-4"}>
-       <span className={UI.label + " !text-[#00c6ff] mb-4"}>{label} - Trend</span>
+       <span className={UI.label + " !text-indigo-500 mb-4"}>{label} - Trend</span>
        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-md">
-          <polyline points={points} fill="none" stroke="#00c6ff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={points} fill="none" stroke="#6366f1" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           {data.map((val, i) => {
             const x = padding + (i / (data.length - 1)) * (width - padding * 2); const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
-            return <g key={i}><circle cx={x} cy={y} r="5" fill="#E0E5EC" stroke="#00c6ff" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>;
+            return <g key={i}><circle cx={x} cy={y} r="5" fill="#E0E5EC" stroke="#6366f1" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>;
           })}
        </svg>
     </div>
@@ -208,6 +209,7 @@ export default function Home() {
   const [vistaTelemetria, setVistaTelemetria] = useState<'FORM' | 'STORICO'>('FORM');
   const [vistaGraficiCarichi, setVistaGraficiCarichi] = useState(false);
   const [esercizioGraficoSelezionato, setEsercizioGraficoSelezionato] = useState<string>("e1");
+
   // LOGICA TIMER FOCUS
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -590,7 +592,7 @@ export default function Home() {
         <div className={UI.card + " w-full max-w-md z-10 anim-pop"} style={{animationDelay: '0.1s'}}>
            <div className="flex justify-center items-center mb-8">
               <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
-                OMNI<span className="text-[#00c6ff] drop-shadow-sm font-black">FIT</span>
+                OMNI<span className="text-lime-500 drop-shadow-sm font-black">FIT</span>
               </h1>
            </div>
            
@@ -606,7 +608,7 @@ export default function Home() {
                     {listaAtleti.map(a => <option key={a} value={a}>{a}</option>)}
                  </select>
                  <div className="mt-4 flex justify-center">
-                   <button onClick={() => setModalWizard(true)} className={UI.btnSecondary + " w-full !text-[#00c6ff]"}>+ Crea Nuovo Profilo A.I.</button>
+                   <button onClick={() => setModalWizard(true)} className={UI.btnSecondary + " w-full !text-lime-500"}>+ Crea Nuovo Profilo A.I.</button>
                  </div>
               </div>
 
@@ -667,7 +669,7 @@ export default function Home() {
                       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(biometria.peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore, metabolismoBloccato: bloccato } }, data: new Date().toISOString() };
                       await supabase.from("check_utente").insert([payload]);
                     }
-                 }} className="w-5 h-5 accent-[#00c6ff] cursor-pointer rounded-md shadow-inner" />
+                 }} className="w-5 h-5 accent-lime-500 cursor-pointer rounded-md shadow-inner" />
                  <label htmlFor="metabolismoMain" className="text-[11px] text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
               </div>
 
@@ -681,7 +683,7 @@ export default function Home() {
           <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
             <div className={UI.card + " w-full max-w-lg relative overflow-hidden"}>
                <button onClick={() => { setModalWizard(false); setStepWizard(1); }} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 font-bold text-2xl transition-colors">&times;</button>
-               <h3 className={`font-black text-2xl uppercase tracking-widest mb-8 text-[#00c6ff] drop-shadow-sm`}>Nuova Profilazione</h3>
+               <h3 className={`font-black text-2xl uppercase tracking-widest mb-8 text-lime-500 drop-shadow-sm`}>Nuova Profilazione</h3>
                
                {stepWizard === 1 && (
                  <div className="space-y-6">
@@ -749,14 +751,14 @@ export default function Home() {
                    </div>
                    
                    <div className="bg-[#E0E5EC] shadow-[5px_5px_10px_#a3b1c6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
-                     <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-[#00c6ff] rounded cursor-pointer shadow-inner" />
+                     <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-lime-500 rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
 
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#E0E5EC] file:text-[#00c6ff] hover:file:text-[#0072ff] transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#E0E5EC] file:text-lime-500 hover:file:text-lime-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
@@ -788,20 +790,21 @@ export default function Home() {
 
   // HELPER BOTTOM NAV
   const renderNavIcon = (tab: string, icon: string, label: string) => (
-     <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-[#00c6ff] scale-110 drop-shadow-md' : 'text-slate-400 hover:text-slate-500'}`}>
+     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110 drop-shadow-md' : 'text-slate-400 hover:text-slate-500'}`}>
         <span className="text-xl mb-1">{icon}</span>
         <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
      </button>
   );
 
   return (
-    <main className="min-h-screen bg-[#E0E5EC] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-cyan-400/30">
+    <main className="min-h-screen bg-[#E0E5EC] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
       <header className="mb-6 pb-4 flex justify-between items-center relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
         <div>
-          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-2 block transition-all bg-[#E0E5EC] px-4 py-2 rounded-full shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">⬅️ Torna alla Home</button>
+          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[#E0E5EC] px-4 py-2 rounded-full shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">⬅️ Torna alla Home</button>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
-            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
           </h1>
         </div>
         <div className="text-right">
@@ -809,7 +812,7 @@ export default function Home() {
           <div className="flex flex-col items-end gap-2.5">
              <span className="text-sm font-bold text-slate-600 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
              <div className="flex gap-2 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
-                <span className="text-[9px] font-bold text-[#00c6ff] uppercase tracking-widest">{tipoDieta}</span>
+                <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
                 {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
              </div>
           </div>
@@ -817,10 +820,10 @@ export default function Home() {
       </header>
 
       {/* CONTENITORE PRINCIPALE: GRIGLIA DESKTOP / TABS MOBILE */}
-      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10 pb-28 lg:pb-0">
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10">
         
         {/* COLONNA SINISTRA: Telemetria & Coach IA */}
-        <div className="flex flex-col gap-8 lg:col-span-3">
+        <div className={`flex-col gap-8 lg:col-span-3 ${mobileTab === 'TELEMETRIA' || mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`}>
           
           <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex-col relative overflow-hidden anim-pop ${mobileTab === 'TELEMETRIA' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.2s'}}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
@@ -929,13 +932,13 @@ export default function Home() {
         </div>
 
         {/* COLONNA CENTRALE: Turni & Nutrizione */}
-        <div className="flex flex-col gap-8 lg:col-span-4">
+        <div className={`flex-col gap-8 lg:col-span-4 ${mobileTab === 'TURNI' || mobileTab === 'NUTRIZIONE' ? 'flex' : 'hidden'} lg:flex`}>
           <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'TURNI' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.4s'}}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lime-400 to-green-500 opacity-80"></div>
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lime-400 to-emerald-500 opacity-80"></div>
             
             <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-200/50 pt-2">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Incastro Turni</h2>
-              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-green-500 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none border-none cursor-pointer">
+              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-lime-600 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none border-none cursor-pointer">
                 <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
               </select>
             </div>
@@ -972,15 +975,15 @@ export default function Home() {
               <div className="pt-2 mt-4 border-t border-slate-200/50">
                 <div className="flex justify-between items-center mb-8 bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff]">
                    <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Digiuno Intermittente 16:8</span>
-                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer ${digiuno ? 'bg-gradient-to-r from-lime-400 to-green-500' : 'bg-slate-300'}`}>
+                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer ${digiuno ? 'bg-gradient-to-r from-lime-400 to-emerald-500' : 'bg-slate-300'}`}>
                       <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
                    </button>
                 </div>
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 block px-1">Collocazione Allenamento</span>
                 <div className="flex space-x-3 bg-[#E0E5EC] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#a3b1c6,inset_-5px_-5px_10px_#ffffff]">
-                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-lime-400 to-green-500 text-white shadow-[0_4px_10px_rgba(34,197,94,0.3)]' : 'text-slate-500 hover:text-green-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
-                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-lime-400 to-green-500 text-white shadow-[0_4px_10px_rgba(34,197,94,0.3)]' : 'text-slate-500 hover:text-green-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
-                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-lime-400 to-green-500 text-white shadow-[0_4px_10px_rgba(34,197,94,0.3)]' : 'text-slate-500 hover:text-green-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
+                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
+                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
+                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
                 </div>
               </div>
             </div>
@@ -1145,8 +1148,8 @@ export default function Home() {
         </div>
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
-        <div className="flex flex-col gap-8 lg:col-span-5">
-          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl flex-col min-h-0 relative overflow-hidden flex-1 anim-pop ${mobileTab === 'ALLENAMENTO' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.6s'}}>
+        <div className={`flex-col gap-8 lg:col-span-5 ${mobileTab === 'ALLENAMENTO' ? 'flex' : 'hidden'} lg:flex`}>
+          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1 anim-pop" style={{animationDelay: '0.6s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
 
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 pt-2 shrink-0">
@@ -1199,8 +1202,10 @@ export default function Home() {
                  </div>
               ) : (
                  <div className="flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar min-h-0">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {dbDinamico[schedaAttiva].esercizi.map((es: any, idx: number) => {
                     const nomeAttuale = eserciziModificati[es.id] || es.nome;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const altEs = es.alternative.find((a: any) => a.nome === nomeAttuale);
                     const currentEx = altEs || es;
                     
@@ -1236,15 +1241,14 @@ export default function Home() {
                              {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-500 px-3 py-2 bg-white/50 shadow-[2px_2px_4px_rgba(163,177,198,0.4)] rounded-xl uppercase tracking-widest">Ultima: <span className="ml-1 text-[14px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>}
                           </div>
                           
-                          {/* Pulsante Tattico per Aprire il Focus Timer */}
-                          <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-white/50 shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/60 cursor-pointer" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
+                          <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-white/50 shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/60 cursor-pointer transition-all hover:-translate-y-0.5" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
 
                           <div className="mt-5 pt-5 border-t border-slate-400/20">
                             <div className="flex gap-4">
                               {Array.from({ length: numeroSetTarget }).map((_, i) => (
                                 <div key={i} className="flex-1 relative">
                                   <label className="text-[9px] text-slate-500 uppercase font-bold tracking-widest block text-center mb-2.5">Set {i+1}</label>
-                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none" style={{color: phaseColor}} placeholder="-" />
+                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
                                 </div>
                               ))}
                             </div>
@@ -1288,6 +1292,8 @@ export default function Home() {
             </div>
           )}
         </section>
+        </div>
+
       </div>
 
       {/* --- BOTTOM NAVIGATION BAR (Solo su Mobile) --- */}
@@ -1317,13 +1323,13 @@ export default function Home() {
                  </div>
                  <svg className="absolute w-full h-full -rotate-90 pointer-events-none drop-shadow-md" viewBox="0 0 100 100">
                    <circle cx="50" cy="50" r="47" fill="none" stroke="#e2e8f0" strokeWidth="2" />
-                   <circle cx="50" cy="50" r="47" fill="none" stroke="url(#gradPrimary)" strokeWidth="3.5" strokeDasharray="295.3" strokeDashoffset={295.3 - (295.3 * (timeLeft / (totalTimeRef.current || 1)))} strokeLinecap="round" className="transition-all duration-1000 ease-linear" />
+                   <circle cx="50" cy="50" r="47" fill="none" stroke="#0ea5e9" strokeWidth="3.5" strokeDasharray="295.3" strokeDashoffset={295.3 - (295.3 * (timeLeft / (totalTimeRef.current || 1)))} strokeLinecap="round" className="transition-all duration-1000 ease-linear" />
                  </svg>
                </div>
                
                <div className="flex gap-8 items-center">
                   <button onClick={() => { setTimeLeft(totalTimeRef.current); setTimerActive(false); }} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-400 font-black border-none cursor-pointer">⏹</button>
-                  <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center text-[#00c6ff] font-black border-none cursor-pointer text-2xl pl-1">{timerActive ? '⏸' : '▶'}</button>
+                  <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center text-[#0ea5e9] font-black border-none cursor-pointer text-2xl pl-1">{timerActive ? '⏸' : '▶'}</button>
                   <button onClick={() => setTimeLeft(t => t + 15)} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-500 font-black text-xs border-none cursor-pointer">+15</button>
                </div>
             </div>
@@ -1332,7 +1338,7 @@ export default function Home() {
             <div className="bg-[#E0E5EC] shadow-[0_-8px_16px_rgba(163,177,198,0.3)] p-6 z-10 overflow-y-auto h-[45%] custom-scrollbar pb-10 rounded-t-[2.5rem] border-t border-white/50">
                <div className="flex justify-between items-start mb-2">
                  <h3 className="font-black text-xl text-slate-700 tracking-tight leading-none">{eserciziModificati[focusWorkout.id] || focusWorkout.nome}</h3>
-                 <div className="w-12 h-12 bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] rounded-xl flex items-center justify-center border border-white/40 shrink-0"><MediaVisualizer animKey={focusWorkout.anim || "chest_barbell_flat"} color="#00c6ff" /></div>
+                 <div className="w-12 h-12 bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] rounded-xl flex items-center justify-center border border-white/40 shrink-0"><MediaVisualizer animKey={focusWorkout.anim || "chest_barbell_flat"} color="#0ea5e9" /></div>
                </div>
                <p className="text-[12px] text-slate-500 font-bold mb-6 mt-2 leading-relaxed">{focusWorkout.dettaglio}</p>
                
@@ -1340,7 +1346,7 @@ export default function Home() {
                    {Array.from({ length: getNumeroSet(focusWorkout.fase) }).map((_, i) => (
                       <div key={i} className="flex-1 relative">
                          <label className="text-[10px] text-slate-400 uppercase font-black tracking-widest block text-center mb-3">Set {i+1}</label>
-                         <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-4 px-2 text-center rounded-[1.2rem] text-[20px] font-black outline-none transition-all border-none appearance-none text-[#00c6ff] focus:ring-2 focus:ring-cyan-400/50" placeholder="-" />
+                         <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-4 px-2 text-center rounded-[1.2rem] text-[20px] font-black outline-none transition-all border-none appearance-none text-[#0ea5e9] focus:ring-2 focus:ring-cyan-400/50" placeholder="-" />
                       </div>
                    ))}
                </div>
