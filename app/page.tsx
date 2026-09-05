@@ -1345,14 +1345,17 @@ export default function Home() {
 
               {/* PARTE BASSA: ESERCIZIO E INPUT SET */}
               <div className="bg-[#E0E5EC] shadow-[0_-8px_16px_rgba(163,177,198,0.3)] p-6 z-10 overflow-y-auto custom-scrollbar pb-safe sm:pb-8 rounded-t-[2.5rem] border-t border-white/50 shrink-0 flex-1">
-                 <div className="flex justify-between items-center mb-4 gap-4">
-                   <h3 className="font-black text-lg text-slate-700 tracking-tight leading-tight">{nomeAttuale}</h3>
-                   {/* Shrink-0 assicura che il box rimanga sempre un quadrato perfetto */}
-                   <div className="w-16 h-16 shrink-0 aspect-square bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] rounded-2xl flex items-center justify-center border border-white/40 p-2.5">
+                 
+                 {/* TITOLO ED ESERCIZIO CENTRATI (Risolve la deformazione a tubo) */}
+                 <div className="flex flex-col items-center justify-center text-center mb-6 gap-3">
+                   <div className="bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-[1.2rem] w-28 shrink-0 border border-white/40 flex items-center justify-center">
                      <MediaVisualizer animKey={currentEx.anim || "chest_barbell_flat"} color={phaseColor} />
                    </div>
+                   <div>
+                     <h3 className="font-black text-lg text-slate-700 tracking-tight leading-tight">{nomeAttuale}</h3>
+                     <p className="text-[12px] text-slate-500 font-bold mt-1.5 leading-relaxed">{currentEx.dettaglio}</p>
+                   </div>
                  </div>
-                 <p className="text-[12px] text-slate-500 font-bold mb-6 leading-relaxed">{currentEx.dettaglio}</p>
                  
                  <div className="flex gap-4">
                      {Array.from({ length: getNumeroSet(focusWorkout.fase) }).map((_, i) => (
