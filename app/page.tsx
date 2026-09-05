@@ -12,22 +12,22 @@ const shadowOutset = "shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff]";
 const shadowInset = "shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff]";
 const shadowOutsetSm = "shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff]";
 const shadowInsetSm = "shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]";
-const gradPrimary = "bg-gradient-to-r from-lime-400 to-emerald-500"; 
+const gradPrimary = "bg-gradient-to-r from-cyan-400 to-blue-500"; 
 
 const UI = {
   bg: colorBg,
   card: `${colorBg} ${shadowOutset} rounded-[2rem] p-5 sm:p-6 lg:p-8`,
   panelInset: `${colorBg} ${shadowInset} rounded-[1.5rem] p-5`,
   panelOutset: `${colorBg} ${shadowOutsetSm} rounded-[1.5rem] p-5`,
-  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
-  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_12px_20px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none cursor-pointer`,
-  btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-emerald-500 py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px] cursor-pointer`,
+  input: `w-full ${colorBg} ${shadowInsetSm} px-5 py-3.5 rounded-2xl text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none appearance-none`,
+  btnPrimary: `${gradPrimary} shadow-[0_8px_15px_rgba(6,182,212,0.3)] hover:shadow-[0_12px_20px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-white font-bold uppercase tracking-widest rounded-2xl py-3.5 px-6 flex items-center justify-center border-none cursor-pointer`,
+  btnSecondary: `${colorBg} ${shadowOutsetSm} active:${shadowInsetSm} text-slate-500 hover:text-cyan-500 py-2.5 px-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-200 text-[10px] cursor-pointer`,
   label: "text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1",
-  pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(16,185,129,0.3)] cursor-pointer`,
-  pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-emerald-500 cursor-pointer`
+  pillActive: `${gradPrimary} text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)] cursor-pointer`,
+  pillInactive: `${colorBg} ${shadowOutsetSm} text-slate-500 font-bold hover:text-cyan-500 cursor-pointer`
 };
 
-const baseDbAllenamento={Spinta:{focus:"SPINTA (Petto, Spalle, Tricipiti)",esercizi:[{id:"e1",nome:"Panca piana bilanciere",anim:"chest_barbell_flat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Disteso su panca piana.",alternative:[{nome:"Chest Press Convergente",anim:"chest_machine_flat",note:"Stesso asse di spinta",dettaglio:"MACCHINARIO: Siediti in appoggio."},{nome:"Panca piana manubri",anim:"chest_db_flat",note:"Maggiore ROM",dettaglio:"MANUBRI: Disteso su panca piana."}]},{id:"e3",nome:"Panca inclinata manubri",anim:"chest_db_incline",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Panca a 30-45°.",alternative:[{nome:"Panca inclinata bilanciere",anim:"chest_barbell_incline",note:"Focus forza",dettaglio:"BILANCIERE: Panca inclinata."},{nome:"Chest Press Inclinata",anim:"chest_machine_incline",note:"Tensione costante",dettaglio:"MACCHINARIO: Usa la variante inclinata."}]},{id:"e4",nome:"Chest press",anim:"chest_machine_flat",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Esercizio guidato per isolare il pettorale.",alternative:[{nome:"Pectoral Machine",anim:"chest_pec_deck",note:"Isolamento sternale",dettaglio:"MACCHINARIO: Tieni i gomiti alti."},{nome:"Croci cavi seduto",anim:"chest_cable_seated",note:"Picco di tensione",dettaglio:"CAVI: Posiziona una panca al centro."}]},{id:"e5",nome:"Croci ai manubri",anim:"chest_flye_db",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MANUBRI: Panca piana.",alternative:[{nome:"Croci cavi piana",anim:"chest_cable_flat",note:"Tensione continua",dettaglio:"CAVI: Dai cavi bassi."},{nome:"Pec Deck (Fly)",anim:"chest_pec_deck",note:"Pump controllato",dettaglio:"MACCHINARIO: Usa il pec deck."}]},{id:"e18",nome:"Lento avanti manubri",anim:"shoulder_db_seated",fase:"Fase 1: Forza Spalle",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Seduto a 90°.",alternative:[{nome:"Military Press",anim:"shoulder_military",note:"Carico massimo",dettaglio:"BILANCIERE: In piedi."},{nome:"Shoulder Press",anim:"shoulder_machine",note:"Spinta guidata",dettaglio:"MACCHINARIO: Esercizio di spinta verticale."}]},{id:"e20",nome:"Alzate laterali cavi",anim:"lateral_cable",fase:"Fase 3: Pump Spalle",rep:"3-4 serie, 10-12 rep | Rec: 45 sec",dettaglio:"CAVI: Tira il cavo lateralmente dal basso.",alternative:[{nome:"Alzate manubri",anim:"lateral_db",note:"Focus classico",dettaglio:"MANUBRI: In piedi."},{nome:"Alzate macchina",anim:"lateral_machine",note:"No compensazioni",dettaglio:"MACCHINARIO: Isola i deltoidi."}]},{id:"e22",nome:"Panca stretta",anim:"tricep_close_grip",fase:"Fase 1: Forza Tricipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE: Presa stretta.",alternative:[{nome:"French Press",anim:"tricep_french_press",note:"Stretch capo lungo",dettaglio:"BILANCIERE EZ: Disteso."},{nome:"Dips parallele",anim:"tricep_dips",note:"Catena chiusa",dettaglio:"LIBERO/ZAVORRA: Scendi piegando le braccia."}]},{id:"e27",nome:"Push down corda",anim:"tricep_pushdown",fase:"Fase 3: Pump Tricipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Spingi verso il basso e apri le estremità.",alternative:[{nome:"Push down sbarra",anim:"tricep_pushdown",note:"Carico maggiore",dettaglio:"CAVI: Sbarra dritta."},{nome:"Estensioni nuca",anim:"tricep_overhead",note:"Enfasi capo lungo",dettaglio:"CAVI: Dai cavi bassi dietro la testa."}]}]},Tirata:{focus:"TIRATA (Schiena, Bicipiti)",esercizi:[{id:"e6",nome:"Trazioni",anim:"back_pullup",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"CORPO LIBERO: Appeso alla sbarra.",alternative:[{nome:"Lat Machine Larga",anim:"back_pulldown",note:"Carichi modulabili",dettaglio:"MACCHINARIO: Presa larga prono."},{nome:"Lat Machine Triang.",anim:"back_pulldown_triangle",note:"Focus centrale",dettaglio:"MACCHINARIO: Triangolo presa stretta."}]},{id:"e7",nome:"Rematore bilanciere",anim:"back_row_barbell",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Busto a 45°.",alternative:[{nome:"Rematore Manubrio",anim:"back_row_db",note:"Unilaterale",dettaglio:"MANUBRI: In appoggio su panca."},{nome:"Rematore T-Bar",anim:"back_t_bar",note:"Tirata esplosiva",dettaglio:"MACCHINARIO: Afferra il T-Bar e tira."}]},{id:"e9",nome:"Pulley seduto",anim:"back_pulley",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"CAVI: Seduto, tira la maniglia.",alternative:[{nome:"Chest Supported",anim:"back_chest_supported",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Petto in appoggio."},{nome:"Seal Row",anim:"back_seal_row",note:"Puro isolamento",dettaglio:"BILANCIERE: Sdraiato prono su panca."}]},{id:"e10",nome:"Pullover ai cavi",anim:"back_pullover_cable",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"CAVI: Cavo alto con sbarra.",alternative:[{nome:"Pullover Macchina",anim:"back_pullover_cable",note:"Tensione continua",dettaglio:"MACCHINARIO: Macchina specifica."},{nome:"Pullover Manubrio",anim:"back_pullover_db",note:"Stretch toracico",dettaglio:"MANUBRI: Di traverso su panca."}]},{id:"e23",nome:"Curl bilanciere EZ",anim:"bicep_barbell",fase:"Fase 1: Forza Bicipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE EZ: In piedi.",alternative:[{nome:"Curl Manubri Alt.",anim:"bicep_db",note:"Lavoro unilaterale",dettaglio:"MANUBRI: Fletti un braccio alla volta."},{nome:"Curl Cavo Basso",anim:"bicep_cable_bar",note:"Tensione continua",dettaglio:"CAVI: Cavo basso con sbarra corta."}]},{id:"e26",nome:"Curl cavi corda",anim:"bicep_cable",fase:"Fase 3: Pump Bicipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Fune al cavo basso.",alternative:[{nome:"Curl Inclinata",anim:"bicep_incline_db",note:"Stretch capo lungo",dettaglio:"MANUBRI: Seduto su panca a 45°."},{nome:"Spider Curl",anim:"bicep_spider_curl",note:"Picco bicipite",dettaglio:"BILANCIERE: Petto in appoggio."}]}]},Gambe:{focus:"GAMBE E POLPACCI",esercizi:[{id:"e11",nome:"Squat bilanciere",anim:"leg_squat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Sui trapezi.",alternative:[{nome:"Front Squat",anim:"leg_squat",note:"Focus quadricipite",dettaglio:"BILANCIERE: Appoggiato sulle clavicole anteriori."},{nome:"Hack Squat Libero",anim:"leg_hack_barbell",note:"Carico posteriore",dettaglio:"BILANCIERE: Bilanciere dietro le gambe."},{nome:"Hack Squat Macchina",anim:"leg_hack_machine",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Focus spinta."}]},{id:"e12",nome:"Hack squat",anim:"leg_hack_machine",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MACCHINARIO: Poggia schiena.",alternative:[{nome:"Leg Press 45°",anim:"leg_press",note:"Isolamento pressa",dettaglio:"MACCHINARIO: Piedi bassi e stretti."},{nome:"Belt Squat",anim:"leg_belt_squat",note:"Zero stress lombare",dettaglio:"MACCHINARIO: Cintura pesata ai fianchi."}]},{id:"e14",nome:"Pressa 45°",anim:"leg_press",fase:"Fase 2: Connessione",rep:"4-5 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Scendi portando le ginocchia verso il petto.",alternative:[{nome:"Affondi Manubri",anim:"leg_lunge",note:"Equilibrio",dettaglio:"MANUBRI: In camminata o sul posto."},{nome:"Bulgarian Squat",anim:"leg_bulgarian",note:"Unilaterale",dettaglio:"MANUBRI: Piede posteriore su panca."}]},{id:"e15",nome:"Leg extension",anim:"leg_extension",fase:"Fase 3: Pump Quad",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Distendi le gambe.",alternative:[{nome:"Sissy Squat",anim:"leg_sissy_squat",note:"Bodyweight stretch",dettaglio:"CORPO LIBERO: Blocca i polpacci."},{nome:"Step-up controllato",anim:"leg_lunge",note:"Lavoro concentrico",dettaglio:"MANUBRI: Sali su un box alto."}]},{id:"e13",nome:"Stacco rumeno",anim:"leg_deadlift",fase:"Fase 2: Conn. Femorali",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"BILANCIERE: Scivola lungo le cosce.",alternative:[{nome:"Stacco Gambe Tese",anim:"leg_deadlift",note:"Stretch puro",dettaglio:"BILANCIERE: Ginocchia dritte."},{nome:"Good Morning",anim:"leg_deadlift",note:"Catena posteriore",dettaglio:"BILANCIERE: Sui trapezi."}]},{id:"e16",nome:"Leg curl sdraiato",anim:"leg_curl",fase:"Fase 3: Pump Femorali",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Prono, porta i talloni ai glutei.",alternative:[{nome:"Leg Curl Seduto",anim:"leg_curl_seduto",note:"Isolamento femorale",dettaglio:"MACCHINARIO: Isola il bicipite femorale."},{nome:"Glute Ham Raise",anim:"leg_curl",note:"Catena chiusa",dettaglio:"MACCHINARIO: Solleva il busto."}]},{id:"e17",nome:"Calf in piedi",anim:"leg_calf",fase:"Fase 3: Pump",rep:"3-4 serie, 20 rep | Rec: 45 sec",dettaglio:"LIBERO/MACCHINA: Scendi al massimo.",alternative:[{nome:"Calf Press",anim:"leg_calf_press",note:"Sovraccarico",dettaglio:"MACCHINARIO: Usa la Leg Press."},{nome:"Calf Seduto",anim:"leg_calf_seated",note:"Focus Soleo",dettaglio:"MACCHINARIO: Seduto, solleva i talloni."}]}]}};
+const baseDbAllenamento={Spinta:{focus:"SPINTA (Petto, Spalle, Tricipiti)",esercizi:[{id:"e1",nome:"Panca piana bilanciere",anim:"chest_barbell_flat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Disteso su panca piana.",alternative:[{nome:"Chest Press Convergente",anim:"chest_machine_flat",note:"Stesso asse di spinta",dettaglio:"MACCHINARIO: Siediti in appoggio."},{nome:"Panca piana manubri",anim:"chest_db_flat",note:"Maggiore ROM",dettaglio:"MANUBRI: Disteso su panca piana."}]},{id:"e3",nome:"Panca inclinata manubri",anim:"chest_db_incline",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Panca a 30-45°.",alternative:[{nome:"Panca inclinata bilanciere",anim:"chest_barbell_incline",note:"Focus forza",dettaglio:"BILANCIERE: Panca inclinata."},{nome:"Chest Press Inclinata",anim:"chest_machine_incline",note:"Tensione costante",dettaglio:"MACCHINARIO: Usa la variante inclinata."}]},{id:"e4",nome:"Chest press",anim:"chest_machine_flat",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Esercizio guidato per isolare il pettorale.",alternative:[{nome:"Pectoral Machine",anim:"chest_pec_deck",note:"Isolamento sternale",dettaglio:"MACCHINARIO: Tieni i gomiti alti."},{nome:"Croci cavi seduto",anim:"chest_cable_seated",note:"Picco di tensione",dettaglio:"CAVI: Posiziona una panca al centro."}]},{id:"e5",nome:"Croci ai manubri",anim:"chest_flye_db",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MANUBRI: Panca piana.",alternative:[{nome:"Croci cavi piana",anim:"chest_cable_flat",note:"Tensione continua",dettaglio:"CAVI: Dai cavi bassi."},{nome:"Pec Deck (Fly)",anim:"chest_pec_deck",note:"Pump controllato",dettaglio:"MACCHINARIO: Usa il pec deck."}]},{id:"e18",nome:"Lento avanti manubri",anim:"shoulder_db_seated",fase:"Fase 1: Forza Spalle",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MANUBRI: Seduto a 90°.",alternative:[{nome:"Military Press",anim:"shoulder_military",note:"Carico massimo",dettaglio:"BILANCIERE: In piedi."},{nome:"Shoulder Press",anim:"shoulder_machine",note:"Spinta guidata",dettaglio:"MACCHINARIO: Esercizio di spinta verticale."}]},{id:"e20",nome:"Alzate laterali cavi",anim:"lateral_cable",fase:"Fase 3: Pump Spalle",rep:"3-4 serie, 10-12 rep | Rec: 45 sec",dettaglio:"CAVI: Tira il cavo lateralmente dal basso.",alternative:[{nome:"Alzate manubri",anim:"lateral_db",note:"Focus classico",dettaglio:"MANUBRI: In piedi."},{nome:"Alzate macchina",anim:"lateral_machine",note:"No compensazioni",dettaglio:"MACCHINARIO: Isola i deltoidi."}]},{id:"e22",nome:"Panca stretta",anim:"tricep_close_grip",fase:"Fase 1: Forza Tricipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE: Presa stretta.",alternative:[{nome:"French Press",anim:"tricep_french_press",note:"Stretch capo lungo",dettaglio:"BILANCIERE EZ: Disteso."},{nome:"Dips parallele",anim:"tricep_dips",note:"Catena chiusa",dettaglio:"LIBERO/ZAVORRA: Scendi piegando le braccia."}]},{id:"e27",nome:"Push down corda",anim:"tricep_pushdown",fase:"Fase 3: Pump Tricipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Spingi verso il basso e apri le estremità.",alternative:[{nome:"Push down sbarra",anim:"tricep_pushdown",note:"Carico maggiore",dettaglio:"CAVI: Sbarra dritta."},{nome:"Estensioni nuca",anim:"tricep_overhead",note:"Enfasi capo lungo",dettaglio:"CAVI: Dai cavi bassi dietro la testa."}]}]},Tirata:{focus:"TIRATA (Schiena, Bicipiti)",esercizi:[{id:"e6",nome:"Trazioni",anim:"back_pullup",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"CORPO LIBERO: Appeso alla sbarra.",alternative:[{nome:"Lat Machine Larga",anim:"back_pulldown",note:"Carichi modulabili",dettaglio:"MACCHINARIO: Presa larga prono."},{nome:"Lat Machine Triang.",anim:"back_pulldown_triangle",note:"Focus centrale",dettaglio:"MACCHINARIO: Triangolo presa stretta."}]},{id:"e7",nome:"Rematore bilanciere",anim:"back_row_barbell",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Busto a 45°.",alternative:[{nome:"Rematore Manubrio",anim:"back_row_db",note:"Unilaterale",dettaglio:"MANUBRI: In appoggio su panca."},{nome:"Rematore T-Bar",anim:"back_t_bar",note:"Tirata esplosiva",dettaglio:"MACCHINARIO: Afferra il T-Bar e tira."}]},{id:"e9",nome:"Pulley seduto",anim:"back_pulley",fase:"Fase 2: Connessione",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"CAVI: Seduto, tira la maniglia.",alternative:[{nome:"Chest Supported",anim:"back_chest_supported",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Petto in appoggio."},{nome:"Seal Row",anim:"back_seal_row",note:"Puro isolamento",dettaglio:"BILANCIERE: Sdraiato prono su panca."}]},{id:"e10",nome:"Pullover ai cavi",anim:"back_pullover_cable",fase:"Fase 3: Pump",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"CAVI: Cavo alto con sbarra.",alternative:[{nome:"Pullover Macchina",anim:"back_pullover_cable",note:"Tensione continua",dettaglio:"MACCHINARIO: Macchina specifica."},{nome:"Pullover Manubrio",anim:"back_pullover_db",note:"Stretch toracico",dettaglio:"MANUBRI: Di traverso su panca."}]},{id:"e23",nome:"Curl bilanciere EZ",anim:"bicep_barbell",fase:"Fase 1: Forza Bicipiti",rep:"4-5 serie, 6-8 rep | Rec: 2 min",dettaglio:"BILANCIERE EZ: In piedi.",alternative:[{nome:"Curl Manubri Alt.",anim:"bicep_db",note:"Lavoro unilaterale",dettaglio:"MANUBRI: Fletti un braccio alla volta."},{nome:"Curl Cavo Basso",anim:"bicep_cable_bar",note:"Tensione continua",dettaglio:"CAVI: Cavo basso con sbarra corta."}]},{id:"e26",nome:"Curl cavi corda",anim:"bicep_cable",fase:"Fase 3: Pump Bicipiti",rep:"3-4 serie, 12-15 rep | Rec: 45 sec",dettaglio:"CAVI: Fune al cavo basso.",alternative:[{nome:"Curl Inclinata",anim:"bicep_incline_db",note:"Stretch capo lungo",dettaglio:"MANUBRI: Seduto su panca a 45°."},{nome:"Spider Curl",anim:"bicep_spider_curl",note:"Picco bicipite",dettaglio:"BILANCIERE: Petto in appoggio."}]}]},Gambe:{focus:"GAMBE E POLPACCI",esercizi:[{id:"e11",nome:"Squat bilanciere",anim:"leg_squat",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"BILANCIERE: Sui trapezi.",alternative:[{nome:"Front Squat",anim:"leg_squat",note:"Focus quadricipite",dettaglio:"BILANCIERE: Appoggiato sulle clavicole anteriori."},{nome:"Hack Squat Libero",anim:"leg_hack_barbell",note:"Carico posteriore",dettaglio:"BILANCIERE: Bilanciere dietro le gambe."},{nome:"Hack Squat Macchina",anim:"leg_hack_machine",note:"Zero carico lombare",dettaglio:"MACCHINARIO: Focus spinta."}]},{id:"e12",nome:"Hack squat",anim:"leg_hack_machine",fase:"Fase 1: Forza",rep:"4-5 serie, 4-6 rep | Rec: 2 min",dettaglio:"MACCHINARIO: Poggia schiena.",alternative:[{nome:"Leg Press 45°",anim:"leg_press",note:"Isolamento pressa",dettaglio:"MACCHINARIO: Piedi bassi e stretti sulla pedana."},{nome:"Belt Squat",anim:"leg_belt_squat",note:"Zero stress lombare",dettaglio:"MACCHINARIO: Cintura pesata ai fianchi."}]},{id:"e14",nome:"Pressa 45°",anim:"leg_press",fase:"Fase 2: Connessione",rep:"4-5 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"MACCHINARIO: Scendi portando le ginocchia verso il petto.",alternative:[{nome:"Affondi Manubri",anim:"leg_lunge",note:"Equilibrio",dettaglio:"MANUBRI: In camminata o sul posto."},{nome:"Bulgarian Squat",anim:"leg_bulgarian",note:"Unilaterale",dettaglio:"MANUBRI: Piede posteriore su panca."}]},{id:"e15",nome:"Leg extension",anim:"leg_extension",fase:"Fase 3: Pump Quad",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Distendi le gambe.",alternative:[{nome:"Sissy Squat",anim:"leg_sissy_squat",note:"Bodyweight stretch",dettaglio:"CORPO LIBERO: Blocca i polpacci."},{nome:"Step-up controllato",anim:"leg_lunge",note:"Lavoro concentrico",dettaglio:"MANUBRI: Sali su un box alto."}]},{id:"e13",nome:"Stacco rumeno",anim:"leg_deadlift",fase:"Fase 2: Conn. Femorali",rep:"3-4 serie, 10-12 rep | Rec: 1.5 min",dettaglio:"BILANCIERE: Scivola lungo le cosce.",alternative:[{nome:"Stacco Gambe Tese",anim:"leg_deadlift",note:"Stretch puro",dettaglio:"BILANCIERE: Ginocchia dritte."},{nome:"Good Morning",anim:"leg_deadlift",note:"Catena posteriore",dettaglio:"BILANCIERE: Sui trapezi."}]},{id:"e16",nome:"Leg curl sdraiato",anim:"leg_curl",fase:"Fase 3: Pump Femorali",rep:"3-4 serie, 15 rep | Rec: 45 sec",dettaglio:"MACCHINARIO: Prono, porta i talloni ai glutei.",alternative:[{nome:"Leg Curl Seduto",anim:"leg_curl_seduto",note:"Isolamento femorale",dettaglio:"MACCHINARIO: Isola il bicipite femorale."},{nome:"Glute Ham Raise",anim:"leg_curl",note:"Catena chiusa",dettaglio:"MACCHINARIO: Solleva il busto."}]},{id:"e17",nome:"Calf in piedi",anim:"leg_calf",fase:"Fase 3: Pump",rep:"3-4 serie, 20 rep | Rec: 45 sec",dettaglio:"LIBERO/MACCHINA: Scendi al massimo.",alternative:[{nome:"Calf Press",anim:"leg_calf_press",note:"Sovraccarico",dettaglio:"MACCHINARIO: Usa la Leg Press."},{nome:"Calf Seduto",anim:"leg_calf_seated",note:"Focus Soleo",dettaglio:"MACCHINARIO: Seduto, solleva i talloni."}]}]}};
 const dbAlimenti={Pasto1:[{nome:"Avena + Whey + Burro",baseCarbo:12,pro:35,fat:15,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro`},{nome:"Pancakes avena + Albume",baseCarbo:14,pro:30,fat:10,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro`},{nome:"Uova intere + Segale + Avocado",baseCarbo:10,pro:25,fat:22,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*2)}g Pane Segale • ${Math.round(p/6)} Uova • ${Math.round(f*6)}g Avocado`}],Pasto2:[{nome:"Riso Basmati + Pollo + Olio EVO",baseCarbo:20,pro:40,fat:12,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4)}g Pollo • ${f}g Olio`},{nome:"Pasta di Semola + Carne Magra",baseCarbo:20,pro:45,fat:10,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.3)}g Pasta • ${Math.round(p*4.5)}g Macinato • ${f}g Olio`},{nome:"Patate dolci + Salmone",baseCarbo:16,pro:40,fat:20,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*4.5)}g Patate • ${Math.round(p*4.5)}g Salmone`}],Pasto3:[{nome:"Yogurt Greco + Mandorle",baseCarbo:5,pro:20,fat:15,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle`},{nome:"Fiocchi di latte + Burro",baseCarbo:4,pro:25,fat:18,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*8)}g Fiocchi Latte • ${f}g Burro Arachidi`},{nome:"Parmigiano + Wasa",baseCarbo:8,pro:16,fat:14,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(p*3)}g Parmigiano • ${Math.round(c*1.5)}g Wasa`}],PostWorkout:[{nome:"Crema di Riso + Whey",baseCarbo:16,pro:35,fat:1,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.2)}g Crema Riso • ${Math.round(p*1.1)}g Isolate`},{nome:"Corn Flakes + Whey",baseCarbo:16,pro:35,fat:1,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c*1.15)}g Corn Flakes • ${Math.round(p*1.1)}g Isolate`},{nome:"Gallette + Bresaola",baseCarbo:15,pro:30,fat:3,dettaglioGrammi:(c:number,p:number,f:number)=>`⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*3)}g Bresaola`}]};
 const misureBase = [{ id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" }, { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" }, { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }];
 const misureBIA = [{ id: 'vita', label: "Circ. Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa", unit: "%" }, { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Musc.", unit: "%" }];
@@ -56,29 +56,30 @@ const HumanHeatmap = ({ scheda }: { scheda: string }) => {
     if (scheda === 'Spinta' && ['chest', 'shoulders', 'triceps'].includes(part)) return 'url(#gradPrimary)'; 
     if (scheda === 'Tirata' && ['back', 'biceps'].includes(part)) return 'url(#gradPrimary)';
     if (scheda === 'Gambe' && ['legs', 'calves', 'glutes'].includes(part)) return 'url(#gradPrimary)';
-    return '#a3b1c6'; 
+    return '#334155'; 
   };
   return (
-    <div className={`${UI.panelInset} w-full flex justify-center py-8 mb-5 relative`}>
-      <svg width="110" height="170" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div className="w-full flex justify-center py-8 mb-5 relative bg-slate-800 rounded-[1.5rem] shadow-[inset_4px_4px_10px_rgba(0,0,0,0.3),inset_-4px_-4px_10px_rgba(255,255,255,0.05)] border border-slate-700">
+      <svg width="120" height="180" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
          <defs>
             <linearGradient id="gradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
-               <stop offset="0%" stopColor="#00c6ff" /><stop offset="100%" stopColor="#0072ff" />
+               <stop offset="0%" stopColor="#00c6ff" />
+               <stop offset="100%" stopColor="#0072ff" />
             </linearGradient>
          </defs>
-         <circle cx="50" cy="20" r="14" fill="#E0E5EC" stroke={getActive('head')} strokeWidth="4" className="transition-all duration-700" />
+         <circle cx="50" cy="20" r="12" fill="#1e293b" stroke={getActive('head')} strokeWidth="3" className="transition-all duration-700" />
          <path d="M30 40 Q50 35 70 40 L75 60 L25 60 Z" fill={getActive('chest')} className="transition-colors duration-700" />
-         <circle cx="23" cy="45" r="9" fill={getActive('shoulders')} className="transition-colors duration-700" />
-         <circle cx="77" cy="45" r="9" fill={getActive('shoulders')} className="transition-colors duration-700" />
-         <rect x="13" y="50" width="12" height="30" rx="6" fill={getActive('triceps')} className="transition-colors duration-700" />
-         <rect x="75" y="50" width="12" height="30" rx="6" fill={getActive('triceps')} className="transition-colors duration-700" />
-         <rect x="11" y="82" width="12" height="25" rx="6" fill={getActive('biceps')} className="transition-colors duration-700" />
-         <rect x="77" y="82" width="12" height="25" rx="6" fill={getActive('biceps')} className="transition-colors duration-700" />
-         <path d="M32 62 L68 62 L62 110 L38 110 Z" fill={scheda === 'Tirata' ? getActive('back') : '#a3b1c6'} className="transition-colors duration-700" />
-         <rect x="34" y="115" width="14" height="40" rx="7" fill={getActive('legs')} className="transition-colors duration-700" />
-         <rect x="52" y="115" width="14" height="40" rx="7" fill={getActive('legs')} className="transition-colors duration-700" />
-         <rect x="34" y="158" width="12" height="35" rx="6" fill={getActive('calves')} className="transition-colors duration-700" />
-         <rect x="54" y="158" width="12" height="35" rx="6" fill={getActive('calves')} className="transition-colors duration-700" />
+         <circle cx="25" cy="45" r="8" fill={getActive('shoulders')} className="transition-colors duration-700" />
+         <circle cx="75" cy="45" r="8" fill={getActive('shoulders')} className="transition-colors duration-700" />
+         <rect x="15" y="50" width="10" height="30" rx="5" fill={getActive('triceps')} className="transition-colors duration-700" />
+         <rect x="75" y="50" width="10" height="30" rx="5" fill={getActive('triceps')} className="transition-colors duration-700" />
+         <rect x="13" y="82" width="10" height="25" rx="5" fill={getActive('biceps')} className="transition-colors duration-700" />
+         <rect x="77" y="82" width="10" height="25" rx="5" fill={getActive('biceps')} className="transition-colors duration-700" />
+         <path d="M32 62 L68 62 L62 110 L38 110 Z" fill={scheda === 'Tirata' ? getActive('back') : '#334155'} className="transition-colors duration-700" />
+         <rect x="35" y="115" width="12" height="40" rx="6" fill={getActive('legs')} className="transition-colors duration-700" />
+         <rect x="53" y="115" width="12" height="40" rx="6" fill={getActive('legs')} className="transition-colors duration-700" />
+         <rect x="35" y="158" width="10" height="35" rx="5" fill={getActive('calves')} className="transition-colors duration-700" />
+         <rect x="55" y="158" width="10" height="35" rx="5" fill={getActive('calves')} className="transition-colors duration-700" />
       </svg>
     </div>
   );
@@ -141,9 +142,21 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
     </div>
   );
 };
+
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
+  
+  // NAVIGAZIONE BOTTOM BAR
+  const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
+  
+  // STATI TIMER FOCUS
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [focusWorkout, setFocusWorkout] = useState<any>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [timerActive, setTimerActive] = useState(false);
+  const totalTimeRef = useRef(0);
+
   const [listaAtleti, setListaAtleti] = useState<string[]>(["Leonardo"]);
   const [utenteCorrente, setUtenteCorrente] = useState("Leonardo");
   const [protocolloAttivo, setProtocolloAttivo] = useState("Massa");
@@ -173,9 +186,11 @@ export default function Home() {
   const [fastWorkout, setFastWorkout] = useState(false);
   const [eserciziModificati, setEserciziModificati] = useState<Record<string, string>>({});
   const [carichiAttuali, setCarichiAttuali] = useState<Record<string, string[]>>({});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoSessioni, setStoricoSessioni] = useState<any[]>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
   const [modalEsercizio, setModalEsercizio] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
@@ -188,10 +203,43 @@ export default function Home() {
   const [fileAllegato, setFileAllegato] = useState<{data: string, mimeType: string, nome: string} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
   const [vistaTelemetria, setVistaTelemetria] = useState<'FORM' | 'STORICO'>('FORM');
   const [vistaGraficiCarichi, setVistaGraficiCarichi] = useState(false);
   const [esercizioGraficoSelezionato, setEsercizioGraficoSelezionato] = useState<string>("e1");
+  // LOGICA TIMER FOCUS
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let interval: any = null;
+    if (timerActive && timeLeft > 0) {
+      interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
+    } else if (timeLeft === 0 && timerActive) {
+      setTimerActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, timeLeft]);
+
+  const formatTime = (sec: number) => {
+    const m = Math.floor(sec / 60); const s = sec % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const apriFocusAllenamento = (es: any, recuperoStr: string) => {
+    setFocusWorkout(es);
+    let sec = 90; // Default 1.5 min
+    if (recuperoStr.includes('min')) {
+      const match = recuperoStr.match(/([\d.]+)\s*min/);
+      if (match) sec = parseFloat(match[1]) * 60;
+    } else if (recuperoStr.includes('sec')) {
+      const match = recuperoStr.match(/(\d+)\s*sec/);
+      if (match) sec = parseInt(match[1], 10);
+    }
+    totalTimeRef.current = sec;
+    setTimeLeft(sec);
+    setTimerActive(false);
+  };
 
   const calcolaTempoScheda = () => fastWorkout ? 45 : 75;
 
@@ -258,12 +306,14 @@ export default function Home() {
      const isKetoOrLowCarb = activeDieta === 'Keto' || activeDieta === 'LowCarb'; const isOverweightMechanically = fatNum > 20 || pesoNum > 95; const needsLumbarProtection = isOver40 && stileVita.includes("Fisico");
 
      const swapToAlternative = (ex: any, partialName: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const alt = ex.alternative.find((a: any) => a.nome.toLowerCase().includes(partialName.toLowerCase()));
         if (alt) { ex.nome = alt.nome; ex.anim = alt.anim; ex.dettaglio = alt.dettaglio; }
      };
 
      Object.keys(plan).forEach(sch => {
         let methodCycleGerardo = 0; 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
            if (protocolloAutore === 'Gerardo Calvo (Reset Ormonale)') {
                if (methodCycleGerardo === 0) ex.rep = "7x10 | Rec: 30 sec (15RM)";
@@ -323,6 +373,7 @@ export default function Home() {
     setLoadingWizard(true);
     try {
       const contesto = `Sei un Coach IA. Analizza: Nome: ${datiWizard.nome}, Età: ${datiWizard.eta}, Altezza: ${datiWizard.altezza}cm, Peso: ${datiWizard.peso}kg. Lifestyle: ${datiWizard.stileVita}. Obiettivo: ${datiWizard.obiettivo}. Dieta: ${datiWizard.dieta}. Fornisci un verdetto.`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: "Analizza il mio profilo.", context: contesto }; const files = [];
       if (fotoPartenza) files.push({ data: fotoPartenza.data, mimeType: fotoPartenza.mimeType, label: "Partenza" });
       if (fotoArrivo) files.push({ data: fotoArrivo.data, mimeType: fotoArrivo.mimeType, label: "Obiettivo" });
@@ -346,6 +397,7 @@ export default function Home() {
     setChatLog(prev => [...prev, { role: 'user', text: fileAllegato ? `📎 [${fileAllegato.nome}] ${msg}` : msg }]);
     setInputChat(""); setFileAllegato(null); setIsTyping(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = { message: msg, context: `SEI IL COACH IA. Utente: ${utenteCorrente}. Estrai Macro e scrivi alla fine: [MAGIC_MACRO | PASTO_TARGET | cho | pro | fat | NOME]` };
       if (fileAllegato) payload.file = { data: fileAllegato.data, mimeType: fileAllegato.mimeType };
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -401,8 +453,10 @@ export default function Home() {
   const toggleCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true } }));
   const resetCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { attivo: false, cho: '', pro: '', fat: '', nome: '' } }));
   const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat'|'nome', value: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], [field]: value } }));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const apriSwapEsercizio = (es: any) => { 
     const nomeAttuale = eserciziModificati[es.id] || es.nome;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tutteLeOpzioni = [ { nome: es.nome, anim: es.anim, dettaglio: es.dettaglio, note: "Originale" }, ...es.alternative ];
     const opzioniDisponibili = tutteLeOpzioni.filter(opt => opt.nome !== nomeAttuale);
     setEsercizioDaCambiare({ id: es.id, nomeAttuale: nomeAttuale, alternative: opzioniDisponibili }); setModalEsercizio(true); 
@@ -469,6 +523,7 @@ export default function Home() {
   targetCho = Math.max(targetCho, intraCho); targetFat = Math.max(targetFat, intraFat); targetPro = Math.max(targetPro, intraPro);
   const activeCategories = digiuno ? ['Pasto2', 'Pasto3', 'PostWorkout'] : ['Pasto1', 'Pasto2', 'Pasto3', 'PostWorkout'];
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const originalMeals: Record<string, any> = {};
   activeCategories.forEach(cat => { const item = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]]; if(item) { originalMeals[cat] = { cho: item.baseCarbo, pro: item.pro, fat: item.fat }; } });
 
@@ -479,6 +534,7 @@ export default function Home() {
   });
 
   const remainingCho = Math.max(0, targetCho - customCho - intraCho); const remainingPro = Math.max(0, targetPro - customPro - intraPro); const remainingFat = Math.max(0, targetFat - customFat - intraFat);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const finalMeals: Record<string, any> = {};
   activeCategories.forEach(cat => {
      if(pastiCustom[cat].attivo) { finalMeals[cat] = { cho: Number(pastiCustom[cat].cho) || 0, pro: Number(pastiCustom[cat].pro) || 0, fat: Number(pastiCustom[cat].fat) || 0 }; } 
@@ -514,6 +570,7 @@ export default function Home() {
     const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
     const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.\n• Acqua, Caffè amaro, Tè.` };
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t: any[] = [];
     if (quandoTiAlleni === 'mattina') {
         if (digiuno) t.push(bloccoDigiuno); t.push(bloccoIntra); t.push({ idCategoria: 'PostWorkout', titoloUI: 'Post-Workout (Mattina)' });
@@ -729,6 +786,14 @@ export default function Home() {
     );
   }
 
+  // HELPER BOTTOM NAV
+  const renderNavIcon = (tab: string, icon: string, label: string) => (
+     <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-[#00c6ff] scale-110 drop-shadow-md' : 'text-slate-400 hover:text-slate-500'}`}>
+        <span className="text-xl mb-1">{icon}</span>
+        <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
+     </button>
+  );
+
   return (
     <main className="min-h-screen bg-[#E0E5EC] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-cyan-400/30">
       
@@ -736,7 +801,7 @@ export default function Home() {
         <div>
           <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-[#00c6ff] mb-2 block transition-all bg-[#E0E5EC] px-4 py-2 rounded-full shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">⬅️ Torna alla Home</button>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
-            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00c6ff] to-[#0072ff] font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
           </h1>
         </div>
         <div className="text-right">
@@ -751,11 +816,13 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10">
+      {/* CONTENITORE PRINCIPALE: GRIGLIA DESKTOP / TABS MOBILE */}
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10 pb-28 lg:pb-0">
         
         {/* COLONNA SINISTRA: Telemetria & Coach IA */}
         <div className="flex flex-col gap-8 lg:col-span-3">
-          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex flex-col relative overflow-hidden anim-pop" style={{animationDelay: '0.2s'}}>
+          
+          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex-col relative overflow-hidden anim-pop ${mobileTab === 'TELEMETRIA' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.2s'}}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 relative z-10">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Telemetria</h2>
@@ -831,7 +898,7 @@ export default function Home() {
             )}
           </section>
 
-          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex flex-col h-[480px] anim-pop" style={{animationDelay: '0.3s'}}>
+          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex-col h-[480px] anim-pop ${mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.3s'}}>
             <h2 className="text-base font-bold tracking-widest uppercase text-slate-700 mb-6 flex items-center gap-3 border-b border-slate-200/50 pb-4">
               <span className="w-3 h-3 rounded-full bg-[#00c6ff] animate-pulse shadow-[0_0_10px_#00c6ff]"></span> A.I. Coach
             </h2>
@@ -839,7 +906,7 @@ export default function Home() {
               {chatLog.map((msg, i) => (
                 <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} anim-pop`} style={{animationDelay: `${0.1 * i}s`}}>
                   <span className={`text-[9px] uppercase font-black tracking-widest mb-2 ${msg.role === 'user' ? 'text-slate-400 pr-2' : 'text-[#00c6ff] pl-2'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
-                  <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#E0E5EC] text-slate-600 rounded-tr-sm' : 'bg-gradient-to-br from-[#00c6ff] to-[#0072ff] text-white rounded-tl-sm shadow-[0_8px_15px_rgba(0,198,255,0.3)]'}`}>{msg.text}</div>
+                  <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#E0E5EC] text-slate-600 rounded-tr-sm' : 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white rounded-tl-sm shadow-[0_8px_15px_rgba(6,182,212,0.3)]'}`}>{msg.text}</div>
                 </div>
               ))}
               {isTyping && <div className="text-[10px] text-[#00c6ff] font-bold tracking-widest pl-2 animate-pulse mt-2">Elaborazione in corso...</div>}
@@ -855,15 +922,15 @@ export default function Home() {
             <div className="flex gap-3 relative">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
               <button onClick={() => fileInputRef.current?.click()} className="bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-500 hover:text-[#00c6ff] px-5 py-3.5 rounded-full transition-all border-none cursor-pointer">📎</button>
-              <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega..." className="flex-1 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-5 py-3.5 rounded-full text-[13px] text-slate-600 outline-none focus:ring-2 focus:ring-[#00c6ff]/40 transition-all font-semibold placeholder:text-slate-400 border-none" />
-              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-gradient-to-r from-[#00c6ff] to-[#0072ff] text-white font-bold px-7 rounded-full shadow-[0_8px_15px_rgba(0,198,255,0.3)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 transition-all border-none cursor-pointer">→</button>
+              <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Chiedi o allega..." className="flex-1 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-5 py-3.5 rounded-full text-[13px] text-slate-600 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none" />
+              <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold px-7 rounded-full shadow-[0_8px_15px_rgba(6,182,212,0.3)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 transition-all border-none cursor-pointer">→</button>
             </div>
           </section>
         </div>
 
         {/* COLONNA CENTRALE: Turni & Nutrizione */}
         <div className="flex flex-col gap-8 lg:col-span-4">
-          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop" style={{animationDelay: '0.4s'}}>
+          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'TURNI' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.4s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lime-400 to-green-500 opacity-80"></div>
             
             <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-200/50 pt-2">
@@ -872,6 +939,7 @@ export default function Home() {
                 <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
               </select>
             </div>
+            
             <div className="space-y-6">
               <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.7)] backdrop-blur-md p-5 rounded-[1.5rem]">
                 <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
@@ -918,12 +986,12 @@ export default function Home() {
             </div>
           </section>
 
-          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop" style={{animationDelay: '0.5s'}}>
+          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'NUTRIZIONE' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.5s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-rose-400 opacity-80"></div>
             
             <div className="flex flex-col mb-8 pt-2">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Piano Nutrizionale</h2>
+                <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Piano Nutrizionale</h2>
                 <div className="flex gap-2 items-center">
                   {protocolloAutore === 'Gerardo Calvo (Reset Ormonale)' && (
                      <button 
@@ -948,7 +1016,7 @@ export default function Home() {
                         await supabase.from("check_utente").insert([payload]);
                       }
                     }}
-                    className={`text-[9px] font-black px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] border-none ${
+                    className={`text-[9px] font-bold px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] border-none ${
                       (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
                         ? 'bg-[#E0E5EC] text-slate-400' 
                         : `bg-gradient-to-r from-orange-400 to-rose-400 shadow-[0_8px_15px_rgba(249,115,22,0.25)] text-white`
@@ -1078,7 +1146,7 @@ export default function Home() {
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
         <div className="flex flex-col gap-8 lg:col-span-5">
-          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1 anim-pop" style={{animationDelay: '0.6s'}}>
+          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl flex-col min-h-0 relative overflow-hidden flex-1 anim-pop ${mobileTab === 'ALLENAMENTO' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.6s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
 
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 pt-2 shrink-0">
@@ -1131,7 +1199,6 @@ export default function Home() {
                  </div>
               ) : (
                  <div className="flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar min-h-0">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {dbDinamico[schedaAttiva].esercizi.map((es: any, idx: number) => {
                     const nomeAttuale = eserciziModificati[es.id] || es.nome;
                     const altEs = es.alternative.find((a: any) => a.nome === nomeAttuale);
@@ -1140,7 +1207,6 @@ export default function Home() {
                     const ultimoCarico = getUltimoCarico(es.id);
                     const numeroSetTarget = getNumeroSet(es.fase);
                     
-                    // Colori e Tinte Trasparenti per l'intera Card
                     const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#0ea5e9' : '#ef4444'); 
                     const phaseTint = es.fase.includes('Fase 1') ? 'bg-orange-400/15 border border-orange-400/30' : (es.fase.includes('Fase 2') ? 'bg-cyan-400/15 border border-cyan-400/30' : 'bg-red-400/15 border border-red-400/30');
                     
@@ -1170,7 +1236,10 @@ export default function Home() {
                              {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-500 px-3 py-2 bg-white/50 shadow-[2px_2px_4px_rgba(163,177,198,0.4)] rounded-xl uppercase tracking-widest">Ultima: <span className="ml-1 text-[14px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>}
                           </div>
                           
-                          <div className="mt-6 pt-5 border-t border-slate-400/20">
+                          {/* Pulsante Tattico per Aprire il Focus Timer */}
+                          <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-white/50 shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/60 cursor-pointer" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
+
+                          <div className="mt-5 pt-5 border-t border-slate-400/20">
                             <div className="flex gap-4">
                               {Array.from({ length: numeroSetTarget }).map((_, i) => (
                                 <div key={i} className="flex-1 relative">
@@ -1221,57 +1290,118 @@ export default function Home() {
         </section>
       </div>
 
-    </div>
+      {/* --- BOTTOM NAVIGATION BAR (Solo su Mobile) --- */}
+      <nav className="sm:hidden fixed bottom-0 left-0 w-full bg-[#E0E5EC]/90 backdrop-blur-xl shadow-[0_-10px_30px_rgba(163,177,198,0.4)] z-[90] pb-safe flex justify-between border-t border-white/50 px-2 pt-2">
+         {renderNavIcon('TELEMETRIA', '📊', 'Dati')}
+         {renderNavIcon('COACH', '🤖', 'AI')}
+         {renderNavIcon('TURNI', '🕒', 'Turni')}
+         {renderNavIcon('NUTRIZIONE', '🍎', 'Dieta')}
+         {renderNavIcon('ALLENAMENTO', '🏋️', 'Workout')}
+      </nav>
 
-    {/* --- MODALI SWAP --- */}
-    {modalEsercizio && (
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
-          <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
-            <h3 className="font-bold text-xl uppercase tracking-widest text-slate-600">Sostituisci Esercizio</h3>
-            <button onClick={() => setModalEsercizio(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
-          </div>
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {esercizioDaCambiare.alternative.map((alt: any, i: number) => (
-              <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-5 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer">
-                <p className="font-bold text-[14px] text-slate-600 group-hover:text-[#00c6ff] transition-colors drop-shadow-sm">{alt.nome}</p>
-                <p className="text-[9px] text-[#0072ff] mt-2 uppercase font-bold tracking-widest mb-2">{alt.note}</p>
-                <p className="text-[11px] text-slate-500 leading-relaxed font-medium">{alt.dettaglio}</p>
-              </button>
-            ))}
+      {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
+      {focusWorkout && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 anim-pop">
+          <div className="bg-[#E0E5EC] w-full h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-white/20">
+            <button onClick={() => setFocusWorkout(null)} className="absolute top-5 right-6 text-slate-400 hover:text-slate-600 text-3xl font-bold z-20 border-none bg-transparent cursor-pointer">&times;</button>
+            
+            {/* PARTE ALTA: TIMER NEUMORFICO */}
+            <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#E0E5EC] relative shrink-0 min-h-[350px]">
+               <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-8 drop-shadow-sm">Rest Interval</p>
+               
+               <div className="relative flex items-center justify-center w-52 h-52 sm:w-60 sm:h-60 rounded-full bg-[#E0E5EC] shadow-[10px_10px_20px_#a3b1c6,-10px_-10px_20px_#ffffff] mb-10">
+                 <div className="absolute inset-4 rounded-full bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] flex items-center justify-center">
+                    <div className="absolute inset-6 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex items-center justify-center">
+                        <span className="text-5xl font-light text-slate-700 font-mono tracking-widest drop-shadow-md">{formatTime(timeLeft)}</span>
+                    </div>
+                 </div>
+                 <svg className="absolute w-full h-full -rotate-90 pointer-events-none drop-shadow-md" viewBox="0 0 100 100">
+                   <circle cx="50" cy="50" r="47" fill="none" stroke="#e2e8f0" strokeWidth="2" />
+                   <circle cx="50" cy="50" r="47" fill="none" stroke="url(#gradPrimary)" strokeWidth="3.5" strokeDasharray="295.3" strokeDashoffset={295.3 - (295.3 * (timeLeft / (totalTimeRef.current || 1)))} strokeLinecap="round" className="transition-all duration-1000 ease-linear" />
+                 </svg>
+               </div>
+               
+               <div className="flex gap-8 items-center">
+                  <button onClick={() => { setTimeLeft(totalTimeRef.current); setTimerActive(false); }} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-400 font-black border-none cursor-pointer">⏹</button>
+                  <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center text-[#00c6ff] font-black border-none cursor-pointer text-2xl pl-1">{timerActive ? '⏸' : '▶'}</button>
+                  <button onClick={() => setTimeLeft(t => t + 15)} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-500 font-black text-xs border-none cursor-pointer">+15</button>
+               </div>
+            </div>
+
+            {/* PARTE BASSA: ESERCIZIO E INPUT SET */}
+            <div className="bg-[#E0E5EC] shadow-[0_-8px_16px_rgba(163,177,198,0.3)] p-6 z-10 overflow-y-auto h-[45%] custom-scrollbar pb-10 rounded-t-[2.5rem] border-t border-white/50">
+               <div className="flex justify-between items-start mb-2">
+                 <h3 className="font-black text-xl text-slate-700 tracking-tight leading-none">{eserciziModificati[focusWorkout.id] || focusWorkout.nome}</h3>
+                 <div className="w-12 h-12 bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] rounded-xl flex items-center justify-center border border-white/40 shrink-0"><MediaVisualizer animKey={focusWorkout.anim || "chest_barbell_flat"} color="#00c6ff" /></div>
+               </div>
+               <p className="text-[12px] text-slate-500 font-bold mb-6 mt-2 leading-relaxed">{focusWorkout.dettaglio}</p>
+               
+               <div className="flex gap-4">
+                   {Array.from({ length: getNumeroSet(focusWorkout.fase) }).map((_, i) => (
+                      <div key={i} className="flex-1 relative">
+                         <label className="text-[10px] text-slate-400 uppercase font-black tracking-widest block text-center mb-3">Set {i+1}</label>
+                         <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-4 px-2 text-center rounded-[1.2rem] text-[20px] font-black outline-none transition-all border-none appearance-none text-[#00c6ff] focus:ring-2 focus:ring-cyan-400/50" placeholder="-" />
+                      </div>
+                   ))}
+               </div>
+               
+               <button onClick={() => setFocusWorkout(null)} className="w-full mt-8 py-4 bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 font-black uppercase tracking-widest text-[13px] rounded-2xl transition-all border-none cursor-pointer">CHIUDI FOCUS E SALVA SET</button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
-    {modalAlimento && (
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
-          <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
-            <h3 className="font-bold text-xl uppercase tracking-widest text-slate-600">Sostituisci Pasto</h3>
-            <button onClick={() => setModalAlimento(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
-          </div>
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-            {/* @ts-ignore */}
-            {dbAlimenti[categoriaDaCambiare].map((alt, i) => {
-               const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
-               const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
-               return (
-                <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-5 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer">
-                  <div className="flex justify-between items-start mb-3">
-                    <p className="font-bold text-[14px] text-slate-600 group-hover:text-[#00c6ff] transition-colors pr-2 leading-snug">{alt.nome}</p>
-                    <span className="text-[9px] bg-[#e4ebf5] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[#00c6ff] px-3 py-1.5 rounded-lg font-bold tracking-widest shrink-0">{swapKcal} Kcal</span>
-                  </div>
-                  <p className="text-[9px] text-slate-500 font-bold tracking-widest bg-white/40 inline-block px-3 py-1.5 rounded-lg mb-3 shadow-sm">C <span className="text-[#00c6ff]">{macroCho}g</span> <span className="mx-2 text-slate-300">|</span> P <span className="text-slate-600">{alt.pro}g</span> <span className="mx-2 text-slate-300">|</span> F <span className="text-slate-600">{alt.fat}g</span></p>
-                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed bg-[#e4ebf5] p-3 rounded-xl shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff]">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
+      {/* --- MODALI SWAP --- */}
+      {modalEsercizio && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[150] p-4">
+          <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
+            <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
+              <h3 className="font-bold text-xl uppercase tracking-widest text-slate-600">Sostituisci Esercizio</h3>
+              <button onClick={() => setModalEsercizio(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
+            </div>
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {esercizioDaCambiare.alternative.map((alt: any, i: number) => (
+                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-5 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer">
+                  <p className="font-bold text-[14px] text-slate-600 group-hover:text-[#00c6ff] transition-colors drop-shadow-sm">{alt.nome}</p>
+                  <p className="text-[9px] text-[#0072ff] mt-2 uppercase font-bold tracking-widest mb-2">{alt.note}</p>
+                  <p className="text-[11px] text-slate-500 leading-relaxed font-medium">{alt.dettaglio}</p>
                 </button>
-               );
-            })}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    )}
-  </main>
-);
+      )}
+
+      {modalAlimento && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[150] p-4">
+          <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
+            <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
+              <h3 className="font-bold text-xl uppercase tracking-widest text-slate-600">Sostituisci Pasto</h3>
+              <button onClick={() => setModalAlimento(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
+            </div>
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+              {/* @ts-ignore */}
+              {dbAlimenti[categoriaDaCambiare].map((alt, i) => {
+                 const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
+                 const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
+                 return (
+                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-5 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer">
+                    <div className="flex justify-between items-start mb-3">
+                      <p className="font-bold text-[14px] text-slate-600 group-hover:text-[#00c6ff] transition-colors pr-2 leading-snug">{alt.nome}</p>
+                      <span className="text-[9px] bg-[#e4ebf5] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[#00c6ff] px-3 py-1.5 rounded-lg font-bold tracking-widest shrink-0">{swapKcal} Kcal</span>
+                    </div>
+                    <p className="text-[9px] text-slate-500 font-bold tracking-widest bg-white/40 inline-block px-3 py-1.5 rounded-lg mb-3 shadow-sm">C <span className="text-[#00c6ff]">{macroCho}g</span> <span className="mx-2 text-slate-300">|</span> P <span className="text-slate-600">{alt.pro}g</span> <span className="mx-2 text-slate-300">|</span> F <span className="text-slate-600">{alt.fat}g</span></p>
+                    <p className="text-[11px] text-slate-500 font-medium leading-relaxed bg-[#e4ebf5] p-3 rounded-xl shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff]">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
+                  </button>
+                 );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
+    </main>
+  );
 }
