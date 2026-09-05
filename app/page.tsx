@@ -1312,18 +1312,24 @@ export default function Home() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const altEs = focusWorkout.alternative.find((a: any) => a.nome === nomeAttuale);
         const currentEx = altEs || focusWorkout;
-        const phaseColor = focusWorkout.fase.includes('Fase 1') ? '#f97316' : (focusWorkout.fase.includes('Fase 2') ? '#0ea5e9' : '#ef4444');
         
+        // Calcoliamo i colori e le trasparenze
+        const phaseColor = focusWorkout.fase.includes('Fase 1') ? '#f97316' : (focusWorkout.fase.includes('Fase 2') ? '#0ea5e9' : '#ef4444');
+        const phaseTint = focusWorkout.fase.includes('Fase 1') ? 'bg-orange-400/15 border-orange-400/30' : (focusWorkout.fase.includes('Fase 2') ? 'bg-cyan-400/15 border-cyan-400/30' : 'bg-red-400/15 border-red-400/30');
+
+        // Ricalcoliamo la stringa delle ripetizioni per mostrarla nel modale
+        let repMostrate = focusWorkout.rep;
+        if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
+
         return (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 anim-pop">
             <div className="bg-[#E0E5EC] w-full max-h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-white/20">
               <button onClick={() => setFocusWorkout(null)} className="absolute top-5 right-6 text-slate-400 hover:text-slate-600 text-3xl font-bold z-20 border-none bg-transparent cursor-pointer">&times;</button>
               
-              {/* PARTE ALTA: TIMER NEUMORFICO */}
+              {/* PARTE ALTA: TIMER NEUMORFICO (Neutra) */}
               <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-[#E0E5EC] relative shrink-0 pt-16 pb-8">
                  <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-6 drop-shadow-sm">Rest Interval</p>
                  
-                 {/* La chiave è qui: shrink-0 e aspect-square impediscono la deformazione a ovale */}
                  <div className="relative flex items-center justify-center w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-[#E0E5EC] shadow-[10px_10px_20px_#a3b1c6,-10px_-10px_20px_#ffffff] mb-8 shrink-0 aspect-square">
                    <div className="absolute inset-4 rounded-full bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] flex items-center justify-center">
                       <div className="absolute inset-6 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex items-center justify-center">
@@ -1343,30 +1349,35 @@ export default function Home() {
                  </div>
               </div>
 
-              {/* PARTE BASSA: ESERCIZIO E INPUT SET */}
-              <div className="bg-[#E0E5EC] shadow-[0_-8px_16px_rgba(163,177,198,0.3)] p-6 z-10 overflow-y-auto custom-scrollbar pb-safe sm:pb-8 rounded-t-[2.5rem] border-t border-white/50 shrink-0 flex-1">
+              {/* PARTE BASSA: ESERCIZIO E INPUT SET (Tinta Glassmorphism) */}
+              <div className={`${phaseTint} shadow-[0_-8px_20px_rgba(0,0,0,0.1)] p-6 z-10 overflow-y-auto custom-scrollbar pb-safe sm:pb-8 rounded-t-[2.5rem] border-t shrink-0 flex-1 backdrop-blur-xl`}>
                  
-                 {/* TITOLO ED ESERCIZIO CENTRATI (Forzati in un riquadro largo e schiacciato) */}
+                 {/* TITOLO ED ESERCIZIO CENTRATI */}
                  <div className="flex flex-col items-center justify-center text-center mb-6 gap-4">
-                   <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-2 rounded-[1.2rem] w-36 h-32 shrink-0 border border-white/40 flex items-center justify-center overflow-hidden">
+                   <div className="bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-2 rounded-[1.2rem] w-36 h-32 shrink-0 border border-white/40 flex items-center justify-center overflow-hidden">
                      <MediaVisualizer animKey={currentEx.anim || "chest_barbell_flat"} color={phaseColor} />
                    </div>
                    <div>
                      <h3 className="font-black text-lg text-slate-700 tracking-tight leading-tight">{nomeAttuale}</h3>
-                     <p className="text-[12px] text-slate-500 font-bold mt-1.5 leading-relaxed">{currentEx.dettaglio}</p>
+                     <p className="text-[12px] text-slate-600 font-bold mt-1.5 leading-relaxed">{currentEx.dettaglio}</p>
+                     
+                     {/* BOX RIPETIZIONI/SET */}
+                     <div className="mt-4 bg-white/40 shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] px-5 py-2.5 rounded-xl border border-white/50 inline-block">
+                        <span className="text-[11px] font-black text-slate-600 tracking-widest">{repMostrate}</span>
+                     </div>
                    </div>
                  </div>
                  
                  <div className="flex gap-4">
                      {Array.from({ length: getNumeroSet(focusWorkout.fase) }).map((_, i) => (
                         <div key={i} className="flex-1 relative">
-                           <label className="text-[10px] text-slate-400 uppercase font-black tracking-widest block text-center mb-3">Set {i+1}</label>
-                           <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-4 px-2 text-center rounded-[1.2rem] text-[20px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-slate-300" style={{color: phaseColor}} placeholder="-" />
+                           <label className="text-[10px] text-slate-600 uppercase font-black tracking-widest block text-center mb-3">Set {i+1}</label>
+                           <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-4 px-2 text-center rounded-[1.2rem] text-[20px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
                         </div>
                      ))}
                  </div>
                  
-                 <button onClick={() => setFocusWorkout(null)} className="w-full mt-8 py-4 bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 font-black uppercase tracking-widest text-[13px] rounded-2xl transition-all border-none cursor-pointer">CHIUDI E SALVA SET</button>
+                 <button onClick={() => setFocusWorkout(null)} className="w-full mt-8 py-4 bg-white/50 shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] text-slate-600 font-black uppercase tracking-widest text-[13px] rounded-2xl transition-all border border-white/60 cursor-pointer hover:-translate-y-0.5">CHIUDI E SALVA SET</button>
               </div>
             </div>
           </div>
