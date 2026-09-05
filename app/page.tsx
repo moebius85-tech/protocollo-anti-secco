@@ -1306,56 +1306,69 @@ export default function Home() {
       </nav>
 
       {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
-      {focusWorkout && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 anim-pop">
-          <div className="bg-[#E0E5EC] w-full h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-white/20">
-            <button onClick={() => setFocusWorkout(null)} className="absolute top-5 right-6 text-slate-400 hover:text-slate-600 text-3xl font-bold z-20 border-none bg-transparent cursor-pointer">&times;</button>
-            
-            {/* PARTE ALTA: TIMER NEUMORFICO */}
-            <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#E0E5EC] relative shrink-0 min-h-[350px]">
-               <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-8 drop-shadow-sm">Rest Interval</p>
-               
-               <div className="relative flex items-center justify-center w-52 h-52 sm:w-60 sm:h-60 rounded-full bg-[#E0E5EC] shadow-[10px_10px_20px_#a3b1c6,-10px_-10px_20px_#ffffff] mb-10">
-                 <div className="absolute inset-4 rounded-full bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] flex items-center justify-center">
-                    <div className="absolute inset-6 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex items-center justify-center">
-                        <span className="text-5xl font-light text-slate-700 font-mono tracking-widest drop-shadow-md">{formatTime(timeLeft)}</span>
-                    </div>
-                 </div>
-                 <svg className="absolute w-full h-full -rotate-90 pointer-events-none drop-shadow-md" viewBox="0 0 100 100">
-                   <circle cx="50" cy="50" r="47" fill="none" stroke="#e2e8f0" strokeWidth="2" />
-                   <circle cx="50" cy="50" r="47" fill="none" stroke="#0ea5e9" strokeWidth="3.5" strokeDasharray="295.3" strokeDashoffset={295.3 - (295.3 * (timeLeft / (totalTimeRef.current || 1)))} strokeLinecap="round" className="transition-all duration-1000 ease-linear" />
-                 </svg>
-               </div>
-               
-               <div className="flex gap-8 items-center">
-                  <button onClick={() => { setTimeLeft(totalTimeRef.current); setTimerActive(false); }} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-400 font-black border-none cursor-pointer">⏹</button>
-                  <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center text-[#0ea5e9] font-black border-none cursor-pointer text-2xl pl-1">{timerActive ? '⏸' : '▶'}</button>
-                  <button onClick={() => setTimeLeft(t => t + 15)} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-500 font-black text-xs border-none cursor-pointer">+15</button>
-               </div>
-            </div>
-
-            {/* PARTE BASSA: ESERCIZIO E INPUT SET */}
-            <div className="bg-[#E0E5EC] shadow-[0_-8px_16px_rgba(163,177,198,0.3)] p-6 z-10 overflow-y-auto h-[45%] custom-scrollbar pb-10 rounded-t-[2.5rem] border-t border-white/50">
-               <div className="flex justify-between items-start mb-2">
-                 <h3 className="font-black text-xl text-slate-700 tracking-tight leading-none">{eserciziModificati[focusWorkout.id] || focusWorkout.nome}</h3>
-                 <div className="w-12 h-12 bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] rounded-xl flex items-center justify-center border border-white/40 shrink-0"><MediaVisualizer animKey={focusWorkout.anim || "chest_barbell_flat"} color="#0ea5e9" /></div>
-               </div>
-               <p className="text-[12px] text-slate-500 font-bold mb-6 mt-2 leading-relaxed">{focusWorkout.dettaglio}</p>
-               
-               <div className="flex gap-4">
-                   {Array.from({ length: getNumeroSet(focusWorkout.fase) }).map((_, i) => (
-                      <div key={i} className="flex-1 relative">
-                         <label className="text-[10px] text-slate-400 uppercase font-black tracking-widest block text-center mb-3">Set {i+1}</label>
-                         <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-4 px-2 text-center rounded-[1.2rem] text-[20px] font-black outline-none transition-all border-none appearance-none text-[#0ea5e9] focus:ring-2 focus:ring-cyan-400/50" placeholder="-" />
+      {focusWorkout && (() => {
+        // Recuperiamo i dati dell'esercizio (in caso di swap) e il colore esatto
+        const nomeAttuale = eserciziModificati[focusWorkout.id] || focusWorkout.nome;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const altEs = focusWorkout.alternative.find((a: any) => a.nome === nomeAttuale);
+        const currentEx = altEs || focusWorkout;
+        const phaseColor = focusWorkout.fase.includes('Fase 1') ? '#f97316' : (focusWorkout.fase.includes('Fase 2') ? '#0ea5e9' : '#ef4444');
+        
+        return (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 anim-pop">
+            <div className="bg-[#E0E5EC] w-full max-h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-white/20">
+              <button onClick={() => setFocusWorkout(null)} className="absolute top-5 right-6 text-slate-400 hover:text-slate-600 text-3xl font-bold z-20 border-none bg-transparent cursor-pointer">&times;</button>
+              
+              {/* PARTE ALTA: TIMER NEUMORFICO */}
+              <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-[#E0E5EC] relative shrink-0 pt-16 pb-8">
+                 <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-6 drop-shadow-sm">Rest Interval</p>
+                 
+                 {/* La chiave è qui: shrink-0 e aspect-square impediscono la deformazione a ovale */}
+                 <div className="relative flex items-center justify-center w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-[#E0E5EC] shadow-[10px_10px_20px_#a3b1c6,-10px_-10px_20px_#ffffff] mb-8 shrink-0 aspect-square">
+                   <div className="absolute inset-4 rounded-full bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] flex items-center justify-center">
+                      <div className="absolute inset-6 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex items-center justify-center">
+                          <span className="text-5xl font-light text-slate-700 font-mono tracking-widest drop-shadow-md">{formatTime(timeLeft)}</span>
                       </div>
-                   ))}
-               </div>
-               
-               <button onClick={() => setFocusWorkout(null)} className="w-full mt-8 py-4 bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 font-black uppercase tracking-widest text-[13px] rounded-2xl transition-all border-none cursor-pointer">CHIUDI FOCUS E SALVA SET</button>
+                   </div>
+                   <svg className="absolute w-full h-full -rotate-90 pointer-events-none drop-shadow-md" viewBox="0 0 100 100">
+                     <circle cx="50" cy="50" r="47" fill="none" stroke="#e2e8f0" strokeWidth="2" />
+                     <circle cx="50" cy="50" r="47" fill="none" stroke={phaseColor} strokeWidth="3.5" strokeDasharray="295.3" strokeDashoffset={295.3 - (295.3 * (timeLeft / (totalTimeRef.current || 1)))} strokeLinecap="round" className="transition-all duration-1000 ease-linear" />
+                   </svg>
+                 </div>
+                 
+                 <div className="flex gap-8 items-center">
+                    <button onClick={() => { setTimeLeft(totalTimeRef.current); setTimerActive(false); }} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-400 font-black border-none cursor-pointer">⏹</button>
+                    <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center font-black border-none cursor-pointer text-2xl pl-1" style={{color: phaseColor}}>{timerActive ? '⏸' : '▶'}</button>
+                    <button onClick={() => setTimeLeft(t => t + 15)} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-500 font-black text-xs border-none cursor-pointer">+15</button>
+                 </div>
+              </div>
+
+              {/* PARTE BASSA: ESERCIZIO E INPUT SET */}
+              <div className="bg-[#E0E5EC] shadow-[0_-8px_16px_rgba(163,177,198,0.3)] p-6 z-10 overflow-y-auto custom-scrollbar pb-safe sm:pb-8 rounded-t-[2.5rem] border-t border-white/50 shrink-0 flex-1">
+                 <div className="flex justify-between items-center mb-4 gap-4">
+                   <h3 className="font-black text-lg text-slate-700 tracking-tight leading-tight">{nomeAttuale}</h3>
+                   {/* Shrink-0 assicura che il box rimanga sempre un quadrato perfetto */}
+                   <div className="w-16 h-16 shrink-0 aspect-square bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] rounded-2xl flex items-center justify-center border border-white/40 p-2.5">
+                     <MediaVisualizer animKey={currentEx.anim || "chest_barbell_flat"} color={phaseColor} />
+                   </div>
+                 </div>
+                 <p className="text-[12px] text-slate-500 font-bold mb-6 leading-relaxed">{currentEx.dettaglio}</p>
+                 
+                 <div className="flex gap-4">
+                     {Array.from({ length: getNumeroSet(focusWorkout.fase) }).map((_, i) => (
+                        <div key={i} className="flex-1 relative">
+                           <label className="text-[10px] text-slate-400 uppercase font-black tracking-widest block text-center mb-3">Set {i+1}</label>
+                           <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] py-4 px-2 text-center rounded-[1.2rem] text-[20px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-slate-300" style={{color: phaseColor}} placeholder="-" />
+                        </div>
+                     ))}
+                 </div>
+                 
+                 <button onClick={() => setFocusWorkout(null)} className="w-full mt-8 py-4 bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 font-black uppercase tracking-widest text-[13px] rounded-2xl transition-all border-none cursor-pointer">CHIUDI E SALVA SET</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* --- MODALI SWAP --- */}
       {modalEsercizio && (
