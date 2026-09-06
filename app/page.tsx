@@ -702,24 +702,24 @@ export default function Home() {
       return (
         <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
           
-          {/* --- SPLASH SCREEN INTRO ANIMATA (OMNIFIT EVOLUTIVO DELUXE) --- */}
+          {/* --- SPLASH SCREEN INTRO ANIMATA (OMNIFIT EVOLUTIVO LENTO) --- */}
           {mostraIntro && (
             <div className="fixed inset-0 z-[9999] bg-[#E0E5EC] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out overflow-hidden" style={{ opacity: mostraIntro ? 1 : 0 }}>
               <style>{`
                 /* ANIMAZIONE TRACCIATO CERCHI / O GIGANTI */
-                .anim-circle-svg { stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawCircleSvg 4.5s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
+                .anim-circle-svg { stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawCircleSvg 6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
                 
                 /* ANIMAZIONE CERCHIO MICCIA "PROTOCOLLO EVOLUTIVO" */
-                .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+                .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
                 /* ANIMAZIONI TESTI E LOGO */
                 .anim-mni { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.4s forwards; }
                 .anim-fit { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.6s forwards; }
                 .anim-sub { opacity: 0; transform: translateY(15px); animation: slideUp 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 1.1s forwards; }
                 
-                /* SCORRIMENTO SFONDO LENTO E CINEMATOGRAFICO (5 SECONDI) */
-                .anim-bg-ltr { animation: slideLeftToRight 5s cubic-bezier(0.1, 0.7, 0.1, 1) forwards; }
-                .anim-bg-rtl { animation: slideRightToLeft 5.2s cubic-bezier(0.1, 0.7, 0.1, 1) 0.1s forwards; }
+                /* SCORRIMENTO SFONDO MOLTO PIÙ LENTO E LEGGIBILE (8.5 SECONDI) */
+                .anim-bg-ltr { animation: slideLeftToRight 8.5s linear forwards; }
+                .anim-bg-rtl { animation: slideRightToLeft 8.5s linear forwards; }
                 
                 @keyframes drawCircleSvg { to { stroke-dashoffset: 0; } }
                 @keyframes drawMiccia { to { stroke-dashoffset: 0; } }
@@ -727,28 +727,26 @@ export default function Home() {
                 @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
                 
                 @keyframes slideLeftToRight { 
-                   0% { transform: translateX(-25%); opacity: 0; } 
-                   15% { opacity: 0.10; }
-                   85% { opacity: 0.10; }
-                   100% { transform: translateX(15%); opacity: 0; } 
+                   0% { transform: translateX(-15%); opacity: 0; } 
+                   20% { opacity: 0.14; }
+                   80% { opacity: 0.14; }
+                   100% { transform: translateX(5%); opacity: 0; } 
                 }
                 @keyframes slideRightToLeft { 
-                   0% { transform: translateX(15%); opacity: 0; } 
-                   15% { opacity: 0.10; }
-                   85% { opacity: 0.10; }
-                   100% { transform: translateX(-25%); opacity: 0; } 
+                   0% { transform: translateX(5%); opacity: 0; } 
+                   20% { opacity: 0.14; }
+                   80% { opacity: 0.14; }
+                   100% { transform: translateX(-15%); opacity: 0; } 
                 }
               `}</style>
 
-              {/* 1. GIOCHI DI MOVIMENTO: LE 2 "O" GIGANTI DI SFONDO (SOPRA LE SCRITTE, SOTTO I BANNER) */}
+              {/* 1. GIOCHI DI MOVIMENTO: LE 2 "O" GIGANTI DI SFONDO */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
-                 {/* O Gigante in Alto a Sinistra */}
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
                     <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(132,204,22,0.3)]">
                       <circle cx="100" cy="100" r="75" fill="none" stroke="#84cc16" strokeWidth="38" className="anim-circle-svg" strokeLinecap="round" />
                     </svg>
                  </div>
-                 {/* O Gigante in Basso a Destra */}
                  <div className="absolute -bottom-24 -right-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-25">
                     <svg viewBox="0 0 200 200" className="w-full h-full rotate-90 drop-shadow-[0_0_15px_rgba(100,116,139,0.3)]">
                       <circle cx="100" cy="100" r="75" fill="none" stroke="#64748b" strokeWidth="38" className="anim-circle-svg" strokeLinecap="round" style={{animationDelay: '0.5s'}} />
@@ -756,7 +754,7 @@ export default function Home() {
                  </div>
               </div>
 
-              {/* 2. TESTI GIGANTI SCORREVOLI DI SFONDO (PIÙ LENTI) */}
+              {/* 2. TESTI GIGANTI SCORREVOLI DI SFONDO (FLUIDI E LENTI) */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                  <div className="absolute top-[12%] left-0 whitespace-nowrap text-[80px] sm:text-[130px] font-black text-slate-400 leading-none anim-bg-ltr opacity-0">
                     AI COACH • AI COACH • AI COACH • AI COACH
@@ -764,15 +762,14 @@ export default function Home() {
                  <div className="absolute top-[30%] right-0 whitespace-nowrap text-[90px] sm:text-[150px] font-black text-lime-500 leading-none anim-bg-rtl opacity-0">
                     ESERCIZI • ESERCIZI • ESERCIZI • ESERCIZI
                  </div>
-                 <div className="absolute bottom-[12%] left-0 whitespace-nowrap text-[75px] sm:text-[120px] font-black text-slate-400 leading-none anim-bg-ltr opacity-0" style={{animationDelay: '0.4s'}}>
+                 <div className="absolute bottom-[12%] left-0 whitespace-nowrap text-[75px] sm:text-[120px] font-black text-slate-400 leading-none anim-bg-ltr opacity-0" style={{animationDelay: '0.2s'}}>
                     ANALISI CORPOREA • ANALISI CORPOREA • ANALISI CORPOREA
                  </div>
               </div>
 
-              {/* 3. BLOCCO CENTRALE PRINCIPALE (LOGO + ETICHETTA MICCIA) */}
+              {/* 3. BLOCCO CENTRALE PRINCIPALE */}
               <div className="flex flex-col items-center justify-center z-10 relative mt-4">
                  
-                 {/* Banner Logo Superiore */}
                  <div className="flex items-center justify-center mb-5 px-8 py-4 bg-[#E0E5EC]/80 backdrop-blur-xl rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-white/60">
                    <div className="relative flex items-center justify-center -mr-1 z-10">
                      <svg width="65" height="65" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg">
@@ -786,13 +783,10 @@ export default function Home() {
                    </div>
                  </div>
 
-                 {/* Sottotitolo con Effetto Miccia / Scintilla sul Bordo */}
                  <div className="relative px-8 py-3 rounded-full bg-[#E0E5EC]/90 backdrop-blur-xl shadow-sm anim-sub overflow-hidden border border-transparent">
-                    {/* SVG animato della scintilla/miccia che traccia il bordo */}
                     <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 240 50" preserveAspectRatio="none">
                        <rect x="2" y="2" width="236" height="46" rx="23" fill="none" stroke="#84cc16" strokeWidth="3" className="anim-miccia-border drop-shadow-[0_0_8px_#84cc16]" />
                     </svg>
-                    {/* Testo interno */}
                     <p className="text-[12px] font-black text-slate-600 tracking-[0.4em] uppercase relative z-10">
                        Protocollo Evolutivo
                     </p>
