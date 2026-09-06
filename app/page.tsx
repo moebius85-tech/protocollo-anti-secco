@@ -739,7 +739,7 @@ export default function Home() {
             }
           `}</style>
 
-          {/* --- SCHERMATA DI LOGIN (RIMANE SEMPRE SOTTO, ATTENDE LA FINE DELLA INTRO) --- */}
+          {/* --- SCHERMATA DI LOGIN SOTTOSTANTE --- */}
           <div className={UI.card + " w-full max-w-sm z-10 anim-drop-down"}>
              <div className="flex justify-center items-center mb-10">
                 <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
@@ -765,16 +765,15 @@ export default function Home() {
                )}
                 
                 <button onClick={eseguiLogin} className={UI.btnPrimary + " w-full !mt-6"}>
-                   ACCEDI AL SESITEMA
+                   ACCEDI AL SISTEMA
                 </button>
              </div>
           </div>
 
-          {/* --- SPLASH SCREEN IN OVERLAY (SFUMA E SCOMPARE LENTAMENTE) --- */}
+          {/* --- SPLASH SCREEN IN OVERLAY --- */}
           {mostraIntro && (
             <div className="fixed inset-0 z-[9999] bg-[#E0E5EC] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out overflow-hidden pointer-events-none" style={{ opacity: mostraIntro ? 1 : 0 }}>
               
-              {/* O GIGANTI DI SFONDO */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
                     <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(132,204,22,0.3)]">
@@ -788,7 +787,6 @@ export default function Home() {
                  </div>
               </div>
 
-              {/* TESTI SCORREVOLI */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                  <div className="absolute top-[12%] left-0 whitespace-nowrap text-[80px] sm:text-[130px] font-black text-slate-400 leading-none anim-bg-ltr opacity-0">
                     AI COACH • AI COACH • AI COACH • AI COACH
@@ -801,7 +799,6 @@ export default function Home() {
                  </div>
               </div>
 
-              {/* LOGO CENTRALE */}
               <div className="flex flex-col items-center justify-center z-10 relative mt-4">
                  <div className="flex items-center justify-center mb-5 px-8 py-4 bg-[#E0E5EC]/80 backdrop-blur-xl rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-white/60">
                    <div className="relative flex items-center justify-center -mr-1 z-10">
