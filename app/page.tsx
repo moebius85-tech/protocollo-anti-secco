@@ -702,10 +702,9 @@ export default function Home() {
       return (
         <div className={"min-h-screen " + UI.bg + " flex items-center justify-center p-4 relative overflow-hidden font-sans"}>
           
-          {/* CSS BLINDATO IN LINEA (Zero apici inversi per evitare errori di compilazione) */}
           <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down { animation: dropDownPanel 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes dropDownPanel { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } } .anim-circle-svg { stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawCircleSvg 6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; } .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; } .anim-mni { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.4s forwards; } .anim-fit { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.6s forwards; } .anim-sub { opacity: 0; transform: translateY(15px); animation: slideUp 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 1.1s forwards; } .anim-bg-ltr { animation: slideLeftToRight 8.5s linear forwards; } .anim-bg-rtl { animation: slideRightToLeft 8.5s linear forwards; } @keyframes drawCircleSvg { to { stroke-dashoffset: 0; } } @keyframes drawMiccia { to { stroke-dashoffset: 0; } } @keyframes slideText { to { opacity: 1; transform: translateX(0); } } @keyframes slideUp { to { opacity: 1; transform: translateY(0); } } @keyframes slideLeftToRight { 0% { transform: translateX(-15%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(5%); opacity: 0; } } @keyframes slideRightToLeft { 0% { transform: translateX(5%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(-15%); opacity: 0; } }" }} />
 
-          {/* --- SCHERMATA DI LOGIN SOTTOSTANTE (Appare mentre la intro sfuma) --- */}
+          {/* --- PANNELLO DI LOGIN --- */}
           <div className={UI.card + " w-full max-w-sm z-10 anim-drop-down"}>
              <div className="flex justify-center items-center mb-10">
                 <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
@@ -735,7 +734,7 @@ export default function Home() {
              </div>
           </div>
 
-          {/* --- SPLASH SCREEN IN OVERLAY (Le animazioni WOW) --- */}
+          {/* --- SPLASH SCREEN INTRO --- */}
           {mostraIntro && (
             <div className="fixed inset-0 z-[9999] bg-[#E0E5EC] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out pointer-events-none" style={{ opacity: mostraIntro ? 1 : 0 }}>
               
@@ -794,40 +793,6 @@ export default function Home() {
         </div>
       );
     }
-
-          {/* --- SCHERMATA DI LOGIN NEUMORFICA --- */}
-          <div className={UI.card + " w-full max-w-sm z-10 anim-pop"} style={{animationDelay: '0.1s'}}>
-             <div className="flex justify-center items-center mb-10">
-                <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
-                  OMNI<span className="text-lime-500 drop-shadow-sm font-black">FIT</span>
-                </h1>
-             </div>
-             
-             <div className="space-y-6">
-                <div>
-                   <label className={UI.label}>Email Accesso</label>
-                   <input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className={UI.input} placeholder="atleta@mail.com" />
-                </div>
-                <div>
-               <label className={UI.label}>Password</label>
-               <input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && eseguiLogin()} className={UI.input} placeholder="••••••••" />
-            </div>
-            
-            {/* MESSAGGIO DI ERRORE */}
-            {loginError && (
-              <div className="bg-red-500/10 border border-red-500/50 p-3 rounded-xl text-center">
-                <span className="text-[10px] font-black text-red-500 uppercase tracking-widest">{loginError}</span>
-              </div>
-           )}
-            
-            <button onClick={eseguiLogin} className={UI.btnPrimary + " w-full !mt-6"}>
-               ACCEDI AL SISTEMA
-            </button>
-         </div>
-      </div>
-    </div>
-  );
-}
 
     // --- SE SEI AUTENTICATO, VEDI LA TUA VECCHIA HOME ---
     return (
