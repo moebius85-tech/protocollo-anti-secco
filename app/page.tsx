@@ -441,12 +441,24 @@ export default function Home() {
 
   const eliminaMisurazione = async (id: string) => { if(confirm("Eliminare misurazione?")) { await supabase.from("check_utente").delete().eq("id", id); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); } };
   const getUltimoCarico = (idEs: string) => { for (let i = storicoSessioni.length - 1; i >= 0; i--) { if (storicoSessioni[i].carichi[idEs]) return storicoSessioni[i].carichi[idEs]; } return '0'; };
+  
   const getNumeroSet = (repStr: string) => {
-    const matchX = repStr.match(/(\d+)x/i); // Es: "7x10" -> trova 7
+    const matchX = repStr.match(/(\d+)x/i); 
     if (matchX) return parseInt(matchX[1], 10);
-    const matchSerie = repStr.match(/(\d+)-?(\d+)?\s*serie/i); // Es: "3-4 serie" -> trova 4
+    const matchSerie = repStr.match(/(\d+)-?(\d+)?\s*serie/i);
     if (matchSerie) return matchSerie[2] ? parseInt(matchSerie[2], 10) : parseInt(matchSerie[1], 10);
-    return 3; // Fallback di sicurezza
+    return 3; 
+  };
+
+  const updateCaricoSet = (idEs: string, indexSet: number, valore: string) => { setCarichiAttuali(prev => { const arr = prev[idEs] ? [...prev[idEs]] : Array(5).fill(""); arr[indexSet] = valore; return { ...prev, [idEs]: arr }; }); };
+  
+  const salvaSessione = async () => {
+    if (Object.keys(carichiAttuali).length === 0) return alert("Inserisci almeno un carico!");
+    const sessioneCarichiStr: Record<string, string> = {};
+    Object.keys(carichiAttuali).forEach(k => { const pesiValidi = carichiAttuali[k].filter(v => v !== ""); if(pesiValidi.length > 0) sessioneCarichiStr[k] = pesiValidi.join(" | "); });
+    const payload = { nome_utente: utenteCorrente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: sessioneCarichiStr, data: new Date().toISOString() };
+    await supabase.from("storico_allenamenti").insert([payload]);
+    setCarichiAttuali({}); alert(`Sessione salvata.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta);
   };
   
   const toggleCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true } }));
