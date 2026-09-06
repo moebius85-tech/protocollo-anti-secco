@@ -147,6 +147,18 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
+  // --- STATI ADMIN CONTROL ROOM ---
+  const isAdmin = loginEmail === "leo@admin.com";
+  const [showAdmin, setShowAdmin] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [adminUtenti, setAdminUtenti] = useState<any[]>([]);
+  const [nuovoUtentePremium, setNuovoUtentePremium] = useState({ email: '', password: '', nome_atleta: '', scadenza: '' });
+
+  const apriAdmin = async () => {
+    const { data } = await supabase.from('utenti_premium').select('*').order('data_scadenza', { ascending: true });
+    if (data) setAdminUtenti(data);
+    setShowAdmin(true);
+  };
   // --- STATO SPLASH SCREEN INTRO ---
   const [mostraIntro, setMostraIntro] = useState(true);
 
@@ -969,6 +981,12 @@ export default function Home() {
           </h1>
         </div>
         <div className="text-right">
+          {/* BOTTONE SEGRETO ADMIN */}
+          {isAdmin && (
+             <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto">
+               👑 Control Room
+             </button>
+          )}
           <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
           <div className="flex flex-col items-end gap-2.5">
              <span className="text-sm font-bold text-slate-600 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
@@ -1670,6 +1688,72 @@ export default function Home() {
               })}
             </div>
           </div>
+        </div>
+      )}
+      {/* ========================================= */}
+      {/* 👑 ADMIN CONTROL ROOM (MODALE) 👑         */}
+      {/* ========================================= */}
+      {showAdmin && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[9999] p-4 sm:p-8 overflow-y-auto custom-scrollbar flex flex-col items-center">
+           <div className="w-full max-w-5xl bg-[#E0E5EC] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-10 mb-10">
+              <button onClick={() => setShowAdmin(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 text-3xl font-black transition-colors border-none bg-transparent cursor-pointer">&times;</button>
+              
+              <h2 className="text-2xl font-black uppercase tracking-widest text-slate-700 mb-8">👑 Admin <span className="text-red-500">Control Room</span></h2>
+              
+              {/* PANNELLO AGGIUNGI NUOVO CLIENTE */}
+              <div className="bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3)] p-6 rounded-3xl mb-8 border border-white/50">
+                 <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Nuovo Accesso Premium</h3>
+                 <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
+                    <div><label className={UI.label}>Email</label><input type="email" value={nuovoUtentePremium.email} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, email: e.target.value})} className={UI.input + " bg-white/60"} /></div>
+                    <div><label className={UI.label}>Password</label><input type="text" value={nuovoUtentePremium.password} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, password: e.target.value})} className={UI.input + " bg-white/60"} /></div>
+                    <div><label className={UI.label}>Nome Atleta (Uguale al DB)</label><input type="text" value={nuovoUtentePremium.nome_atleta} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, nome_atleta: e.target.value})} className={UI.input + " bg-white/60"} placeholder="Es. Mario" /></div>
+                    <div><label className={UI.label}>Scadenza</label><input type="date" value={nuovoUtentePremium.scadenza} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, scadenza: e.target.value})} className={UI.input + " bg-white/60"} /></div>
+                    <button onClick={async () => {
+                       if(!nuovoUtentePremium.email || !nuovoUtentePremium.scadenza) return alert("Inserisci almeno Email e Scadenza.");
+                       await supabase.from('utenti_premium').insert([{ email: nuovoUtentePremium.email, password: nuovoUtentePremium.password, nome_atleta: nuovoUtentePremium.nome_atleta, data_scadenza: nuovoUtentePremium.scadenza }]);
+                       setNuovoUtentePremium({ email: '', password: '', nome_atleta: '', scadenza: '' });
+                       apriAdmin(); // Ricarica la lista
+                    }} className={UI.btnPrimary + " h-12"}>+ AGGIUNGI</button>
+                 </div>
+              </div>
+
+              {/* LISTA CLIENTI ATTIVI E GESTIONE SCADENZE */}
+              <div className="space-y-4">
+                 <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Clienti nel Database</h3>
+                 {adminUtenti.map((u, idx) => (
+                    <div key={idx} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                       <div className="flex-1 text-center sm:text-left">
+                          <p className="font-black text-slate-700 text-lg uppercase">{u.nome_atleta}</p>
+                          <p className="text-xs text-slate-500 font-bold tracking-widest">{u.email} <span className="text-slate-300 mx-2">|</span> Pass: {u.password}</p>
+                       </div>
+                       <div className="flex flex-wrap justify-center sm:justify-end items-center gap-3 w-full sm:w-auto">
+                          {/* Modifica Scadenza al volo */}
+                          <input type="date" defaultValue={u.data_scadenza} onChange={(e) => u.nuova_scadenza = e.target.value} className={UI.input + " !w-auto text-center font-black text-red-500 !py-2.5"} />
+                          
+                          <button onClick={async () => {
+                             if(u.nuova_scadenza) {
+                                await supabase.from('utenti_premium').update({ data_scadenza: u.nuova_scadenza }).eq('id', u.id);
+                                alert(`Scadenza per ${u.nome_atleta} aggiornata al ${u.nuova_scadenza}!`);
+                                apriAdmin();
+                             }
+                          }} className="bg-emerald-500 text-white font-bold px-4 py-3 rounded-xl uppercase tracking-widest text-[10px] shadow-[0_4px_10px_rgba(16,185,129,0.3)] hover:scale-105 transition-all border-none cursor-pointer">
+                             AGGIORNA
+                          </button>
+                          
+                          <button onClick={async () => {
+                             if(confirm(`Sei assolutamente sicuro di voler revocare l'accesso a ${u.nome_atleta}?`)) {
+                                await supabase.from('utenti_premium').delete().eq('id', u.id);
+                                apriAdmin();
+                             }
+                          }} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-700 font-bold px-4 py-3 rounded-xl uppercase tracking-widest text-[10px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">
+                             ELIMINA
+                          </button>
+                       </div>
+                    </div>
+                 ))}
+                 {adminUtenti.length === 0 && <p className="text-center text-slate-400 font-bold text-sm py-4">Nessun utente nel database.</p>}
+              </div>
+           </div>
         </div>
       )}
       
