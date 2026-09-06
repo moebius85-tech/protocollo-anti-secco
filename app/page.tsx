@@ -205,8 +205,14 @@ export default function Home() {
 
     // LOGIN COMPLETATO CON SUCCESSO
     setUtenteCorrente(data.nome_atleta);
+    
+    // 1. Forza la tendina a mostrare SOLO il nome del cliente (sparisce Leonardo)
+    setListaAtleti([data.nome_atleta]); 
+    
     setIsAuthenticated(true);
-    caricaProfilo(data.nome_atleta, "Massa", "Equilibrata");
+    
+    // 2. Apriamo il Wizard (Form Domande) invece di buttarlo negli esercizi
+    setModalWizard(true);
   };
 
   // --- STATI ADMIN CONTROL ROOM ---
