@@ -705,38 +705,47 @@ export default function Home() {
                 .anim-fit { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.6s forwards; }
                 .anim-sub { opacity: 0; transform: translateY(15px); animation: slideUp 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 1.1s forwards; }
                 
-                /* ANIMAZIONI SFONDO GIGANTE */
-                .anim-bg-1 { animation: slideBg 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-                .anim-bg-2 { animation: slideBg 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards; }
-                .anim-bg-3 { animation: slideBg 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards; }
+                /* ANIMAZIONI SFONDO GIGANTE ALTERNATE */
+                .anim-bg-ltr { animation: slideLeftToRight 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+                .anim-bg-rtl { animation: slideRightToLeft 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards; }
                 
                 @keyframes drawCircle { to { stroke-dashoffset: 0; } }
                 @keyframes slideText { to { opacity: 1; transform: translateX(0); } }
                 @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
-                @keyframes slideBg { 
-                   0% { transform: translateX(-15%); opacity: 0; } 
-                   20% { opacity: 0.15; }
-                   80% { opacity: 0.15; }
+                
+                @keyframes slideLeftToRight { 
+                   0% { transform: translateX(-20%); opacity: 0; } 
+                   20% { opacity: 0.12; }
+                   80% { opacity: 0.12; }
                    100% { transform: translateX(10%); opacity: 0; } 
+                }
+                @keyframes slideRightToLeft { 
+                   0% { transform: translateX(10%); opacity: 0; } 
+                   20% { opacity: 0.12; }
+                   80% { opacity: 0.12; }
+                   100% { transform: translateX(-20%); opacity: 0; } 
                 }
               `}</style>
 
-              {/* 1. SFONDO TESTUALE GIGANTE SCORREVOLE */}
-              <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none z-0 w-full h-full">
-                 <div className="whitespace-nowrap text-[90px] sm:text-[140px] md:text-[180px] font-black text-slate-400 leading-[0.8] anim-bg-1 opacity-0 -ml-20">
-                    AI COACH
+              {/* 1. TESTI GIGANTI SCORREVOLI (CORNICE AL LOGO) */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                 {/* In alto - Va verso destra */}
+                 <div className="absolute top-[12%] left-0 whitespace-nowrap text-[80px] sm:text-[120px] font-black text-slate-400 leading-none anim-bg-ltr opacity-0">
+                    AI COACH • AI COACH • AI COACH
                  </div>
-                 <div className="whitespace-nowrap text-[100px] sm:text-[150px] md:text-[200px] font-black text-lime-500 leading-[0.8] anim-bg-2 opacity-0 ml-32">
-                    ESERCIZI
+                 {/* Centro/Alto - Va verso sinistra */}
+                 <div className="absolute top-[28%] right-0 whitespace-nowrap text-[90px] sm:text-[140px] font-black text-lime-500 leading-none anim-bg-rtl opacity-0">
+                    ESERCIZI • ESERCIZI • ESERCIZI
                  </div>
-                 <div className="whitespace-nowrap text-[80px] sm:text-[130px] md:text-[160px] font-black text-slate-400 leading-[0.8] anim-bg-3 opacity-0 -ml-40">
-                    ANALISI CORPOREA
+                 {/* In basso - Va verso destra */}
+                 <div className="absolute bottom-[15%] left-0 whitespace-nowrap text-[75px] sm:text-[110px] font-black text-slate-400 leading-none anim-bg-ltr opacity-0" style={{animationDelay: '0.4s'}}>
+                    ANALISI CORPOREA • ANALISI CORPOREA
                  </div>
               </div>
 
-              {/* 2. LOGO CENTRALE IN PRIMO PIANO */}
-              <div className="flex flex-col items-center justify-center z-10 relative">
-                 <div className="flex items-center justify-center mb-6 px-8 py-4 bg-[#E0E5EC]/50 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.05)] border border-white/40">
+              {/* 2. LOGO CENTRALE (CON EFFETTO VETRO) */}
+              <div className="flex flex-col items-center justify-center z-10 relative mt-8">
+                 <div className="flex items-center justify-center mb-6 px-8 py-4 bg-[#E0E5EC]/70 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] border border-white/50">
                    <div className="relative flex items-center justify-center -mr-1 z-10">
                      <svg width="65" height="65" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg">
                        <circle cx="50" cy="50" r="36" fill="#E0E5EC" />
@@ -748,7 +757,7 @@ export default function Home() {
                       <span className="text-[#84cc16] anim-fit">FIT</span>
                    </div>
                  </div>
-                 <p className="text-[12px] font-black text-slate-600 tracking-[0.4em] uppercase anim-sub bg-[#E0E5EC]/80 backdrop-blur-md px-6 py-2 rounded-full border border-white/50 shadow-sm">
+                 <p className="text-[12px] font-black text-slate-600 tracking-[0.4em] uppercase anim-sub bg-[#E0E5EC]/90 backdrop-blur-xl px-6 py-2 rounded-full border border-white/60 shadow-sm">
                     Protocollo Evolutivo
                  </p>
               </div>
@@ -1740,9 +1749,21 @@ export default function Home() {
                     <div><label className={UI.label}>Scadenza</label><input type="date" value={nuovoUtentePremium.scadenza} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, scadenza: e.target.value})} className={UI.input + " bg-white/60"} /></div>
                     <button onClick={async () => {
                        if(!nuovoUtentePremium.email || !nuovoUtentePremium.scadenza) return alert("Inserisci almeno Email e Scadenza.");
-                       await supabase.from('utenti_premium').insert([{ email: nuovoUtentePremium.email, password: nuovoUtentePremium.password, nome_atleta: nuovoUtentePremium.nome_atleta, data_scadenza: nuovoUtentePremium.scadenza }]);
-                       setNuovoUtentePremium({ email: '', password: '', nome_atleta: '', scadenza: '' });
-                       apriAdmin(); // Ricarica la lista
+                       
+                       const { error } = await supabase.from('utenti_premium').insert([{ 
+                         email: nuovoUtentePremium.email, 
+                         password: nuovoUtentePremium.password, 
+                         nome_atleta: nuovoUtentePremium.nome_atleta, 
+                         data_scadenza: nuovoUtentePremium.scadenza 
+                       }]);
+                       
+                       if (error) {
+                          alert("Errore Database: " + error.message);
+                       } else {
+                          setNuovoUtentePremium({ email: '', password: '', nome_atleta: '', scadenza: '' });
+                          apriAdmin(); // Ricarica la lista
+                          alert("Atleta aggiunto con successo!");
+                       }
                     }} className={UI.btnPrimary + " h-12"}>+ AGGIUNGI</button>
                  </div>
               </div>
