@@ -160,6 +160,53 @@ export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  const eseguiLogin = async () => {
+    setLoginError(""); // Resetta errori precedenti
+    
+    if (!loginEmail || !loginPassword) {
+      setLoginError("Inserisci email e password.");
+      return;
+    }
+
+    // 🌟 GOD MODE - BACKUP FAILSAFE (Se Supabase dovesse essere offline, tu entri comunque)
+    if (loginEmail === "leo@admin.com" && loginPassword === "omnifit2026") {
+      setUtenteCorrente("Leonardo");
+      setIsAuthenticated(true);
+      return;
+    }
+
+    setIsDataLoading(true);
+    
+    // Controlla se l'utente esiste nella tabella appena creata
+    const { data, error } = await supabase
+      .from('utenti_premium')
+      .select('*')
+      .eq('email', loginEmail)
+      .eq('password', loginPassword)
+      .single();
+
+    setIsDataLoading(false);
+
+    if (error || !data) {
+      setLoginError("Credenziali non valide o account inesistente.");
+      return;
+    }
+
+    // Controllo Abbonamento Scaduto
+    const oggi = new Date();
+    const scadenza = new Date(data.data_scadenza);
+    if (oggi > scadenza) {
+      setLoginError("Accesso negato: Abbonamento scaduto.");
+      return;
+    }
+
+    // LOGIN COMPLETATO CON SUCCESSO
+    setUtenteCorrente(data.nome_atleta);
+    setIsAuthenticated(true);
+    caricaProfilo(data.nome_atleta, "Massa", "Equilibrata");
+  };
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
   
@@ -680,19 +727,25 @@ export default function Home() {
                    <input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className={UI.input} placeholder="atleta@mail.com" />
                 </div>
                 <div>
-                   <label className={UI.label}>Password</label>
-                   <input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} className={UI.input} placeholder="••••••••" />
-                </div>
-                
-                {/* Tasto Login (per ora finto, poi lo leghiamo a Supabase) */}
-                <button onClick={() => setIsAuthenticated(true)} className={UI.btnPrimary + " w-full !mt-10"}>
-                   LOGIN
-                </button>
-             </div>
-          </div>
-        </div>
-      );
-    }
+               <label className={UI.label}>Password</label>
+               <input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && eseguiLogin()} className={UI.input} placeholder="••••••••" />
+            </div>
+            
+            {/* MESSAGGIO DI ERRORE */}
+            {loginError && (
+              <div className="bg-red-500/10 border border-red-500/50 p-3 rounded-xl text-center">
+                <span className="text-[10px] font-black text-red-500 uppercase tracking-widest">{loginError}</span>
+              </div>
+           )}
+            
+            <button onClick={eseguiLogin} className={UI.btnPrimary + " w-full !mt-6"}>
+               ACCEDI AL SISTEMA
+            </button>
+         </div>
+      </div>
+    </div>
+  );
+}
 
     // --- SE SEI AUTENTICATO, VEDI LA TUA VECCHIA HOME ---
     return (
