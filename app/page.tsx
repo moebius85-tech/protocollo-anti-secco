@@ -156,7 +156,10 @@ export default function Home() {
     }, 2800);
     return () => clearTimeout(timer);
   }, []);
-  
+  // --- STATI LOGIN E AUTENTICAZIONE ---
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
   
@@ -625,43 +628,77 @@ export default function Home() {
     return t;
   };
   if (appState === 'HOME') {
+    
+    // --- MURO DI LOGIN ---
+    if (!isAuthenticated) {
+      return (
+        <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
+          
+          {/* --- SPLASH SCREEN INTRO ANIMATA (OMNIFIT) --- */}
+          {mostraIntro && (
+            <div className="fixed inset-0 z-[9999] bg-[#E0E5EC] flex flex-col items-center justify-center transition-opacity duration-700 ease-in-out" style={{ opacity: mostraIntro ? 1 : 0 }}>
+              <style>{`
+                .anim-circle { stroke-dasharray: 250; stroke-dashoffset: 250; animation: drawCircle 0.8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
+                .anim-mni { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.4s forwards; }
+                .anim-fit { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.6s forwards; }
+                .anim-sub { opacity: 0; transform: translateY(15px); animation: slideUp 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 1.1s forwards; }
+                @keyframes drawCircle { to { stroke-dashoffset: 0; } }
+                @keyframes slideText { to { opacity: 1; transform: translateX(0); } }
+                @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+              `}</style>
+              <div className="flex flex-col items-center justify-center">
+                 <div className="flex items-center justify-center mb-4 pl-4">
+                   <div className="relative flex items-center justify-center -mr-1 z-10">
+                     <svg width="65" height="65" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg">
+                       <circle cx="50" cy="50" r="36" fill="#E0E5EC" />
+                       <circle cx="50" cy="50" r="36" fill="none" stroke="#84cc16" strokeWidth="22" className="anim-circle" strokeLinecap="square" />
+                     </svg>
+                   </div>
+                   <div className="flex items-center text-[65px] font-black tracking-tighter leading-none pt-1">
+                      <span className="text-slate-500 anim-mni">MNI</span>
+                      <span className="text-[#84cc16] anim-fit">FIT</span>
+                   </div>
+                 </div>
+                 <p className="text-[11px] font-black text-slate-400 tracking-[0.4em] uppercase anim-sub">
+                    Protocollo Anti-Secco
+                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* --- SCHERMATA DI LOGIN NEUMORFICA --- */}
+          <div className={UI.card + " w-full max-w-sm z-10 anim-pop"} style={{animationDelay: '0.1s'}}>
+             <div className="flex justify-center items-center mb-10">
+                <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
+                  OMNI<span className="text-lime-500 drop-shadow-sm font-black">FIT</span>
+                </h1>
+             </div>
+             
+             <div className="space-y-6">
+                <div>
+                   <label className={UI.label}>Email Accesso</label>
+                   <input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className={UI.input} placeholder="atleta@mail.com" />
+                </div>
+                <div>
+                   <label className={UI.label}>Password</label>
+                   <input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} className={UI.input} placeholder="••••••••" />
+                </div>
+                
+                {/* Tasto Login (per ora finto, poi lo leghiamo a Supabase) */}
+                <button onClick={() => setIsAuthenticated(true)} className={UI.btnPrimary + " w-full !mt-10"}>
+                   LOGIN
+                </button>
+             </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- SE SEI AUTENTICATO, VEDI LA TUA VECCHIA HOME ---
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
-        
-        {/* --- SPLASH SCREEN INTRO ANIMATA (OMNIFIT) --- */}
-        {mostraIntro && (
-          <div className="fixed inset-0 z-[9999] bg-[#E0E5EC] flex flex-col items-center justify-center transition-opacity duration-700 ease-in-out" style={{ opacity: mostraIntro ? 1 : 0 }}>
-            <style>{`
-              .anim-circle { stroke-dasharray: 250; stroke-dashoffset: 250; animation: drawCircle 0.8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
-              .anim-mni { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.4s forwards; }
-              .anim-fit { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.6s forwards; }
-              .anim-sub { opacity: 0; transform: translateY(15px); animation: slideUp 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 1.1s forwards; }
-              @keyframes drawCircle { to { stroke-dashoffset: 0; } }
-              @keyframes slideText { to { opacity: 1; transform: translateX(0); } }
-              @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
-            `}</style>
-            <div className="flex flex-col items-center justify-center">
-               <div className="flex items-center justify-center mb-4 pl-4">
-                 <div className="relative flex items-center justify-center -mr-1 z-10">
-                   <svg width="65" height="65" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg">
-                     <circle cx="50" cy="50" r="36" fill="#E0E5EC" />
-                     <circle cx="50" cy="50" r="36" fill="none" stroke="#84cc16" strokeWidth="22" className="anim-circle" strokeLinecap="square" />
-                   </svg>
-                 </div>
-                 <div className="flex items-center text-[65px] font-black tracking-tighter leading-none pt-1">
-                    <span className="text-slate-500 anim-mni">MNI</span>
-                    <span className="text-[#84cc16] anim-fit">FIT</span>
-                 </div>
-               </div>
-               <p className="text-[11px] font-black text-slate-400 tracking-[0.4em] uppercase anim-sub">
-                  Protocollo Anti-Secco
-               </p>
-            </div>
-          </div>
-        )}
-
         <div className={UI.card + " w-full max-w-md z-10 anim-pop"} style={{animationDelay: '0.1s'}}>
-          <div className="flex justify-center items-center mb-8">
+           <div className="flex justify-center items-center mb-8">
               <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
                 OMNI<span className="text-lime-500 drop-shadow-sm font-black">FIT</span>
               </h1>
