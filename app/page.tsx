@@ -202,6 +202,7 @@ export default function Home() {
   const [inputChat, setInputChat] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [fileAllegato, setFileAllegato] = useState<{data: string, mimeType: string, nome: string} | null>(null);
+  const [fileCustomPasto, setFileCustomPasto] = useState<Record<string, {data: string, mimeType: string, nome: string} | null>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -370,6 +371,7 @@ export default function Home() {
   const gestisciCaricamentoPartenza = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFotoPartenza({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
   const gestisciCaricamentoArrivo = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFotoArrivo({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
   const gestisciCaricamentoFile = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFileAllegato({ data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }); }; reader.readAsDataURL(file); };
+  const gestisciCaricamentoFilePasto = (e: React.ChangeEvent<HTMLInputElement>, cat: string) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onloadend = () => { setFileCustomPasto(prev => ({...prev, [cat]: { data: (reader.result as string).split(',')[1], mimeType: file.type, nome: file.name }})); }; reader.readAsDataURL(file); };
 
   const analizzaObiettivoWizard = async () => {
     setLoadingWizard(true);
@@ -416,19 +418,24 @@ export default function Home() {
   };
 
   const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
-    if(!nomeCibo.trim()) return alert("Inserisci il nome.");
+    if(!nomeCibo.trim() && !fileCustomPasto[cat]) return alert("Inserisci il nome del prodotto o allega una foto.");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
     try {
-      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Utente: "${nomeCibo}". Calcola macro per porzione. Restituisci: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo}]. Se cat è Integrazione, scrivi di seguito se per la fase: ${protocolloAttivo} e dieta: ${tipoDieta} questo prodotto va bene.` }) });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = { message: `Prodotto: "${nomeCibo || 'Foto allegata'}". Calcola macro per singola porzione. Restituisci la stringa esatta: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo || 'Prodotto'}]. Se cat è Integrazione, aggiungi il tuo parere per la fase: ${protocolloAttivo} e dieta: ${tipoDieta}.` };
+      if (fileCustomPasto[cat]) { payload.file = { data: fileCustomPasto[cat]!.data, mimeType: fileCustomPasto[cat]!.mimeType }; }
+      
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json();
       const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout|Integrazione)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
         updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString()); updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString()); updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString()); updateCustomMeal(cat, 'nome', match[5].trim());
         const feedback = data.reply.replace(match[0], '').trim();
         if(feedback && cat === 'Integrazione') {
-            setChatLog(prev => [...prev, { role: 'ai', text: `🔎 Feedback IA per ${nomeCibo}:\n${feedback}` }]);
-            alert("Integratore salvato! C'è un feedback del Coach IA per te nella sezione Chat.");
+            setChatLog(prev => [...prev, { role: 'ai', text: `🔎 Feedback IA per ${nomeCibo || 'Prodotto'}:\n${feedback}` }]);
+            alert("Integratore analizzato! Trovi il feedback del Coach nella chat.");
         }
+        setFileCustomPasto(prev => ({...prev, [cat]: null})); // Pulisci la foto dopo averla inviata
       } else { alert("Non riconosciuto. Risposta: " + data.reply); }
     } catch(e) { console.log(e); alert("Errore di rete."); }
     setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
@@ -1128,10 +1135,20 @@ export default function Home() {
                         {isCustom ? (
                            <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
                              <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
-                             <div className="flex gap-4 mb-4 ml-2">
-                                <input type="text" placeholder="Es. Mass Gainer" value={pastiCustom[cat]?.nome || ''} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50"} />
-                                <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-6 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>🪄 AI</button>
+                             <div className="flex gap-3 mb-4 ml-2 items-center">
+                                <label className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-full transition-all border-none cursor-pointer">
+                                   📎
+                                   <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, cat)} />
+                                </label>
+                                <input type="text" placeholder="Es. Mass Gainer" value={pastiCustom[cat]?.nome || ''} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50 min-w-0"} />
+                                <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat]?.nome || '')} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-5 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>🪄 AI</button>
                              </div>
+                             {fileCustomPasto[cat] && (
+                                <div className="flex items-center gap-2 mb-4 ml-2 p-2 bg-white/50 rounded-xl w-fit border border-white/60">
+                                   <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]">📎 {fileCustomPasto[cat]!.nome}</span>
+                                   <button onClick={() => setFileCustomPasto(prev => ({...prev, [cat]: null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
+                                </div>
+                             )}
                              <div className="flex gap-4 ml-2">
                                 <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat]?.cho || ''} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
                                 <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat]?.pro || ''} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
@@ -1186,10 +1203,20 @@ export default function Home() {
                     {isCustom ? (
                        <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
                          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
-                         <div className="flex gap-4 mb-4 ml-2">
-                            <input type="text" placeholder="Es. 35g Plumcake" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50"} />
-                            <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-6 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>🪄 AI</button>
-                         </div>
+                         <div className="flex gap-3 mb-4 ml-2 items-center">
+                                <label className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-full transition-all border-none cursor-pointer">
+                                   📎
+                                   <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, cat)} />
+                                </label>
+                                <input type="text" placeholder="Es. 35g Plumcake" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50 min-w-0"} />
+                                <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-5 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>🪄 AI</button>
+                             </div>
+                             {fileCustomPasto[cat] && (
+                                <div className="flex items-center gap-2 mb-4 ml-2 p-2 bg-white/50 rounded-xl w-fit border border-white/60">
+                                   <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]">📎 {fileCustomPasto[cat]!.nome}</span>
+                                   <button onClick={() => setFileCustomPasto(prev => ({...prev, [cat]: null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
+                                </div>
+                             )}
                          <div className="flex gap-4 ml-2">
                             <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
                             <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
