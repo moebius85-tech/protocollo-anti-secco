@@ -441,15 +441,12 @@ export default function Home() {
 
   const eliminaMisurazione = async (id: string) => { if(confirm("Eliminare misurazione?")) { await supabase.from("check_utente").delete().eq("id", id); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); } };
   const getUltimoCarico = (idEs: string) => { for (let i = storicoSessioni.length - 1; i >= 0; i--) { if (storicoSessioni[i].carichi[idEs]) return storicoSessioni[i].carichi[idEs]; } return '0'; };
-  const getNumeroSet = (fase: string) => { if (fase.includes('Fase 1')) return fastWorkout ? 3 : 4; return fastWorkout ? 2 : 3; };
-  const updateCaricoSet = (idEs: string, indexSet: number, valore: string) => { setCarichiAttuali(prev => { const arr = prev[idEs] ? [...prev[idEs]] : Array(5).fill(""); arr[indexSet] = valore; return { ...prev, [idEs]: arr }; }); };
-  const salvaSessione = async () => {
-    if (Object.keys(carichiAttuali).length === 0) return alert("Inserisci almeno un carico!");
-    const sessioneCarichiStr: Record<string, string> = {};
-    Object.keys(carichiAttuali).forEach(k => { const pesiValidi = carichiAttuali[k].filter(v => v !== ""); if(pesiValidi.length > 0) sessioneCarichiStr[k] = pesiValidi.join(" | "); });
-    const payload = { nome_utente: utenteCorrente, giornata: `${giornoCalendario} - ${schedaAttiva}`, dettagli_esercizi: sessioneCarichiStr, data: new Date().toISOString() };
-    await supabase.from("storico_allenamenti").insert([payload]);
-    setCarichiAttuali({}); alert(`Sessione salvata.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta);
+  const getNumeroSet = (repStr: string) => {
+    const matchX = repStr.match(/(\d+)x/i); // Es: "7x10" -> trova 7
+    if (matchX) return parseInt(matchX[1], 10);
+    const matchSerie = repStr.match(/(\d+)-?(\d+)?\s*serie/i); // Es: "3-4 serie" -> trova 4
+    if (matchSerie) return matchSerie[2] ? parseInt(matchSerie[2], 10) : parseInt(matchSerie[1], 10);
+    return 3; // Fallback di sicurezza
   };
   
   const toggleCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true } }));
@@ -1210,15 +1207,16 @@ export default function Home() {
                     const currentEx = altEs || es;
                     
                     const ultimoCarico = getUltimoCarico(es.id);
-                    const numeroSetTarget = getNumeroSet(es.fase);
                     
                     const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#0ea5e9' : '#ef4444'); 
-                    const phaseTint = es.fase.includes('Fase 1') ? 'bg-orange-400/15 border border-orange-400/30' : (es.fase.includes('Fase 2') ? 'bg-cyan-400/15 border border-cyan-400/30' : 'bg-red-400/15 border border-red-400/30');
+                    const phaseTint = es.fase.includes('Fase 1') ? 'bg-orange-400/15 border-orange-400/30' : (es.fase.includes('Fase 2') ? 'bg-cyan-400/15 border-cyan-400/30' : 'bg-red-400/15 border-red-400/30');
                     
                     const animType = currentEx.anim || "chest_barbell_flat"; 
                     
                     let repMostrate = es.rep;
                     if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
+
+                    const numeroSetTarget = getNumeroSet(repMostrate);
 
                     return (
                       <div key={`${es.id}-${nomeAttuale}`} className={`${phaseTint} backdrop-blur-md shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
@@ -1369,7 +1367,7 @@ export default function Home() {
                  </div>
                  
                  <div className="flex gap-4">
-                     {Array.from({ length: getNumeroSet(focusWorkout.fase) }).map((_, i) => (
+                     {Array.from({ length: getNumeroSet(repMostrate) }).map((_, i) => (
                         <div key={i} className="flex-1 relative">
                            <label className="text-[10px] text-slate-600 uppercase font-black tracking-widest block text-center mb-3">Set {i+1}</label>
                            <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-4 px-2 text-center rounded-[1.2rem] text-[20px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
