@@ -194,7 +194,7 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
-  const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
+  const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Integrazione: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
   const [modalAlimento, setModalAlimento] = useState(false);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
   const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
@@ -400,11 +400,11 @@ export default function Home() {
     setInputChat(""); setFileAllegato(null); setIsTyping(true);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payload: any = { message: msg, context: `SEI IL COACH IA. Utente: ${utenteCorrente}. Estrai Macro e scrivi alla fine: [MAGIC_MACRO | PASTO_TARGET | cho | pro | fat | NOME]` };
+      const payload: any = { message: msg, context: `SEI IL COACH IA. Utente: ${utenteCorrente}, Obiettivo: ${protocolloAttivo}, Dieta: ${tipoDieta}. Estrai Macro e scrivi alla fine: [MAGIC_MACRO | PASTO_TARGET | cho | pro | fat | NOME]. PASTO_TARGET può essere Pasto1, Pasto2, Pasto3, PostWorkout o Integrazione. Se è Integrazione, analizza i macro e scrivi il tuo parere se sono adatti alla sua fase attuale.` };
       if (fileAllegato) payload.file = { data: fileAllegato.data, mimeType: fileAllegato.mimeType };
       const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await response.json(); let responseText = data.reply;
-      const match = responseText.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
+      const match = responseText.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout|Integrazione)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
           setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
@@ -416,14 +416,19 @@ export default function Home() {
   };
 
   const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
-    if(!nomeCibo.trim()) return alert("Inserisci il nome del sgarro.");
+    if(!nomeCibo.trim()) return alert("Inserisci il nome.");
     setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
     try {
-      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Utente: "${nomeCibo}". Calcola macro. Restituisci SOLO: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo}]` }) });
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Utente: "${nomeCibo}". Calcola macro per porzione. Restituisci: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo}]. Se cat è Integrazione, scrivi di seguito se per la fase: ${protocolloAttivo} e dieta: ${tipoDieta} questo prodotto va bene.` }) });
       const data = await response.json();
-      const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
+      const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout|Integrazione)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
         updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString()); updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString()); updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString()); updateCustomMeal(cat, 'nome', match[5].trim());
+        const feedback = data.reply.replace(match[0], '').trim();
+        if(feedback && cat === 'Integrazione') {
+            setChatLog(prev => [...prev, { role: 'ai', text: `🔎 Feedback IA per ${nomeCibo}:\n${feedback}` }]);
+            alert("Integratore salvato! C'è un feedback del Coach IA per te nella sezione Chat.");
+        }
       } else { alert("Non riconosciuto. Risposta: " + data.reply); }
     } catch(e) { console.log(e); alert("Errore di rete."); }
     setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
@@ -544,7 +549,15 @@ export default function Home() {
      else if(originalMeals[cat]) { sumNonCustomOrigCho += activeDieta === 'Keto' ? 1 : originalMeals[cat].cho; sumNonCustomOrigPro += originalMeals[cat].pro; sumNonCustomOrigFat += originalMeals[cat].fat; }
   });
 
-  const remainingCho = Math.max(0, targetCho - customCho - intraCho); const remainingPro = Math.max(0, targetPro - customPro - intraPro); const remainingFat = Math.max(0, targetFat - customFat - intraFat);
+  // GESTIONE INTEGRAZIONE CUSTOM: Se inserita, sovrascrive i macro intra-workout di default
+  const appliedIntraCho = pastiCustom['Integrazione'].attivo ? (Number(pastiCustom['Integrazione'].cho) || 0) : intraCho;
+  const appliedIntraPro = pastiCustom['Integrazione'].attivo ? (Number(pastiCustom['Integrazione'].pro) || 0) : intraPro;
+  const appliedIntraFat = pastiCustom['Integrazione'].attivo ? (Number(pastiCustom['Integrazione'].fat) || 0) : intraFat;
+
+  const remainingCho = Math.max(0, targetCho - customCho - appliedIntraCho); 
+  const remainingPro = Math.max(0, targetPro - customPro - appliedIntraPro); 
+  const remainingFat = Math.max(0, targetFat - customFat - appliedIntraFat);
+  
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const finalMeals: Record<string, any> = {};
   activeCategories.forEach(cat => {
@@ -559,7 +572,7 @@ export default function Home() {
      }
   });
 
-  let actualCho = intraCho + customCho, actualPro = intraPro + customPro, actualFat = intraFat + customFat;
+  let actualCho = appliedIntraCho + customCho, actualPro = appliedIntraPro + customPro, actualFat = appliedIntraFat + customFat;
   activeCategories.forEach(cat => { if(!pastiCustom[cat].attivo && finalMeals[cat]) { actualCho += finalMeals[cat].cho; actualPro += finalMeals[cat].pro; actualFat += finalMeals[cat].fat; } });
   const actualIntakeKcal = Math.round((actualCho * 4) + (actualPro * 4) + (actualFat * 9));
 
@@ -1082,16 +1095,70 @@ export default function Home() {
               <div className="space-y-7">
               {generaTimelineDieta().map((blocco, idx) => {
                 if (blocco.isIntra) {
-                  return (
-                    <div key={`intra-${idx}`} className={`bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
-                      <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
-                      <div className="flex justify-between items-start mb-4">
-                        <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
-                        <span className="text-[10px] font-black text-white bg-gradient-to-r from-orange-400 to-rose-400 px-4 py-2 rounded-full shadow-md"><AnimatedCounter value={Math.round((intraCho*4)+(intraPro*4))} /> KCAL</span>
+                  if (blocco.titolo === "⏱️ DIGIUNO 16:8") {
+                    return (
+                      <div key={`intra-${idx}`} className={`bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                        <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
+                        <div className="flex justify-between items-start mb-4">
+                          <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
+                        </div>
+                        <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
                       </div>
-                      <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
-                    </div>
-                  );
+                    );
+                  } else {
+                    const cat = 'Integrazione';
+                    const isCustom = pastiCustom[cat]?.attivo;
+                    const intraKcal = Math.round((appliedIntraCho*4)+(appliedIntraPro*4)+(appliedIntraFat*9));
+
+                    return (
+                      <div key={`intra-${idx}`} className={`bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] relative overflow-hidden p-6 rounded-3xl anim-pop ring-2 ring-orange-300/50`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                        <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
+                        
+                        <div className="flex justify-between items-center mb-5">
+                          <span className="text-[12px] uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
+                          <div className="flex gap-3">
+                            {!isCustom ? (
+                              <button onClick={() => toggleCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Custom</button>
+                            ) : (
+                               <button onClick={() => resetCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">🗑️ Reset</button>
+                            )}
+                          </div>
+                        </div>
+
+                        {isCustom ? (
+                           <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+                             <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
+                             <div className="flex gap-4 mb-4 ml-2">
+                                <input type="text" placeholder="Es. Mass Gainer" value={pastiCustom[cat]?.nome || ''} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50"} />
+                                <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-6 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>🪄 AI</button>
+                             </div>
+                             <div className="flex gap-4 ml-2">
+                                <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat]?.cho || ''} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
+                                <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat]?.pro || ''} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
+                                <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat]?.fat || ''} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
+                             </div>
+                           </div>
+                        ) : (
+                           <div className={`mt-2 p-5 rounded-3xl bg-orange-50/50 backdrop-blur-xl border border-white shadow-[inset_4px_4px_8px_rgba(255,255,255,0.8),inset_-4px_-4px_8px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
+                             <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
+                             <p className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">{blocco.descrizione}</p>
+                           </div>
+                        )}
+                        
+                        <div className="mt-5 flex justify-between items-center gap-4">
+                           <div className={`flex-1 flex justify-between items-center ${UI.panelInset} !px-6 !py-3`}>
+                             <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">C</span><span className="text-[15px] font-black text-orange-500">{appliedIntraCho}g</span></div>
+                             <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">P</span><span className="text-[15px] font-bold text-slate-600">{appliedIntraPro}g</span></div>
+                             <div className="flex flex-col items-center"><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">F</span><span className="text-[15px] font-bold text-slate-600">{appliedIntraFat}g</span></div>
+                           </div>
+                           <div className={`${UI.panelOutset} !px-6 !py-2.5 flex flex-col items-center justify-center shrink-0`}>
+                              <span className={`text-[15px] font-bold leading-none text-orange-500`}><AnimatedCounter value={intraKcal}/></span>
+                              <span className="text-[9px] font-bold text-slate-400 tracking-widest mt-1">KCAL</span>
+                           </div>
+                        </div>
+                      </div>
+                    );
+                  }
                 }
                 const cat = blocco.idCategoria as keyof typeof dbAlimenti;
                 const isPW = cat === 'PostWorkout';
