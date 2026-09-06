@@ -147,18 +147,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
-  // --- STATI ADMIN CONTROL ROOM ---
-  const isAdmin = loginEmail === "leo@admin.com";
-  const [showAdmin, setShowAdmin] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [adminUtenti, setAdminUtenti] = useState<any[]>([]);
-  const [nuovoUtentePremium, setNuovoUtentePremium] = useState({ email: '', password: '', nome_atleta: '', scadenza: '' });
-
-  const apriAdmin = async () => {
-    const { data } = await supabase.from('utenti_premium').select('*').order('data_scadenza', { ascending: true });
-    if (data) setAdminUtenti(data);
-    setShowAdmin(true);
-  };
+  
   // --- STATO SPLASH SCREEN INTRO ---
   const [mostraIntro, setMostraIntro] = useState(true);
 
@@ -219,6 +208,20 @@ export default function Home() {
     setIsAuthenticated(true);
     caricaProfilo(data.nome_atleta, "Massa", "Equilibrata");
   };
+
+  // --- STATI ADMIN CONTROL ROOM ---
+  const isAdmin = loginEmail === "leo@admin.com";
+  const [showAdmin, setShowAdmin] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [adminUtenti, setAdminUtenti] = useState<any[]>([]);
+  const [nuovoUtentePremium, setNuovoUtentePremium] = useState({ email: '', password: '', nome_atleta: '', scadenza: '' });
+
+  const apriAdmin = async () => {
+    const { data } = await supabase.from('utenti_premium').select('*').order('data_scadenza', { ascending: true });
+    if (data) setAdminUtenti(data);
+    setShowAdmin(true);
+  };
+  
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
   
