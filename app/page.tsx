@@ -697,19 +697,15 @@ export default function Home() {
   };
   if (appState === 'HOME') {
     
-    // --- MURO DI LOGIN CON TRANSIZIONE FLUIDA ---
+    // --- MURO DI LOGIN CON TRANSIZIONE FLUIDA E ANIMAZIONI DELUXE ---
     if (!isAuthenticated) {
       return (
         <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
           
-          <style>{`
-            .anim-drop-down {
-              animation: dropDownPanel 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            }
-            @keyframes dropDownPanel {
-              0% { opacity: 0; transform: translateY(-40px); }
-              100% { opacity: 1; transform: translateY(0); }
-            }
+          {/* STILE INIETTATO IN MODO SICURO PER NEXT.JS (Evita errori Turbopack) */}
+          <style dangerouslySetInnerHTML={{ __html: `
+            .anim-drop-down { animation: dropDownPanel 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+            @keyframes dropDownPanel { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } }
             
             .anim-circle-svg { stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawCircleSvg 6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
             .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
@@ -723,21 +719,11 @@ export default function Home() {
             @keyframes drawMiccia { to { stroke-dashoffset: 0; } }
             @keyframes slideText { to { opacity: 1; transform: translateX(0); } }
             @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
-            @keyframes slideLeftToRight { 
-               0% { transform: translateX(-15%); opacity: 0; } 
-               20% { opacity: 0.14; }
-               80% { opacity: 0.14; }
-               100% { transform: translateX(5%); opacity: 0; } 
-            }
-            @keyframes slideRightToLeft { 
-               0% { transform: translateX(5%); opacity: 0; } 
-               20% { opacity: 0.14; }
-               80% { opacity: 0.14; }
-               100% { transform: translateX(-15%); opacity: 0; } 
-            }
-          `}</style>
+            @keyframes slideLeftToRight { 0% { transform: translateX(-15%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(5%); opacity: 0; } }
+            @keyframes slideRightToLeft { 0% { transform: translateX(5%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(-15%); opacity: 0; } }
+          `}} />
 
-          {/* --- SCHERMATA DI LOGIN SOTTOSTANTE --- */}
+          {/* --- SCHERMATA DI LOGIN SOTTOSTANTE (Appare mentre la intro sfuma) --- */}
           <div className={`${UI.card} w-full max-w-sm z-10 anim-drop-down`}>
              <div className="flex justify-center items-center mb-10">
                 <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
@@ -767,9 +753,9 @@ export default function Home() {
              </div>
           </div>
 
-          {/* --- SPLASH SCREEN IN OVERLAY --- */}
+          {/* --- SPLASH SCREEN IN OVERLAY (Le animazioni WOW) --- */}
           {mostraIntro && (
-            <div className="fixed inset-0 z-[9999] bg-[#E0E5EC] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out overflow-hidden pointer-events-none" style={{ opacity: mostraIntro ? 1 : 0 }}>
+            <div className="fixed inset-0 z-[9999] bg-[#E0E5EC] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out pointer-events-none" style={{ opacity: mostraIntro ? 1 : 0 }}>
               
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
