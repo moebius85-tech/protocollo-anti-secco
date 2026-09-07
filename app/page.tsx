@@ -289,6 +289,8 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoMisure, setStoricoMisure] = useState<any[]>([]);
   const [vistaTelemetria, setVistaTelemetria] = useState<'FORM' | 'STORICO'>('FORM');
+  const [ricercaTelemetria, setRicercaTelemetria] = useState("");
+  const [meseApertoTele, setMeseApertoTele] = useState<string | null>(null);
   const [vistaGraficiCarichi, setVistaGraficiCarichi] = useState(false);
   const [esercizioGraficoSelezionato, setEsercizioGraficoSelezionato] = useState<string>("e1");
 
@@ -1088,30 +1090,88 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                </div>
             ) : (
                <div className="flex-1 overflow-y-auto space-y-5 pr-2 max-h-[600px] custom-scrollbar relative z-10">
-                 {storicoMisure.length === 0 ? <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessun dato registrato.</p> : (
-                    storicoMisure.map((mis: any, idx: number) => {
-                       const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
-                       return (
-                         <div key={mis.id} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex flex-col gap-4 p-5 rounded-[1.5rem] anim-pop" style={{animationDelay: `${0.2 + idx * 0.1}s`}}>
-                            <div className="flex justify-between items-center mb-2 border-b border-slate-200/50 pb-3">
-                               <p className="text-[11px] font-bold text-indigo-500 tracking-widest bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
-                               <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[10px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] px-2.5 py-1.5 rounded-full active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">🗑️</button>
-                            </div>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Peso</span> <strong className="text-slate-600 text-xs">{mis.peso || '-'}kg</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Petto</span> <strong className="text-slate-600 text-xs">{circ.petto || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Spalle</span> <strong className="text-slate-600 text-xs">{circ.spalle || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600 text-xs">{circ.braccia || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600 text-xs">{circ.gambe || '-'}cm</strong></p>
-                               <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600 text-xs">{circ.glutei || '-'}cm</strong></p>
-                               <p className="bg-indigo-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-indigo-600 flex justify-between items-center"><span>Vita</span> <strong className="text-indigo-600 text-xs">{circ.vita || '-'}cm</strong></p>
-                               <p className="bg-purple-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-purple-600 flex justify-between items-center"><span>BIA</span> <strong className="text-purple-600 text-xs">{circ.bodyFat || '-'}%</strong></p>
-                            </div>
-                         </div>
-                       );
-                    })
-                 )}
-               </div>
+            {/* BARRA DI RICERCA TELEMETRIA */}
+            <div className="relative w-full mb-6">
+               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">⌕</span>
+               <input 
+                  type="text" 
+                  placeholder="Cerca una data (es. 15/09/2026)..." 
+                  value={ricercaTelemetria}
+                  onChange={(e) => setRicercaTelemetria(e.target.value)}
+                  className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-600 text-xs font-bold pl-10 pr-4 py-3 rounded-full outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all border-none"
+               />
+            </div>
+
+            {/* MOTORE DI RAGGRUPPAMENTO E RENDER */}
+            {(() => {
+              if (storicoMisure.length === 0) {
+                return <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessun dato registrato.</p>;
+              }
+
+              // 1. Applica il filtro della ricerca
+              const filtrate = storicoMisure.filter(mis => {
+                const dataStr = new Date(mis.data).toLocaleDateString('it-IT');
+                return dataStr.includes(ricercaTelemetria);
+              });
+
+              if (filtrate.length === 0) {
+                 return <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessuna misurazione trovata.</p>;
+              }
+
+              // 2. Raggruppa per "Mese Anno"
+              const raggruppate = filtrate.reduce((acc, mis) => {
+                const dataObj = new Date(mis.data);
+                const meseAnno = dataObj.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' }).toUpperCase();
+                if (!acc[meseAnno]) acc[meseAnno] = [];
+                acc[meseAnno].push(mis);
+                return acc;
+              }, {} as Record<string, any[]>);
+
+              // 3. Renderizza le cartelle (Accordion)
+              return Object.entries(raggruppate).map(([meseAnno, misure], indexGroup) => (
+                 <div key={meseAnno} className="mb-4">
+                    {/* INTESTAZIONE CARTELLA */}
+                    <button 
+                      onClick={() => setMeseApertoTele(meseApertoTele === meseAnno ? null : meseAnno)}
+                      className="w-full flex justify-between items-center bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] p-4 rounded-2xl border-none cursor-pointer transition-all"
+                    >
+                      <span className="text-[11px] font-black text-slate-600 tracking-widest">{meseAnno}</span>
+                      <div className="flex items-center gap-3">
+                         <span className="text-[9px] bg-indigo-100 shadow-inner text-indigo-500 px-2.5 py-1 rounded-lg font-black tracking-widest">{misure.length} Check</span>
+                         <span className={`text-indigo-400 font-bold transition-transform duration-300 ${meseApertoTele === meseAnno ? 'rotate-180' : ''}`}>▼</span>
+                      </div>
+                    </button>
+
+                    {/* CONTENUTO CARTELLA A TENDINA */}
+                    {meseApertoTele === meseAnno && (
+                      <div className="mt-4 space-y-4 pl-2 pr-1 border-l-2 border-indigo-200/50 ml-2 anim-drop-down">
+                        {misure.map((mis: any, idx: number) => {
+                           const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
+                           return (
+                              <div key={mis.id} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex flex-col gap-4 p-5 rounded-[1.5rem] anim-pop" style={{animationDelay: `${idx * 0.05}s`}}>
+                                <div className="flex justify-between items-center mb-2 border-b border-slate-200/50 pb-3">
+                                  <p className="text-[11px] font-bold text-indigo-500 tracking-widest bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
+                                  <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[18px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] w-8 h-8 flex items-center justify-center rounded-full active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">&times;</button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Peso</span> <strong className="text-slate-600 text-xs">{mis.peso || '-'}kg</strong></p>
+                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Petto</span> <strong className="text-slate-600 text-xs">{circ.petto || '-'}cm</strong></p>
+                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Spalle</span> <strong className="text-slate-600 text-xs">{circ.spalle || '-'}cm</strong></p>
+                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600 text-xs">{circ.braccia || '-'}cm</strong></p>
+                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600 text-xs">{circ.gambe || '-'}cm</strong></p>
+                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600 text-xs">{circ.glutei || '-'}cm</strong></p>
+                                   <p className="bg-indigo-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-indigo-600 flex justify-between items-center"><span>Vita</span> <strong className="text-indigo-600 text-xs">{circ.vita || '-'}cm</strong></p>
+                                   <p className="bg-purple-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-purple-600 flex justify-between items-center"><span>BIA</span> <strong className="text-purple-600 text-xs">{circ.bodyFat || '-'}%</strong></p>
+                                </div>
+                              </div>
+                           );
+                        })}
+                      </div>
+                    )}
+                 </div>
+              ));
+            })()}
+          </div>
             )}
           </section>
 
@@ -1187,12 +1247,23 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 </div>
               )}
               <div className="pt-2 mt-4 border-t border-slate-200/50">
-                <div className="flex justify-between items-center mb-8 bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff]">
-                   <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Digiuno Intermittente 16:8</span>
-                   <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer ${digiuno ? 'bg-gradient-to-r from-lime-400 to-emerald-500' : 'bg-slate-300'}`}>
-                      <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
-                   </button>
-                </div>
+                {/* BLOCCO DIGIUNO INTERMITTENTE MIGLIORATO */}
+            <div className="flex justify-between items-center mb-8 bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff]">
+              <div className="flex flex-col pr-4">
+                 <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-[11px] text-slate-600 uppercase font-black tracking-widest">Digiuno</span>
+                    <span className="bg-lime-400/20 text-lime-600 text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest shadow-sm">16:8</span>
+                 </div>
+                 <p className="text-[10px] text-slate-500 font-bold leading-snug">
+                    {digiuno 
+                      ? "Attivo. Il sistema condenserà i pasti in 8 ore saltando la colazione." 
+                      : "Condensa i pasti in una finestra di 8 ore (es. 13:00 - 21:00)."}
+                 </p>
+              </div>
+              <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer shrink-0 ${digiuno ? 'bg-gradient-to-r from-lime-400 to-emerald-500' : 'bg-slate-300'}`}>
+                <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
+              </button>
+            </div>
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 block px-1">Collocazione Allenamento</span>
                 <div className="flex space-x-3 bg-[#E0E5EC] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#a3b1c6,inset_-5px_-5px_10px_#ffffff]">
                   <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
