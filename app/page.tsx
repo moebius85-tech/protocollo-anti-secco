@@ -1528,9 +1528,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     </div>
                   </div>
                 );
-              })}
-              </div>
-      {/* --- VETRINA INTEGRATORI DINAMICA (EDUCAZIONE ATLETA) --- */}
+          })}
+
+          {/* --- VETRINA INTEGRATORI DINAMICA (EDUCAZIONE ATLETA) --- */}
           {usaIntegratori && (
             <div className="mt-10 pt-8 border-t border-slate-300/50">
               <h3 className="text-[11px] uppercase font-black text-slate-500 tracking-widest mb-6 flex items-center gap-2">
@@ -1612,9 +1612,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               </div>
             </div>
           )}
-            )}
-          </section>
         </div>
+      )}
+    </section>
+        
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
         <div className={`flex-col gap-8 lg:col-span-5 ${mobileTab === 'ALLENAMENTO' ? 'flex' : 'hidden'} lg:flex`}>
