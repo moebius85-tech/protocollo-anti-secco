@@ -1530,6 +1530,88 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 );
               })}
               </div>
+      {/* --- VETRINA INTEGRATORI DINAMICA (EDUCAZIONE ATLETA) --- */}
+          {usaIntegratori && (
+            <div className="mt-10 pt-8 border-t border-slate-300/50">
+              <h3 className="text-[11px] uppercase font-black text-slate-500 tracking-widest mb-6 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span> Guida all'Acquisto
+              </h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {(() => {
+                  const raccomandazioni = [];
+                  
+                  // 1. EAA (Sempre presenti, logica dinamica sul testo)
+                  raccomandazioni.push({
+                    nome: "Aminoacidi Essenziali (EAA)",
+                    icona: "🛡️",
+                    motivo: (activeDieta === 'Keto' || protocolloAttivo === 'Shred') 
+                      ? "Cruciali. Essendo in deficit calorico severo, prevengono il catabolismo (perdita di muscolo) e danno energia immediata senza calorie." 
+                      : "Migliorano il recupero muscolare e forniscono mattoni pronti all'uso durante lo sforzo intenso.",
+                    esempi: ["Yamamoto Nutrition Sustamine", "Tsunami Nutrition EAA Pure", "Prozis Essential Amino Acids"]
+                  });
+
+                  // 2. Pre-workout (Logica orario)
+                  if (quandoTiAlleni === 'sera') {
+                    raccomandazioni.push({
+                      nome: "Pre-Workout PUMP (Zero Caffeina)",
+                      icona: "🩸",
+                      motivo: "Ti alleni tardi: ti serve focus e afflusso di sangue ai muscoli, ma senza stimolanti per non rovinare la qualità del sonno profondo.",
+                      esempi: ["Yamamoto Blood Volume", "Ghost Pump Non-Stim", "Tsunami Pump Pure"]
+                    });
+                  } else {
+                     raccomandazioni.push({
+                      nome: "Pre-Workout Energia (Caffeina)",
+                      icona: "⚡",
+                      motivo: "Ti dà la spinta mentale e fisica necessaria per massimizzare i carichi e la performance in palestra.",
+                      esempi: ["Cellucor C4 Original", "Yamamoto Kamikaze", "Tsunami Pure Professional"]
+                    });
+                  }
+
+                  // 3. Ciclodestrine (Logica protocollo)
+                  if (protocolloAttivo !== 'Shred' && activeDieta !== 'Keto') {
+                     raccomandazioni.push({
+                      nome: "Carbo Liquidi (Ciclodestrine)",
+                      icona: "🔋",
+                      motivo: "Energia a lento rilascio che non pesa sullo stomaco. Indispensabili per sostenere il volume di allenamento in fase di costruzione.",
+                      esempi: ["Yamamoto GlycoBol (HBCD)", "Vitargo", "Tsunami Pure Karbo"]
+                    });
+                  }
+
+                  // 4. Elettroliti (Logica Keto/Shred)
+                  if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') {
+                     raccomandazioni.push({
+                      nome: "Elettroliti e Sali Minerali",
+                      icona: "💧",
+                      motivo: activeDieta === 'Keto' 
+                        ? "In Chetogenica i reni espellono molti liquidi. Gli elettroliti prevengono cali di pressione, letargia e crampi muscolari." 
+                        : "Mantengono l'idratazione ottimale e la contrazione muscolare durante i tagli calorici.",
+                      esempi: ["Yamamoto HydraVOL", "Polase Sport", "Prozis Electrolytes"]
+                    });
+                  }
+
+                  return raccomandazioni.map((r, idx) => (
+                    <div key={idx} className="bg-[#E0E5EC] shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] p-5 rounded-3xl flex flex-col gap-3 anim-pop transition-transform hover:scale-[1.02]" style={{animationDelay: `${idx * 0.15}s`}}>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl bg-white/40 w-12 h-12 flex items-center justify-center rounded-2xl shadow-[inset_2px_2px_4px_rgba(163,177,198,0.4)] shrink-0">{r.icona}</span>
+                        <h4 className="font-black text-slate-700 text-[11px] tracking-wide uppercase leading-tight">{r.nome}</h4>
+                      </div>
+                      <p className="text-[10px] text-slate-500 font-bold leading-relaxed px-1 mt-1">{r.motivo}</p>
+                      
+                      <div className="mt-auto pt-3">
+                         <div className="bg-slate-200/50 p-3 rounded-2xl shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]">
+                            <span className="text-[8px] uppercase font-black text-indigo-400 tracking-widest block mb-2">Esempi Consigliati (Cerca questi):</span>
+                            <ul className="list-disc pl-4 text-[9px] font-bold text-slate-600 space-y-1.5">
+                              {r.esempi.map((es, i) => <li key={i}>{es}</li>)}
+                            </ul>
+                         </div>
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+          )}
             )}
           </section>
         </div>
