@@ -993,14 +993,16 @@ export default function Home() {
     );
   }
 
-  // HELPER BOTTOM NAV
-  const renderNavIcon = (tab: string, icon: string, label: string) => (
-     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-     <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110 drop-shadow-md' : 'text-slate-400 hover:text-slate-500'}`}>
-        <span className="text-xl mb-1">{icon}</span>
-        <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
-     </button>
-  );
+  // --- HELPER BOTTOM NAV CON ICONE SVG MINIMAL, GLASS E FLUO ---
+const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110 drop-shadow-[0_0_10px_rgba(132,204,22,0.5)]' : 'text-slate-400 hover:text-slate-500'}`}>
+    <div className={`relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_rgba(255,255,255,0.4)]' : 'bg-transparent'}`}>
+       {iconSvg}
+    </div>
+    <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
+  </button>
+);
 
   return (
     <main className="min-h-screen bg-[#E0E5EC] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
@@ -1584,11 +1586,22 @@ export default function Home() {
 
       {/* --- BOTTOM NAVIGATION BAR (Solo su Mobile) --- */}
       <nav className="sm:hidden fixed bottom-0 left-0 w-full bg-[#E0E5EC]/90 backdrop-blur-xl shadow-[0_-10px_30px_rgba(163,177,198,0.4)] z-[90] pb-safe flex justify-between border-t border-white/50 px-2 pt-2">
-         {renderNavIcon('TELEMETRIA', '📊', 'Dati')}
-         {renderNavIcon('COACH', '🤖', 'AI')}
-         {renderNavIcon('TURNI', '🕒', 'Turni')}
-         {renderNavIcon('NUTRIZIONE', '🍎', 'Dieta')}
-         {renderNavIcon('ALLENAMENTO', '🏋️', 'Workout')}
+        
+        {/* ICONA DATI: Grafico a linee fluido */}
+        {renderNavicon('TELEMETRIA', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>, 'Dati')}
+        
+        {/* ICONA AI COACH: Esagono neurale con nucleo */}
+        {renderNavicon('COACH', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon><circle cx="12" cy="12" r="3"></circle></svg>, 'AI')}
+        
+        {/* ICONA TURNI: Orologio minimale */}
+        {renderNavicon('TURNI', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>, 'Turni')}
+        
+        {/* ICONA DIETA: Mela stilizzata */}
+        {renderNavicon('NUTRIZIONE', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>, 'Dieta')}
+        
+        {/* ICONA WORKOUT: Manubrio da sala pesi */}
+        {renderNavicon('ALLENAMENTO', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M6 4v16"></path><path d="M18 4v16"></path><path d="M2 8h4"></path><path d="M2 16h4"></path><path d="M18 8h4"></path><path d="M18 16h4"></path><path d="M6 12h12"></path></svg>, 'Workout')}
+        
       </nav>
 
       {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
