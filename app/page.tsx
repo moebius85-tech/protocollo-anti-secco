@@ -1128,7 +1128,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               }, {} as Record<string, any[]>);
 
               // 3. Renderizza le cartelle (Accordion)
-              return Object.entries(raggruppate).map(([meseAnno, misure], indexGroup) => (
+              return (Object.entries(raggruppate) as [string, any[]][]).map(([meseAnno, misure]) => (
                  <div key={meseAnno} className="mb-4">
                     {/* INTESTAZIONE CARTELLA */}
                     <button 
