@@ -254,6 +254,7 @@ export default function Home() {
   const [inizio2, setInizio2] = useState(''); const [fine2, setFine2] = useState('');
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
   const [digiuno, setDigiuno] = useState(false); 
+  const [usaIntegratori, setUsaIntegratori] = useState(true);
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
   const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred', dieta: 'Equilibrata', autore: 'Nessuno', metabolismoBloccato: false });
@@ -620,9 +621,17 @@ export default function Home() {
   }
 
   let intraCho = protocolloAttivo === 'Shred' ? Math.round(pesoNum * 0.3) : Math.round(pesoNum * 0.5);
-  if (activeDieta === 'Keto') intraCho = 0; else if (activeDieta === 'LowCarb') intraCho = Math.round(pesoNum * 0.2);
+if (activeDieta === 'Keto') intraCho = 0; else if (activeDieta === 'LowCarb') intraCho = Math.round(pesoNum * 0.2);
+let intraPro = 15;
+let intraFat = 0;
 
-  const intraPro = 15; const intraFat = 0;
+// LOGICA "REAL FOOD ONLY": Se l'utente spegne gli integratori, azzeriamo l'intra-workout. 
+// Il sistema spalmerà automaticamente questi macro sui pasti solidi!
+if (!usaIntegratori) {
+  intraCho = 0;
+  intraPro = 0;
+  intraFat = 0;
+}
   let moltiplicatoreCarbo = 5;
   if (protocolloAttivo === 'Shred') moltiplicatoreCarbo = 2.5; else if (protocolloAttivo === 'Ricomposizione') moltiplicatoreCarbo = 4;
 
@@ -681,7 +690,9 @@ export default function Home() {
     if (activeDieta === 'Keto' || protocolloAttivo === 'Shred') { saluteW += `\n• Omega-3: 2-3g\n• Multivitaminico`; } 
     else { saluteW += `\n• Omega-3: 1g\n• Vitamina D3 + K2`; }
 
-    const bloccoIntra = { isIntra: true, titolo: "INTEGRAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` };
+    const bloccoIntra = usaIntegratori 
+      ? { isIntra: true, titolo: "SUPPLEMENTAZIONE", descrizione: `${preW}\n\n${intraW}\n\n${saluteW}` }
+      : { isIntra: true, titolo: "REAL FOOD ONLY", descrizione: "🔌 Integratori Disattivati.\n\nIl sistema ha azzerato l'integrazione liquida e spostato le calorie sui pasti solidi.\n\n💡 Assicurati di consumare un pasto solido (es. Pranzo o Cena) non oltre i 60-90 minuti post-allenamento per ottimizzare la finestra anabolica e il recupero." };
     const bloccoDigiuno = { isIntra: true, titolo: "⏱️ DIGIUNO 16:8", descrizione: `• Finestra digiuno: 16 ore.\n• Acqua, Caffè amaro, Tè.` };
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1333,6 +1344,23 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 </div>
               </div>
             </div>
+
+            {/* INTERRUTTORE USO INTEGRATORI */}
+          <div className="flex justify-between items-center bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] mt-6 mb-2">
+             <div className="flex flex-col pr-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                   <span className="text-[11px] text-slate-600 uppercase font-black tracking-widest">Protocollo Integratori</span>
+                </div>
+                <p className="text-[10px] text-slate-500 font-bold leading-snug">
+                   {usaIntegratori 
+                     ? "Attivo. Consigli specifici e macro liquidi inseriti." 
+                     : "Disattivo. Macro spostati 100% su cibo solido."}
+                </p>
+             </div>
+             <button onClick={() => setUsaIntegratori(!usaIntegratori)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer shrink-0 ${usaIntegratori ? 'bg-gradient-to-r from-orange-400 to-rose-400' : 'bg-slate-300'}`}>
+               <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${usaIntegratori ? 'translate-x-8' : 'translate-x-1'}`}></div>
+             </button>
+          </div>
             
             {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
                <div className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-5 rounded-[1.5rem] mb-8 bg-amber-50/30 anim-pop" style={{animationDelay: '0.6s'}}>
