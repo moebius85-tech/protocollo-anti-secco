@@ -218,6 +218,7 @@ export default function Home() {
   // --- STATI ADMIN CONTROL ROOM ---
   const isAdmin = loginEmail === "leo@admin.com";
   const [showAdmin, setShowAdmin] = useState(false);
+  const [ricercaAdmin, setRicercaAdmin] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [adminUtenti, setAdminUtenti] = useState<any[]>([]);
   const [nuovoUtentePremium, setNuovoUtentePremium] = useState({ email: '', password: '', nome_atleta: '', scadenza: '' });
@@ -1774,44 +1775,91 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                  </div>
               </div>
 
-              {/* LISTA CLIENTI ATTIVI E GESTIONE SCADENZE */}
-              <div className="space-y-4">
-                 <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Clienti nel Database</h3>
-                 {adminUtenti.map((u, idx) => (
-                    <div key={idx} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
-                       <div className="flex-1 text-center sm:text-left">
-                          <p className="font-black text-slate-700 text-lg uppercase">{u.nome_atleta}</p>
-                          <p className="text-xs text-slate-500 font-bold tracking-widest">{u.email} <span className="text-slate-300 mx-2">|</span> Pass: {u.password}</p>
-                       </div>
-                       <div className="flex flex-wrap justify-center sm:justify-end items-center gap-3 w-full sm:w-auto">
-                          {/* Modifica Scadenza al volo */}
-                          <input type="date" defaultValue={u.data_scadenza} onChange={(e) => u.nuova_scadenza = e.target.value} className={UI.input + " !w-auto text-center font-black text-red-500 !py-2.5"} />
-                          
-                          <button onClick={async () => {
-                             if(u.nuova_scadenza) {
-                                await supabase.from('utenti_premium').update({ data_scadenza: u.nuova_scadenza }).eq('id', u.id);
-                                alert(`Scadenza per ${u.nome_atleta} aggiornata al ${u.nuova_scadenza}!`);
-                                apriAdmin();
-                             }
-                          }} className="bg-emerald-500 text-white font-bold px-4 py-3 rounded-xl uppercase tracking-widest text-[10px] shadow-[0_4px_10px_rgba(16,185,129,0.3)] hover:scale-105 transition-all border-none cursor-pointer">
-                             AGGIORNA
-                          </button>
-                          
-                          <button onClick={async () => {
-                             if(confirm(`Sei assolutamente sicuro di voler revocare l'accesso a ${u.nome_atleta}?`)) {
-                                await supabase.from('utenti_premium').delete().eq('id', u.id);
-                                apriAdmin();
-                             }
-                          }} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-700 font-bold px-4 py-3 rounded-xl uppercase tracking-widest text-[10px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">
-                             ELIMINA
-                          </button>
-                       </div>
+              {/* --- LISTA CLIENTI ATTIVI, RICERCA E GESTIONE SCADENZE --- */}
+          <div className="space-y-6 mt-8 border-t border-slate-300/50 pt-8">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+               <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest">Database Atleti</h3>
+               
+               {/* BARRA DI RICERCA NEUMORFICA */}
+               <div className="relative w-full sm:w-72">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">⌕</span>
+                  <input 
+                     type="text" 
+                     placeholder="Cerca per nome o email..." 
+                     value={ricercaAdmin}
+                     onChange={(e) => setRicercaAdmin(e.target.value)}
+                     className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-600 text-xs font-bold pl-10 pr-4 py-3 rounded-full outline-none focus:ring-2 focus:ring-lime-500/40 transition-all border-none"
+                  />
+               </div>
+            </div>
+
+            <div className="space-y-4 max-h-[50vh] overflow-y-auto custom-scrollbar pr-2">
+              {adminUtenti
+                .filter(u => u.nome_atleta.toLowerCase().includes(ricercaAdmin.toLowerCase()) || u.email.toLowerCase().includes(ricercaAdmin.toLowerCase()))
+                .map((u, idx) => {
+                  
+                  // LOGICA DEL SEMAFORO
+                  const oggi = new Date();
+                  const scadenza = new Date(u.data_scadenza);
+                  const diffGiorni = Math.ceil((scadenza.getTime() - oggi.getTime()) / (1000 * 3600 * 24));
+                  
+                  let statusColor = "bg-emerald-500 shadow-[0_0_8px_#10b981]";
+                  let statusText = "ATTIVO";
+                  if (diffGiorni < 0) {
+                     statusColor = "bg-rose-500 shadow-[0_0_8px_#f43f5e]";
+                     statusText = "SCADUTO";
+                  } else if (diffGiorni <= 7) {
+                     statusColor = "bg-amber-500 shadow-[0_0_8px_#f59e0b]";
+                     statusText = "IN SCADENZA";
+                  }
+
+                  return (
+                  <div key={idx} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 transition-all hover:shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff]">
+                    
+                    <div className="flex-1 text-center sm:text-left flex flex-col sm:flex-row items-center gap-4">
+                      {/* PALLINO SEMAFORO */}
+                      <div className="flex flex-col items-center justify-center shrink-0">
+                         <div className={`w-3 h-3 rounded-full ${statusColor} mb-1 animate-pulse`}></div>
+                         <span className="text-[7px] font-black uppercase tracking-widest text-slate-400">{statusText}</span>
+                      </div>
+                      
+                      <div>
+                         <p className="font-black text-slate-700 text-lg uppercase">{u.nome_atleta}</p>
+                         <p className="text-xs text-slate-500 font-bold tracking-widest">{u.email} <span className="text-slate-300 mx-2">|</span> Pass: {u.password}</p>
+                      </div>
                     </div>
-                 ))}
-                 {adminUtenti.length === 0 && <p className="text-center text-slate-400 font-bold text-sm py-4">Nessun utente nel database.</p>}
-              </div>
-           </div>
-        </div>
+
+                    <div className="flex flex-wrap justify-center sm:justify-end items-center gap-3 w-full sm:w-auto">
+                      <input type="date" defaultValue={u.data_scadenza} onChange={(e) => u.nuova_scadenza = e.target.value} className={UI.input + " !w-auto text-center font-black text-slate-500 !py-2.5"} />
+                      
+                      <button onClick={async () => {
+                        if(u.nuova_scadenza) {
+                          await supabase.from('utenti_premium').update({ data_scadenza: u.nuova_scadenza }).eq('id', u.id);
+                          alert(`Scadenza per ${u.nome_atleta} aggiornata al ${u.nuova_scadenza}!`);
+                          apriAdmin();
+                        }
+                      }} className="bg-emerald-500 text-white font-bold px-4 py-3 rounded-xl uppercase tracking-widest text-[10px] shadow-[0_4px_10px_rgba(16,185,129,0.3)] hover:scale-105 transition-all border-none cursor-pointer">
+                        AGGIORNA
+                      </button>
+                      
+                      <button onClick={async () => {
+                        if(confirm(`Sei assolutamente sicuro di voler revocare l'accesso a ${u.nome_atleta}?`)) {
+                          await supabase.from('utenti_premium').delete().eq('id', u.id);
+                          apriAdmin();
+                        }
+                      }} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-700 font-bold px-4 py-3 rounded-xl uppercase tracking-widest text-[10px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">
+                        ELIMINA
+                      </button>
+                    </div>
+                  </div>
+                )})}
+                
+                {adminUtenti.length === 0 && <p className="text-center text-slate-400 font-bold text-sm py-4">Nessun utente nel database.</p>}
+                {adminUtenti.length > 0 && adminUtenti.filter(u => u.nome_atleta.toLowerCase().includes(ricercaAdmin.toLowerCase()) || u.email.toLowerCase().includes(ricercaAdmin.toLowerCase())).length === 0 && (
+                   <p className="text-center text-slate-400 font-bold text-sm py-4">Nessun atleta trovato con questa ricerca.</p>
+                )}
+            </div>
+          </div>
       )}
       
       <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
