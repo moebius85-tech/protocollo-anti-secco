@@ -1615,6 +1615,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         </div>
       )}
     </section>
+      </div>
         
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
