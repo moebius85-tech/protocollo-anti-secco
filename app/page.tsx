@@ -2091,7 +2091,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 3D VETRO PURO (PROSPETTIVA BILANCIATA) --- */}
+      {/* --- ARCHIVIO SCROLL ESTRAZIONE (STILE PINTEREST) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden perspective-1000"
@@ -2099,15 +2099,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 '--start-x': `${hudActive.x}px`,
                 '--start-y': `${hudActive.y}px`,
               } as React.CSSProperties}
+              onClick={() => {
+                setIsHudClosing(true);
+                setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 700);
+              }} 
             >
-              {/* SFONDO FORTEMENTE SFOCATO */}
-              <div 
-                className={`absolute inset-0 bg-slate-900/40 backdrop-blur-xl ${isHudClosing ? 'archive-bg-out' : 'archive-bg-in'}`}
-                onClick={() => {
-                  setIsHudClosing(true);
-                  setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 700);
-                }} 
-              ></div>
+              {/* SFONDO SFOCATO */}
+              <div className={`absolute inset-0 bg-slate-900/50 backdrop-blur-xl ${isHudClosing ? 'archive-bg-out' : 'archive-bg-in'}`}></div>
 
               {/* CONTENITORE DEL MAZZO */}
               <div className={`absolute w-[280px] h-[340px] ${isHudClosing ? 'archive-fly-out' : 'archive-fly-in'}`}>
@@ -2116,89 +2114,94 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 {[7, 6, 5, 4, 3, 2, 1].map((i) => (
                   <div 
                     key={`top-${i}`} 
-                    className={`absolute inset-0 rounded-t-[32px] rounded-b-2xl glass-panel pointer-events-none ${isHudClosing ? 'collapse-all' : `fan-top-${i}`}`} 
+                    className={`absolute inset-0 rounded-[32px] glass-panel pointer-events-none ${isHudClosing ? 'collapse-all' : `fan-top-${i}`}`} 
                     style={{ zIndex: 10 - i }}
                   ></div>
                 ))}
 
-                {/* --- 2. SCHEDA PRINCIPALE (Il Prodotto, fa uno slide PIÙ IN ALTO) --- */}
+                {/* --- 2. SCHEDA PRINCIPALE (Scatta molto in alto dopo lo scroll) --- */}
                 <div 
-                  className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_30px_60px_rgba(0,0,0,0.4)] ${isHudClosing ? 'collapse-all' : 'pop-main'}`}
+                  className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_40px_80px_rgba(0,0,0,0.5)] pointer-events-none ${isHudClosing ? 'collapse-all' : 'extract-main'}`}
                   style={{ 
                     zIndex: 20, 
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.8) 100%)',
                     backdropFilter: 'blur(24px)',
                     WebkitBackdropFilter: 'blur(24px)',
                     border: '1px solid rgba(255,255,255,0.9)'
                   }}
                 >
-                  <div className="w-24 h-24 bg-white/50 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_10px_rgba(0,0,0,0.1),_0_4px_10px_rgba(255,255,255,0.8)] mb-6 relative overflow-hidden">
-                    <span className="text-5xl drop-shadow-sm">💊</span>
+                  <div className="w-28 h-28 bg-white/60 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_12px_rgba(0,0,0,0.1),_0_10px_20px_rgba(0,0,0,0.05)] mb-8 relative overflow-hidden">
+                    <span className="text-6xl drop-shadow-sm">💊</span>
                   </div>
                   
-                  <h3 className="text-slate-800 font-black uppercase tracking-widest text-center text-sm mb-2 leading-tight">
+                  <h3 className="text-slate-800 font-black uppercase tracking-widest text-center text-base mb-2 leading-tight">
                     {hudActive.name}
                   </h3>
-                  <p className="text-[10px] text-orange-500 uppercase tracking-widest font-bold text-center mb-6">
+                  <p className="text-[10px] text-orange-500 uppercase tracking-widest font-bold text-center">
                     Scheda Estratta
                   </p>
-
-                  <button 
-                    onClick={() => {
-                      setIsHudClosing(true);
-                      setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 700);
-                    }}
-                    className="w-12 h-12 rounded-full bg-slate-800 text-white hover:bg-rose-500 transition-colors flex items-center justify-center font-black text-sm shadow-xl border border-slate-700"
-                  >
-                    ✕
-                  </button>
+                  {/* NOTA: Bottone X eliminato completamente */}
                 </div>
 
-                {/* --- 3. CASELLE SCARTATE (Scendono PIÙ IN BASSO e non bloccano i click) --- */}
+                {/* --- 3. CASELLE SCARTATE (Stesso colore della principale, scivolano lentament verso il basso simulando lo scroll) --- */}
                 <div 
-                  className={`absolute inset-0 rounded-t-3xl rounded-b-[32px] glass-panel pointer-events-none ${isHudClosing ? 'collapse-all' : 'fan-bottom-1'}`} 
-                  style={{ zIndex: 30 }}
+                  className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : 'scroll-down-1'}`} 
+                  style={{ 
+                    zIndex: 30,
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
+                    border: '1px solid rgba(255,255,255,0.6)',
+                    boxShadow: '0 -10px 40px rgba(0,0,0,0.2)'
+                  }}
                 ></div>
                 <div 
-                  className={`absolute inset-0 rounded-t-3xl rounded-b-[32px] glass-panel pointer-events-none ${isHudClosing ? 'collapse-all' : 'fan-bottom-2'}`} 
-                  style={{ zIndex: 40 }}
+                  className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : 'scroll-down-2'}`} 
+                  style={{ 
+                    zIndex: 40,
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
+                    border: '1px solid rgba(255,255,255,0.5)',
+                    boxShadow: '0 -10px 50px rgba(0,0,0,0.3)'
+                  }}
                 ></div>
 
               </div>
 
-              {/* REGOLE CSS DELLA COREOGRAFIA CORRETTA */}
+              {/* REGOLE CSS - TIMELINE DI ESTRAZIONE */}
               <style dangerouslySetInnerHTML={{__html: `
                 .glass-panel {
                   background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 100%);
                   backdrop-filter: blur(12px);
                   -webkit-backdrop-filter: blur(12px);
                   border: 1px solid rgba(255,255,255,0.4);
-                  box-shadow: 0 8px 32px rgba(0,0,0,0.15), inset 0 0 10px rgba(255,255,255,0.2);
+                  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
                 }
 
                 .archive-bg-in { animation: fadeIn 0.4s ease-out forwards; }
                 .archive-bg-out { animation: fadeOut 0.4s ease-out 0.3s forwards; }
 
-                .archive-fly-in { animation: flyToCenter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+                /* 1. Volo al centro */
+                .archive-fly-in { animation: flyToCenter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
                 .archive-fly-out { animation: flyToButton 0.5s cubic-bezier(0.8, 0.2, 0.8, 1) 0.1s forwards; }
 
-                /* La scheda principale si alza maggiormente per distaccarsi dal fondo */
-                .pop-main { animation: slideUpMain 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
+                /* 2. Le due schede in primo piano simulano lo SCROLL verso il basso (partono in ritardo) */
+                .scroll-down-1 { animation: scrollAway 0.6s cubic-bezier(0.5, 0, 0.2, 1) 0.3s forwards; }
+                .scroll-down-2 { animation: scrollAwayFurther 0.6s cubic-bezier(0.5, 0, 0.2, 1) 0.45s forwards; }
 
-                .fan-top-1 { animation: top1 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
-                .fan-top-2 { animation: top2 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
-                .fan-top-3 { animation: top3 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
-                .fan-top-4 { animation: top4 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
-                .fan-top-5 { animation: top5 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
-                .fan-top-6 { animation: top6 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
-                .fan-top-7 { animation: top7 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
+                /* 3. La scheda principale scatta molto IN ALTO una volta trovata */
+                .extract-main { animation: pullUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
 
-                /* Le schede scartate sprofondano e non si ingrandiscono troppo */
-                .fan-bottom-1 { animation: bot1 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
-                .fan-bottom-2 { animation: bot2 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards; }
+                /* 4. Il resto dell'archivio si apre a ventaglio verso l'alto */
+                .fan-top-1 { animation: top1 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
+                .fan-top-2 { animation: top2 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
+                .fan-top-3 { animation: top3 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
+                .fan-top-4 { animation: top4 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
+                .fan-top-5 { animation: top5 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
+                .fan-top-6 { animation: top6 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
+                .fan-top-7 { animation: top7 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s forwards; }
 
+                /* 5. Chiusura rapida */
                 .collapse-all { animation: collapseCards 0.4s cubic-bezier(0.5, 0, 0.2, 1) forwards; }
 
+                /* --- KEYFRAMES --- */
                 @keyframes flyToCenter {
                   0% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
                   100% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
@@ -2208,22 +2211,30 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   100% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
                 }
 
-                @keyframes slideUpMain {
+                /* L'estrazione che alza la carta principale di 90px separandola dal resto */
+                @keyframes pullUp {
                   0% { transform: translateY(0) scale(1); }
-                  100% { transform: translateY(-40px) scale(1.05); } /* Più in alto */
+                  100% { transform: translateY(-90px) scale(1.05); } 
                 }
 
-                @keyframes top1 { 100% { transform: translateY(-80px) scale(0.95); opacity: 0.9; } }
-                @keyframes top2 { 100% { transform: translateY(-115px) scale(0.90); opacity: 0.8; } }
-                @keyframes top3 { 100% { transform: translateY(-150px) scale(0.85); opacity: 0.7; } }
-                @keyframes top4 { 100% { transform: translateY(-180px) scale(0.80); opacity: 0.5; } }
-                @keyframes top5 { 100% { transform: translateY(-210px) scale(0.75); opacity: 0.3; } }
-                @keyframes top6 { 100% { transform: translateY(-240px) scale(0.70); opacity: 0.15; } }
-                @keyframes top7 { 100% { transform: translateY(-270px) scale(0.65); opacity: 0.05; } }
+                /* Lo scroll che porta le schede scartate sprofondate in basso (fuori fuoco) */
+                @keyframes scrollAway { 
+                  0% { transform: translateY(0) scale(1); opacity: 1; }
+                  100% { transform: translateY(300px) scale(1.15); opacity: 0.9; } 
+                }
+                @keyframes scrollAwayFurther { 
+                  0% { transform: translateY(0) scale(1); opacity: 1; }
+                  100% { transform: translateY(380px) scale(1.25); opacity: 0.8; } 
+                }
 
-                /* Crollo verso il basso per le schede in primo piano */
-                @keyframes bot1 { 100% { transform: translateY(280px) scale(1.05); opacity: 0.4; } }
-                @keyframes bot2 { 100% { transform: translateY(380px) scale(1.1); opacity: 0.1; } }
+                /* Archivio posteriore (distanze aumentate per seguire la scheda principale che si alza) */
+                @keyframes top1 { 100% { transform: translateY(-130px) scale(0.95); opacity: 0.9; } }
+                @keyframes top2 { 100% { transform: translateY(-165px) scale(0.90); opacity: 0.8; } }
+                @keyframes top3 { 100% { transform: translateY(-200px) scale(0.85); opacity: 0.7; } }
+                @keyframes top4 { 100% { transform: translateY(-230px) scale(0.80); opacity: 0.5; } }
+                @keyframes top5 { 100% { transform: translateY(-260px) scale(0.75); opacity: 0.3; } }
+                @keyframes top6 { 100% { transform: translateY(-290px) scale(0.70); opacity: 0.15; } }
+                @keyframes top7 { 100% { transform: translateY(-320px) scale(0.65); opacity: 0.05; } }
 
                 @keyframes collapseCards {
                   100% { transform: translateY(0) scale(1); opacity: 1; }
