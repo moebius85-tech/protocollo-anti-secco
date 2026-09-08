@@ -1452,9 +1452,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         <div className="flex justify-between items-start mb-4">
                           <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
                         </div>
-                        <div className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">
-                          {renderDescrizioneConHUD(blocco.descrizione || "")}
-                       </div>
+                        <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">
+                         {blocco.descrizione}
+                       </p>
                       </div>
                     );
                   } else {
@@ -1503,7 +1503,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         ) : (
                            <div className={`mt-2 p-5 rounded-3xl bg-orange-50/50 backdrop-blur-xl border border-white shadow-[inset_4px_4px_8px_rgba(255,255,255,0.8),inset_-4px_-4px_8px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
                              <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
-                             <p className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">{blocco.descrizione}</p>
+                             <div className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">
+                               {renderDescrizioneConHUD(blocco.descrizione || "")}
+                             </div>
                            </div>
                         )}
                         
