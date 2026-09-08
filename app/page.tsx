@@ -257,6 +257,7 @@ export default function Home() {
   const [usaIntegratori, setUsaIntegratori] = useState(true);
   const [hudActive, setHudActive] = useState<{name: string, x: number, y: number} | null>(null);
   const [winSize, setWinSize] = useState({w: 1000, h: 800});
+  const [isHudClosing, setIsHudClosing] = useState(false);
 
   useEffect(() => {
     if (hudActive) {
@@ -2059,85 +2060,113 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- HUD OLOGRAFICO AVANZATO (EFFETTO LINEA TRACCIANTE) --- */}
+      {/* --- HUD OLOGRAFICO CONTINUO (LINEA + CONTORNO REVERSIBILE) --- */}
           {hudActive && (
             <div 
-              className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-              onClick={() => setHudActive(null)} 
+              className="fixed inset-0 z-[9999] overflow-hidden"
+              onClick={() => {
+                // Attiva l'animazione inversa e aspetta 800ms prima di distruggere l'elemento
+                setIsHudClosing(true);
+                setTimeout(() => {
+                  setHudActive(null);
+                  setIsHudClosing(false);
+                }, 800);
+              }} 
             >
-              {/* Sfondo Sfocato */}
-              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md anim-fade-in"></div>
+              {/* Sfondo Sfocato (Dissolvenza in/out) */}
+              <div className={`absolute inset-0 bg-slate-900/40 backdrop-blur-md ${isHudClosing ? 'hud-bg-out' : 'hud-bg-in'}`}></div>
 
-              {/* Linea Tracciante Morbida (SVG Bézier Curve) */}
+              {/* Vettori Animati (Linea e Contorno) */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-[10000]">
-                <path 
-                  d={`M ${hudActive.x} ${hudActive.y} Q ${hudActive.x} ${(winSize.h / 2) - 150} ${winSize.w / 2} ${(winSize.h / 2) - 50}`} 
-                  fill="none" 
-                  stroke="url(#gradientLine)" 
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  className="hud-line-anim"
-                />
                 <defs>
-                  <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#f97316" /> 
-                    <stop offset="100%" stopColor="#fb7185" /> 
+                  <linearGradient id="gradientHUD" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f97316" /> {/* Arancio */}
+                    <stop offset="100%" stopColor="#fb7185" /> {/* Rosa */}
                   </linearGradient>
                 </defs>
+
+                {/* 1. La Linea Tracciante */}
+                <path 
+                  d={`M ${hudActive.x} ${hudActive.y} Q ${hudActive.x} ${(winSize.h / 2) + 180} ${winSize.w / 2} ${(winSize.h / 2) + 180}`} 
+                  fill="none" 
+                  stroke="url(#gradientHUD)" 
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  pathLength="100"
+                  className={isHudClosing ? 'hud-line-out' : 'hud-line-in'}
+                />
+
+                {/* 2. Il Contorno del Riquadro (Si disegna subito dopo la linea) */}
+                <rect 
+                  x={(winSize.w / 2) - 140} 
+                  y={(winSize.h / 2) - 180} 
+                  width="280" 
+                  height="360" 
+                  rx="32" 
+                  fill="none"
+                  stroke="url(#gradientHUD)" 
+                  strokeWidth="3"
+                  pathLength="100"
+                  className={isHudClosing ? 'hud-box-out' : 'hud-box-in'}
+                />
               </svg>
 
-              {/* Casella Curva Glassmorphism */}
+              {/* Casella Vetro (Contenuto Interno) */}
               <div 
-                onClick={(e) => e.stopPropagation()} 
-                className="relative z-[10001] w-64 p-6 flex flex-col items-center justify-center hud-popup-anim"
+                onClick={(e) => e.stopPropagation()} // Evita la chiusura se clicchi dentro
+                className={`absolute z-[10001] w-[280px] h-[360px] p-6 flex flex-col items-center justify-center ${isHudClosing ? 'hud-content-out' : 'hud-content-in'}`}
                 style={{
-                  borderRadius: '3rem 3rem 1.5rem 1.5rem',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)',
-                  backdropFilter: 'blur(24px)',
-                  WebkitBackdropFilter: 'blur(24px)',
-                  border: '1px solid rgba(255,255,255,0.6)',
-                  borderBottom: '1px solid rgba(255,255,255,0.2)',
-                  boxShadow: '0 16px 40px rgba(0,0,0,0.2), inset 2px 2px 6px rgba(255,255,255,0.8)'
+                  left: `calc(50% - 140px)`,
+                  top: `calc(50% - 180px)`,
+                  borderRadius: '32px',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
                 }}
               >
-                <div className="w-24 h-24 bg-white/30 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] mb-4 overflow-hidden relative group">
-                  <span className="text-4xl opacity-50">?</span>
+                <div className="w-28 h-28 bg-white/20 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] mb-6 overflow-hidden relative">
+                  <span className="text-5xl opacity-40">💊</span>
                 </div>
                 
-                <h3 className="text-slate-800 font-black uppercase tracking-widest text-[13px] text-center mb-1 leading-tight drop-shadow-sm">
+                <h3 className="text-slate-200 font-black uppercase tracking-widest text-sm text-center mb-2 leading-tight drop-shadow-md">
                   {hudActive.name}
                 </h3>
-                <p className="text-[9px] text-slate-500 uppercase tracking-widest font-bold text-center">
-                  Ricerca immagine in corso...
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold text-center px-4">
+                  In attesa di connessione visiva...
                 </p>
 
                 <button 
-                  onClick={() => setHudActive(null)}
-                  className="mt-5 w-8 h-8 rounded-full bg-slate-800/10 hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center text-slate-600 font-black text-sm border-none cursor-pointer"
+                  onClick={() => {
+                    setIsHudClosing(true);
+                    setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 800);
+                  }}
+                  className="mt-8 w-10 h-10 rounded-full bg-white/10 hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center text-slate-300 font-black text-sm border-none cursor-pointer backdrop-blur-sm"
                 >
                   ✕
                 </button>
               </div>
 
+              {/* Regole CSS della Magia (Timing perfetto In/Out) */}
               <style dangerouslySetInnerHTML={{__html: `
-                .anim-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                /* Sfondo */
+                .hud-bg-in { animation: fadeIn 0.4s ease-out forwards; }
+                .hud-bg-out { animation: fadeOut 0.4s ease-out 0.4s forwards; }
 
-                .hud-line-anim {
-                  stroke-dasharray: 1500;
-                  stroke-dashoffset: 1500;
-                  animation: drawLine 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-                }
-                @keyframes drawLine { to { stroke-dashoffset: 0; } }
+                /* Contenuto Vetro */
+                .hud-content-in { opacity: 0; animation: fadeIn 0.4s ease-out 0.4s forwards; }
+                .hud-content-out { opacity: 1; animation: fadeOut 0.2s ease-out forwards; }
 
-                .hud-popup-anim {
-                  opacity: 0;
-                  transform: translateY(30px) scale(0.9);
-                  animation: popUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
-                }
-                @keyframes popUp { 
-                  to { opacity: 1; transform: translateY(0) scale(1); } 
-                }
+                /* Linea e Bordo SVG (Il Trucco del Riavvolgimento) */
+                .hud-line-in { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawPath 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+                .hud-line-out { stroke-dasharray: 100; stroke-dashoffset: 0; animation: erasePath 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards; }
+
+                .hud-box-in { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawPath 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards; }
+                .hud-box-out { stroke-dasharray: 100; stroke-dashoffset: 0; animation: erasePath 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+                @keyframes drawPath { to { stroke-dashoffset: 0; } }
+                @keyframes erasePath { to { stroke-dashoffset: 100; } }
+                @keyframes fadeIn { to { opacity: 1; } }
+                @keyframes fadeOut { to { opacity: 0; } }
               `}} />
             </div>
           )}
