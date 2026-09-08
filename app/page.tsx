@@ -1562,7 +1562,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                        <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
                          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
                          <p className="font-bold text-[15px] text-slate-700 mb-3 ml-2 relative z-10">{itemScelto.nome}</p>
-                         {finalCho === 0 && finalPro === 0 ? <p className="text-[11px] text-red-500 font-bold bg-red-50 p-3 rounded-xl inline-block shadow-sm relative z-10 ml-2">Pasto azzerato (Sgarro o Digiuno).</p> : <p className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2">{itemScelto.dettaglioGrammi(finalCho, finalPro, finalFat)}</p>}
+                         {finalCho === 0 && finalPro === 0 ? <p className="text-[11px] text-red-500 font-bold bg-red-50 p-3 rounded-xl inline-block shadow-sm relative z-10 ml-2">Pasto azzerato (Sgarro o Digiuno).</p> : <div className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">
+  {renderDescrizioneConHUD(itemScelto.dettaglioGrammi(finalCho, finalPro, finalFat) || "")}
+</div>}
                        </div>
                     )}
                     
@@ -2089,10 +2091,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- HUD OLOGRAFICO DEFINITIVO (3 LIVELLI SEPARATI) --- */}
+      {/* --- HUD TATTICO RADIALE (STILE PIE MENU SCI-FI) --- */}
           {hudActive && (
             <div 
-              className="fixed inset-0 z-[9990] overflow-hidden"
+              className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
               onClick={() => {
                 setIsHudClosing(true);
                 setTimeout(() => {
@@ -2101,87 +2103,91 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 }, 800);
               }} 
             >
-              {/* SFONDO (Livello Base) */}
-              <div className={`absolute inset-0 bg-slate-900/60 backdrop-blur-md ${isHudClosing ? 'hud-bg-out' : 'hud-bg-in'}`}></div>
+              {/* SFONDO SCURO */}
+              <div className={`absolute inset-0 bg-slate-900/70 backdrop-blur-md ${isHudClosing ? 'hud-bg-out' : 'hud-bg-in'}`}></div>
 
-              {/* LIVELLO 1: LA LINEA DI COLLEGAMENTO (SOTTO IL VETRO) */}
+              {/* LIVELLO 1: LA LINEA DI CONNESSIONE DATI */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-[9998]">
                 <defs>
                   <linearGradient id="gradientHUD" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#f97316" /> 
-                    <stop offset="100%" stopColor="#fb7185" /> 
+                    <stop offset="0%" stopColor="#f97316" />
+                    <stop offset="100%" stopColor="#fb7185" />
                   </linearGradient>
                 </defs>
-                {/* Parte dalle coordinate del click e arriva esattamente al centro-basso dello schermo */}
+                {/* La linea parte dal bottone e si aggancia al CENTRO esatto */}
                 <path 
-                  d={`M ${hudActive.x} ${hudActive.y} Q ${hudActive.x} ${(winSize.h / 2) + 180} ${winSize.w / 2} ${(winSize.h / 2) + 180}`} 
+                  d={`M ${hudActive.x} ${hudActive.y} C ${hudActive.x} ${winSize.h / 2}, ${winSize.w / 2} ${hudActive.y}, ${winSize.w / 2} ${winSize.h / 2}`} 
                   fill="none" 
                   stroke="url(#gradientHUD)" 
-                  strokeWidth="4"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   pathLength="100"
                   className={isHudClosing ? 'hud-line-out' : 'hud-line-in'}
                 />
               </svg>
 
-              {/* LIVELLO 2: IL RIQUADRO IN VETRO (IN MEZZO) */}
+              {/* LIVELLO 2: NUCLEO CENTRALE IN VETRO */}
               <div 
                 onClick={(e) => e.stopPropagation()} 
-                className={`absolute z-[9999] w-[280px] h-[360px] p-6 flex flex-col items-center justify-center ${isHudClosing ? 'hud-content-out' : 'hud-content-in'}`}
+                className={`relative z-[9999] w-[260px] h-[260px] rounded-full flex flex-col items-center justify-center ${isHudClosing ? 'hud-content-out' : 'hud-content-in'}`}
                 style={{
-                  /* Posizionato matematicamente al centro esatto dello schermo */
-                  left: `calc(50% - 140px)`,
-                  top: `calc(50% - 180px)`,
-                  borderRadius: '32px',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 100%)',
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,1)'
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 30px rgba(255,255,255,1)'
                 }}
               >
-                <div className="w-28 h-28 bg-white/70 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] mb-6 overflow-hidden relative">
-                  <span className="text-5xl opacity-40">💊</span>
+                {/* Immagine / Icona Centrale */}
+                <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center shadow-[inset_4px_4px_10px_rgba(0,0,0,0.1),_inset_-4px_-4px_10px_rgba(255,255,255,1)] mb-3 relative z-10">
+                  <span className="text-4xl opacity-50 drop-shadow-sm">💊</span>
                 </div>
                 
-                <h3 className="text-slate-700 font-black uppercase tracking-widest text-sm text-center mb-2 leading-tight">
+                {/* Dati Sincronizzati */}
+                <h3 className="text-slate-800 font-black uppercase tracking-widest text-xs text-center mb-1 leading-tight z-10 px-4">
                   {hudActive.name}
                 </h3>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold text-center px-4">
-                  In attesa di immagine...
+                <p className="text-[9px] text-orange-500 uppercase tracking-widest font-bold text-center z-10 animate-pulse">
+                  Estrazione Dati...
                 </p>
 
+                {/* Chiusura */}
                 <button 
                   onClick={() => {
                     setIsHudClosing(true);
                     setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 800);
                   }}
-                  className="mt-8 w-10 h-10 rounded-full bg-slate-200 hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center text-slate-600 font-black text-sm border-none cursor-pointer shadow-md"
+                  className="absolute bottom-6 w-8 h-8 rounded-full bg-white hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center text-slate-400 font-black text-xs border-none cursor-pointer shadow-md z-20"
                 >
                   ✕
                 </button>
               </div>
 
-              {/* LIVELLO 3: IL CONTORNO (SOPRA IL VETRO) */}
+              {/* LIVELLO 3: ANELLI TATTICI ROTANTI E SPICCHIO (Sopra il vetro) */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-[10000]">
-                {/* Disegna il perimetro partendo da (centro, fondo) ricalcando i 280x360px del box */}
-                <path 
-                  d={`
-                    M ${winSize.w / 2} ${(winSize.h / 2) + 180} 
-                    L ${(winSize.w / 2) + 108} ${(winSize.h / 2) + 180} 
-                    A 32 32 0 0 0 ${(winSize.w / 2) + 140} ${(winSize.h / 2) + 148} 
-                    L ${(winSize.w / 2) + 140} ${(winSize.h / 2) - 148} 
-                    A 32 32 0 0 0 ${(winSize.w / 2) + 108} ${(winSize.h / 2) - 180} 
-                    L ${(winSize.w / 2) - 108} ${(winSize.h / 2) - 180} 
-                    A 32 32 0 0 0 ${(winSize.w / 2) - 140} ${(winSize.h / 2) - 148} 
-                    L ${(winSize.w / 2) - 140} ${(winSize.h / 2) + 148} 
-                    A 32 32 0 0 0 ${(winSize.w / 2) - 108} ${(winSize.h / 2) + 180} 
-                    Z
-                  `} 
+                {/* Anello Esterno Continuo */}
+                <circle 
+                  cx={winSize.w / 2} 
+                  cy={winSize.h / 2} 
+                  r="135" 
+                  fill="none"
+                  stroke="url(#gradientHUD)" 
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  className={isHudClosing ? 'hud-ring-out' : 'hud-ring-in'}
+                  style={{ transformOrigin: 'center', transform: 'rotate(-90deg)' }}
+                />
+                
+                {/* Anello Interno Tratteggiato (Effetto Scansione) */}
+                <circle 
+                  cx={winSize.w / 2} 
+                  cy={winSize.h / 2} 
+                  r="145" 
                   fill="none"
                   stroke="url(#gradientHUD)" 
                   strokeWidth="4"
-                  pathLength="100"
-                  className={isHudClosing ? 'hud-box-out' : 'hud-box-in'}
+                  strokeDasharray="10 15"
+                  className="animate-spin-slow"
+                  style={{ transformOrigin: 'center', opacity: isHudClosing ? 0 : 0.6 }}
                 />
               </svg>
 
@@ -2190,21 +2196,28 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 .hud-bg-in { animation: fadeIn 0.4s ease-out forwards; }
                 .hud-bg-out { animation: fadeOut 0.4s ease-out 0.4s forwards; }
 
-                .hud-content-in { opacity: 0; animation: fadeIn 0.4s ease-out 0.4s forwards; }
-                .hud-content-out { opacity: 1; animation: fadeOut 0.2s ease-out forwards; }
+                /* Il vetro centrale scala ed entra in fade-in */
+                .hud-content-in { opacity: 0; transform: scale(0.6); animation: popCircle 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
+                .hud-content-out { opacity: 1; transform: scale(1); animation: fadeOut 0.2s ease-out forwards; }
 
-                /* La linea disegna per prima */
+                /* La linea traccia per prima */
                 .hud-line-in { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawPath 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
                 .hud-line-out { stroke-dasharray: 100; stroke-dashoffset: 0; animation: erasePath 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards; }
 
-                /* Il contorno parte esattamete quando la linea finisce (delay 0.4s) */
-                .hud-box-in { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawPath 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards; }
-                .hud-box-out { stroke-dasharray: 100; stroke-dashoffset: 0; animation: erasePath 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+                /* L'anello si srotola attorno al vetro */
+                .hud-ring-in { stroke-dasharray: 850; stroke-dashoffset: 850; animation: drawRing 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
+                .hud-ring-out { stroke-dasharray: 850; stroke-dashoffset: 0; animation: eraseRing 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
                 @keyframes drawPath { to { stroke-dashoffset: 0; } }
                 @keyframes erasePath { to { stroke-dashoffset: 100; } }
+                @keyframes drawRing { to { stroke-dashoffset: 0; } }
+                @keyframes eraseRing { to { stroke-dashoffset: 850; } }
                 @keyframes fadeIn { to { opacity: 1; } }
                 @keyframes fadeOut { to { opacity: 0; } }
+                @keyframes popCircle { to { opacity: 1; transform: scale(1); } }
+                
+                .animate-spin-slow { animation: spin 8s linear infinite; }
+                @keyframes spin { 100% { transform: rotate(360deg); } }
               `}} />
             </div>
           )}
