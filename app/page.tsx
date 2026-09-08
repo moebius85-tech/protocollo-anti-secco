@@ -2091,13 +2091,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 3D VETRO (COSTRUZIONE PROSPETTICA FEDELE) --- */}
+      {/* --- ARCHIVIO EFFETTO VETRO (LAYOUT PULITO RIPRISTINATO) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
               style={{
-                /* Telecamera ravvicinata per massimizzare la deformazione trapezoidale */
-                perspective: '600px',
                 '--start-x': `${hudActive.x}px`,
                 '--start-y': `${hudActive.y}px`,
               } as React.CSSProperties}
@@ -2110,25 +2108,22 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               <div className={`absolute inset-0 bg-slate-900/60 backdrop-blur-xl ${isHudClosing ? 'archive-bg-out' : 'archive-bg-in'}`}></div>
 
               {/* CONTENITORE DEL MAZZO */}
-              <div 
-                className={`absolute w-[280px] h-[340px] ${isHudClosing ? 'archive-fly-out' : 'archive-fly-in'}`}
-                style={{ transformStyle: 'preserve-3d' }}
-              >
+              <div className={`absolute w-[280px] h-[340px] ${isHudClosing ? 'archive-fly-out' : 'archive-fly-in'}`}>
                 
-                {/* --- 1. ARCHIVIO SUPERIORE (Le 7 caselle compattate in background) --- */}
+                {/* --- 1. ARCHIVIO SUPERIORE (Ripristinato come nella tua foto) --- */}
                 {[7, 6, 5, 4, 3, 2, 1].map((i) => (
                   <div 
                     key={`top-${i}`} 
                     className={`absolute inset-0 rounded-[32px] glass-panel pointer-events-none ${isHudClosing ? 'collapse-all' : `fan-top-${i}`}`} 
-                    style={{ zIndex: 30 - i }} /* Da 29 (Top 1) a 23 (Top 7) */
+                    style={{ zIndex: 10 - i }}
                   ></div>
                 ))}
 
-                {/* --- 2. SCHEDA PRINCIPALE (Al centro, Z-Index massimo) --- */}
+                {/* --- 2. SCHEDA PRINCIPALE (Pulita e sollevata al punto giusto) --- */}
                 <div 
-                  className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_40px_80px_rgba(0,0,0,0.5)] pointer-events-none ${isHudClosing ? 'collapse-all' : 'extract-main'}`}
+                  className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_30px_60px_rgba(0,0,0,0.4)] pointer-events-none ${isHudClosing ? 'collapse-all' : 'extract-main'}`}
                   style={{ 
-                    zIndex: 50, /* Sormonta tutto, sia le schede sopra che quelle sotto */
+                    zIndex: 20, 
                     background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 100%)',
                     backdropFilter: 'blur(24px)',
                     WebkitBackdropFilter: 'blur(24px)',
@@ -2147,38 +2142,36 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   </p>
                 </div>
 
-                {/* --- 3. CASELLE SCARTATE (Deformazione Trapezio Estrema, poste SOTTO la principale) --- */}
+                {/* --- 3. CASELLE SCARTATE (Nessuna deformazione, solo spinte MOLTO IN BASSO) --- */}
                 <div 
-                  className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : 'scroll-down-1'}`} 
+                  className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-1'}`} 
                   style={{ 
-                    zIndex: 40, /* Sotto la principale (50) ma sopra l'ultima (30) */
-                    transformOrigin: 'top center',
+                    zIndex: 30,
                     background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
                     border: '1px solid rgba(255,255,255,0.6)',
-                    boxShadow: '0 -15px 30px rgba(0,0,0,0.15)'
+                    boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
                   }}
                 ></div>
                 <div 
-                  className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : 'scroll-down-2'}`} 
+                  className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-2'}`} 
                   style={{ 
-                    zIndex: 30, /* Sotto la prima carta scartata */
-                    transformOrigin: 'top center',
+                    zIndex: 40,
                     background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
                     border: '1px solid rgba(255,255,255,0.5)',
-                    boxShadow: '0 -15px 30px rgba(0,0,0,0.2)'
+                    boxShadow: '0 -10px 40px rgba(0,0,0,0.2)'
                   }}
                 ></div>
 
               </div>
 
-              {/* REGOLE CSS - FISICA 3D COMPATTATA E ROTAZIONE */}
+              {/* REGOLE CSS - ANIMAZIONI RIPRISTINATE */}
               <style dangerouslySetInnerHTML={{__html: `
                 .glass-panel {
                   background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 100%);
                   backdrop-filter: blur(16px);
                   -webkit-backdrop-filter: blur(16px);
                   border: 1px solid rgba(255,255,255,0.5);
-                  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
                 }
 
                 .archive-bg-in { animation: fadeIn 0.4s ease-out forwards; }
@@ -2187,14 +2180,14 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 .archive-fly-in { animation: flyToCenter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
                 .archive-fly-out { animation: flyToButton 0.4s cubic-bezier(0.8, 0.2, 0.8, 1) 0.1s forwards; }
 
-                /* L'estrazione centrale slitta dal basso verso lo zero (centro) */
-                .extract-main { animation: scrollUpAndExtract 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
+                /* La scheda principale si alza leggermente dal centro */
+                .extract-main { animation: extractMainCard 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
 
-                /* TRAPEZIO INFERIORE: Tessere ravvicinate al centro, ma inclinate violentemente */
-                .scroll-down-1 { animation: scrollAway3D 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
-                .scroll-down-2 { animation: scrollFurther3D 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
+                /* Le schede scartate sprofondano verso il basso senza ruotare */
+                .drop-down-1 { animation: dropDown1 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
+                .drop-down-2 { animation: dropDown2 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards; }
 
-                /* ARCHIVIO SUPERIORE: Molto più ravvicinato tra una tessera e l'altra */
+                /* L'archivio superiore (stesse spaziature della tua foto) */
                 .fan-top-1 { animation: top1 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
                 .fan-top-2 { animation: top2 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
                 .fan-top-3 { animation: top3 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
@@ -2215,35 +2208,32 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   100% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
                 }
 
-                @keyframes scrollUpAndExtract {
+                @keyframes extractMainCard {
                   0% { transform: translateY(200px) scale(0.9); opacity: 0; }
-                  100% { transform: translateY(0px) scale(1.05); opacity: 1; }
+                  100% { transform: translateY(-20px) scale(1.05); opacity: 1; }
                 }
 
-                /* 
-                 * La carta scartata scivola appena sotto la principale (180px),
-                 * ma la rotazione di 65 gradi la schiaccia visivamente creando il trapezio largo sopra e stretto sotto. 
-                 */
-                @keyframes scrollAway3D { 
-                  0% { transform: translateY(0) rotateX(0deg) scale(1); opacity: 1; }
-                  100% { transform: translateY(180px) rotateX(65deg) scale(1.3); opacity: 0.9; } 
+                /* Ecco le schede portate MOLTO più in basso, senza distorsioni */
+                @keyframes dropDown1 { 
+                  0% { transform: translateY(0) scale(1); opacity: 1; }
+                  100% { transform: translateY(450px) scale(1.1); opacity: 0.9; } 
                 }
-                @keyframes scrollFurther3D { 
-                  0% { transform: translateY(0) rotateX(0deg) scale(1); opacity: 1; }
-                  100% { transform: translateY(240px) rotateX(70deg) scale(1.4); opacity: 0.8; } 
+                @keyframes dropDown2 { 
+                  0% { transform: translateY(0) scale(1); opacity: 1; }
+                  100% { transform: translateY(580px) scale(1.15); opacity: 0.7; } 
                 }
 
-                /* Pacchetto superiore molto compatto (spazi ridotti a 25/20px tra le carte) */
-                @keyframes top1 { 100% { transform: translateY(-40px) scale(0.95); opacity: 0.95; } }
-                @keyframes top2 { 100% { transform: translateY(-75px) scale(0.90); opacity: 0.85; } }
-                @keyframes top3 { 100% { transform: translateY(-105px) scale(0.85); opacity: 0.75; } }
-                @keyframes top4 { 100% { transform: translateY(-130px) scale(0.80); opacity: 0.60; } }
-                @keyframes top5 { 100% { transform: translateY(-150px) scale(0.75); opacity: 0.45; } }
-                @keyframes top6 { 100% { transform: translateY(-165px) scale(0.70); opacity: 0.25; } }
-                @keyframes top7 { 100% { transform: translateY(-175px) scale(0.65); opacity: 0.10; } }
+                /* Spaziature perfette per l'archivio superiore */
+                @keyframes top1 { 100% { transform: translateY(-70px) scale(0.95); opacity: 0.95; } }
+                @keyframes top2 { 100% { transform: translateY(-110px) scale(0.90); opacity: 0.85; } }
+                @keyframes top3 { 100% { transform: translateY(-150px) scale(0.85); opacity: 0.75; } }
+                @keyframes top4 { 100% { transform: translateY(-190px) scale(0.80); opacity: 0.60; } }
+                @keyframes top5 { 100% { transform: translateY(-230px) scale(0.75); opacity: 0.45; } }
+                @keyframes top6 { 100% { transform: translateY(-270px) scale(0.70); opacity: 0.25; } }
+                @keyframes top7 { 100% { transform: translateY(-310px) scale(0.65); opacity: 0.10; } }
 
                 @keyframes collapseCards {
-                  100% { transform: translateY(0) rotateX(0deg) scale(1); opacity: 1; }
+                  100% { transform: translateY(0) scale(1); opacity: 1; }
                 }
 
                 @keyframes fadeIn { to { opacity: 1; } }
