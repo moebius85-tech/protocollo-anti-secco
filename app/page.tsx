@@ -2091,134 +2091,136 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- HUD BOLD (STILE RING VECTOR FLAT) --- */}
+      {/* --- ARCHIVIO EFFETTO VETRO (STACK WALLET ANIMATION) --- */}
           {hudActive && (
             <div 
-              className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
-              onClick={() => {
-                setIsHudClosing(true);
-                setTimeout(() => {
-                  setHudActive(null);
-                  setIsHudClosing(false);
-                }, 800);
-              }} 
+              className="fixed inset-0 z-[9990] overflow-hidden"
+              /* Passiamo le coordinate del click al CSS per far partire l'animazione da lì */
+              style={{
+                '--start-x': `${hudActive.x}px`,
+                '--start-y': `${hudActive.y}px`,
+              } as React.CSSProperties}
             >
-              {/* SFONDO SCURO */}
-              <div className={`absolute inset-0 bg-slate-900/80 backdrop-blur-sm ${isHudClosing ? 'hud-bg-out' : 'hud-bg-in'}`}></div>
-
-              {/* LIVELLO 1: LA LINEA DI CONNESSIONE (Più spessa e decisa) */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-[9998]">
-                <defs>
-                  <linearGradient id="gradOrange" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#ea580c" /> {/* Arancio Scuro */}
-                    <stop offset="100%" stopColor="#f97316" /> {/* Arancio Brillante */}
-                  </linearGradient>
-                </defs>
-                <path 
-                  d={`M ${hudActive.x} ${hudActive.y} C ${hudActive.x} ${winSize.h / 2}, ${winSize.w / 2} ${hudActive.y}, ${winSize.w / 2} ${winSize.h / 2}`} 
-                  fill="none" 
-                  stroke="url(#gradOrange)" 
-                  strokeWidth="5" 
-                  strokeLinecap="round"
-                  pathLength="100"
-                  className={isHudClosing ? 'hud-line-out' : 'hud-line-in'}
-                />
-              </svg>
-
-              {/* LIVELLO 2: IL RING GIGANTE E ANIMATO (Il contorno marcato) */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-[9999]">
-                {/* Sfondo del ring per dare profondità */}
-                <circle 
-                  cx={winSize.w / 2} 
-                  cy={winSize.h / 2} 
-                  r="100" 
-                  fill="none"
-                  stroke="#fb923c"
-                  strokeWidth="45"
-                  className={`opacity-20 ${isHudClosing ? 'hud-fade-out' : 'hud-fade-in-delayed'}`}
-                />
-                {/* Ring principale spesso animato */}
-                <circle 
-                  cx={winSize.w / 2} 
-                  cy={winSize.h / 2} 
-                  r="100" 
-                  fill="none"
-                  stroke="url(#gradOrange)" 
-                  strokeWidth="45"
-                  strokeLinecap="butt"
-                  className={isHudClosing ? 'hud-thick-ring-out' : 'hud-thick-ring-in'}
-                  style={{ transformOrigin: 'center', transform: 'rotate(-90deg)' }}
-                />
-              </svg>
-
-              {/* LIVELLO 3: NUCLEO BIANCO E ETICHETTA LATERALE */}
+              {/* SFONDO SFOCATO (In/Out) */}
               <div 
-                onClick={(e) => e.stopPropagation()} 
-                className="absolute z-[10000] flex items-center justify-center"
-                style={{
-                  left: winSize.w / 2,
-                  top: winSize.h / 2,
-                }}
-              >
-                {/* Nucleo Centrale (Sostituisce il vetro con un solido bianco) */}
-                <div className={`absolute w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] transform -translate-x-1/2 -translate-y-1/2 ${isHudClosing ? 'hud-scale-out' : 'hud-scale-in'}`}>
-                   <span className="text-6xl drop-shadow-md">💊</span>
-                </div>
+                className={`absolute inset-0 bg-slate-900/60 backdrop-blur-md ${isHudClosing ? 'archive-bg-out' : 'archive-bg-in'}`}
+                onClick={() => {
+                  setIsHudClosing(true);
+                  setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 700);
+                }} 
+              ></div>
 
-                {/* Tag Laterale (Come la reference "London, UK") */}
-                <div className={`absolute left-[60px] bg-white px-8 py-4 rounded-r-full rounded-l-md shadow-2xl flex items-center gap-3 border-l-4 border-orange-600 origin-left ${isHudClosing ? 'hud-tag-out' : 'hud-tag-in'}`}>
-                   <span className="w-4 h-4 rounded-full bg-orange-500 animate-pulse border-2 border-white shadow-sm"></span>
-                   <div className="flex flex-col">
-                     <span className="text-slate-800 font-black uppercase tracking-widest text-sm leading-none whitespace-nowrap">{hudActive.name}</span>
-                     <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-1">Connesso</span>
-                   </div>
-                </div>
+              {/* CONTENITORE DELLO STACK (Vola dal bottone al centro dello schermo) */}
+              <div className={`absolute w-[260px] h-[340px] ${isHudClosing ? 'archive-fly-out' : 'archive-fly-in'}`}>
+                
+                {/* SCHEDA 3: L'ultima dietro l'archivio */}
+                <div 
+                  className={`absolute inset-0 rounded-[32px] glass-card ${isHudClosing ? 'card-collapse-3' : 'card-fan-3'}`} 
+                  style={{ zIndex: 1, background: 'rgba(255, 255, 255, 0.2)' }}
+                ></div>
+                
+                {/* SCHEDA 2: Quella in mezzo all'archivio */}
+                <div 
+                  className={`absolute inset-0 rounded-[32px] glass-card ${isHudClosing ? 'card-collapse-2' : 'card-fan-2'}`} 
+                  style={{ zIndex: 2, background: 'rgba(255, 255, 255, 0.4)' }}
+                ></div>
 
-                {/* Bottone di Chiusura */}
-                <button 
-                  onClick={() => {
-                    setIsHudClosing(true);
-                    setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 800);
+                {/* SCHEDA 1: La Principale (Quella che si alza in primo piano) */}
+                <div 
+                  className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-2xl glass-card ${isHudClosing ? 'card-collapse-main' : 'card-fan-main'}`}
+                  style={{ 
+                    zIndex: 3, 
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
+                    border: '1px solid rgba(255,255,255,0.8)'
                   }}
-                  className={`absolute top-[150px] -translate-x-1/2 w-12 h-12 rounded-full bg-slate-800 text-white hover:bg-rose-500 transition-all flex items-center justify-center font-black text-sm border-2 border-white shadow-[0_8px_20px_rgba(0,0,0,0.4)] cursor-pointer ${isHudClosing ? 'hud-fade-out' : 'hud-fade-in-delayed'}`}
                 >
-                  ✕
-                </button>
+                  <div className="w-24 h-24 bg-slate-100 rounded-[2rem] flex items-center justify-center shadow-inner mb-6 relative overflow-hidden">
+                    <span className="text-5xl opacity-50 drop-shadow-sm">💊</span>
+                  </div>
+                  
+                  <h3 className="text-slate-800 font-black uppercase tracking-widest text-center text-sm mb-2 leading-tight">
+                    {hudActive.name}
+                  </h3>
+                  <p className="text-[10px] text-orange-500 uppercase tracking-widest font-bold text-center mb-6">
+                    Scheda Estratta
+                  </p>
+
+                  <button 
+                    onClick={() => {
+                      setIsHudClosing(true);
+                      setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 700);
+                    }}
+                    className="w-12 h-12 rounded-full bg-slate-800 text-white hover:bg-rose-500 transition-colors flex items-center justify-center font-black text-sm shadow-xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+
               </div>
 
-              {/* REGOLE CSS DELL'ANIMAZIONE */}
+              {/* REGOLE CSS DELLA FISICA DELL'ARCHIVIO */}
               <style dangerouslySetInnerHTML={{__html: `
-                .hud-bg-in { animation: fadeIn 0.4s ease-out forwards; }
-                .hud-bg-out { animation: fadeOut 0.4s ease-out 0.3s forwards; }
+                .glass-card {
+                  backdrop-filter: blur(16px);
+                  -webkit-backdrop-filter: blur(16px);
+                  box-shadow: 0 10px 40px rgba(0,0,0,0.2), inset 0 0 20px rgba(255,255,255,0.6);
+                }
 
-                .hud-fade-in-delayed { opacity: 0; animation: fadeIn 0.4s ease-out 0.6s forwards; }
-                .hud-fade-out { opacity: 1; animation: fadeOut 0.2s ease-out forwards; }
+                .archive-bg-in { animation: fadeIn 0.4s ease-out forwards; }
+                .archive-bg-out { animation: fadeOut 0.4s ease-out 0.3s forwards; }
 
-                .hud-scale-in { opacity: 0; transform: translate(-50%, -50%) scale(0.5); animation: popCenter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-                /* L'animazione di uscita del centro necessita di una sovrascrittura di translate */
-                .hud-scale-out { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: fadeScaleOut 0.3s ease-in forwards; }
+                /* IL VOLO DAL PULSANTE (Usa le variabili --start-x e --start-y) */
+                .archive-fly-in { animation: flyToCenter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+                .archive-fly-out { animation: flyToButton 0.5s cubic-bezier(0.8, 0.2, 0.8, 1) 0.1s forwards; }
 
-                /* L'etichetta schizza fuori come una linguetta verso destra */
-                .hud-tag-in { opacity: 0; transform: scaleX(0); animation: slideTag 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s forwards; }
-                .hud-tag-out { opacity: 1; transform: scaleX(1); animation: slideTagOut 0.2s ease-in forwards; }
+                @keyframes flyToCenter {
+                  0% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
+                  100% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                }
+                @keyframes flyToButton {
+                  0% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                  100% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
+                }
 
-                .hud-line-in { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawPath 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-                .hud-line-out { stroke-dasharray: 100; stroke-dashoffset: 0; animation: erasePath 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
+                /* L'APERTURA A VENTAGLIO (Scatta appena il mazzo arriva al centro) */
+                .card-fan-3 { animation: fanOut3 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
+                .card-fan-2 { animation: fanOut2 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
+                .card-fan-main { animation: fanOutMain 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
 
-                /* La circonferenza con r=100 è circa 628. Animazione del ring spesso */
-                .hud-thick-ring-in { stroke-dasharray: 630; stroke-dashoffset: 630; animation: drawRing 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
-                .hud-thick-ring-out { stroke-dasharray: 630; stroke-dashoffset: 0; animation: eraseRing 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+                /* LA CHIUSURA A PACCHETTO */
+                .card-collapse-3 { animation: fanIn3 0.3s ease-in forwards; }
+                .card-collapse-2 { animation: fanIn2 0.3s ease-in forwards; }
+                .card-collapse-main { animation: fanInMain 0.3s ease-in forwards; }
 
-                @keyframes drawPath { to { stroke-dashoffset: 0; } }
-                @keyframes erasePath { to { stroke-dashoffset: 100; } }
-                @keyframes drawRing { to { stroke-dashoffset: 0; } }
-                @keyframes eraseRing { to { stroke-dashoffset: 630; } }
+                /* KEYFRAMES FISICA CARTE */
+                @keyframes fanOut3 {
+                  0% { transform: translateY(0) scale(1); opacity: 0; }
+                  100% { transform: translateY(-75px) scale(0.85); opacity: 1; }
+                }
+                @keyframes fanOut2 {
+                  0% { transform: translateY(0) scale(1); opacity: 0; }
+                  100% { transform: translateY(-40px) scale(0.92); opacity: 1; }
+                }
+                @keyframes fanOutMain {
+                  0% { transform: translateY(0) scale(1); }
+                  100% { transform: translateY(15px) scale(1.05); } /* La principale si fa avanti */
+                }
+
+                @keyframes fanIn3 {
+                  0% { transform: translateY(-75px) scale(0.85); opacity: 1; }
+                  100% { transform: translateY(0) scale(1); opacity: 0; }
+                }
+                @keyframes fanIn2 {
+                  0% { transform: translateY(-40px) scale(0.92); opacity: 1; }
+                  100% { transform: translateY(0) scale(1); opacity: 0; }
+                }
+                @keyframes fanInMain {
+                  0% { transform: translateY(15px) scale(1.05); }
+                  100% { transform: translateY(0) scale(1); }
+                }
+
                 @keyframes fadeIn { to { opacity: 1; } }
                 @keyframes fadeOut { to { opacity: 0; } }
-                @keyframes popCenter { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-                @keyframes fadeScaleOut { to { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
-                @keyframes slideTag { to { opacity: 1; transform: scaleX(1); } }
-                @keyframes slideTagOut { to { opacity: 0; transform: scaleX(0); } }
               `}} />
             </div>
           )}
