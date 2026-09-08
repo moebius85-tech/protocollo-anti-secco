@@ -255,6 +255,14 @@ export default function Home() {
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
   const [digiuno, setDigiuno] = useState(false); 
   const [usaIntegratori, setUsaIntegratori] = useState(true);
+  const [hudActive, setHudActive] = useState<{name: string, x: number, y: number} | null>(null);
+  const [winSize, setWinSize] = useState({w: 1000, h: 800});
+
+  useEffect(() => {
+    if (hudActive) {
+      setWinSize({ w: window.innerWidth, h: window.innerHeight });
+    }
+  }, [hudActive]);
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
   const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred', dieta: 'Equilibrata', autore: 'Nessuno', metabolismoBloccato: false });
@@ -1361,6 +1369,19 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${usaIntegratori ? 'translate-x-8' : 'translate-x-1'}`}></div>
              </button>
           </div>
+            <button 
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              setHudActive({ 
+                name: "Ciclodestrine HBCD", 
+                x: rect.left + (rect.width / 2), 
+                y: rect.top + (rect.height / 2) 
+              });
+            }}
+            className="mt-4 w-full bg-[#E0E5EC] px-4 py-3 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-widest shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] hover:text-rose-500 transition-colors border-none cursor-pointer active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]"
+          >
+            Testa Animazione HUD Olografico 👁️
+          </button>
             
             {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
                <div className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-5 rounded-[1.5rem] mb-8 bg-amber-50/30 anim-pop" style={{animationDelay: '0.6s'}}>
@@ -2038,6 +2059,88 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
+      {/* --- HUD OLOGRAFICO AVANZATO (EFFETTO LINEA TRACCIANTE) --- */}
+          {hudActive && (
+            <div 
+              className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
+              onClick={() => setHudActive(null)} 
+            >
+              {/* Sfondo Sfocato */}
+              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md anim-fade-in"></div>
+
+              {/* Linea Tracciante Morbida (SVG Bézier Curve) */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-[10000]">
+                <path 
+                  d={`M ${hudActive.x} ${hudActive.y} Q ${hudActive.x} ${(winSize.h / 2) - 150} ${winSize.w / 2} ${(winSize.h / 2) - 50}`} 
+                  fill="none" 
+                  stroke="url(#gradientLine)" 
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="hud-line-anim"
+                />
+                <defs>
+                  <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f97316" /> 
+                    <stop offset="100%" stopColor="#fb7185" /> 
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              {/* Casella Curva Glassmorphism */}
+              <div 
+                onClick={(e) => e.stopPropagation()} 
+                className="relative z-[10001] w-64 p-6 flex flex-col items-center justify-center hud-popup-anim"
+                style={{
+                  borderRadius: '3rem 3rem 1.5rem 1.5rem',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  border: '1px solid rgba(255,255,255,0.6)',
+                  borderBottom: '1px solid rgba(255,255,255,0.2)',
+                  boxShadow: '0 16px 40px rgba(0,0,0,0.2), inset 2px 2px 6px rgba(255,255,255,0.8)'
+                }}
+              >
+                <div className="w-24 h-24 bg-white/30 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] mb-4 overflow-hidden relative group">
+                  <span className="text-4xl opacity-50">?</span>
+                </div>
+                
+                <h3 className="text-slate-800 font-black uppercase tracking-widest text-[13px] text-center mb-1 leading-tight drop-shadow-sm">
+                  {hudActive.name}
+                </h3>
+                <p className="text-[9px] text-slate-500 uppercase tracking-widest font-bold text-center">
+                  Ricerca immagine in corso...
+                </p>
+
+                <button 
+                  onClick={() => setHudActive(null)}
+                  className="mt-5 w-8 h-8 rounded-full bg-slate-800/10 hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center text-slate-600 font-black text-sm border-none cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <style dangerouslySetInnerHTML={{__html: `
+                .anim-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+                .hud-line-anim {
+                  stroke-dasharray: 1500;
+                  stroke-dashoffset: 1500;
+                  animation: drawLine 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                }
+                @keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+                .hud-popup-anim {
+                  opacity: 0;
+                  transform: translateY(30px) scale(0.9);
+                  animation: popUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+                }
+                @keyframes popUp { 
+                  to { opacity: 1; transform: translateY(0) scale(1); } 
+                }
+              `}} />
+            </div>
+          )}
       </main>
     );
   }
