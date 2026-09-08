@@ -270,7 +270,7 @@ const renderDescrizioneConHUD = (testo: string) => {
   if (!testo) return null;
   
   // Le parole magiche che attivano l'ologramma
-  const integratoriChiave = ["Ciclodestrine", "EAA", "Creatina", "L-Citrullina", "Ashwagandha", "Omega-3", "Vitamina D3", "Proteine", "Whey"];
+  const integratoriChiave = ["Ciclodestrine", "EAA", "Creatina", "L-Citrullina", "Ashwagandha", "Omega-3", "Vitamina D3", "Proteine", "Whey", "Isolate"];
   
   return testo.split('\n').map((linea, index) => {
     const integratoreTrovato = integratoriChiave.find(int => linea.includes(int));
