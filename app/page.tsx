@@ -2091,7 +2091,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- HUD TATTICO RADIALE (STILE PIE MENU SCI-FI) --- */}
+      {/* --- HUD BOLD (STILE RING VECTOR FLAT) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
@@ -2104,120 +2104,121 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               }} 
             >
               {/* SFONDO SCURO */}
-              <div className={`absolute inset-0 bg-slate-900/70 backdrop-blur-md ${isHudClosing ? 'hud-bg-out' : 'hud-bg-in'}`}></div>
+              <div className={`absolute inset-0 bg-slate-900/80 backdrop-blur-sm ${isHudClosing ? 'hud-bg-out' : 'hud-bg-in'}`}></div>
 
-              {/* LIVELLO 1: LA LINEA DI CONNESSIONE DATI */}
+              {/* LIVELLO 1: LA LINEA DI CONNESSIONE (Più spessa e decisa) */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-[9998]">
                 <defs>
-                  <linearGradient id="gradientHUD" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#f97316" />
-                    <stop offset="100%" stopColor="#fb7185" />
+                  <linearGradient id="gradOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ea580c" /> {/* Arancio Scuro */}
+                    <stop offset="100%" stopColor="#f97316" /> {/* Arancio Brillante */}
                   </linearGradient>
                 </defs>
-                {/* La linea parte dal bottone e si aggancia al CENTRO esatto */}
                 <path 
                   d={`M ${hudActive.x} ${hudActive.y} C ${hudActive.x} ${winSize.h / 2}, ${winSize.w / 2} ${hudActive.y}, ${winSize.w / 2} ${winSize.h / 2}`} 
                   fill="none" 
-                  stroke="url(#gradientHUD)" 
-                  strokeWidth="3"
+                  stroke="url(#gradOrange)" 
+                  strokeWidth="5" 
                   strokeLinecap="round"
                   pathLength="100"
                   className={isHudClosing ? 'hud-line-out' : 'hud-line-in'}
                 />
               </svg>
 
-              {/* LIVELLO 2: NUCLEO CENTRALE IN VETRO */}
+              {/* LIVELLO 2: IL RING GIGANTE E ANIMATO (Il contorno marcato) */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-[9999]">
+                {/* Sfondo del ring per dare profondità */}
+                <circle 
+                  cx={winSize.w / 2} 
+                  cy={winSize.h / 2} 
+                  r="100" 
+                  fill="none"
+                  stroke="#fb923c"
+                  strokeWidth="45"
+                  className={`opacity-20 ${isHudClosing ? 'hud-fade-out' : 'hud-fade-in-delayed'}`}
+                />
+                {/* Ring principale spesso animato */}
+                <circle 
+                  cx={winSize.w / 2} 
+                  cy={winSize.h / 2} 
+                  r="100" 
+                  fill="none"
+                  stroke="url(#gradOrange)" 
+                  strokeWidth="45"
+                  strokeLinecap="butt"
+                  className={isHudClosing ? 'hud-thick-ring-out' : 'hud-thick-ring-in'}
+                  style={{ transformOrigin: 'center', transform: 'rotate(-90deg)' }}
+                />
+              </svg>
+
+              {/* LIVELLO 3: NUCLEO BIANCO E ETICHETTA LATERALE */}
               <div 
                 onClick={(e) => e.stopPropagation()} 
-                className={`relative z-[9999] w-[260px] h-[260px] rounded-full flex flex-col items-center justify-center ${isHudClosing ? 'hud-content-out' : 'hud-content-in'}`}
+                className="absolute z-[10000] flex items-center justify-center"
                 style={{
-                  background: 'radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 30px rgba(255,255,255,1)'
+                  left: winSize.w / 2,
+                  top: winSize.h / 2,
                 }}
               >
-                {/* Immagine / Icona Centrale */}
-                <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center shadow-[inset_4px_4px_10px_rgba(0,0,0,0.1),_inset_-4px_-4px_10px_rgba(255,255,255,1)] mb-3 relative z-10">
-                  <span className="text-4xl opacity-50 drop-shadow-sm">💊</span>
+                {/* Nucleo Centrale (Sostituisce il vetro con un solido bianco) */}
+                <div className={`absolute w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] transform -translate-x-1/2 -translate-y-1/2 ${isHudClosing ? 'hud-scale-out' : 'hud-scale-in'}`}>
+                   <span className="text-6xl drop-shadow-md">💊</span>
                 </div>
-                
-                {/* Dati Sincronizzati */}
-                <h3 className="text-slate-800 font-black uppercase tracking-widest text-xs text-center mb-1 leading-tight z-10 px-4">
-                  {hudActive.name}
-                </h3>
-                <p className="text-[9px] text-orange-500 uppercase tracking-widest font-bold text-center z-10 animate-pulse">
-                  Estrazione Dati...
-                </p>
 
-                {/* Chiusura */}
+                {/* Tag Laterale (Come la reference "London, UK") */}
+                <div className={`absolute left-[60px] bg-white px-8 py-4 rounded-r-full rounded-l-md shadow-2xl flex items-center gap-3 border-l-4 border-orange-600 origin-left ${isHudClosing ? 'hud-tag-out' : 'hud-tag-in'}`}>
+                   <span className="w-4 h-4 rounded-full bg-orange-500 animate-pulse border-2 border-white shadow-sm"></span>
+                   <div className="flex flex-col">
+                     <span className="text-slate-800 font-black uppercase tracking-widest text-sm leading-none whitespace-nowrap">{hudActive.name}</span>
+                     <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mt-1">Connesso</span>
+                   </div>
+                </div>
+
+                {/* Bottone di Chiusura */}
                 <button 
                   onClick={() => {
                     setIsHudClosing(true);
                     setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 800);
                   }}
-                  className="absolute bottom-6 w-8 h-8 rounded-full bg-white hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center text-slate-400 font-black text-xs border-none cursor-pointer shadow-md z-20"
+                  className={`absolute top-[150px] -translate-x-1/2 w-12 h-12 rounded-full bg-slate-800 text-white hover:bg-rose-500 transition-all flex items-center justify-center font-black text-sm border-2 border-white shadow-[0_8px_20px_rgba(0,0,0,0.4)] cursor-pointer ${isHudClosing ? 'hud-fade-out' : 'hud-fade-in-delayed'}`}
                 >
                   ✕
                 </button>
               </div>
 
-              {/* LIVELLO 3: ANELLI TATTICI ROTANTI E SPICCHIO (Sopra il vetro) */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-[10000]">
-                {/* Anello Esterno Continuo */}
-                <circle 
-                  cx={winSize.w / 2} 
-                  cy={winSize.h / 2} 
-                  r="135" 
-                  fill="none"
-                  stroke="url(#gradientHUD)" 
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  className={isHudClosing ? 'hud-ring-out' : 'hud-ring-in'}
-                  style={{ transformOrigin: 'center', transform: 'rotate(-90deg)' }}
-                />
-                
-                {/* Anello Interno Tratteggiato (Effetto Scansione) */}
-                <circle 
-                  cx={winSize.w / 2} 
-                  cy={winSize.h / 2} 
-                  r="145" 
-                  fill="none"
-                  stroke="url(#gradientHUD)" 
-                  strokeWidth="4"
-                  strokeDasharray="10 15"
-                  className="animate-spin-slow"
-                  style={{ transformOrigin: 'center', opacity: isHudClosing ? 0 : 0.6 }}
-                />
-              </svg>
-
               {/* REGOLE CSS DELL'ANIMAZIONE */}
               <style dangerouslySetInnerHTML={{__html: `
                 .hud-bg-in { animation: fadeIn 0.4s ease-out forwards; }
-                .hud-bg-out { animation: fadeOut 0.4s ease-out 0.4s forwards; }
+                .hud-bg-out { animation: fadeOut 0.4s ease-out 0.3s forwards; }
 
-                /* Il vetro centrale scala ed entra in fade-in */
-                .hud-content-in { opacity: 0; transform: scale(0.6); animation: popCircle 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
-                .hud-content-out { opacity: 1; transform: scale(1); animation: fadeOut 0.2s ease-out forwards; }
+                .hud-fade-in-delayed { opacity: 0; animation: fadeIn 0.4s ease-out 0.6s forwards; }
+                .hud-fade-out { opacity: 1; animation: fadeOut 0.2s ease-out forwards; }
 
-                /* La linea traccia per prima */
-                .hud-line-in { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawPath 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-                .hud-line-out { stroke-dasharray: 100; stroke-dashoffset: 0; animation: erasePath 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards; }
+                .hud-scale-in { opacity: 0; transform: translate(-50%, -50%) scale(0.5); animation: popCenter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
+                /* L'animazione di uscita del centro necessita di una sovrascrittura di translate */
+                .hud-scale-out { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: fadeScaleOut 0.3s ease-in forwards; }
 
-                /* L'anello si srotola attorno al vetro */
-                .hud-ring-in { stroke-dasharray: 850; stroke-dashoffset: 850; animation: drawRing 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
-                .hud-ring-out { stroke-dasharray: 850; stroke-dashoffset: 0; animation: eraseRing 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+                /* L'etichetta schizza fuori come una linguetta verso destra */
+                .hud-tag-in { opacity: 0; transform: scaleX(0); animation: slideTag 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s forwards; }
+                .hud-tag-out { opacity: 1; transform: scaleX(1); animation: slideTagOut 0.2s ease-in forwards; }
+
+                .hud-line-in { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawPath 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+                .hud-line-out { stroke-dasharray: 100; stroke-dashoffset: 0; animation: erasePath 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
+
+                /* La circonferenza con r=100 è circa 628. Animazione del ring spesso */
+                .hud-thick-ring-in { stroke-dasharray: 630; stroke-dashoffset: 630; animation: drawRing 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
+                .hud-thick-ring-out { stroke-dasharray: 630; stroke-dashoffset: 0; animation: eraseRing 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
                 @keyframes drawPath { to { stroke-dashoffset: 0; } }
                 @keyframes erasePath { to { stroke-dashoffset: 100; } }
                 @keyframes drawRing { to { stroke-dashoffset: 0; } }
-                @keyframes eraseRing { to { stroke-dashoffset: 850; } }
+                @keyframes eraseRing { to { stroke-dashoffset: 630; } }
                 @keyframes fadeIn { to { opacity: 1; } }
                 @keyframes fadeOut { to { opacity: 0; } }
-                @keyframes popCircle { to { opacity: 1; transform: scale(1); } }
-                
-                .animate-spin-slow { animation: spin 8s linear infinite; }
-                @keyframes spin { 100% { transform: rotate(360deg); } }
+                @keyframes popCenter { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+                @keyframes fadeScaleOut { to { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
+                @keyframes slideTag { to { opacity: 1; transform: scaleX(1); } }
+                @keyframes slideTagOut { to { opacity: 0; transform: scaleX(0); } }
               `}} />
             </div>
           )}
