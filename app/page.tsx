@@ -2091,7 +2091,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 3D VETRO PURO (PROSPETTIVA PINTEREST) --- */}
+      {/* --- ARCHIVIO 3D VETRO PURO (PROSPETTIVA BILANCIATA) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden perspective-1000"
@@ -2109,24 +2109,23 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 }} 
               ></div>
 
-              {/* CONTENITORE DEL MAZZO (Vola dal bottone al centro) */}
+              {/* CONTENITORE DEL MAZZO */}
               <div className={`absolute w-[280px] h-[340px] ${isHudClosing ? 'archive-fly-out' : 'archive-fly-in'}`}>
                 
                 {/* --- 1. ARCHIVIO SUPERIORE (Le 7 caselle in background) --- */}
                 {[7, 6, 5, 4, 3, 2, 1].map((i) => (
                   <div 
                     key={`top-${i}`} 
-                    className={`absolute inset-0 rounded-t-[32px] rounded-b-2xl glass-panel ${isHudClosing ? 'collapse-all' : `fan-top-${i}`}`} 
+                    className={`absolute inset-0 rounded-t-[32px] rounded-b-2xl glass-panel pointer-events-none ${isHudClosing ? 'collapse-all' : `fan-top-${i}`}`} 
                     style={{ zIndex: 10 - i }}
                   ></div>
                 ))}
 
-                {/* --- 2. SCHEDA PRINCIPALE (Il Prodotto, fa uno slide in alto) --- */}
+                {/* --- 2. SCHEDA PRINCIPALE (Il Prodotto, fa uno slide PIÙ IN ALTO) --- */}
                 <div 
                   className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_30px_60px_rgba(0,0,0,0.4)] ${isHudClosing ? 'collapse-all' : 'pop-main'}`}
                   style={{ 
                     zIndex: 20, 
-                    /* Vetro più luminoso e nitido per la scheda attiva */
                     background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
                     backdropFilter: 'blur(24px)',
                     WebkitBackdropFilter: 'blur(24px)',
@@ -2155,21 +2154,20 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   </button>
                 </div>
 
-                {/* --- 3. CASELLE SCARTATE (Le 2 in primo piano, scivolano in basso a ventaglio) --- */}
+                {/* --- 3. CASELLE SCARTATE (Scendono PIÙ IN BASSO e non bloccano i click) --- */}
                 <div 
-                  className={`absolute inset-0 rounded-t-3xl rounded-b-[32px] glass-panel ${isHudClosing ? 'collapse-all' : 'fan-bottom-1'}`} 
+                  className={`absolute inset-0 rounded-t-3xl rounded-b-[32px] glass-panel pointer-events-none ${isHudClosing ? 'collapse-all' : 'fan-bottom-1'}`} 
                   style={{ zIndex: 30 }}
                 ></div>
                 <div 
-                  className={`absolute inset-0 rounded-t-3xl rounded-b-[32px] glass-panel ${isHudClosing ? 'collapse-all' : 'fan-bottom-2'}`} 
+                  className={`absolute inset-0 rounded-t-3xl rounded-b-[32px] glass-panel pointer-events-none ${isHudClosing ? 'collapse-all' : 'fan-bottom-2'}`} 
                   style={{ zIndex: 40 }}
                 ></div>
 
               </div>
 
-              {/* REGOLE CSS DELLA COREOGRAFIA 3D VETRO */}
+              {/* REGOLE CSS DELLA COREOGRAFIA CORRETTA */}
               <style dangerouslySetInnerHTML={{__html: `
-                /* Stile base del Cristallo per tutte le carte DUMMY */
                 .glass-panel {
                   background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 100%);
                   backdrop-filter: blur(12px);
@@ -2181,14 +2179,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 .archive-bg-in { animation: fadeIn 0.4s ease-out forwards; }
                 .archive-bg-out { animation: fadeOut 0.4s ease-out 0.3s forwards; }
 
-                /* Volo iniziale e finale */
                 .archive-fly-in { animation: flyToCenter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
                 .archive-fly-out { animation: flyToButton 0.5s cubic-bezier(0.8, 0.2, 0.8, 1) 0.1s forwards; }
 
-                /* Animazione della scheda principale (Si alza e si ingrandisce) */
+                /* La scheda principale si alza maggiormente per distaccarsi dal fondo */
                 .pop-main { animation: slideUpMain 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
 
-                /* Animazioni dell'archivio superiore (Le 7 carte che fuggono in alto) */
                 .fan-top-1 { animation: top1 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
                 .fan-top-2 { animation: top2 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
                 .fan-top-3 { animation: top3 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
@@ -2197,14 +2193,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 .fan-top-6 { animation: top6 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
                 .fan-top-7 { animation: top7 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
 
-                /* Animazioni delle carte in primo piano (Le 2 che scendono enormi in basso) */
+                /* Le schede scartate sprofondano e non si ingrandiscono troppo */
                 .fan-bottom-1 { animation: bot1 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
                 .fan-bottom-2 { animation: bot2 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards; }
 
-                /* Richiusura di tutto il mazzo */
                 .collapse-all { animation: collapseCards 0.4s cubic-bezier(0.5, 0, 0.2, 1) forwards; }
 
-                /* --- KEYFRAMES --- */
                 @keyframes flyToCenter {
                   0% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
                   100% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
@@ -2216,21 +2210,20 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
                 @keyframes slideUpMain {
                   0% { transform: translateY(0) scale(1); }
-                  100% { transform: translateY(-20px) scale(1.05); }
+                  100% { transform: translateY(-40px) scale(1.05); } /* Più in alto */
                 }
 
-                /* Prospettiva Y e Scala decrescente per l'archivio in background */
-                @keyframes top1 { 100% { transform: translateY(-60px) scale(0.95); opacity: 0.9; } }
-                @keyframes top2 { 100% { transform: translateY(-100px) scale(0.90); opacity: 0.8; } }
-                @keyframes top3 { 100% { transform: translateY(-140px) scale(0.85); opacity: 0.7; } }
-                @keyframes top4 { 100% { transform: translateY(-170px) scale(0.80); opacity: 0.5; } }
-                @keyframes top5 { 100% { transform: translateY(-200px) scale(0.75); opacity: 0.3; } }
-                @keyframes top6 { 100% { transform: translateY(-230px) scale(0.70); opacity: 0.15; } }
-                @keyframes top7 { 100% { transform: translateY(-260px) scale(0.65); opacity: 0.05; } }
+                @keyframes top1 { 100% { transform: translateY(-80px) scale(0.95); opacity: 0.9; } }
+                @keyframes top2 { 100% { transform: translateY(-115px) scale(0.90); opacity: 0.8; } }
+                @keyframes top3 { 100% { transform: translateY(-150px) scale(0.85); opacity: 0.7; } }
+                @keyframes top4 { 100% { transform: translateY(-180px) scale(0.80); opacity: 0.5; } }
+                @keyframes top5 { 100% { transform: translateY(-210px) scale(0.75); opacity: 0.3; } }
+                @keyframes top6 { 100% { transform: translateY(-240px) scale(0.70); opacity: 0.15; } }
+                @keyframes top7 { 100% { transform: translateY(-270px) scale(0.65); opacity: 0.05; } }
 
-                /* Carte giganti in primo piano che scendono simulando lo sfoglio */
-                @keyframes bot1 { 100% { transform: translateY(220px) scale(1.15); opacity: 0.8; } }
-                @keyframes bot2 { 100% { transform: translateY(420px) scale(1.35); opacity: 0.4; } }
+                /* Crollo verso il basso per le schede in primo piano */
+                @keyframes bot1 { 100% { transform: translateY(280px) scale(1.05); opacity: 0.4; } }
+                @keyframes bot2 { 100% { transform: translateY(380px) scale(1.1); opacity: 0.1; } }
 
                 @keyframes collapseCards {
                   100% { transform: translateY(0) scale(1); opacity: 1; }
