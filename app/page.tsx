@@ -2091,7 +2091,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 2D VETRO (FORMA TRAPEZOIDALE PURA VIA CLIP-PATH) --- */}
+      {/* --- ARCHIVIO 2D VETRO (POSIZIONAMENTO PERFETTO DELLE SCHEDE INFERIORI) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
@@ -2107,10 +2107,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               {/* SFONDO SFOCATO */}
               <div className={`absolute inset-0 bg-slate-900/60 backdrop-blur-xl ${isHudClosing ? 'archive-bg-out' : 'archive-bg-in'}`}></div>
 
-              {/* CONTENITORE DEL MAZZO (Niente più 3D) */}
+              {/* CONTENITORE DEL MAZZO */}
               <div className={`absolute w-[280px] h-[340px] ${isHudClosing ? 'archive-fly-out' : 'archive-fly-in'}`}>
                 
-                {/* --- 1. ARCHIVIO SUPERIORE (Denso e compatto in alto) --- */}
+                {/* --- 1. ARCHIVIO SUPERIORE --- */}
                 {[7, 6, 5, 4, 3, 2, 1].map((i) => (
                   <div 
                     key={`top-${i}`} 
@@ -2126,7 +2126,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   ></div>
                 ))}
 
-                {/* --- 2. SCHEDA PRINCIPALE (Livello Superiore) --- */}
+                {/* --- 2. SCHEDA PRINCIPALE --- */}
                 <div 
                   className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_40px_80px_rgba(0,0,0,0.5)] pointer-events-none ${isHudClosing ? 'collapse-all' : 'extract-main'}`}
                   style={{ 
@@ -2149,11 +2149,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   </p>
                 </div>
 
-                {/* --- 3. CASELLE SCARTATE (Forma Trapezio VERA in 2D) --- */}
-                {/* 
-                  Usiamo un wrapper per il drop-shadow e applichiamo il clip-path 
-                  all'elemento interno. Questo simula la forma senza toccare il 3D.
-                */}
+                {/* --- 3. CASELLE SCARTATE (Più in basso e più vicine tra loro) --- */}
                 <div 
                   className={`absolute inset-0 pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-1'}`}
                   style={{ zIndex: 40, filter: 'drop-shadow(0 -10px 20px rgba(0,0,0,0.2))' }}
@@ -2162,7 +2158,6 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     className="w-full h-full rounded-[32px]"
                     style={{
                       background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
-                      /* Taglia via le diagonali inferiori simulando la prospettiva in 2D */
                       clipPath: 'polygon(0 0, 100% 0, 92% 100%, 8% 100%)'
                     }}
                   ></div>
@@ -2221,14 +2216,18 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   100% { transform: translateY(-20px) scale(1.05); opacity: 1; }
                 }
 
-                /* Le due carte sprofondano sotto la principale, allargandosi ma mantenendo il taglio trapezoidale 2D */
+                /* 
+                  ECCO LA MODIFICA CHIAVE: 
+                  - Carta 1 scende a 340px (si appoggia esattamente sotto la principale)
+                  - Carta 2 scende a 410px (molto ravvicinata alla Carta 1)
+                */
                 @keyframes dropDown1 { 
                   0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(240px) scale(1.15); opacity: 0.95; } 
+                  100% { transform: translateY(340px) scale(1.15); opacity: 0.95; } 
                 }
                 @keyframes dropDown2 { 
                   0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(400px) scale(1.3); opacity: 0.85; } 
+                  100% { transform: translateY(410px) scale(1.22); opacity: 0.85; } 
                 }
 
                 /* Archivio superiore denso */
