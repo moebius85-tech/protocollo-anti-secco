@@ -1453,8 +1453,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                           <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
                         </div>
                         <div className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">
-  {renderDescrizioneConHUD(blocco.descrizione)}
-</div>
+                          {renderDescrizioneConHUD(blocco.descrizione || "")}
+                       </div>
                       </div>
                     );
                   } else {
