@@ -2063,9 +2063,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* --- HUD OLOGRAFICO CONTINUO (LINEA + CONTORNO REVERSIBILE) --- */}
           {hudActive && (
             <div 
-              className="fixed inset-0 z-[9999] overflow-hidden"
+              className="fixed inset-0 z-[9999] overflow-hidden flex items-center justify-center"
               onClick={() => {
-                // Attiva l'animazione inversa e aspetta 800ms prima di distruggere l'elemento
                 setIsHudClosing(true);
                 setTimeout(() => {
                   setHudActive(null);
@@ -2073,66 +2072,33 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 }, 800);
               }} 
             >
-              {/* Sfondo Sfocato (Dissolvenza in/out) */}
-              <div className={`absolute inset-0 bg-slate-900/40 backdrop-blur-md ${isHudClosing ? 'hud-bg-out' : 'hud-bg-in'}`}></div>
+              {/* Sfondo Sfocato Scuro (per dare contrasto al vetro chiaro) */}
+              <div className={`absolute inset-0 bg-slate-900/60 backdrop-blur-md ${isHudClosing ? 'hud-bg-out' : 'hud-bg-in'}`}></div>
 
-              {/* Vettori Animati (Linea e Contorno) */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-[10000]">
-                <defs>
-                  <linearGradient id="gradientHUD" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#f97316" /> {/* Arancio */}
-                    <stop offset="100%" stopColor="#fb7185" /> {/* Rosa */}
-                  </linearGradient>
-                </defs>
-
-                {/* 1. La Linea Tracciante */}
-                <path 
-                  d={`M ${hudActive.x} ${hudActive.y} Q ${hudActive.x} ${(winSize.h / 2) + 180} ${winSize.w / 2} ${(winSize.h / 2) + 180}`} 
-                  fill="none" 
-                  stroke="url(#gradientHUD)" 
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  pathLength="100"
-                  className={isHudClosing ? 'hud-line-out' : 'hud-line-in'}
-                />
-
-                {/* 2. Il Contorno del Riquadro (Si disegna subito dopo la linea) */}
-                <rect 
-                  x={(winSize.w / 2) - 140} 
-                  y={(winSize.h / 2) - 180} 
-                  width="280" 
-                  height="360" 
-                  rx="32" 
-                  fill="none"
-                  stroke="url(#gradientHUD)" 
-                  strokeWidth="3"
-                  pathLength="100"
-                  className={isHudClosing ? 'hud-box-out' : 'hud-box-in'}
-                />
-              </svg>
-
-              {/* Casella Vetro (Contenuto Interno) */}
+              {/* Casella Vetro Chiaro (Sotto il perimetro animato) */}
               <div 
-                onClick={(e) => e.stopPropagation()} // Evita la chiusura se clicchi dentro
-                className={`absolute z-[10001] w-[280px] h-[360px] p-6 flex flex-col items-center justify-center ${isHudClosing ? 'hud-content-out' : 'hud-content-in'}`}
+                onClick={(e) => e.stopPropagation()} 
+                className={`absolute z-[10000] w-[280px] h-[360px] p-6 flex flex-col items-center justify-center ${isHudClosing ? 'hud-content-out' : 'hud-content-in'}`}
                 style={{
-                  left: `calc(50% - 140px)`,
-                  top: `calc(50% - 180px)`,
                   borderRadius: '32px',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
+                  // Vetro molto più chiaro ed elegante
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,1)'
+                  // ATTENZIONE: Nessun bordo CSS! Il contorno lo disegna l'animazione SVG
                 }}
               >
-                <div className="w-28 h-28 bg-white/20 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] mb-6 overflow-hidden relative">
+                <div className="w-28 h-28 bg-white/70 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_8px_rgba(0,0,0,0.1)] mb-6 overflow-hidden relative">
                   <span className="text-5xl opacity-40">💊</span>
                 </div>
                 
-                <h3 className="text-slate-200 font-black uppercase tracking-widest text-sm text-center mb-2 leading-tight drop-shadow-md">
+                {/* Testi scuri per risaltare sul vetro chiaro */}
+                <h3 className="text-slate-700 font-black uppercase tracking-widest text-sm text-center mb-2 leading-tight">
                   {hudActive.name}
                 </h3>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold text-center px-4">
-                  In attesa di connessione visiva...
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold text-center px-4">
+                  In attesa di immagine...
                 </p>
 
                 <button 
@@ -2140,23 +2106,62 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     setIsHudClosing(true);
                     setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 800);
                   }}
-                  className="mt-8 w-10 h-10 rounded-full bg-white/10 hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center text-slate-300 font-black text-sm border-none cursor-pointer backdrop-blur-sm"
+                  className="mt-8 w-10 h-10 rounded-full bg-slate-200 hover:bg-rose-500 hover:text-white transition-colors flex items-center justify-center text-slate-600 font-black text-sm border-none cursor-pointer shadow-md"
                 >
                   ✕
                 </button>
               </div>
 
+              {/* Vettori Animati (SOPRA IL VETRO z-[10001]) */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-[10001]">
+                <defs>
+                  <linearGradient id="gradientHUD" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f97316" /> {/* Arancio */}
+                    <stop offset="100%" stopColor="#fb7185" /> {/* Rosa */}
+                  </linearGradient>
+                </defs>
+
+                {/* 1. La Linea Tracciante (Arriva ESATTAMENTE al centro della base del box) */}
+                <path 
+                  d={`M ${hudActive.x} ${hudActive.y} Q ${hudActive.x} ${(winSize.h / 2) + 220} ${winSize.w / 2} ${(winSize.h / 2) + 180}`} 
+                  fill="none" 
+                  stroke="url(#gradientHUD)" 
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  pathLength="100"
+                  className={isHudClosing ? 'hud-line-out' : 'hud-line-in'}
+                />
+
+                {/* 2. Il Contorno del Riquadro (Inizia esattamente alle coordinate di fine linea, e gira intorno) */}
+                <path 
+                  d={`
+                    M ${winSize.w / 2} ${(winSize.h / 2) + 180} 
+                    L ${(winSize.w / 2) + 108} ${(winSize.h / 2) + 180} 
+                    A 32 32 0 0 0 ${(winSize.w / 2) + 140} ${(winSize.h / 2) + 148} 
+                    L ${(winSize.w / 2) + 140} ${(winSize.h / 2) - 148} 
+                    A 32 32 0 0 0 ${(winSize.w / 2) + 108} ${(winSize.h / 2) - 180} 
+                    L ${(winSize.w / 2) - 108} ${(winSize.h / 2) - 180} 
+                    A 32 32 0 0 0 ${(winSize.w / 2) - 140} ${(winSize.h / 2) - 148} 
+                    L ${(winSize.w / 2) - 140} ${(winSize.h / 2) + 148} 
+                    A 32 32 0 0 0 ${(winSize.w / 2) - 108} ${(winSize.h / 2) + 180} 
+                    Z
+                  `} 
+                  fill="none"
+                  stroke="url(#gradientHUD)" 
+                  strokeWidth="4"
+                  pathLength="100"
+                  className={isHudClosing ? 'hud-box-out' : 'hud-box-in'}
+                />
+              </svg>
+
               {/* Regole CSS della Magia (Timing perfetto In/Out) */}
               <style dangerouslySetInnerHTML={{__html: `
-                /* Sfondo */
                 .hud-bg-in { animation: fadeIn 0.4s ease-out forwards; }
                 .hud-bg-out { animation: fadeOut 0.4s ease-out 0.4s forwards; }
 
-                /* Contenuto Vetro */
                 .hud-content-in { opacity: 0; animation: fadeIn 0.4s ease-out 0.4s forwards; }
                 .hud-content-out { opacity: 1; animation: fadeOut 0.2s ease-out forwards; }
 
-                /* Linea e Bordo SVG (Il Trucco del Riavvolgimento) */
                 .hud-line-in { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawPath 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
                 .hud-line-out { stroke-dasharray: 100; stroke-dashoffset: 0; animation: erasePath 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards; }
 
