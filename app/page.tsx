@@ -264,6 +264,43 @@ export default function Home() {
       setWinSize({ w: window.innerWidth, h: window.innerHeight });
     }
   }, [hudActive]);
+
+  // FUNZIONE MAGICA: Aggiunge i pallini HUD accanto agli integratori
+const renderDescrizioneConHUD = (testo: string) => {
+  if (!testo) return null;
+  
+  // Le parole magiche che attivano l'ologramma
+  const integratoriChiave = ["Ciclodestrine", "EAA", "Creatina", "L-Citrullina", "Ashwagandha", "Omega-3", "Vitamina D3", "Proteine", "Whey"];
+  
+  return testo.split('\n').map((linea, index) => {
+    const integratoreTrovato = integratoriChiave.find(int => linea.includes(int));
+    
+    if (integratoreTrovato) {
+      return (
+        <span key={index} className="block mb-1 relative flex items-center">
+          <span>{linea}</span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const rect = e.currentTarget.getBoundingClientRect();
+              setHudActive({ 
+                name: integratoreTrovato, 
+                x: rect.left + (rect.width / 2), 
+                y: rect.top + (rect.height / 2) 
+              });
+            }}
+            className="ml-2.5 w-4 h-4 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 shadow-[0_0_8px_rgba(249,115,22,0.6)] flex items-center justify-center hover:scale-125 transition-transform cursor-pointer border-none flex-shrink-0"
+            title={`Mostra ologramma ${integratoreTrovato}`}
+          >
+            <span className="text-[9px] text-white font-black drop-shadow-md">✦</span>
+          </button>
+        </span>
+      );
+    }
+    return <span key={index} className="block mb-1">{linea}</span>;
+  });
+};
+  
   const [modalWizard, setModalWizard] = useState(false);
   const [stepWizard, setStepWizard] = useState(1);
   const [datiWizard, setDatiWizard] = useState({ nome: '', eta: '', altezza: '', peso: '', stileVita: 'Sedentario', obiettivo: 'Shred', dieta: 'Equilibrata', autore: 'Nessuno', metabolismoBloccato: false });
@@ -1415,7 +1452,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         <div className="flex justify-between items-start mb-4">
                           <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
                         </div>
-                        <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">{blocco.descrizione}</p>
+                        <div className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">
+  {renderDescrizioneConHUD(blocco.descrizione)}
+</div>
                       </div>
                     );
                   } else {
