@@ -2091,13 +2091,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 3D VETRO PURO (PROSPETTIVA TRAPEZOIDALE PINTEREST) --- */}
+      {/* --- ARCHIVIO 3D VETRO PURO (PROSPETTIVA TRAPEZOIDALE ESTREMA E CENTRATA) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
               style={{
-                /* Attiviamo la telecamera 3D per l'intero schermo */
-                perspective: '1200px',
+                /* Telecamera più vicina (800px) per un effetto trapezio/3D molto più aggressivo */
+                perspective: '800px',
                 '--start-x': `${hudActive.x}px`,
                 '--start-y': `${hudActive.y}px`,
               } as React.CSSProperties}
@@ -2107,7 +2107,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               }} 
             >
               {/* SFONDO SFOCATO */}
-              <div className={`absolute inset-0 bg-slate-900/50 backdrop-blur-xl ${isHudClosing ? 'archive-bg-out' : 'archive-bg-in'}`}></div>
+              <div className={`absolute inset-0 bg-slate-900/60 backdrop-blur-xl ${isHudClosing ? 'archive-bg-out' : 'archive-bg-in'}`}></div>
 
               {/* CONTENITORE DEL MAZZO (Mantiene il 3D per i figli) */}
               <div 
@@ -2115,7 +2115,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 
-                {/* --- 1. ARCHIVIO SUPERIORE (Le 7 caselle in background) --- */}
+                {/* --- 1. ARCHIVIO SUPERIORE (Le 7 caselle in background, spinte MOLTO più in alto) --- */}
                 {[7, 6, 5, 4, 3, 2, 1].map((i) => (
                   <div 
                     key={`top-${i}`} 
@@ -2124,7 +2124,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   ></div>
                 ))}
 
-                {/* --- 2. SCHEDA PRINCIPALE (Scorre dal basso e svetta in alto) --- */}
+                {/* --- 2. SCHEDA PRINCIPALE (Scorre dal basso e SI FERMA AL CENTRO ESATTO) --- */}
                 <div 
                   className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_40px_80px_rgba(0,0,0,0.5)] pointer-events-none ${isHudClosing ? 'collapse-all' : 'extract-main'}`}
                   style={{ 
@@ -2147,8 +2147,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   </p>
                 </div>
 
-                {/* --- 3. CASELLE SCARTATE IN 3D (Effetto Trapezio) --- */}
-                {/* Hanno la stessa tonalità della scheda estratta, ma ruotano sull'asse X per creare la deformazione prospettica */}
+                {/* --- 3. CASELLE SCARTATE IN 3D (Effetto Trapezio ESTREMO) --- */}
                 <div 
                   className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : 'scroll-down-1'}`} 
                   style={{ 
@@ -2190,19 +2189,20 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 .archive-fly-out { animation: flyToButton 0.5s cubic-bezier(0.8, 0.2, 0.8, 1) 0.1s forwards; }
 
                 /* 
-                 * LA MAGIA 3D: Le schede scartate sprofondano e ruotano sull'asse X. 
-                 * rotateX(55deg) piega la parte bassa verso il fondo, creando l'illusione del trapezio!
+                 * MAGIA 3D TRAPEZIO:
+                 * Ruotiamo di oltre 70 gradi per forzare la deformazione trapezoidale 
+                 * e le spingiamo giù di 450/580 pixel verso il fondo dello schermo.
                  */
                 .scroll-down-1 { animation: scrollAway3D 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; }
                 .scroll-down-2 { animation: scrollFurther3D 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.45s forwards; }
 
                 /* 
-                 * SCORRIMENTO DAL BASSO: La scheda principale parte da translateY(250px) (sotto)
-                 * e viene "tirata su" dal dito immaginario, scavalcando tutte le altre.
+                 * LA SCHEDA CENTRALE:
+                 * Parte da sotto e si posiziona ESATTAMENTE a translateY(0) (centro schermo).
                  */
                 .extract-main { animation: scrollUpAndExtract 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
 
-                /* Archivio posteriore */
+                /* L'archivio posteriore scappa verso l'alto per fare spazio al centro */
                 .fan-top-1 { animation: top1 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s forwards; }
                 .fan-top-2 { animation: top2 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s forwards; }
                 .fan-top-3 { animation: top3 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s forwards; }
@@ -2223,31 +2223,31 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   100% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
                 }
 
-                /* L'estrazione dal basso verso l'alto */
+                /* Carta estratta (Ora finisce a translateY(0) per essere perfetta su desktop) */
                 @keyframes scrollUpAndExtract {
-                  0% { transform: translateY(250px) scale(0.8); opacity: 0; }
-                  40% { transform: translateY(0px) scale(1); opacity: 1; }
-                  100% { transform: translateY(-130px) scale(1.08); opacity: 1; } 
+                  0% { transform: translateY(300px) scale(0.8); opacity: 0; }
+                  50% { transform: translateY(-20px) scale(1.12); opacity: 1; } /* Piccolo balzo in alto */
+                  100% { transform: translateY(0px) scale(1.1); opacity: 1; } /* Assestamento al centro */
                 }
 
-                /* La rotazione 3D per l'effetto trapezio (Pitch back) */
+                /* Effetto Trapezio marcato in basso */
                 @keyframes scrollAway3D { 
                   0% { transform: translateY(0) rotateX(0deg) scale(1); opacity: 1; }
-                  100% { transform: translateY(320px) rotateX(50deg) scale(1.3); opacity: 0.9; } 
+                  100% { transform: translateY(450px) rotateX(70deg) scale(1.4); opacity: 0.9; } 
                 }
                 @keyframes scrollFurther3D { 
                   0% { transform: translateY(0) rotateX(0deg) scale(1); opacity: 1; }
-                  100% { transform: translateY(430px) rotateX(55deg) scale(1.4); opacity: 0.8; } 
+                  100% { transform: translateY(580px) rotateX(75deg) scale(1.5); opacity: 0.8; } 
                 }
 
-                /* Sfondo sfalsato */
-                @keyframes top1 { 100% { transform: translateY(-170px) scale(0.95); opacity: 0.9; } }
-                @keyframes top2 { 100% { transform: translateY(-210px) scale(0.90); opacity: 0.8; } }
-                @keyframes top3 { 100% { transform: translateY(-245px) scale(0.85); opacity: 0.7; } }
-                @keyframes top4 { 100% { transform: translateY(-280px) scale(0.80); opacity: 0.5; } }
-                @keyframes top5 { 100% { transform: translateY(-310px) scale(0.75); opacity: 0.3; } }
-                @keyframes top6 { 100% { transform: translateY(-340px) scale(0.70); opacity: 0.15; } }
-                @keyframes top7 { 100% { transform: translateY(-370px) scale(0.65); opacity: 0.05; } }
+                /* Sfondo sfalsato che vola in alto */
+                @keyframes top1 { 100% { transform: translateY(-200px) scale(0.95); opacity: 0.9; } }
+                @keyframes top2 { 100% { transform: translateY(-245px) scale(0.90); opacity: 0.8; } }
+                @keyframes top3 { 100% { transform: translateY(-285px) scale(0.85); opacity: 0.7; } }
+                @keyframes top4 { 100% { transform: translateY(-320px) scale(0.80); opacity: 0.5; } }
+                @keyframes top5 { 100% { transform: translateY(-355px) scale(0.75); opacity: 0.3; } }
+                @keyframes top6 { 100% { transform: translateY(-385px) scale(0.70); opacity: 0.15; } }
+                @keyframes top7 { 100% { transform: translateY(-415px) scale(0.65); opacity: 0.05; } }
 
                 @keyframes collapseCards {
                   100% { transform: translateY(0) rotateX(0deg) scale(1); opacity: 1; }
