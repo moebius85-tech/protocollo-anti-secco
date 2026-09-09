@@ -2091,7 +2091,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 2D (INQUADRATURA CENTRATA PER NON USCIRE DELLO SCHERMO) --- */}
+      {/* --- ARCHIVIO 2D (SCHEDE INFERIORI INGRANDITE E LARGHE) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
@@ -2110,7 +2110,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               {/* CONTENITORE DEL MAZZO */}
               <div className={`absolute w-[280px] h-[340px] ${isHudClosing ? 'archive-fly-out' : 'archive-fly-in'}`}>
                 
-                {/* --- 1. ARCHIVIO SUPERIORE (Segue la scheda principale verso l'alto) --- */}
+                {/* --- 1. ARCHIVIO SUPERIORE --- */}
                 {[7, 6, 5, 4, 3, 2, 1].map((i) => (
                   <div 
                     key={`top-${i}`} 
@@ -2126,7 +2126,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   ></div>
                 ))}
 
-                {/* --- 2. SCHEDA PRINCIPALE (Sale maggiormente per fare spazio sotto) --- */}
+                {/* --- 2. SCHEDA PRINCIPALE --- */}
                 <div 
                   className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_40px_80px_rgba(0,0,0,0.5)] pointer-events-none ${isHudClosing ? 'collapse-all' : 'extract-main'}`}
                   style={{ 
@@ -2149,7 +2149,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   </p>
                 </div>
 
-                {/* --- 3. CASELLE SCARTATE (Visibili, piene e distanziate a dovere) --- */}
+                {/* --- 3. CASELLE SCARTATE (Più larghe, senza uscire dallo schermo) --- */}
                 <div 
                   className={`absolute inset-0 pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-1'}`}
                   style={{ zIndex: 40, filter: 'drop-shadow(0 -10px 20px rgba(0,0,0,0.2))' }}
@@ -2158,7 +2158,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     className="w-full h-full rounded-[32px]"
                     style={{
                       background: '#ffffff',
-                      clipPath: 'polygon(0 0, 100% 0, 92% 100%, 8% 100%)'
+                      /* Taglio leggermente più netto per compensare l'ingrandimento */
+                      clipPath: 'polygon(0 0, 100% 0, 90% 100%, 10% 100%)'
                     }}
                   ></div>
                 </div>
@@ -2171,7 +2172,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     className="w-full h-full rounded-[32px]"
                     style={{
                       background: '#f8fafc',
-                      clipPath: 'polygon(0 0, 100% 0, 88% 100%, 12% 100%)'
+                      clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)'
                     }}
                   ></div>
                 </div>
@@ -2211,27 +2212,25 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   100% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
                 }
 
-                /* La scheda sale a -90px (prima era -20px) per liberare la visuale inferiore */
                 @keyframes extractMainCard {
                   0% { transform: translateY(200px) scale(0.9); opacity: 0; }
                   100% { transform: translateY(-90px) scale(1.05); opacity: 1; }
                 }
 
                 /* 
-                  Le schede scartate restano a 320px e 390px. 
-                  Poiché la centrale è salita, questo genera l'esatta voragine vista nella foto
-                  senza spingerle fuori dallo schermo del telefono.
+                  Scale incrementato a 1.18 e 1.28 per allargarle sensibilmente.
+                  TranslateY compensato (335px e 415px) per mantenere esattamente la stessa distanza visiva.
                 */
                 @keyframes dropDown1 { 
                   0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(320px) scale(1.05); opacity: 1; } 
+                  100% { transform: translateY(335px) scale(1.18); opacity: 1; } 
                 }
                 @keyframes dropDown2 { 
                   0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(390px) scale(1.1); opacity: 1; } 
+                  100% { transform: translateY(415px) scale(1.28); opacity: 1; } 
                 }
 
-                /* Anche l'archivio denso superiore deve salire per seguire la scheda */
+                /* Archivio superiore intatto */
                 @keyframes top1 { 100% { transform: translateY(-130px) scale(0.95); opacity: 0.95; } }
                 @keyframes top2 { 100% { transform: translateY(-170px) scale(0.90); opacity: 0.85; } }
                 @keyframes top3 { 100% { transform: translateY(-205px) scale(0.85); opacity: 0.75; } }
