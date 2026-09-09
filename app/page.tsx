@@ -324,6 +324,10 @@ const renderDescrizioneConHUD = (testo: string) => {
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Integrazione: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
   const [modalAlimento, setModalAlimento] = useState(false);
+  const [boxSpesa, setBoxSpesa] = useState<Array<{nome: string, cho: string, pro: string, fat: string}>>([
+  { nome: "Yogurt Fage 0%", cho: "3", pro: "10", fat: "0" },
+  { nome: "Crema di Riso", cho: "80", pro: "7", fat: "1" }
+]);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
   const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Scrivimi cosa hai mangiato per stimare i macro!' }]);
@@ -1467,27 +1471,87 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
                         {isCustom ? (
                            <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
-                             <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
-                             <div className="flex gap-3 mb-4 ml-2 items-center">
-                                <label className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-full transition-all border-none cursor-pointer">
-                                   📎
-                                   <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, cat)} />
-                                </label>
-                                <input type="text" placeholder="Es. Mass Gainer" value={pastiCustom[cat]?.nome || ''} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50 min-w-0"} />
-                                <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat]?.nome || '')} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-5 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>🪄 AI</button>
-                             </div>
-                             {fileCustomPasto[cat] && (
-                                <div className="flex items-center gap-2 mb-4 ml-2 p-2 bg-white/50 rounded-xl w-fit border border-white/60">
-                                   <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]">📎 {fileCustomPasto[cat]!.nome}</span>
-                                   <button onClick={() => setFileCustomPasto(prev => ({...prev, [cat]: null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
-                                </div>
-                             )}
-                             <div className="flex gap-4 ml-2">
-                                <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat]?.cho || ''} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
-                                <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat]?.pro || ''} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
-                                <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat]?.fat || ''} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
-                             </div>
-                           </div>
+      <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
+
+      {/* --- NUOVO: SLIDER ORIZZONTALE BOX SPESA --- */}
+      {boxSpesa.length > 0 && (
+        <div className="mb-5 ml-2 mt-1">
+          <span className="text-[9px] uppercase font-black text-slate-400 tracking-widest block mb-2.5">Il tuo Box Spesa</span>
+          <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-3">
+            {boxSpesa.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  updateCustomMeal(cat, 'nome', item.nome);
+                  updateCustomMeal(cat, 'cho', item.cho);
+                  updateCustomMeal(cat, 'pro', item.pro);
+                  updateCustomMeal(cat, 'fat', item.fat);
+                }}
+                className="shrink-0 bg-white/60 shadow-[2px_2px_6px_rgba(163,177,198,0.3)] active:shadow-[inset_2px_2px_4px_rgba(163,177,198,0.4)] px-4 py-2.5 rounded-[1rem] border border-white/80 transition-all cursor-pointer text-left hover:-translate-y-0.5"
+              >
+                <p className="text-[11px] font-bold text-slate-700 whitespace-nowrap mb-1">{item.nome}</p>
+                <p className="text-[9px] font-bold text-slate-400 tracking-widest">
+                  C <span className="text-orange-500">{item.cho}g</span> <span className="mx-1 text-slate-300">|</span> 
+                  P <span className="text-slate-600">{item.pro}g</span> <span className="mx-1 text-slate-300">|</span> 
+                  F <span className="text-slate-600">{item.fat}g</span>
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Barra di ricerca A.I. e Caricamento Foto */}
+      <div className="flex gap-3 mb-4 ml-2 items-center">
+        <label className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-full transition-all border-none cursor-pointer">
+          <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, cat)} />
+          <span className="text-[16px] leading-none">📸</span>
+        </label>
+        <input type="text" placeholder="Es. Mass Gainer" value={pastiCustom[cat]?.nome || ''} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50 min-w-0"} />
+        <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat]?.nome || '')} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-5 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>
+          {isCalculatingMacro[cat] ? '...' : '/ AI'}
+        </button>
+      </div>
+
+      {fileCustomPasto[cat] && (
+        <div className="flex items-center gap-2 mb-4 ml-2 p-2 bg-white/50 rounded-xl w-fit border border-white/60">
+          <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]"> {fileCustomPasto[cat]!.nome}</span>
+          <button onClick={() => setFileCustomPasto(prev => ({...prev, [cat]: null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
+        </div>
+      )}
+
+      {/* Input Macro */}
+      <div className="flex gap-4 ml-2 mb-4">
+        <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat]?.cho || ''} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
+        <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat]?.pro || ''} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
+        <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat]?.fat || ''} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
+      </div>
+
+      {/* --- NUOVO: BOTTONE SALVA NEL BOX SPESA --- */}
+      {pastiCustom[cat]?.nome && (pastiCustom[cat]?.cho !== "" || pastiCustom[cat]?.pro !== "" || pastiCustom[cat]?.fat !== "") && (
+        <div className="flex justify-end ml-2 pt-2 border-t border-white/40">
+          <button 
+            onClick={() => {
+              const isAlreadySaved = boxSpesa.some(item => item.nome.toLowerCase() === pastiCustom[cat].nome.trim().toLowerCase());
+              if (!isAlreadySaved) {
+                setBoxSpesa(prev => [{
+                  nome: pastiCustom[cat].nome.trim(), 
+                  cho: pastiCustom[cat].cho || "0", 
+                  pro: pastiCustom[cat].pro || "0", 
+                  fat: pastiCustom[cat].fat || "0"
+                }, ...prev]);
+                alert("Alimento salvato nel Box Spesa!");
+              } else {
+                alert("Questo alimento è già nel Box Spesa.");
+              }
+            }}
+            className="text-[9px] bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest px-4 py-2.5 rounded-full shadow-[0_4px_10px_rgba(249,115,22,0.3)] hover:shadow-[0_6px_15px_rgba(249,115,22,0.4)] transition-all border-none cursor-pointer"
+          >
+            + Salva nel Box
+          </button>
+        </div>
+      )}
+    </div>
                         ) : (
                            <div className={`mt-2 p-5 rounded-3xl bg-orange-50/50 backdrop-blur-xl border border-white shadow-[inset_4px_4px_8px_rgba(255,255,255,0.8),inset_-4px_-4px_8px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
                              <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
