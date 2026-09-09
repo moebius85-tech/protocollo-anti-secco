@@ -2091,7 +2091,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 2D VETRO (POSIZIONAMENTO PERFETTO DELLE SCHEDE INFERIORI) --- */}
+      {/* --- ARCHIVIO 2D (DISTANZA ESTREMA PER LE SCHEDE INFERIORI) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
@@ -2149,7 +2149,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   </p>
                 </div>
 
-                {/* --- 3. CASELLE SCARTATE (Più in basso e più vicine tra loro) --- */}
+                {/* --- 3. CASELLE SCARTATE (Opache e distanziatissime) --- */}
                 <div 
                   className={`absolute inset-0 pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-1'}`}
                   style={{ zIndex: 40, filter: 'drop-shadow(0 -10px 20px rgba(0,0,0,0.2))' }}
@@ -2157,7 +2157,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   <div 
                     className="w-full h-full rounded-[32px]"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
+                      background: '#ffffff',
                       clipPath: 'polygon(0 0, 100% 0, 92% 100%, 8% 100%)'
                     }}
                   ></div>
@@ -2170,7 +2170,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   <div 
                     className="w-full h-full rounded-[32px]"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%)',
+                      background: '#f8fafc',
                       clipPath: 'polygon(0 0, 100% 0, 88% 100%, 12% 100%)'
                     }}
                   ></div>
@@ -2217,20 +2217,20 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 }
 
                 /* 
-                  ECCO LA MODIFICA CHIAVE: 
-                  - Carta 1 scende a 340px (si appoggia esattamente sotto la principale)
-                  - Carta 2 scende a 410px (molto ravvicinata alla Carta 1)
+                  Distanza massiccia come da screenshot:
+                  - Carta 1 scivola a 520px
+                  - Carta 2 scivola a 600px 
                 */
                 @keyframes dropDown1 { 
                   0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(340px) scale(1.15); opacity: 0.95; } 
+                  100% { transform: translateY(520px) scale(1.15); opacity: 1; } 
                 }
                 @keyframes dropDown2 { 
                   0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(410px) scale(1.22); opacity: 0.85; } 
+                  100% { transform: translateY(600px) scale(1.22); opacity: 1; } 
                 }
 
-                /* Archivio superiore denso */
+                /* Archivio superiore */
                 @keyframes top1 { 100% { transform: translateY(-50px) scale(0.95); opacity: 0.95; } }
                 @keyframes top2 { 100% { transform: translateY(-90px) scale(0.90); opacity: 0.85; } }
                 @keyframes top3 { 100% { transform: translateY(-125px) scale(0.85); opacity: 0.75; } }
