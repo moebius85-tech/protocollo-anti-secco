@@ -2091,7 +2091,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 2D (SCHEDE INFERIORI INGRANDITE E LARGHE) --- */}
+      {/* --- ARCHIVIO 2D (OMBRA CORRETTA E LARGHEZZA ESTREMA) --- */}
           {hudActive && (
             <div 
               className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
@@ -2116,7 +2116,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     key={`top-${i}`} 
                     className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : `fan-top-${i}`}`} 
                     style={{ 
-                      zIndex: 30 - i,
+                      zIndex: 30 - i, // Livelli da 23 a 29
                       background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 100%)',
                       backdropFilter: 'blur(16px)',
                       WebkitBackdropFilter: 'blur(16px)',
@@ -2126,11 +2126,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   ></div>
                 ))}
 
-                {/* --- 2. SCHEDA PRINCIPALE --- */}
+                {/* --- 2. SCHEDA PRINCIPALE (Ora sta SOTTO le schede in primo piano) --- */}
                 <div 
                   className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_40px_80px_rgba(0,0,0,0.5)] pointer-events-none ${isHudClosing ? 'collapse-all' : 'extract-main'}`}
                   style={{ 
-                    zIndex: 50, 
+                    zIndex: 40, // Minore delle schede scartate (50 e 60) per far cadere l'ombra dietro!
                     background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 100%)',
                     backdropFilter: 'blur(24px)',
                     WebkitBackdropFilter: 'blur(24px)',
@@ -2149,16 +2149,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   </p>
                 </div>
 
-                {/* --- 3. CASELLE SCARTATE (Più larghe, senza uscire dallo schermo) --- */}
+                {/* --- 3. CASELLE SCARTATE (Livello superiore, larghezza estrema) --- */}
                 <div 
                   className={`absolute inset-0 pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-1'}`}
-                  style={{ zIndex: 40, filter: 'drop-shadow(0 -10px 20px rgba(0,0,0,0.2))' }}
+                  style={{ zIndex: 50, filter: 'drop-shadow(0 -10px 20px rgba(0,0,0,0.15))' }}
                 >
                   <div 
                     className="w-full h-full rounded-[32px]"
                     style={{
                       background: '#ffffff',
-                      /* Taglio leggermente più netto per compensare l'ingrandimento */
                       clipPath: 'polygon(0 0, 100% 0, 90% 100%, 10% 100%)'
                     }}
                   ></div>
@@ -2166,7 +2165,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
                 <div 
                   className={`absolute inset-0 pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-2'}`}
-                  style={{ zIndex: 30, filter: 'drop-shadow(0 -10px 30px rgba(0,0,0,0.25))' }}
+                  style={{ zIndex: 60, filter: 'drop-shadow(0 -10px 30px rgba(0,0,0,0.2))' }}
                 >
                   <div 
                     className="w-full h-full rounded-[32px]"
@@ -2218,19 +2217,19 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 }
 
                 /* 
-                  Scale incrementato a 1.18 e 1.28 per allargarle sensibilmente.
-                  TranslateY compensato (335px e 415px) per mantenere esattamente la stessa distanza visiva.
+                  Scale spinto a 1.30 e 1.45.
+                  Y abbassato a 355px e 450px per bilanciare l'ingrandimento verticale.
                 */
                 @keyframes dropDown1 { 
                   0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(335px) scale(1.18); opacity: 1; } 
+                  100% { transform: translateY(355px) scale(1.30); opacity: 1; } 
                 }
                 @keyframes dropDown2 { 
                   0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(415px) scale(1.28); opacity: 1; } 
+                  100% { transform: translateY(450px) scale(1.45); opacity: 1; } 
                 }
 
-                /* Archivio superiore intatto */
+                /* Archivio superiore */
                 @keyframes top1 { 100% { transform: translateY(-130px) scale(0.95); opacity: 0.95; } }
                 @keyframes top2 { 100% { transform: translateY(-170px) scale(0.90); opacity: 0.85; } }
                 @keyframes top3 { 100% { transform: translateY(-205px) scale(0.85); opacity: 0.75; } }
