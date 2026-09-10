@@ -2101,10 +2101,20 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               if (!formAInuovo.nome && !fileCustomPasto['ScannerAI']) return alert("Inserisci un nome o allega una foto!");
               setIsCalculatingAI(true);
               try {
+                // Recuperiamo il contesto del pasto per passarlo allo scanner
+                const baseMeal = modalScegliDispensa ? dbAlimenti[modalScegliDispensa as keyof typeof dbAlimenti]?.[pastiSelezionati[modalScegliDispensa]] : null;
+                const contestoConsiglio = baseMeal ? baseMeal.nome : "Nessun consiglio";
+
                 const payload: any = { message: `
-                  Analizza: "${formAInuovo.nome || 'Foto allegata'}". 
-                  Se il nome è "Foto allegata", scrivi tu il nome esatto del prodotto che leggi sulla confezione.
-                  Restituisci la stringa esatta: [MAGIC_MACRO | ScannerAI | cho | pro | fat | Nome Completo Del Prodotto]
+                  Prodotto da analizzare: "${formAInuovo.nome || 'Foto allegata'}".
+                  Pasto consigliato dal sistema: "${contestoConsiglio}".
+
+                  REGOLE MATEMATICHE TASSATIVE:
+                  1. Se l'utente ha scritto i grammi (es. "35g mandorle"), DEVI calcolare le proporzioni matematiche! Trova i valori per 100g e moltiplicali per il peso richiesto. Non restituire i valori di 100g se ti chiedono grammi diversi.
+                  2. Se c'è una "Foto allegata" e nessun grammo esplicito: leggi i valori per 100g dall'etichetta, poi guarda il "Pasto consigliato". Se il consiglio dice "250g Yogurt", devi moltiplicare i valori della foto per 2.5.
+                  3. Se non riesci a dedurre i grammi in nessun modo, usa 100g ma scrivilo CHIARAMENTE alla fine del nome.
+
+                  Restituisci la stringa esatta: [MAGIC_MACRO | ScannerAI | cho | pro | fat | Nome Completo (Grammi Calcolati)]
                 ` };
                 
                 if (fileCustomPasto['ScannerAI']) {
