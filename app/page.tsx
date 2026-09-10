@@ -555,28 +555,60 @@ const renderDescrizioneConHUD = (testo: string) => {
   };
 
   const calcolaMacroDaNome = async (cat: string, nomeCibo: string) => {
-    if(!nomeCibo.trim() && !fileCustomPasto[cat]) return alert("Inserisci il nome del prodotto o allega una foto.");
-    setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const payload: any = { message: `Prodotto: "${nomeCibo || 'Foto allegata'}". Calcola macro per singola porzione. Restituisci la stringa esatta: [MAGIC_MACRO | ${cat} | cho | pro | fat | ${nomeCibo || 'Prodotto'}]. Se cat è Integrazione, aggiungi il tuo parere per la fase: ${protocolloAttivo} e dieta: ${tipoDieta}.` };
-      if (fileCustomPasto[cat]) { payload.file = { data: fileCustomPasto[cat]!.data, mimeType: fileCustomPasto[cat]!.mimeType }; }
+  if(!nomeCibo.trim() && !fileCustomPasto[cat]) return alert("Inserisci il nome del prodotto o allega una foto.");
+  
+  setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
+  
+  try {
+    // 1. Recuperiamo il nome del pasto originariamente consigliato per passarlo all'IA
+    const baseMeal = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]];
+    const contestoConsiglio = baseMeal ? baseMeal.nome : "Nessun consiglio specifico";
+
+    // 2. Il nuovo Super-Prompt con le 3 Regole
+    const payload: any = { message: `
+      Prodotto richiesto dall'utente: "${nomeCibo || 'Foto allegata'}".
       
-      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      const data = await response.json();
-      const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout|Integrazione)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
-      if(match) {
-        updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString()); updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString()); updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString()); updateCustomMeal(cat, 'nome', match[5].trim());
-        const feedback = data.reply.replace(match[0], '').trim();
-        if(feedback && cat === 'Integrazione') {
-            setChatLog(prev => [...prev, { role: 'ai', text: `🔎 Feedback IA per ${nomeCibo || 'Prodotto'}:\n${feedback}` }]);
-            alert("Integratore analizzato! Trovi il feedback del Coach nella chat.");
-        }
-        setFileCustomPasto(prev => ({...prev, [cat]: null})); // Pulisci la foto dopo averla inviata
-      } else { alert("Non riconosciuto. Risposta: " + data.reply); }
-    } catch(e) { console.log(e); alert("Errore di rete."); }
-    setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
-  };
+      Devi calcolare i macronutrienti seguendo queste 3 REGOLE:
+      1. Se l'utente ha scritto i grammi nel nome (es. "30g Mandorle"), calcola i macro esatti per quel peso.
+      2. Se NON ci sono i grammi, verifica se il prodotto fa parte del pasto consigliato attualmente dal sistema che era: "${contestoConsiglio}". Se sì, deduci una grammatura logica per quel pasto (es. 200g per lo yogurt, 30g per le mandorle).
+      3. Se NON ci sono i grammi ed è un alimento totalmente diverso/nuovo, calcola i valori standard per 100g.
+      
+      Restituisci sempre il nome con la grammatura che hai scelto di usare alla fine.
+      Restituisci la stringa esatta in questo formato: [MAGIC_MACRO | ${cat} | cho | pro | fat | NomeCibo (Grammi usati)].
+      
+      Se cat è Integrazione, aggiungi il tuo parere per la fase: ${protocolloAttivo} e dieta: ${tipoDieta}.
+    `};
+
+    if (fileCustomPasto[cat]) { 
+      payload.file = { data: fileCustomPasto[cat]!.data, mimeType: fileCustomPasto[cat]!.mimeType }; 
+    }
+    
+    const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const data = await response.json();
+    
+    const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout|Integrazione|ScannerAI)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^\]]*\s*([^\]]+)\]/i);
+    
+    if(match) {
+      updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString());
+      updateCustomMeal(cat, 'pro', Math.round(parseFloat(match[3].replace(',','.'))).toString());
+      updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString());
+      updateCustomMeal(cat, 'nome', match[5].trim());
+      
+      const feedback = data.reply.replace(match[0], '').trim();
+      if(feedback && cat === 'Integrazione') {
+        setChatLog(prev => [...prev, { role: 'ai', text: `Feedback IA per ${nomeCibo || 'Prodotto'}:\n${feedback}`}]);
+        alert("Integratore analizzato! Trovi il feedback del Coach nella chat.");
+      }
+      setFileCustomPasto(prev => ({...prev, [cat]: null}));
+    } else { 
+      alert("Non riconosciuto. Risposta: " + data.reply); 
+    }
+  } catch(e) { 
+    console.log(e); 
+    alert("Errore di rete."); 
+  }
+  setIsCalculatingMacro(prev => ({...prev, [cat]: false}));
+};
 
   const valutaCheckFisico = async () => {
     const { peso } = biometria;
