@@ -2133,11 +2133,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           >
             {isCalculatingAI ? '...' : '/ AI'}
           </button> 
-            disabled={isCalculatingAI} 
-            className={"bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] font-bold !w-auto !py-3 !px-4 !rounded-xl disabled:opacity-50 border-none cursor-pointer"}
-          >
-            {isCalculatingAI ? '...' : '/ AI'}
-          </button>
+            
         </div>
 
         {fileCustomPasto['ScannerAI'] && (
