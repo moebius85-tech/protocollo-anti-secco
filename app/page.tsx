@@ -324,9 +324,10 @@ const renderDescrizioneConHUD = (testo: string) => {
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Integrazione: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
   const [modalAlimento, setModalAlimento] = useState(false);
-  const [dispensa, setDispensa] = useState<Array<{id: string, nome: string, cho: string, pro: string, fat: string}>>([]);
+  const [dispensa, setDispensa] = useState<Array<{id: string, nome: string, cho: string, pro: string, fat: string, tipo: 'alimento' | 'integratore'}>>([]);
   const [modalDispensa, setModalDispensa] = useState(false);
   const [modalScegliDispensa, setModalScegliDispensa] = useState<string | null>(null);
+  const [filtroDispensa, setFiltroDispensa] = useState<'alimento' | 'integratore'>('alimento');
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
   const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Scrivimi cosa hai mangiato per stimare i macro!' }]);
@@ -1986,23 +1987,30 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* === MODALE SCELTA DALLA DISPENSA === */}
 {modalScegliDispensa && (
   <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[150] p-4">
-    <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-6 sm:p-8 w-full max-w-md relative anim-pop max-h-[85vh] flex flex-col">
-      <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4 shrink-0">
+    <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-6 w-full max-w-md relative anim-pop max-h-[90vh] flex flex-col">
+      <div className="flex justify-between items-center mb-4 border-b border-slate-300/50 pb-4 shrink-0">
         <h3 className="font-black text-lg uppercase tracking-widest text-slate-600 flex items-center gap-2">
           📦 La Tua Dispensa
         </h3>
         <button onClick={() => setModalScegliDispensa(null)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4">
-        {dispensa.length === 0 ? (
+      {/* --- TAB: ALIMENTI VS INTEGRATORI --- */}
+      <div className="flex gap-2 mb-4 shrink-0 bg-white/40 p-1.5 rounded-2xl shadow-inner">
+        <button onClick={() => setFiltroDispensa('alimento')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer ${filtroDispensa === 'alimento' ? 'bg-gradient-to-r from-orange-400 to-rose-400 text-white shadow-md' : 'bg-transparent text-slate-500 hover:text-orange-500'}`}>🍎 Alimenti</button>
+        <button onClick={() => setFiltroDispensa('integratore')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer ${filtroDispensa === 'integratore' ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-md' : 'bg-transparent text-slate-500 hover:text-cyan-500'}`}>💊 Integratori</button>
+      </div>
+
+      {/* --- LISTA CIBI SALVATI --- */}
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 mb-4">
+        {dispensa.filter(d => d.tipo === filtroDispensa).length === 0 ? (
           <div className="text-center py-8">
             <span className="text-4xl block mb-4 opacity-50">🛒</span>
-            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">La tua dispensa è vuota.</p>
-            <p className="text-[10px] text-slate-400 font-medium mt-2 px-4">Scansiona un'etichetta nutrizionale per aggiungere il tuo primo alimento.</p>
+            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Nessun {filtroDispensa} salvato.</p>
+            <p className="text-[10px] text-slate-400 font-medium mt-2 px-4">Usa la barra qui sotto per analizzare e salvare il tuo primo prodotto.</p>
           </div>
         ) : (
-          dispensa.map((item) => (
+          dispensa.filter(d => d.tipo === filtroDispensa).map((item) => (
             <button 
               key={item.id}
               onClick={() => {
@@ -2010,9 +2018,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 updateCustomMeal(modalScegliDispensa, 'cho', item.cho);
                 updateCustomMeal(modalScegliDispensa, 'pro', item.pro);
                 updateCustomMeal(modalScegliDispensa, 'fat', item.fat);
-                setModalScegliDispensa(null); // Chiudi modale dopo la scelta
+                setModalScegliDispensa(null); // Chiude il modale e compila il pasto
               }}
-              className="w-full text-left p-5 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer flex flex-col gap-3"
+              className="w-full text-left p-4 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer flex flex-col gap-3"
             >
               <p className="font-bold text-[14px] text-slate-700 group-hover:text-orange-500 transition-colors">{item.nome}</p>
               <div className="flex gap-2">
@@ -2025,17 +2033,53 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         )}
       </div>
 
-      {/* Tasto per Scansionare Etichetta (Mock per ora, collegato alla fotocamera) */}
-      <div className="pt-6 mt-4 border-t border-slate-300/50 shrink-0">
-        <label className="w-full bg-gradient-to-r from-lime-400 to-emerald-500 text-white font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl shadow-[0_4px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.4)] transition-all border-none cursor-pointer hover:-translate-y-0.5 flex items-center justify-center gap-2">
-          <input type="file" accept="image/*" capture="environment" className="hidden" 
-            onChange={(e) => {
-              // Qui inietteremo la logica A.I. per leggere l'etichetta
-              alert("Scanner Etichetta: Qui collegheremo l'A.I. per estrarre Carbo, Pro e Fat dalla foto!");
-            }} 
-          />
-          📸 Scansiona Etichetta
-        </label>
+      {/* --- MOTORE A.I. (Foto, Testo, Calcolo) --- */}
+      <div className="pt-4 border-t border-slate-300/50 shrink-0">
+        <span className="text-[9px] uppercase font-black text-slate-400 tracking-widest block mb-3">Analizza e Salva Nuovo Prodotto</span>
+        <div className="flex gap-3 mb-3 items-center">
+          <label className="bg-white/60 shadow-[2px_2px_5px_rgba(163,177,198,0.4)] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-xl transition-all border-none cursor-pointer">
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, modalScegliDispensa)} />
+            <span className="text-[16px] leading-none">📸</span>
+          </label>
+          <input type="text" placeholder="Es. Avena Betti..." value={pastiCustom[modalScegliDispensa]?.nome || ''} onChange={e => updateCustomMeal(modalScegliDispensa, 'nome', e.target.value)} className={UI.input + " bg-white/50 min-w-0 !py-3 !rounded-xl"} />
+          <button onClick={() => calcolaMacroDaNome(modalScegliDispensa, pastiCustom[modalScegliDispensa]?.nome || '')} disabled={isCalculatingMacro[modalScegliDispensa]} className={UI.btnPrimary + " !w-auto !py-3 !px-4 !rounded-xl disabled:opacity-50 border-none cursor-pointer"}>
+            {isCalculatingMacro[modalScegliDispensa] ? '...' : '/ AI'}
+          </button>
+        </div>
+
+        {fileCustomPasto[modalScegliDispensa] && (
+          <div className="flex items-center gap-2 mb-3 p-2 bg-white/50 rounded-xl w-fit border border-white/60">
+            <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]"> {fileCustomPasto[modalScegliDispensa]!.nome}</span>
+            <button onClick={() => setFileCustomPasto(prev => ({...prev, [modalScegliDispensa]: null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
+          </div>
+        )}
+
+        {/* --- RISULTATO A.I. E SALVATAGGIO --- */}
+        {pastiCustom[modalScegliDispensa]?.nome && (pastiCustom[modalScegliDispensa]?.cho !== "" || pastiCustom[modalScegliDispensa]?.pro !== "" || pastiCustom[modalScegliDispensa]?.fat !== "") && (
+          <div className="bg-white/40 p-3 rounded-xl border border-white/60 shadow-sm mt-2">
+            <div className="flex gap-2 mb-3">
+              <div className="flex-1"><span className={UI.label + " text-center !mb-1"}>Carbo</span><input type="number" value={pastiCustom[modalScegliDispensa]?.cho || ''} onChange={e => updateCustomMeal(modalScegliDispensa, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50 !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={UI.label + " text-center !mb-1"}>Pro</span><input type="number" value={pastiCustom[modalScegliDispensa]?.pro || ''} onChange={e => updateCustomMeal(modalScegliDispensa, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50 !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={UI.label + " text-center !mb-1"}>Fat</span><input type="number" value={pastiCustom[modalScegliDispensa]?.fat || ''} onChange={e => updateCustomMeal(modalScegliDispensa, 'fat', e.target.value)} className={UI.input + " text-center bg-white/50 !py-2 !rounded-lg"} /></div>
+            </div>
+            <button 
+              onClick={() => {
+                setDispensa(prev => [{
+                  id: Date.now().toString(), // Genera un ID univoco
+                  nome: pastiCustom[modalScegliDispensa].nome.trim(), 
+                  cho: pastiCustom[modalScegliDispensa].cho || "0", 
+                  pro: pastiCustom[modalScegliDispensa].pro || "0", 
+                  fat: pastiCustom[modalScegliDispensa].fat || "0",
+                  tipo: filtroDispensa // Lo salva nel Tab attualmente aperto
+                }, ...prev]);
+                setModalScegliDispensa(null); // Chiude la modale
+              }}
+              className="w-full bg-gradient-to-r from-lime-400 to-emerald-500 text-white font-black uppercase tracking-widest text-[10px] py-3 rounded-xl shadow-[0_4px_10px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_15px_rgba(16,185,129,0.4)] transition-all border-none cursor-pointer"
+            >
+              + Salva in {filtroDispensa === 'alimento' ? 'Alimenti' : 'Integratori'} e Usa
+            </button>
+          </div>
+        )}
       </div>
     </div>
   </div>
