@@ -322,6 +322,8 @@ const renderDescrizioneConHUD = (testo: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
+  const [formAInuovo, setFormAInuovo] = useState({ nome: '', cho: '', pro: '', fat: '' });
+  const [isCalculatingAI, setIsCalculatingAI] = useState(false);
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Integrazione: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
   const [modalAlimento, setModalAlimento] = useState(false);
   const [dispensa, setDispensa] = useState<Array<{id: string, nome: string, cho: string, pro: string, fat: string, tipo: 'alimento' | 'integratore'}>>([]);
@@ -2058,46 +2060,93 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         )}
       </div>
 
-      {/* --- MOTORE A.I. (Foto, Testo, Calcolo) --- */}
+      {/* --- MOTORE A.I. (Foto, Testo, Calcolo) ISOLATO --- */}
       <div className="pt-4 border-t border-slate-300/50 shrink-0">
         <span className="text-[9px] uppercase font-black text-slate-400 tracking-widest block mb-3">Analizza e Salva Nuovo Prodotto</span>
         <div className="flex gap-3 mb-3 items-center">
           <label className="bg-white/60 shadow-[2px_2px_5px_rgba(163,177,198,0.4)] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-xl transition-all border-none cursor-pointer">
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, modalScegliDispensa)} />
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, 'ScannerAI')} />
             <span className="text-[16px] leading-none">📸</span>
           </label>
-          {/* L'input testo serve solo a dare il nome prima di scansionare con IA */}
-          <input type="text" placeholder="Es. Avena Betti..." value={pastiCustom[modalScegliDispensa]?.nome || ''} onChange={e => updateCustomMeal(modalScegliDispensa, 'nome', e.target.value)} className={"w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 py-3 rounded-xl text-[13px] text-slate-600 outline-none transition-all font-semibold border-none"} />
-          <button onClick={() => calcolaMacroDaNome(modalScegliDispensa, pastiCustom[modalScegliDispensa]?.nome || '')} disabled={isCalculatingMacro[modalScegliDispensa]} className={"bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] font-bold !w-auto !py-3 !px-4 !rounded-xl disabled:opacity-50 border-none cursor-pointer"}>
-            {isCalculatingMacro[modalScegliDispensa] ? '...' : '/ AI'}
+          
+          {/* INPUT ISOLATO (Non tocca più il pasto principale finché non salvi) */}
+          <input type="text" placeholder="Es. 30g Mandorle..." value={formAInuovo.nome} onChange={e => setFormAInuovo({...formAInuovo, nome: e.target.value})} className={"w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 py-3 rounded-xl text-[13px] text-slate-600 outline-none transition-all font-semibold border-none"} />
+          
+          <button 
+            onClick={async () => {
+              if (!formAInuovo.nome && !fileCustomPasto['ScannerAI']) return;
+              setIsCalculatingAI(true);
+              try {
+                // Genera la richiesta all'AI usando la memoria isolata
+                const payload: any = { message: `Calcola macro per: "${formAInuovo.nome}". Restituisci la stringa esatta: [MAGIC_MACRO | Scanner | cho | pro | fat | ${formAInuovo.nome}]` };
+                if (fileCustomPasto['ScannerAI']) {
+                  payload.file = { data: fileCustomPasto['ScannerAI'].data, mimeType: fileCustomPasto['ScannerAI'].mimeType };
+                }
+                const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                
+                // Estrae i dati
+                const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*Scanner\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^\]]*\s*([^\]]+)\]/i);
+                if(match) {
+                  setFormAInuovo({
+                    nome: match[4].trim(),
+                    cho: Math.round(parseFloat(match[1].replace(',','.'))).toString(),
+                    pro: Math.round(parseFloat(match[2].replace(',','.'))).toString(),
+                    fat: Math.round(parseFloat(match[3].replace(',','.'))).toString()
+                  });
+                  setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}));
+                } else { alert("Dati non trovati. Ricorda di specificare i grammi (es. 50g Riso)."); }
+              } catch(e) { console.log(e); alert("Errore di connessione A.I."); }
+              setIsCalculatingAI(false);
+            }} 
+            disabled={isCalculatingAI} 
+            className={"bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] font-bold !w-auto !py-3 !px-4 !rounded-xl disabled:opacity-50 border-none cursor-pointer"}
+          >
+            {isCalculatingAI ? '...' : '/ AI'}
           </button>
         </div>
 
-        {fileCustomPasto[modalScegliDispensa] && (
+        {fileCustomPasto['ScannerAI'] && (
           <div className="flex items-center gap-2 mb-3 p-2 bg-white/50 rounded-xl w-fit border border-white/60">
-            <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]"> {fileCustomPasto[modalScegliDispensa]!.nome}</span>
-            <button onClick={() => setFileCustomPasto(prev => ({...prev, [modalScegliDispensa]: null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
+            <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]"> {fileCustomPasto['ScannerAI'].nome}</span>
+            <button onClick={() => setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
           </div>
         )}
 
         {/* --- RISULTATO A.I. E SALVATAGGIO --- */}
-        {pastiCustom[modalScegliDispensa]?.nome && (pastiCustom[modalScegliDispensa]?.cho !== "" || pastiCustom[modalScegliDispensa]?.pro !== "" || pastiCustom[modalScegliDispensa]?.fat !== "") && (
+        {formAInuovo.nome && (formAInuovo.cho !== "" || formAInuovo.pro !== "" || formAInuovo.fat !== "") && (
           <div className="bg-white/40 p-3 rounded-xl border border-white/60 shadow-sm mt-2">
             <div className="flex gap-2 mb-3">
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Carbo</span><input type="number" value={pastiCustom[modalScegliDispensa]?.cho || ''} onChange={e => updateCustomMeal(modalScegliDispensa, 'cho', e.target.value)} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Pro</span><input type="number" value={pastiCustom[modalScegliDispensa]?.pro || ''} onChange={e => updateCustomMeal(modalScegliDispensa, 'pro', e.target.value)} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Fat</span><input type="number" value={pastiCustom[modalScegliDispensa]?.fat || ''} onChange={e => updateCustomMeal(modalScegliDispensa, 'fat', e.target.value)} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Carbo</span><input type="number" value={formAInuovo.cho} onChange={e => setFormAInuovo({...formAInuovo, cho: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Pro</span><input type="number" value={formAInuovo.pro} onChange={e => setFormAInuovo({...formAInuovo, pro: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Fat</span><input type="number" value={formAInuovo.fat} onChange={e => setFormAInuovo({...formAInuovo, fat: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
             </div>
             <button 
               onClick={() => {
+                // 1. Salva in dispensa
                 setDispensa(prev => [{
                   id: Date.now().toString(),
-                  nome: pastiCustom[modalScegliDispensa].nome.trim(), 
-                  cho: pastiCustom[modalScegliDispensa].cho || "0", 
-                  pro: pastiCustom[modalScegliDispensa].pro || "0", 
-                  fat: pastiCustom[modalScegliDispensa].fat || "0",
+                  nome: formAInuovo.nome.trim(), 
+                  cho: formAInuovo.cho || "0", 
+                  pro: formAInuovo.pro || "0", 
+                  fat: formAInuovo.fat || "0",
                   tipo: filtroDispensa
                 }, ...prev]);
+                
+                // 2. Aggiunge al pasto principale in modo pulito (Logica Additiva)
+                const currentName = pastiCustom[modalScegliDispensa]?.nome || "";
+                const newName = currentName ? `${currentName} + ${formAInuovo.nome.trim()}` : formAInuovo.nome.trim();
+                const currentCho = Number(pastiCustom[modalScegliDispensa]?.cho) || 0;
+                const currentPro = Number(pastiCustom[modalScegliDispensa]?.pro) || 0;
+                const currentFat = Number(pastiCustom[modalScegliDispensa]?.fat) || 0;
+
+                updateCustomMeal(modalScegliDispensa, 'nome', newName);
+                updateCustomMeal(modalScegliDispensa, 'cho', (currentCho + Number(formAInuovo.cho || 0)).toString());
+                updateCustomMeal(modalScegliDispensa, 'pro', (currentPro + Number(formAInuovo.pro || 0)).toString());
+                updateCustomMeal(modalScegliDispensa, 'fat', (currentFat + Number(formAInuovo.fat || 0)).toString());
+                
+                // 3. Reset form isolato e chiusura
+                setFormAInuovo({ nome: '', cho: '', pro: '', fat: '' });
                 setModalScegliDispensa(null);
                 setRicercaDispensa("");
               }}
