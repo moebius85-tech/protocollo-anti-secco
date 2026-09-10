@@ -2101,20 +2101,20 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               if (!formAInuovo.nome && !fileCustomPasto['ScannerAI']) return alert("Inserisci un nome o allega una foto!");
               setIsCalculatingAI(true);
               try {
-                // Recuperiamo il contesto del pasto per passarlo allo scanner
                 const baseMeal = modalScegliDispensa ? dbAlimenti[modalScegliDispensa as keyof typeof dbAlimenti]?.[pastiSelezionati[modalScegliDispensa]] : null;
                 const contestoConsiglio = baseMeal ? baseMeal.nome : "Nessun consiglio";
 
                 const payload: any = { message: `
-                  Prodotto da analizzare: "${formAInuovo.nome || 'Foto allegata'}".
-                  Pasto consigliato dal sistema: "${contestoConsiglio}".
+                  Analizza: "${formAInuovo.nome || 'Foto allegata'}".
+                  Pasto consigliato: "${contestoConsiglio}".
 
-                  REGOLE MATEMATICHE TASSATIVE:
-                  1. Se l'utente ha scritto i grammi (es. "35g mandorle"), DEVI calcolare le proporzioni matematiche! Trova i valori per 100g e moltiplicali per il peso richiesto. Non restituire i valori di 100g se ti chiedono grammi diversi.
-                  2. Se c'è una "Foto allegata" e nessun grammo esplicito: leggi i valori per 100g dall'etichetta, poi guarda il "Pasto consigliato". Se il consiglio dice "250g Yogurt", devi moltiplicare i valori della foto per 2.5.
-                  3. Se non riesci a dedurre i grammi in nessun modo, usa 100g ma scrivilo CHIARAMENTE alla fine del nome.
+                  REGOLE MATEMATICHE:
+                  1. Se ci sono grammi nel nome (es. "35g"), calcola le proporzioni.
+                  2. Se c'è una Foto ma NESSUN grammo: leggi i valori 100g, poi moltiplicali per i grammi del "Pasto consigliato" (es. se consigliati 250g, moltiplica per 2.5). 
+                  3. USA SOLO NUMERI per i macro (es. 4.5). Niente lettere come "g" o "cho:".
 
-                  Restituisci la stringa esatta: [MAGIC_MACRO | ScannerAI | cho | pro | fat | Nome Completo (Grammi Calcolati)]
+                  FORMATO TASSATIVO (non aggiungere alcun testo prima o dopo):
+                  [MAGIC_MACRO | ScannerAI | 4.5 | 10 | 0 | Nome Prodotto (Grammi usati)]
                 ` };
                 
                 if (fileCustomPasto['ScannerAI']) {
@@ -2123,8 +2123,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
                 
-                // REGEX CORRETTA
-                const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*([^|]+)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
+                // REGEX CORAZZATA: Trova i numeri anche se c'è "g" o testo sporco in mezzo
+                const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*([^|]+)\s*\|\s*[^\d]*([\d.,]+)[^|]*\|\s*[^\d]*([\d.,]+)[^|]*\|\s*[^\d]*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
                 
                 if(match) {
                   setFormAInuovo({
@@ -2134,7 +2134,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     fat: Math.round(parseFloat(match[4].replace(',','.'))).toString()
                   });
                   setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}));
-                } else { alert("Errore di formattazione. Riprova."); }
+                } else { 
+                  // RAGGI X ATTIVATI: Mostriamo cosa ha detto l'A.I. per capire l'errore
+                  alert("L'A.I. ha risposto in modo anomalo:\n" + data.reply); 
+                }
               } catch(e) { console.log(e); alert("Errore di connessione A.I."); }
               setIsCalculatingAI(false);
             }} 
