@@ -1512,7 +1512,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       <div className="ml-2">
         <div className="flex justify-between items-center mb-4">
           <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
-          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-white/60 px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">Cambia</button>
+          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-white/60 px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">+ Aggiungi / Modifica</button>
         </div>
         <div className="flex gap-4 mb-2">
           <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50 text-orange-500"} /></div>
