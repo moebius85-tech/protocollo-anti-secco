@@ -324,10 +324,9 @@ const renderDescrizioneConHUD = (testo: string) => {
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Integrazione: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
   const [modalAlimento, setModalAlimento] = useState(false);
-  const [boxSpesa, setBoxSpesa] = useState<Array<{nome: string, cho: string, pro: string, fat: string}>>([
-  { nome: "Yogurt Fage 0%", cho: "3", pro: "10", fat: "0" },
-  { nome: "Crema di Riso", cho: "80", pro: "7", fat: "1" }
-]);
+  const [dispensa, setDispensa] = useState<Array<{id: string, nome: string, cho: string, pro: string, fat: string}>>([]);
+  const [modalDispensa, setModalDispensa] = useState(false);
+  const [modalScegliDispensa, setModalScegliDispensa] = useState<string | null>(null);
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
   const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Scrivimi cosa hai mangiato per stimare i macro!' }]);
@@ -1600,29 +1599,33 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     </div>
                     
                     {isCustom ? (
-                       <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
-                         <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
-                         <div className="flex gap-3 mb-4 ml-2 items-center">
-                                <label className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-full transition-all border-none cursor-pointer">
-                                   📎
-                                   <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, cat)} />
-                                </label>
-                                <input type="text" placeholder="Es. 35g Plumcake" value={pastiCustom[cat].nome} onChange={e => updateCustomMeal(cat, 'nome', e.target.value)} className={UI.input + " bg-white/50 min-w-0"} />
-                                <button onClick={() => calcolaMacroDaNome(cat, pastiCustom[cat].nome)} disabled={isCalculatingMacro[cat]} className={UI.btnPrimary + " !w-auto !py-3 !px-5 !rounded-full disabled:opacity-50 border-none cursor-pointer"}>🪄 AI</button>
-                             </div>
-                             {fileCustomPasto[cat] && (
-                                <div className="flex items-center gap-2 mb-4 ml-2 p-2 bg-white/50 rounded-xl w-fit border border-white/60">
-                                   <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]">📎 {fileCustomPasto[cat]!.nome}</span>
-                                   <button onClick={() => setFileCustomPasto(prev => ({...prev, [cat]: null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
-                                </div>
-                             )}
-                         <div className="flex gap-4 ml-2">
-                            <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
-                            <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
-                            <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-white/50"} /></div>
-                         </div>
-                       </div>
-                    ) : (
+  <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+    <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
+
+    {pastiCustom[cat]?.nome ? (
+      <div className="ml-2">
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
+          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-white/60 px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">Cambia</button>
+        </div>
+        <div className="flex gap-4 mb-2">
+          <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50 text-orange-500"} /></div>
+          <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50 text-slate-600"} /></div>
+          <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-white/50 text-slate-600"} /></div>
+        </div>
+      </div>
+    ) : (
+      <div className="flex flex-col items-center justify-center p-2 ml-2">
+        <button onClick={() => setModalScegliDispensa(cat)} className="w-full bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest text-[12px] py-4 rounded-2xl shadow-[0_4px_15px_rgba(249,115,22,0.3)] hover:shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all border-none cursor-pointer hover:-translate-y-0.5 flex items-center justify-center gap-2">
+          📦 Scegli dalla Dispensa
+        </button>
+        <p className="text-[9px] text-slate-500 font-bold mt-4 tracking-widest text-center leading-relaxed">
+          Seleziona un alimento dal tuo database personale<br/>o scansiona una nuova etichetta.
+        </p>
+      </div>
+    )}
+  </div>
+) : (
                        <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
                          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
                          <p className="font-bold text-[15px] text-slate-700 mb-3 ml-2 relative z-10">{itemScelto.nome}</p>
@@ -2036,6 +2039,63 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           </div>
         </div>
       )}
+      {/* === MODALE SCELTA DALLA DISPENSA === */}
+{modalScegliDispensa && (
+  <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[150] p-4">
+    <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-6 sm:p-8 w-full max-w-md relative anim-pop max-h-[85vh] flex flex-col">
+      <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4 shrink-0">
+        <h3 className="font-black text-lg uppercase tracking-widest text-slate-600 flex items-center gap-2">
+          📦 La Tua Dispensa
+        </h3>
+        <button onClick={() => setModalScegliDispensa(null)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4">
+        {dispensa.length === 0 ? (
+          <div className="text-center py-8">
+            <span className="text-4xl block mb-4 opacity-50">🛒</span>
+            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">La tua dispensa è vuota.</p>
+            <p className="text-[10px] text-slate-400 font-medium mt-2 px-4">Scansiona un'etichetta nutrizionale per aggiungere il tuo primo alimento.</p>
+          </div>
+        ) : (
+          dispensa.map((item) => (
+            <button 
+              key={item.id}
+              onClick={() => {
+                updateCustomMeal(modalScegliDispensa, 'nome', item.nome);
+                updateCustomMeal(modalScegliDispensa, 'cho', item.cho);
+                updateCustomMeal(modalScegliDispensa, 'pro', item.pro);
+                updateCustomMeal(modalScegliDispensa, 'fat', item.fat);
+                setModalScegliDispensa(null); // Chiudi modale dopo la scelta
+              }}
+              className="w-full text-left p-5 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer flex flex-col gap-3"
+            >
+              <p className="font-bold text-[14px] text-slate-700 group-hover:text-orange-500 transition-colors">{item.nome}</p>
+              <div className="flex gap-2">
+                <span className="bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">C <span className="text-orange-500">{item.cho}g</span></span>
+                <span className="bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">P <span className="text-slate-600">{item.pro}g</span></span>
+                <span className="bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">F <span className="text-slate-600">{item.fat}g</span></span>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+
+      {/* Tasto per Scansionare Etichetta (Mock per ora, collegato alla fotocamera) */}
+      <div className="pt-6 mt-4 border-t border-slate-300/50 shrink-0">
+        <label className="w-full bg-gradient-to-r from-lime-400 to-emerald-500 text-white font-black uppercase tracking-widest text-[11px] py-4 rounded-2xl shadow-[0_4px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.4)] transition-all border-none cursor-pointer hover:-translate-y-0.5 flex items-center justify-center gap-2">
+          <input type="file" accept="image/*" capture="environment" className="hidden" 
+            onChange={(e) => {
+              // Qui inietteremo la logica A.I. per leggere l'etichetta
+              alert("Scanner Etichetta: Qui collegheremo l'A.I. per estrarre Carbo, Pro e Fat dalla foto!");
+            }} 
+          />
+          📸 Scansiona Etichetta
+        </label>
+      </div>
+    </div>
+  </div>
+)}
       {/* === ADMIN CONTROL ROOM (MODALE) === */}
           {showAdmin && (
             <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[9999] p-4 sm:p-8 overflow-y-auto custom-scrollbar flex flex-col items-center">
