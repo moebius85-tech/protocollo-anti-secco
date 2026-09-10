@@ -560,23 +560,19 @@ const renderDescrizioneConHUD = (testo: string) => {
   setIsCalculatingMacro(prev => ({...prev, [cat]: true}));
   
   try {
-    // 1. Recuperiamo il nome del pasto originariamente consigliato per passarlo all'IA
     const baseMeal = dbAlimenti[cat as keyof typeof dbAlimenti]?.[pastiSelezionati[cat]];
     const contestoConsiglio = baseMeal ? baseMeal.nome : "Nessun consiglio specifico";
 
-    // 2. Il nuovo Super-Prompt con le 3 Regole
     const payload: any = { message: `
-      Prodotto richiesto dall'utente: "${nomeCibo || 'Foto allegata'}".
+      Prodotto richiesto: "${nomeCibo || 'Foto allegata'}".
       
-      Devi calcolare i macronutrienti seguendo queste 3 REGOLE:
+      REGOLE:
       1. Se l'utente ha scritto i grammi nel nome (es. "30g Mandorle"), calcola i macro esatti per quel peso.
-      2. Se NON ci sono i grammi, verifica se il prodotto fa parte del pasto consigliato attualmente dal sistema che era: "${contestoConsiglio}". Se sì, deduci una grammatura logica per quel pasto (es. 200g per lo yogurt, 30g per le mandorle).
-      3. Se NON ci sono i grammi ed è un alimento totalmente diverso/nuovo, calcola i valori standard per 100g.
+      2. Se NON ci sono i grammi, verifica se fa parte del pasto consigliato: "${contestoConsiglio}". Se sì, deduci una grammatura logica per il pasto.
+      3. Se NON ci sono i grammi ed è diverso, calcola per 100g.
+      4. Se ti invio "Foto allegata" e nessun nome, scrivi tu il nome di ciò che vedi nell'immagine.
       
-      Restituisci sempre il nome con la grammatura che hai scelto di usare alla fine.
-      Restituisci la stringa esatta in questo formato: [MAGIC_MACRO | ${cat} | cho | pro | fat | NomeCibo (Grammi usati)].
-      
-      Se cat è Integrazione, aggiungi il tuo parere per la fase: ${protocolloAttivo} e dieta: ${tipoDieta}.
+      Stringa esatta: [MAGIC_MACRO | ${cat} | cho | pro | fat | Nome Completo Del Prodotto]
     `};
 
     if (fileCustomPasto[cat]) { 
@@ -586,7 +582,8 @@ const renderDescrizioneConHUD = (testo: string) => {
     const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     const data = await response.json();
     
-    const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout|Integrazione|ScannerAI)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^\]]*\s*([^\]]+)\]/i);
+    // REGEX CORRETTA: Ora usa la "barra" (|) per non mangiarsi le lettere del nome!
+    const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*([^|]+)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
     
     if(match) {
       updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString());
@@ -594,14 +591,9 @@ const renderDescrizioneConHUD = (testo: string) => {
       updateCustomMeal(cat, 'fat', Math.round(parseFloat(match[4].replace(',','.'))).toString());
       updateCustomMeal(cat, 'nome', match[5].trim());
       
-      const feedback = data.reply.replace(match[0], '').trim();
-      if(feedback && cat === 'Integrazione') {
-        setChatLog(prev => [...prev, { role: 'ai', text: `Feedback IA per ${nomeCibo || 'Prodotto'}:\n${feedback}`}]);
-        alert("Integratore analizzato! Trovi il feedback del Coach nella chat.");
-      }
       setFileCustomPasto(prev => ({...prev, [cat]: null}));
     } else { 
-      alert("Non riconosciuto. Risposta: " + data.reply); 
+      alert("L'A.I. non ha formattato i dati correttamente. Riprova."); 
     }
   } catch(e) { 
     console.log(e); 
@@ -2106,31 +2098,41 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           
           <button 
             onClick={async () => {
-              if (!formAInuovo.nome && !fileCustomPasto['ScannerAI']) return;
+              if (!formAInuovo.nome && !fileCustomPasto['ScannerAI']) return alert("Inserisci un nome o allega una foto!");
               setIsCalculatingAI(true);
               try {
-                // Genera la richiesta all'AI usando la memoria isolata
-                const payload: any = { message: `Calcola macro per: "${formAInuovo.nome}". Restituisci la stringa esatta: [MAGIC_MACRO | Scanner | cho | pro | fat | ${formAInuovo.nome}]` };
+                const payload: any = { message: `
+                  Analizza: "${formAInuovo.nome || 'Foto allegata'}". 
+                  Se il nome è "Foto allegata", scrivi tu il nome esatto del prodotto che leggi sulla confezione.
+                  Restituisci la stringa esatta: [MAGIC_MACRO | ScannerAI | cho | pro | fat | Nome Completo Del Prodotto]
+                ` };
+                
                 if (fileCustomPasto['ScannerAI']) {
                   payload.file = { data: fileCustomPasto['ScannerAI'].data, mimeType: fileCustomPasto['ScannerAI'].mimeType };
                 }
                 const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
                 
-                // Estrae i dati
-                const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*Scanner\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^\]]*\s*([^\]]+)\]/i);
+                // REGEX CORRETTA
+                const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*([^|]+)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
+                
                 if(match) {
                   setFormAInuovo({
-                    nome: match[4].trim(),
-                    cho: Math.round(parseFloat(match[1].replace(',','.'))).toString(),
-                    pro: Math.round(parseFloat(match[2].replace(',','.'))).toString(),
-                    fat: Math.round(parseFloat(match[3].replace(',','.'))).toString()
+                    nome: match[5].trim(), 
+                    cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(),
+                    pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(),
+                    fat: Math.round(parseFloat(match[4].replace(',','.'))).toString()
                   });
                   setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}));
-                } else { alert("Dati non trovati. Ricorda di specificare i grammi (es. 50g Riso)."); }
+                } else { alert("Errore di formattazione. Riprova."); }
               } catch(e) { console.log(e); alert("Errore di connessione A.I."); }
               setIsCalculatingAI(false);
             }} 
+            disabled={isCalculatingAI} 
+            className={"bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] font-bold !w-auto !py-3 !px-4 !rounded-xl disabled:opacity-50 border-none cursor-pointer"}
+          >
+            {isCalculatingAI ? '...' : '/ AI'}
+          </button> 
             disabled={isCalculatingAI} 
             className={"bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] font-bold !w-auto !py-3 !px-4 !rounded-xl disabled:opacity-50 border-none cursor-pointer"}
           >
