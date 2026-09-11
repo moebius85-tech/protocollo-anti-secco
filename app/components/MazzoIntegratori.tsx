@@ -38,7 +38,7 @@ export const MazzoIntegratori = () => {
 
   return (
     <motion.div 
-      className="relative w-full h-[450px] flex justify-center items-center bg-transparent mb-6 touch-none"
+      className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
     >
       <AnimatePresence>
@@ -57,17 +57,16 @@ export const MazzoIntegratori = () => {
             yPos = 0;
             zIndexCard = 50;
           } else if (isFuture) {
-            // Carte in alto (Mazzo da sfogliare)
-            yPos = -distanza * 35;
-            scaleCard = 1 - (distanza * 0.06);
-            opacityCard = 1 - (distanza * 0.2);
+            yPos = -distanza * 30;
+            scaleCard = 1 - (distanza * 0.05);
+            opacityCard = 1 - (distanza * 0.15);
             zIndexCard = 50 - distanza; 
           } else if (isPast) {
-            // Carte in basso (Effetto tasca ingrandita)
-            yPos = 290 + (distanza * 40); // Più spazio di discesa
-            scaleCard = 1 + (distanza * 0.12); // Aumentato da 0.05 a 0.12: la carta si gonfia e si avvicina molto di più!
-            opacityCard = distanza <= 2 ? 1 : 0; // Mostra le 2 carte precedenti
-            zIndexCard = 60 + distanza; // Quella più in basso copre perfettamente quella sopra
+            // Spazio maggiore inziale e visualizzazione estesa fino a 5 carte
+            yPos = 260 + (distanza * 38); 
+            scaleCard = 1 + (distanza * 0.08); 
+            opacityCard = distanza <= 5 ? 1 : 0; // Ora mostra fino a 5 carte in basso
+            zIndexCard = 60 + distanza; 
           }
 
           return (
@@ -75,10 +74,10 @@ export const MazzoIntegratori = () => {
               key={card.id}
               className="absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6"
               style={{
-                // Ombra dinamica: più forte per le carte in primo piano!
+                // Ombre notevolmente ammorbidite e meno "illuminate" sui bordi
                 boxShadow: isPast 
-                  ? "12px 12px 24px rgba(163,177,198,0.8), -12px -12px 24px rgba(255,255,255,0.9)"
-                  : "8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.8)"
+                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
+                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
               }}
               animate={{ 
                 y: yPos, 
@@ -92,7 +91,8 @@ export const MazzoIntegratori = () => {
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
-              <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_5px_5px_10px_rgba(163,177,198,0.5),inset_-5px_-5px_10px_rgba(255,255,255,0.9)] flex items-center justify-center mb-6 text-4xl">
+              {/* Icona interna con rilievo meno accentuato */}
+              <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl">
                 {card.icon}
               </div>
               <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase">
