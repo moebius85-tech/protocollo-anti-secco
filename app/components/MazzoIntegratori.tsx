@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// MOCK DI 20 CARTE PER TESTARE LO SCROLL E LA SEQUENZA LUNGA
 const integratoriMock = [
   { id: '1', nome: 'L-CITRULLINA', tag: 'SCHEDA ESTRATTA', icon: '💊' },
   { id: '2', nome: 'CREATINA', tag: 'SCHEDA ESTRATTA', icon: '⚡' },
@@ -9,6 +10,20 @@ const integratoriMock = [
   { id: '4', nome: 'MAGNESIO', tag: 'SCHEDA ESTRATTA', icon: '🧬' },
   { id: '5', nome: 'ZINCO', tag: 'SCHEDA ESTRATTA', icon: '🛡️' },
   { id: '6', nome: 'ASHWAGANDHA', tag: 'SCHEDA ESTRATTA', icon: '🌿' },
+  { id: '7', nome: 'VITAMINA D3', tag: 'SCHEDA ESTRATTA', icon: '☀️' },
+  { id: '8', nome: 'PROTEINE WHEY', tag: 'SCHEDA ESTRATTA', icon: '🥛' },
+  { id: '9', nome: 'MULTIVITAMINICO', tag: 'SCHEDA ESTRATTA', icon: '🍎' },
+  { id: '10', nome: 'BCAA 8:1:1', tag: 'SCHEDA ESTRATTA', icon: '💪' },
+  { id: '11', nome: 'MELATONINA', tag: 'SCHEDA ESTRATTA', icon: '🌙' },
+  { id: '12', nome: 'CAFFEINA', tag: 'SCHEDA ESTRATTA', icon: '☕' },
+  { id: '13', nome: 'BETA ALANINA', tag: 'SCHEDA ESTRATTA', icon: '🔥' },
+  { id: '14', nome: 'GLUTAMMINA', tag: 'SCHEDA ESTRATTA', icon: '🧪' },
+  { id: '15', nome: 'GINSENG', tag: 'SCHEDA ESTRATTA', icon: '根' },
+  { id: '16', nome: 'MACA PERUVIANA', tag: 'SCHEDA ESTRATTA', icon: '⛰️' },
+  { id: '17', nome: 'L-CARNITINA', tag: 'SCHEDA ESTRATTA', icon: '🩸' },
+  { id: '18', nome: 'SPIRULINA', tag: 'SCHEDA ESTRATTA', icon: '🦠' },
+  { id: '19', nome: 'COLLAGENE', tag: 'SCHEDA ESTRATTA', icon: '🦴' },
+  { id: '20', nome: 'TRIBULUS', tag: 'SCHEDA ESTRATTA', icon: '🌱' }
 ];
 
 export const MazzoIntegratori = () => {
@@ -19,28 +34,28 @@ export const MazzoIntegratori = () => {
   const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
   const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
 
-  // 1. SCROLL OTTIMIZZATO: Ora rileva anche la velocità (il "flick") del dito/mouse
   const handlePanEnd = (e: any, info: any) => {
-    const isVertical = Math.abs(info.offset.y) > Math.abs(info.offset.x);
-    if (isVertical) {
-      if (info.offset.y > 40 || info.velocity.y > 200) goNext(); 
-      else if (info.offset.y < -40 || info.velocity.y < -200) goPrev();
+    if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
+      if (info.offset.y > 40) goNext(); 
+      else if (info.offset.y < -40) goPrev();
     }
   };
 
-  // 2. SWIPE CORRETTO: Aggiorna l'indice in modo sincronizzato con l'eliminazione
   const handleDragEnd = (event: any, info: any, cardId: string) => {
     setIsNearPocket(false);
     const x = info.offset.x;
     
-    if (x > 100 || x < -100) {
+    // ARCHIVIAZIONE CARTA (Swipe Destra)
+    if (x > 100) {
       alert("Prodotto aggiunto alla Dispensa!");
-      setCards((prev) => {
-        const newCards = prev.filter((c) => c.id !== cardId);
-        // Regola l'indice in tempo reale senza farlo sballare
-        setIndiceAttuale((currIdx) => Math.min(currIdx, Math.max(newCards.length - 1, 0)));
-        return newCards;
-      });
+      setCards((prev) => prev.filter((c) => c.id !== cardId));
+      // Se era l'ultima carta della lista, indietreggia l'indice, altrimenti lascialo fermo
+      setIndiceAttuale((prev) => prev >= cards.length - 1 ? Math.max(0, cards.length - 2) : prev);
+    } 
+    // SCARTO CARTA (Swipe Sinistra)
+    else if (x < -100) {
+      setCards((prev) => prev.filter((c) => c.id !== cardId));
+      setIndiceAttuale((prev) => prev >= cards.length - 1 ? Math.max(0, cards.length - 2) : prev);
     }
   };
 
@@ -48,15 +63,17 @@ export const MazzoIntegratori = () => {
     <motion.div 
       className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
+      // BLOCCA IL CLICK DESKTOP PER NON FAR CHIUDERE LA SCHERMATA
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
     >
       {/* 
-        3. BANDA INFINITA: 
-        left: calc(50% + 140px) -> Fissa la partenza 20px oltre la carta.
-        right: -1000px -> Si allunga all'infinito verso destra, addio bordi tagliati!
-        bg-slate-700/80 -> Colore leggermente a contrasto con effetto vetro.
+        BANDA "DISPENSA"
+        z-[999] garantisce che la carta scivoli sotto.
+        left: calc(50% + 140px) e right: -1000px la rendono distante dalla carta e senza fine.
       */}
       <div 
-        className={`absolute top-[-500px] bottom-[-500px] z-[100] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
+        className={`absolute top-[-500px] bottom-[-500px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
           isNearPocket
             ? 'bg-slate-700 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
             : 'bg-slate-700/80 backdrop-blur-md border-slate-500 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]'
@@ -82,21 +99,20 @@ export const MazzoIntegratori = () => {
           let opacityCard = 1;
           let zIndexCard = 50;
 
-          // 4. FIX DEI LIVELLI (Z-INDEX): La carta in primo piano domina su tutto (100)
+          // RISOLTO ORDINE Z-INDEX
           if (isFront) {
             yPos = 0;
-            zIndexCard = 100; // <- RISOLTO IL BUG DELLO SCAVALLAMENTO
+            zIndexCard = 50; // La carta centrale parte da 50
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 50 - distanza; 
+            zIndexCard = 40 - distanza; // Le carte da scorrere (in alto) stanno DIETRO la centrale (es. 39, 38)
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
-            opacityCard = distanza <= 5 ? 1 : 0;
-            // Le carte passate si coprono a vicenda per l'effetto tasca, ma restano sotto al 100!
-            zIndexCard = 50 + distanza; 
+            opacityCard = distanza <= 5 ? 1 : 0; // Mostra fino a 5 carte in basso
+            zIndexCard = 60 + distanza; // Le carte in basso COPRONO la centrale (es. 61, 62)
           }
 
           return (
@@ -108,27 +124,31 @@ export const MazzoIntegratori = () => {
                   ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
                   : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
               }}
+              // exit garantisce che quando una carta viene eliminata, sparisca morbidamente
+              initial={{ opacity: 0, scale: 0.8 }}
               animate={{ 
                 y: yPos, 
                 scale: scaleCard, 
                 opacity: opacityCard,
                 zIndex: zIndexCard 
               }}
+              exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
               drag={isFront ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               
+              // ACCENSIONE NEON
               onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 60) : undefined}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
-              <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl">
+              <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
                 {card.icon}
               </div>
-              <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase">
+              <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase pointer-events-none">
                 {card.nome}
               </h3>
-              <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3">
+              <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
                 {card.tag}
               </span>
             </motion.div>
