@@ -2022,7 +2022,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         </h3>
         <button onClick={() => { setModalScegliDispensa(null); setRicercaDispensa(""); }} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
       </div>
-      <MazzoIntegratori />
+      
       {/* --- TAB E BARRA DI RICERCA --- */}
       <div className="shrink-0 mb-4">
         <div className="flex gap-2 mb-3 bg-white/40 p-1.5 rounded-2xl shadow-inner">
@@ -2039,7 +2039,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       </div>
 
       {/* --- LISTA CIBI SALVATI (Filtrata per Tab e per Ricerca) --- */}
-      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 mb-4">
+      {/* --- MOSTRA IL MAZZO 3D SOLO SE SIAMO NELLA TAB INTEGRATORI --- */}
+        {filtroDispensa === 'integratore' && (
+          <div className="flex-1 w-full mt-2 flex justify-center z-10 relative">
+            <MazzoIntegratori />
+          </div>
+        )}
+
+        {/* --- LA LISTA NORMALE SI NASCONDE (hidden) QUANDO SIAMO NEGLI INTEGRATORI --- */}
+        <div className={`flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 mb-4 ${filtroDispensa === 'integratore' ? 'hidden' : 'block'}`}>
         {dispensa
           .filter(d => d.tipo === filtroDispensa)
           .filter(d => d.nome.toLowerCase().includes(ricercaDispensa.toLowerCase()))
