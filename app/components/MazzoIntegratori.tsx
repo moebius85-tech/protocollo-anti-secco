@@ -67,7 +67,7 @@ export const MazzoIntegratori = () => {
             yPos = 250 + (distanza * 35); // Stacco perfetto di 35px
             scaleCard = 1;
             opacityCard = distanza <= 2 ? 1 : 0; // Mantiene visibili le 2 carte precedenti
-            zIndexCard = 60 - distanza; // Magia Z-Index: la carta sfogliata per ultima va sopra quella precedente
+            zIndexCard = 60 + distanza; // Magia Z-Index: la carta sfogliata per ultima va sopra quella precedente
           }
 
           return (
