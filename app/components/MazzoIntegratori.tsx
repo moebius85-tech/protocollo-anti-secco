@@ -15,9 +15,13 @@ export const MazzoIntegratori = () => {
   const [cards, setCards] = useState(integratoriMock);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
 
+  // 1. L'UNICO STATO AGGIUNTO (Per accendere il neon)
+  const [isNearPocket, setIsNearPocket] = useState(false);
+
   const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
   const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
 
+  // IL TUO SCROLL (Intatto)
   const handlePanEnd = (e: any, info: any) => {
     if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
       if (info.offset.y > 40) goNext(); 
@@ -25,7 +29,9 @@ export const MazzoIntegratori = () => {
     }
   };
 
+  // IL TUO DRAG (Intatto, con l'aggiunta dello spegnimento neon)
   const handleDragEnd = (event: any, info: any, cardId: string) => {
+    setIsNearPocket(false); // Spegne il neon
     const x = info.offset.x;
     if (x > 100 || x < -100) {
       alert("Prodotto aggiunto alla Dispensa!");
@@ -41,6 +47,20 @@ export const MazzoIntegratori = () => {
       className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
     >
+      
+      {/* 2. LA BANDA LATERALE AGGIUNTA (Sta incollata a destra del contenitore, senza schiacciare le carte) */}
+      <div className={`absolute right-0 top-0 bottom-0 w-12 sm:w-16 z-[100] pointer-events-none flex items-center justify-center rounded-l-[2rem] border-l-2 transition-all duration-300 ${
+        isNearPocket
+          ? 'bg-slate-800 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
+          : 'bg-slate-800/95 border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.6)]'
+      }`}>
+        <span className={`text-[10px] font-black tracking-[0.3em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${
+          isNearPocket ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'text-slate-400 drop-shadow-sm'
+        }`}>
+          DISPENSA
+        </span>
+      </div>
+
       <AnimatePresence>
         {cards.map((card, index) => {
           const isFront = index === indiceAttuale;
@@ -62,10 +82,9 @@ export const MazzoIntegratori = () => {
             opacityCard = 1 - (distanza * 0.15);
             zIndexCard = 50 - distanza; 
           } else if (isPast) {
-            // Spazio maggiore inziale e visualizzazione estesa fino a 5 carte
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
-            opacityCard = distanza <= 5 ? 1 : 0; // Ora mostra fino a 5 carte in basso
+            opacityCard = distanza <= 5 ? 1 : 0; 
             zIndexCard = 60 + distanza; 
           }
 
@@ -74,7 +93,6 @@ export const MazzoIntegratori = () => {
               key={card.id}
               className="absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6"
               style={{
-                // Ombre notevolmente ammorbidite e meno "illuminate" sui bordi
                 boxShadow: isPast 
                   ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
                   : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
@@ -89,9 +107,12 @@ export const MazzoIntegratori = () => {
               
               drag={isFront ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
+              
+              // 3. IL CONTROLLO DEL NEON (Accende il neon solo se vai a destra di 60px)
+              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 60) : undefined}
+              
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
-              {/* Icona interna con rilievo meno accentuato */}
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl">
                 {card.icon}
               </div>
