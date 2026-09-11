@@ -2039,15 +2039,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       </div>
 
       {/* --- LISTA CIBI SALVATI (Filtrata per Tab e per Ricerca) --- */}
-      {/* --- MOSTRA IL MAZZO 3D SOLO SE SIAMO NELLA TAB INTEGRATORI --- */}
-        {filtroDispensa === 'integratore' && (
-          <div className="flex-1 w-full mt-2 flex justify-center z-10 relative">
-            <MazzoIntegratori />
-          </div>
-        )}
-
-        {/* --- LA LISTA NORMALE SI NASCONDE (hidden) QUANDO SIAMO NEGLI INTEGRATORI --- */}
-        <div className={`flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 mb-4 ${filtroDispensa === 'integratore' ? 'hidden' : 'block'}`}>
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 mb-4">
         {dispensa
           .filter(d => d.tipo === filtroDispensa)
           .filter(d => d.nome.toLowerCase().includes(ricercaDispensa.toLowerCase()))
