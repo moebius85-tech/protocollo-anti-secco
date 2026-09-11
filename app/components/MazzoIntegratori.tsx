@@ -57,15 +57,17 @@ export const MazzoIntegratori = () => {
             yPos = 0;
             zIndexCard = 50;
           } else if (isFuture) {
+            // Carte in alto (Mazzo da sfogliare)
             yPos = -distanza * 35;
             scaleCard = 1 - (distanza * 0.06);
             opacityCard = 1 - (distanza * 0.2);
-            zIndexCard = 50 - distanza; // Le carte dietro hanno indice minore (49, 48...)
+            zIndexCard = 50 - distanza; 
           } else if (isPast) {
-            yPos = 250 + (distanza * 20);
+            // Carte in basso (Mazzo già sfogliato in primo piano)
+            yPos = 250 + (distanza * 35); // Stacco perfetto di 35px
             scaleCard = 1;
-            opacityCard = distanza === 1 ? 1 : 0; 
-            zIndexCard = 50 + distanza; // CORREZIONE: Le carte sfogliate vanno in PRIMO PIANO (51, 52...)
+            opacityCard = distanza <= 2 ? 1 : 0; // Mantiene visibili le 2 carte precedenti
+            zIndexCard = 60 - distanza; // Magia Z-Index: la carta sfogliata per ultima va sopra quella precedente
           }
 
           return (
