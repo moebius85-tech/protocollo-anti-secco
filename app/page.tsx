@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from "@supabase/supabase-js";
 import { MediaVisualizer } from './animations';
+import { MazzoIntegratori } from './components/MazzoIntegratori';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtxfkahzyduq.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
@@ -2021,7 +2022,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         </h3>
         <button onClick={() => { setModalScegliDispensa(null); setRicercaDispensa(""); }} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
       </div>
-
+      <MazzoIntegratori />
       {/* --- TAB E BARRA DI RICERCA --- */}
       <div className="shrink-0 mb-4">
         <div className="flex gap-2 mb-3 bg-white/40 p-1.5 rounded-2xl shadow-inner">
