@@ -2310,22 +2310,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* === MODALE MAZZO 3D INTEGRATORI === */}
+      {/* === MODALE MAZZO 3D INTEGRATORI (Chiusura al tocco dello sfondo) === */}
       {mostraMazzoIntegratori && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center z-[9990] p-4">
-          <div className="w-full max-w-md relative flex flex-col items-center">
-            
-            <div className="w-full flex justify-end mb-4">
-              <button 
-                onClick={() => setMostraMazzoIntegratori(false)} 
-                className="text-white hover:text-orange-400 text-4xl font-bold transition-colors border-none bg-transparent cursor-pointer"
-              >
-                &times;
-              </button>
-            </div>
-
+        <div 
+          onClick={() => setMostraMazzoIntegratori(false)}
+          className="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center z-[9990] p-4 cursor-pointer"
+        >
+          {/* UnstopPropagation evita che cliccando sul mazzo la modale si chiuda per sbaglio */}
+          <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
             <MazzoIntegratori />
-            
           </div>
         </div>
       )}
