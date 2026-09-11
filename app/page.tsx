@@ -256,15 +256,7 @@ export default function Home() {
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
   const [digiuno, setDigiuno] = useState(false); 
   const [usaIntegratori, setUsaIntegratori] = useState(true);
-  const [hudActive, setHudActive] = useState<{name: string, x: number, y: number} | null>(null);
-  const [winSize, setWinSize] = useState({w: 1000, h: 800});
-  const [isHudClosing, setIsHudClosing] = useState(false);
-
-  useEffect(() => {
-    if (hudActive) {
-      setWinSize({ w: window.innerWidth, h: window.innerHeight });
-    }
-  }, [hudActive]);
+  const [mostraMazzoIntegratori, setMostraMazzoIntegratori] = useState(false);
 
   // FUNZIONE MAGICA: Aggiunge i pallini HUD accanto agli integratori
 const renderDescrizioneConHUD = (testo: string) => {
@@ -283,12 +275,7 @@ const renderDescrizioneConHUD = (testo: string) => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              const rect = e.currentTarget.getBoundingClientRect();
-              setHudActive({ 
-                name: integratoreTrovato, 
-                x: rect.left + (rect.width / 2), 
-                y: rect.top + (rect.height / 2) 
-              });
+              setMostraMazzoIntegratori(true);
             }}
             className="ml-2.5 w-4 h-4 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 shadow-[0_0_8px_rgba(249,115,22,0.6)] flex items-center justify-center hover:scale-125 transition-transform cursor-pointer border-none flex-shrink-0"
             title={`Mostra ologramma ${integratoreTrovato}`}
@@ -2323,162 +2310,25 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* --- ARCHIVIO 2D (OMBRA CORRETTA E LARGHEZZA ESTREMA) --- */}
-          {hudActive && (
-            <div 
-              className="fixed inset-0 z-[9990] overflow-hidden flex items-center justify-center"
-              style={{
-                '--start-x': `${hudActive.x}px`,
-                '--start-y': `${hudActive.y}px`,
-              } as React.CSSProperties}
-              onClick={() => {
-                setIsHudClosing(true);
-                setTimeout(() => { setHudActive(null); setIsHudClosing(false); }, 700);
-              }} 
-            >
-              {/* SFONDO SFOCATO */}
-              <div className={`absolute inset-0 bg-slate-900/60 backdrop-blur-xl ${isHudClosing ? 'archive-bg-out' : 'archive-bg-in'}`}></div>
-
-              {/* CONTENITORE DEL MAZZO */}
-              <div className={`absolute w-[280px] h-[340px] ${isHudClosing ? 'archive-fly-out' : 'archive-fly-in'}`}>
-                
-                {/* --- 1. ARCHIVIO SUPERIORE --- */}
-                {[7, 6, 5, 4, 3, 2, 1].map((i) => (
-                  <div 
-                    key={`top-${i}`} 
-                    className={`absolute inset-0 rounded-[32px] pointer-events-none ${isHudClosing ? 'collapse-all' : `fan-top-${i}`}`} 
-                    style={{ 
-                      zIndex: 30 - i, // Livelli da 23 a 29
-                      background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 100%)',
-                      backdropFilter: 'blur(16px)',
-                      WebkitBackdropFilter: 'blur(16px)',
-                      border: '1px solid rgba(255,255,255,0.5)',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-                    }}
-                  ></div>
-                ))}
-
-                {/* --- 2. SCHEDA PRINCIPALE (Ora sta SOTTO le schede in primo piano) --- */}
-                <div 
-                  className={`absolute inset-0 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-[0_40px_80px_rgba(0,0,0,0.5)] pointer-events-none ${isHudClosing ? 'collapse-all' : 'extract-main'}`}
-                  style={{ 
-                    zIndex: 40, // Minore delle schede scartate (50 e 60) per far cadere l'ombra dietro!
-                    background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 100%)',
-                    backdropFilter: 'blur(24px)',
-                    WebkitBackdropFilter: 'blur(24px)',
-                    border: '1px solid rgba(255,255,255,0.9)'
-                  }}
-                >
-                  <div className="w-28 h-28 bg-slate-100 rounded-[2rem] flex items-center justify-center shadow-[inset_2px_2px_12px_rgba(0,0,0,0.1),_0_10px_20px_rgba(0,0,0,0.05)] mb-8 relative overflow-hidden">
-                    <span className="text-6xl drop-shadow-sm">💊</span>
-                  </div>
-                  
-                  <h3 className="text-slate-800 font-black uppercase tracking-widest text-center text-base mb-2 leading-tight">
-                    {hudActive.name}
-                  </h3>
-                  <p className="text-[10px] text-orange-500 uppercase tracking-widest font-bold text-center">
-                    Scheda Estratta
-                  </p>
-                </div>
-
-                {/* --- 3. CASELLE SCARTATE (Livello superiore, larghezza estrema) --- */}
-                <div 
-                  className={`absolute inset-0 pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-1'}`}
-                  style={{ zIndex: 50, filter: 'drop-shadow(0 -10px 20px rgba(0,0,0,0.15))' }}
-                >
-                  <div 
-                    className="w-full h-full rounded-[32px]"
-                    style={{
-                      background: '#ffffff',
-                      clipPath: 'polygon(0 0, 100% 0, 90% 100%, 10% 100%)'
-                    }}
-                  ></div>
-                </div>
-
-                <div 
-                  className={`absolute inset-0 pointer-events-none ${isHudClosing ? 'collapse-all' : 'drop-down-2'}`}
-                  style={{ zIndex: 60, filter: 'drop-shadow(0 -10px 30px rgba(0,0,0,0.2))' }}
-                >
-                  <div 
-                    className="w-full h-full rounded-[32px]"
-                    style={{
-                      background: '#f8fafc',
-                      clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)'
-                    }}
-                  ></div>
-                </div>
-
-              </div>
-
-              {/* REGOLE CSS - GEOMETRIA E ANIMAZIONI */}
-              <style dangerouslySetInnerHTML={{__html: `
-                .archive-bg-in { animation: fadeIn 0.4s ease-out forwards; }
-                .archive-bg-out { animation: fadeOut 0.4s ease-out 0.3s forwards; }
-
-                .archive-fly-in { animation: flyToCenter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-                .archive-fly-out { animation: flyToButton 0.4s cubic-bezier(0.8, 0.2, 0.8, 1) 0.1s forwards; }
-
-                .extract-main { animation: extractMainCard 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
-
-                .drop-down-1 { animation: dropDown1 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; }
-                .drop-down-2 { animation: dropDown2 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards; }
-
-                .fan-top-1 { animation: top1 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-                .fan-top-2 { animation: top2 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-                .fan-top-3 { animation: top3 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-                .fan-top-4 { animation: top4 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-                .fan-top-5 { animation: top5 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-                .fan-top-6 { animation: top6 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-                .fan-top-7 { animation: top7 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards; }
-
-                .collapse-all { animation: collapseCards 0.3s ease-in forwards; }
-
-                /* --- KEYFRAMES --- */
-                @keyframes flyToCenter {
-                  0% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
-                  100% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
-                }
-                @keyframes flyToButton {
-                  0% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
-                  100% { top: var(--start-y); left: var(--start-x); transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
-                }
-
-                @keyframes extractMainCard {
-                  0% { transform: translateY(200px) scale(0.9); opacity: 0; }
-                  100% { transform: translateY(-90px) scale(1.05); opacity: 1; }
-                }
-
-                /* 
-                  Scale spinto a 1.30 e 1.45.
-                  Y abbassato a 355px e 450px per bilanciare l'ingrandimento verticale.
-                */
-                @keyframes dropDown1 { 
-                  0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(355px) scale(1.30); opacity: 1; } 
-                }
-                @keyframes dropDown2 { 
-                  0% { transform: translateY(0) scale(1); opacity: 1; }
-                  100% { transform: translateY(450px) scale(1.45); opacity: 1; } 
-                }
-
-                /* Archivio superiore */
-                @keyframes top1 { 100% { transform: translateY(-130px) scale(0.95); opacity: 0.95; } }
-                @keyframes top2 { 100% { transform: translateY(-170px) scale(0.90); opacity: 0.85; } }
-                @keyframes top3 { 100% { transform: translateY(-205px) scale(0.85); opacity: 0.75; } }
-                @keyframes top4 { 100% { transform: translateY(-235px) scale(0.80); opacity: 0.60; } }
-                @keyframes top5 { 100% { transform: translateY(-260px) scale(0.75); opacity: 0.45; } }
-                @keyframes top6 { 100% { transform: translateY(-275px) scale(0.70); opacity: 0.25; } }
-                @keyframes top7 { 100% { transform: translateY(-285px) scale(0.65); opacity: 0.10; } }
-
-                @keyframes collapseCards {
-                  100% { transform: translateY(0) scale(1); opacity: 1; }
-                }
-
-                @keyframes fadeIn { to { opacity: 1; } }
-                @keyframes fadeOut { to { opacity: 0; } }
-              `}} />
+      {/* === MODALE MAZZO 3D INTEGRATORI === */}
+      {mostraMazzoIntegratori && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center z-[9990] p-4">
+          <div className="w-full max-w-md relative flex flex-col items-center">
+            
+            <div className="w-full flex justify-end mb-4">
+              <button 
+                onClick={() => setMostraMazzoIntegratori(false)} 
+                className="text-white hover:text-orange-400 text-4xl font-bold transition-colors border-none bg-transparent cursor-pointer"
+              >
+                &times;
+              </button>
             </div>
-          )}
-      </main>
-    );
-  }
+
+            <MazzoIntegratori />
+            
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
