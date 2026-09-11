@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const integratoriMock = [
   { id: '1', nome: 'L-CITRULLINA', tag: 'SCHEDA ESTRATTA', icon: '💊' },
@@ -19,13 +19,9 @@ export const MazzoIntegratori = () => {
   const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
 
   const handlePanEnd = (e: any, info: any) => {
-    // Traccia lo swipe verticale per scorrere il mazzo
     if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
-      if (info.offset.y > 40) {
-        goNext(); // Trascini verso il basso -> sfogli in avanti
-      } else if (info.offset.y < -40) {
-        goPrev(); // Trascini verso l'alto -> torni indietro
-      }
+      if (info.offset.y > 40) goNext(); 
+      else if (info.offset.y < -40) goPrev();
     }
   };
 
@@ -42,66 +38,71 @@ export const MazzoIntegratori = () => {
 
   return (
     <motion.div 
-      // rimosso 'overflow-hidden' per permettere alle carte di uscire e creare l'effetto 3D
       className="relative w-full h-[450px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
     >
-      {cards.map((card, index) => {
-        const isFront = index === indiceAttuale;
-        const isFuture = index > indiceAttuale;
-        const isPast = index < indiceAttuale;
-        const distanza = Math.abs(index - indiceAttuale);
+      <AnimatePresence>
+        {cards.map((card, index) => {
+          const isFront = index === indiceAttuale;
+          const isFuture = index > indiceAttuale;
+          const isPast = index < indiceAttuale;
+          const distanza = Math.abs(index - indiceAttuale);
 
-        // Calcolo millimetrico delle posizioni per ricalcare la tua immagine
-        let yPos = 0;
-        let scaleCard = 1;
-        let opacityCard = 1;
-        let zIndexCard = 50 - distanza;
+          let yPos = 0;
+          let scaleCard = 1;
+          let opacityCard = 1;
+          let zIndexCard = 50;
 
-        if (isFront) {
-          yPos = 0; // Carta al centro
-        } else if (isFuture) {
-          yPos = -distanza * 35; // Carte in attesa: salgono verso l'alto creando il mazzo
-          scaleCard = 1 - (distanza * 0.06); // Si rimpiccioliscono in prospettiva
-          opacityCard = 1 - (distanza * 0.2); // Sbiadiscono gradualmente
-        } else if (isPast) {
-          yPos = 250 + (distanza * 20); // Carta passata: scende in basso e fa "capolino"
-          scaleCard = 1; 
-          opacityCard = distanza === 1 ? 1 : 0; // Lasciamo visibile solo l'ultima sfogliata per pulizia visiva
-        }
+          if (isFront) {
+            yPos = 0;
+            zIndexCard = 50;
+          } else if (isFuture) {
+            yPos = -distanza * 35;
+            scaleCard = 1 - (distanza * 0.06);
+            opacityCard = 1 - (distanza * 0.2);
+            zIndexCard = 50 - distanza; // Le carte dietro hanno indice minore (49, 48...)
+          } else if (isPast) {
+            yPos = 250 + (distanza * 20);
+            scaleCard = 1;
+            opacityCard = distanza === 1 ? 1 : 0; 
+            zIndexCard = 50 + distanza; // CORREZIONE: Le carte sfogliate vanno in PRIMO PIANO (51, 52...)
+          }
 
-        return (
-          <motion.div
-            key={card.id}
-            className="absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.8)]"
-            
-            // Il trucco per rimuovere lo sfarfallio: inseriamo lo zIndex dentro animate!
-            animate={{ 
-              y: yPos, 
-              scale: scaleCard, 
-              opacity: opacityCard,
-              zIndex: zIndexCard 
-            }}
-            transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
-            
-            drag={isFront ? "x" : false}
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
-          >
-            {/* --- GRAFICA DELLA CARTA --- */}
-            <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_5px_5px_10px_rgba(163,177,198,0.5),inset_-5px_-5px_10px_rgba(255,255,255,0.9)] flex items-center justify-center mb-6 text-4xl">
-              {card.icon}
-            </div>
-            <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase">
-              {card.nome}
-            </h3>
-            <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3">
-              {card.tag}
-            </span>
-            
-          </motion.div>
-        );
-      })}
+          return (
+            <motion.div
+              key={card.id}
+              className="absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6"
+              style={{
+                // Ombra dinamica: più forte per le carte in primo piano!
+                boxShadow: isPast 
+                  ? "12px 12px 24px rgba(163,177,198,0.8), -12px -12px 24px rgba(255,255,255,0.9)"
+                  : "8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.8)"
+              }}
+              animate={{ 
+                y: yPos, 
+                scale: scaleCard, 
+                opacity: opacityCard,
+                zIndex: zIndexCard 
+              }}
+              transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
+              
+              drag={isFront ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
+            >
+              <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_5px_5px_10px_rgba(163,177,198,0.5),inset_-5px_-5px_10px_rgba(255,255,255,0.9)] flex items-center justify-center mb-6 text-4xl">
+                {card.icon}
+              </div>
+              <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase">
+                {card.nome}
+              </h3>
+              <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3">
+                {card.tag}
+              </span>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
     </motion.div>
   );
 };
