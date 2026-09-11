@@ -14,62 +14,62 @@ const integratoriMock = [
 export const MazzoIntegratori = () => {
   const [cards, setCards] = useState(integratoriMock);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
-  
-  // Stato per accendere l'effetto Neon
   const [isNearPocket, setIsNearPocket] = useState(false);
 
-  const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
-  const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
+  // GESTORE UNICO DI TUTTI I MOVIMENTI (Sia Desktop che Mobile)
+  const handleDragEnd = (event: any, info: any, cardId: string) => {
+    setIsNearPocket(false); // Spegne sempre il neon al rilascio
+    
+    const offsetX = info.offset.x;
+    const offsetY = info.offset.y;
 
-  const handlePanEnd = (e: any, info: any) => {
-    // Scroll fluido verticale
-    if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
-      if (info.offset.y > 40) goNext(); 
-      else if (info.offset.y < -40) goPrev();
+    // SCROLL VERTICALE (Se il movimento Y è maggiore del movimento X)
+    if (Math.abs(offsetY) > Math.abs(offsetX)) {
+      if (offsetY > 40) {
+        setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1)); // Scorri Giù
+      } else if (offsetY < -40) {
+        setIndiceAttuale((prev) => Math.max(prev - 1, 0)); // Scorri Su
+      }
+    } 
+    // ARCHIVIAZIONE ORIZZONTALE (Se il movimento X è maggiore)
+    else {
+      if (offsetX > 100) {
+        // Swipe Destra (Dispensa)
+        alert("Prodotto aggiunto alla Dispensa!");
+        setCards((prev) => prev.filter((c) => c.id !== cardId));
+        if (indiceAttuale >= cards.length - 1) {
+          setIndiceAttuale(Math.max(cards.length - 2, 0));
+        }
+      } else if (offsetX < -100) {
+        // Swipe Sinistra (Scarta)
+        setCards((prev) => prev.filter((c) => c.id !== cardId));
+        if (indiceAttuale >= cards.length - 1) {
+          setIndiceAttuale(Math.max(cards.length - 2, 0));
+        }
+      }
     }
   };
 
-  // Rileva quando la carta si avvicina alla banda destra
+  // ACCENSIONE NEON OTTIMIZZATA (Niente lag)
   const handleDrag = (e: any, info: any) => {
-    if (info.offset.x > 80) {
+    if (info.offset.x > 60) {
       if (!isNearPocket) setIsNearPocket(true);
     } else {
       if (isNearPocket) setIsNearPocket(false);
     }
   };
 
-  const handleDragEnd = (event: any, info: any, cardId: string) => {
-    setIsNearPocket(false); // Spegne il neon al rilascio
-    const x = info.offset.x;
-    
-    // Swipe laterale verso DESTRA per archiviare la carta
-    if (x > 100) {
-      alert("Prodotto aggiunto alla Dispensa!");
-      setCards((prev) => prev.filter((c) => c.id !== cardId));
-      if (indiceAttuale >= cards.length - 1) {
-        setIndiceAttuale(Math.max(cards.length - 2, 0));
-      }
-    } 
-    // Swipe laterale verso SINISTRA
-    else if (x < -100) {
-      setCards((prev) => prev.filter((c) => c.id !== cardId));
-      if (indiceAttuale >= cards.length - 1) {
-        setIndiceAttuale(Math.max(cards.length - 2, 0));
-      }
-    }
-  };
-
   return (
+    // Larghezza fissa (max-w-[360px]) e margin auto per tenere le bande sempre vicine alle carte su Desktop
     <motion.div 
-      className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
-      onPanEnd={handlePanEnd}
+      className="relative w-full max-w-[360px] mx-auto h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
     >
-      {/* === BANDA LATERALE SINISTRA (SIPARIO FISSO A COLORE PIENO) === */}
-      <div className="fixed left-0 top-0 bottom-0 w-10 sm:w-16 bg-slate-800 shadow-[20px_0_40px_rgba(0,0,0,0.8)] z-[100] pointer-events-none flex items-center justify-center border-r border-slate-500 rounded-r-[2rem]">
+      {/* === BANDA LATERALE SINISTRA (Absolute: abbraccia il contenitore, non lo schermo) === */}
+      <div className="absolute left-[-20px] top-0 bottom-0 w-12 bg-slate-800 shadow-[20px_0_40px_rgba(0,0,0,0.8)] z-[100] pointer-events-none flex items-center justify-center border-r border-slate-500 rounded-r-[2rem]">
       </div>
 
-      {/* === BANDA LATERALE DESTRA (DISPENSA CON EFFETTO NEON) === */}
-      <div className={`fixed right-0 top-0 bottom-0 w-10 sm:w-16 transition-all duration-300 z-[100] pointer-events-none flex items-center justify-center rounded-l-[2rem] border-l-2 ${
+      {/* === BANDA LATERALE DESTRA (Absolute: abbraccia il contenitore, non lo schermo) === */}
+      <div className={`absolute right-[-20px] top-0 bottom-0 w-12 transition-all duration-300 z-[100] pointer-events-none flex items-center justify-center rounded-l-[2rem] border-l-2 ${
         isNearPocket 
           ? 'bg-slate-800 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]' 
           : 'bg-slate-800 border-slate-500 shadow-[-20px_0_40px_rgba(0,0,0,0.8)]'
@@ -125,9 +125,13 @@ export const MazzoIntegratori = () => {
               }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
-              drag={isFront ? "x" : false}
-              dragConstraints={{ left: 0, right: 0 }}
-              onDrag={isFront ? handleDrag : undefined} // AGGIUNTO IL TRACCIAMENTO DEL DITO
+              // ORA LA CARTA E' LIBERA DI MUOVERSI IN TUTTE LE DIREZIONI
+              drag={isFront ? true : false} 
+              // MA TORNA SEMPRE AL CENTRO COME UN ELASTICO
+              dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }} 
+              dragElastic={0.6} // Rende il trascinamento morbido e soddisfacente
+              
+              onDrag={isFront ? handleDrag : undefined} 
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
