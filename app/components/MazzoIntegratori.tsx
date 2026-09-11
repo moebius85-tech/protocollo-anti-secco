@@ -28,16 +28,16 @@ export const MazzoIntegratori = () => {
 
   const handleDragEnd = (event: any, info: any, cardId: string) => {
     const x = info.offset.x;
-    // Swipe laterale per archiviare la carta (scivola sotto la banda destra)
+    // Swipe laterale verso DESTRA per archiviare la carta (scivola sotto la banda)
     if (x > 100) {
       alert("Prodotto aggiunto alla Dispensa!");
       setCards((prev) => prev.filter((c) => c.id !== cardId));
       if (indiceAttuale >= cards.length - 1) {
         setIndiceAttuale(Math.max(cards.length - 2, 0));
       }
-    } else if (x < -100) {
-      // Se vuoi gestire anche lo scarto a sinistra
-      alert("Prodotto scartato!");
+    } 
+    // Swipe laterale verso SINISTRA (scarta nel nulla)
+    else if (x < -100) {
       setCards((prev) => prev.filter((c) => c.id !== cardId));
       if (indiceAttuale >= cards.length - 1) {
         setIndiceAttuale(Math.max(cards.length - 2, 0));
@@ -50,12 +50,12 @@ export const MazzoIntegratori = () => {
       className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
     >
-      {/* === BANDA LATERALE SINISTRA (SIPARIO) === */}
-      <div className="absolute left-0 top-[-20px] bottom-[-20px] w-12 sm:w-16 bg-slate-800/90 shadow-[15px_0_30px_rgba(0,0,0,0.5)] z-[100] pointer-events-none flex items-center justify-center border-r border-white/10 rounded-r-[2rem]">
+      {/* === BANDA LATERALE SINISTRA (SIPARIO FISSO A SCHERMO) === */}
+      <div className="fixed left-0 top-0 bottom-0 w-10 sm:w-16 bg-slate-800/90 shadow-[20px_0_40px_rgba(0,0,0,0.6)] z-[100] pointer-events-none flex items-center justify-center border-r border-white/10 rounded-r-[2rem]">
       </div>
 
-      {/* === BANDA LATERALE DESTRA (SIPARIO DISPENSA) === */}
-      <div className="absolute right-0 top-[-20px] bottom-[-20px] w-12 sm:w-16 bg-slate-800/90 shadow-[-15px_0_30px_rgba(0,0,0,0.5)] z-[100] pointer-events-none flex items-center justify-center border-l border-white/10 rounded-l-[2rem]">
+      {/* === BANDA LATERALE DESTRA (SIPARIO DISPENSA FISSO A SCHERMO) === */}
+      <div className="fixed right-0 top-0 bottom-0 w-10 sm:w-16 bg-slate-800/90 shadow-[-20px_0_40px_rgba(0,0,0,0.6)] z-[100] pointer-events-none flex items-center justify-center border-l border-white/10 rounded-l-[2rem]">
         <span className="text-[10px] font-black tracking-[0.3em] uppercase [writing-mode:vertical-rl] rotate-180 text-slate-400 drop-shadow-sm">
           DISPENSA
         </span>
