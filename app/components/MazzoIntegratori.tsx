@@ -50,7 +50,7 @@ export const MazzoIntegratori = () => {
   };
 
   return (
-    <div 
+    <motion.div 
       className="relative w-full h-[450px] flex justify-center items-center overflow-hidden bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
     >
@@ -122,6 +122,6 @@ export const MazzoIntegratori = () => {
       {cards.length === 0 && (
         <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Archivio vuoto</p>
       )}
-    </div>
+    </motion.div>
   );
 };
