@@ -14,29 +14,33 @@ const integratoriMock = [
 export const MazzoIntegratori = () => {
   const [cards, setCards] = useState(integratoriMock);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
-  
   const [isNearPocket, setIsNearPocket] = useState(false);
 
   const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
   const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
 
+  // 1. SCROLL OTTIMIZZATO: Ora rileva anche la velocità (il "flick") del dito/mouse
   const handlePanEnd = (e: any, info: any) => {
-    if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
-      if (info.offset.y > 40) goNext(); 
-      else if (info.offset.y < -40) goPrev();
+    const isVertical = Math.abs(info.offset.y) > Math.abs(info.offset.x);
+    if (isVertical) {
+      if (info.offset.y > 40 || info.velocity.y > 200) goNext(); 
+      else if (info.offset.y < -40 || info.velocity.y < -200) goPrev();
     }
   };
 
+  // 2. SWIPE CORRETTO: Aggiorna l'indice in modo sincronizzato con l'eliminazione
   const handleDragEnd = (event: any, info: any, cardId: string) => {
     setIsNearPocket(false);
     const x = info.offset.x;
     
     if (x > 100 || x < -100) {
       alert("Prodotto aggiunto alla Dispensa!");
-      setCards((prev) => prev.filter((c) => c.id !== cardId));
-      if (indiceAttuale >= cards.length - 1) {
-        setIndiceAttuale(Math.max(cards.length - 2, 0));
-      }
+      setCards((prev) => {
+        const newCards = prev.filter((c) => c.id !== cardId);
+        // Regola l'indice in tempo reale senza farlo sballare
+        setIndiceAttuale((currIdx) => Math.min(currIdx, Math.max(newCards.length - 1, 0)));
+        return newCards;
+      });
     }
   };
 
@@ -46,16 +50,20 @@ export const MazzoIntegratori = () => {
       onPanEnd={handlePanEnd}
     >
       {/* 
-        MODIFICHE APPLICATE QUI:
-        1. top-[-500px] bottom-[-500px] per nascondere i margini all'infinito.
-        2. ml-[140px] per garantire 20px di stacco perfetti dalla card (larga 120px dal centro).
+        3. BANDA INFINITA: 
+        left: calc(50% + 140px) -> Fissa la partenza 20px oltre la carta.
+        right: -1000px -> Si allunga all'infinito verso destra, addio bordi tagliati!
+        bg-slate-700/80 -> Colore leggermente a contrasto con effetto vetro.
       */}
-      <div className={`absolute top-[-500px] bottom-[-500px] w-12 z-[100] pointer-events-none flex items-center justify-center rounded-l-[2rem] border-l-2 transition-all duration-300 left-1/2 ml-[140px] ${
-        isNearPocket
-          ? 'bg-slate-800 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
-          : 'bg-slate-800/95 border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.6)]'
-      }`}>
-        <span className={`text-[10px] font-black tracking-[0.3em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${
+      <div 
+        className={`absolute top-[-500px] bottom-[-500px] z-[100] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
+          isNearPocket
+            ? 'bg-slate-700 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
+            : 'bg-slate-700/80 backdrop-blur-md border-slate-500 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]'
+        }`}
+        style={{ left: 'calc(50% + 140px)', right: '-1000px' }}
+      >
+        <span className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${
           isNearPocket ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'text-slate-400 drop-shadow-sm'
         }`}>
           DISPENSA
@@ -74,9 +82,10 @@ export const MazzoIntegratori = () => {
           let opacityCard = 1;
           let zIndexCard = 50;
 
+          // 4. FIX DEI LIVELLI (Z-INDEX): La carta in primo piano domina su tutto (100)
           if (isFront) {
             yPos = 0;
-            zIndexCard = 50;
+            zIndexCard = 100; // <- RISOLTO IL BUG DELLO SCAVALLAMENTO
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
@@ -86,7 +95,8 @@ export const MazzoIntegratori = () => {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0;
-            zIndexCard = 60 + distanza; 
+            // Le carte passate si coprono a vicenda per l'effetto tasca, ma restano sotto al 100!
+            zIndexCard = 50 + distanza; 
           }
 
           return (
