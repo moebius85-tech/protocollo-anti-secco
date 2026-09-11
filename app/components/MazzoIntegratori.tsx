@@ -34,7 +34,7 @@ export const MazzoIntegratori = () => {
   const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
   const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
 
-  // GESTORE SCROLL: Funziona in tutta l'area perché è attaccato al contenitore
+  // GESTORE SCROLL
   const handlePanEnd = (e: any, info: any) => {
     if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
       if (info.offset.y > 40) goNext(); 
@@ -44,38 +44,29 @@ export const MazzoIntegratori = () => {
 
   // GESTORE DISPENSA (Swipe Laterale)
   const handleDragEnd = (event: any, info: any, cardId: string) => {
-    setIsNearPocket(false); // Spegne sempre il neon
+    setIsNearPocket(false); // Spegne il neon al rilascio
     
     const x = info.offset.x;
-    
     if (x > 100 || x < -100) {
-      alert("Prodotto aggiunto alla Dispensa!");
-      setCards((prev) => prev.filter((c) => c.id !== cardId));
-      if (indiceAttuale >= cards.length - 1) {
-        setIndiceAttuale(Math.max(cards.length - 2, 0));
-      }
+      if (x > 100) alert("Prodotto aggiunto alla Dispensa!");
+      
+      // Risolve il bug della sequenza: aggiorna l'indice in base alla nuova lunghezza del mazzo
+      setCards((prevCards) => {
+        const newCards = prevCards.filter((c) => c.id !== cardId);
+        setIndiceAttuale((currIdx) => currIdx >= newCards.length ? Math.max(0, newCards.length - 1) : currIdx);
+        return newCards;
+      });
     }
-  };
-
-  // ACCENSIONE NEON
-  const handleDrag = (e: any, info: any) => {
-    const near = info.offset.x > 50;
-    if (near !== isNearPocket) setIsNearPocket(near);
   };
 
   return (
     <motion.div 
       className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
-      onClick={(e) => e.stopPropagation()} // Impedisce al click del mouse di chiudere lo sfondo
+      onClick={(e) => e.stopPropagation()} 
     >
       
-      {/* 
-        BANDA INFINITA: 
-        1. bg-slate-700 per uno stacco delicato
-        2. right: -2000px e top/bottom -1000px nascondono i confini per sempre
-        3. z-[200] garantisce che la carta ci scivoli sotto
-      */}
+      {/* BANDA INFINITA DISPENSA */}
       <div 
         className={`absolute top-[-1000px] bottom-[-1000px] z-[200] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
           isNearPocket
@@ -91,7 +82,7 @@ export const MazzoIntegratori = () => {
         </span>
       </div>
 
-      <AnimatePresence initial={false}>
+      <AnimatePresence>
         {cards.map((card, index) => {
           const isFront = index === indiceAttuale;
           const isFuture = index > indiceAttuale;
@@ -101,49 +92,55 @@ export const MazzoIntegratori = () => {
           let yPos = 0;
           let scaleCard = 1;
           let opacityCard = 1;
+          
+          // LA REGOLA INFALLIBILE PER I LIVELLI
           let zIndexCard = 50;
-
           if (isFront) {
             yPos = 0;
-            zIndexCard = 100; // Carta attiva domina su tutte
+            zIndexCard = 50;
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 50 - distanza; 
+            zIndexCard = 40 - distanza; // Le carte da svelare stanno SEMPRE SOTTO (es. 39, 38)
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
-            
-            // LA CORREZIONE DEL LIVELLO: 
-            // Distanza 2 (più vecchia) ha z-index 52. Distanza 1 (più nuova) ha z-index 51.
-            // La prima copre perfettamente la seconda!
-            zIndexCard = 50 + distanza; 
+            zIndexCard = 60 - distanza; // Le carte scartate stanno SEMPRE SOPRA (Distanza 1 = 59, copre la centrale 50!)
           }
+
+          // LA SOLUZIONE AL FLICKERING: Gestiamo le ombre come variabile animata, non come stile fisso!
+          const shadowCard = isPast 
+            ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
+            : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)";
 
           return (
             <motion.div
               key={card.id}
               className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
-              style={{
-                boxShadow: isPast 
-                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
-              }}
+              
+              // TUTTO PASSA DA ANIMATE, NIENTE PIU' SCATTI!
               animate={{ 
                 y: yPos, 
                 scale: scaleCard, 
                 opacity: opacityCard,
-                zIndex: zIndexCard 
+                zIndex: zIndexCard,
+                boxShadow: shadowCard
               }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
-              // Svincola il drag orizzontale (carta) dal pan verticale (sfondo)
               drag={isFront ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               
-              onDrag={isFront ? handleDrag : undefined}
+              // LA SOLUZIONE AL NEON: Aggiorna lo stato in tempo reale solo se cambia davvero, salvando la memoria
+              onDrag={isFront ? (e, info) => {
+                setIsNearPocket((prev) => {
+                  const near = info.offset.x > 60;
+                  return prev === near ? prev : near;
+                });
+              } : undefined}
+              
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
