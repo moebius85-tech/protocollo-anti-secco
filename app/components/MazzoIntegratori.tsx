@@ -15,7 +15,6 @@ export const MazzoIntegratori = () => {
   const [cards, setCards] = useState(integratoriMock);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
   
-  // UNICO STATO AGGIUNTO: Controllo del Neon
   const [isNearPocket, setIsNearPocket] = useState(false);
 
   const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
@@ -29,7 +28,7 @@ export const MazzoIntegratori = () => {
   };
 
   const handleDragEnd = (event: any, info: any, cardId: string) => {
-    setIsNearPocket(false); // Spegne sempre il neon al rilascio
+    setIsNearPocket(false);
     const x = info.offset.x;
     
     if (x > 100 || x < -100) {
@@ -47,12 +46,11 @@ export const MazzoIntegratori = () => {
       onPanEnd={handlePanEnd}
     >
       {/* 
-        BANDA ANCORATA MATEMATICAMENTE: 
-        left-1/2 = parte dal centro esatto. 
-        ml-[130px] = si sposta a destra appena oltre il bordo della carta. 
-        Non si accavallerà MAI PIÙ, su nessuno schermo. 
+        MODIFICHE APPLICATE QUI:
+        1. top-[-500px] bottom-[-500px] per nascondere i margini all'infinito.
+        2. ml-[140px] per garantire 20px di stacco perfetti dalla card (larga 120px dal centro).
       */}
-      <div className={`absolute top-0 bottom-0 w-12 z-[100] pointer-events-none flex items-center justify-center rounded-l-[2rem] border-l-2 transition-all duration-300 left-1/2 ml-[130px] ${
+      <div className={`absolute top-[-500px] bottom-[-500px] w-12 z-[100] pointer-events-none flex items-center justify-center rounded-l-[2rem] border-l-2 transition-all duration-300 left-1/2 ml-[140px] ${
         isNearPocket
           ? 'bg-slate-800 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
           : 'bg-slate-800/95 border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.6)]'
@@ -111,9 +109,7 @@ export const MazzoIntegratori = () => {
               drag={isFront ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               
-              // SENSORE NEON AGGIUNTO QUI: Preciso e in tempo reale (si accende oltre i 60px)
               onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 60) : undefined}
-              
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl">
