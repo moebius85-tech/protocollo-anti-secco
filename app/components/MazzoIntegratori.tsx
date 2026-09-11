@@ -57,17 +57,17 @@ export const MazzoIntegratori = () => {
             yPos = 0;
             zIndexCard = 50;
           } else if (isFuture) {
-            // Carte in alto (Mazzo da sfogliare, si rimpiccioliscono e vanno dietro)
+            // Carte in alto (Mazzo da sfogliare)
             yPos = -distanza * 35;
             scaleCard = 1 - (distanza * 0.06);
             opacityCard = 1 - (distanza * 0.2);
             zIndexCard = 50 - distanza; 
           } else if (isPast) {
-            // Effetto Prospettico "Cartella" in basso
-            yPos = 310 + (distanza * 35); // Portate molto più in basso per creare il distacco visivo
-            scaleCard = 1 + (distanza * 0.08); // Si allargano (1.08, 1.16...) sembrando più vicine allo schermo
-            opacityCard = distanza <= 2 ? 1 : 0; // Mantiene visibili le 2 carte
-            zIndexCard = 60 + distanza; // Quella più in basso (dist 2) sta SOPRA quella superiore (dist 1)
+            // Carte in basso (Effetto tasca ingrandita)
+            yPos = 290 + (distanza * 40); // Più spazio di discesa
+            scaleCard = 1 + (distanza * 0.12); // Aumentato da 0.05 a 0.12: la carta si gonfia e si avvicina molto di più!
+            opacityCard = distanza <= 2 ? 1 : 0; // Mostra le 2 carte precedenti
+            zIndexCard = 60 + distanza; // Quella più in basso copre perfettamente quella sopra
           }
 
           return (
