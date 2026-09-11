@@ -14,14 +14,13 @@ const integratoriMock = [
 export const MazzoIntegratori = () => {
   const [cards, setCards] = useState(integratoriMock);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
-
-  // 1. L'UNICO STATO AGGIUNTO (Per accendere il neon)
+  
+  // UNICO STATO AGGIUNTO: Controllo del Neon
   const [isNearPocket, setIsNearPocket] = useState(false);
 
   const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
   const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
 
-  // IL TUO SCROLL (Intatto)
   const handlePanEnd = (e: any, info: any) => {
     if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
       if (info.offset.y > 40) goNext(); 
@@ -29,10 +28,10 @@ export const MazzoIntegratori = () => {
     }
   };
 
-  // IL TUO DRAG (Intatto, con l'aggiunta dello spegnimento neon)
   const handleDragEnd = (event: any, info: any, cardId: string) => {
-    setIsNearPocket(false); // Spegne il neon
+    setIsNearPocket(false); // Spegne sempre il neon al rilascio
     const x = info.offset.x;
+    
     if (x > 100 || x < -100) {
       alert("Prodotto aggiunto alla Dispensa!");
       setCards((prev) => prev.filter((c) => c.id !== cardId));
@@ -47,9 +46,13 @@ export const MazzoIntegratori = () => {
       className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
     >
-      
-      {/* 2. LA BANDA LATERALE AGGIUNTA (Sta incollata a destra del contenitore, senza schiacciare le carte) */}
-      <div className={`absolute right-0 top-0 bottom-0 w-12 sm:w-16 z-[100] pointer-events-none flex items-center justify-center rounded-l-[2rem] border-l-2 transition-all duration-300 ${
+      {/* 
+        BANDA ANCORATA MATEMATICAMENTE: 
+        left-1/2 = parte dal centro esatto. 
+        ml-[130px] = si sposta a destra appena oltre il bordo della carta. 
+        Non si accavallerà MAI PIÙ, su nessuno schermo. 
+      */}
+      <div className={`absolute top-0 bottom-0 w-12 z-[100] pointer-events-none flex items-center justify-center rounded-l-[2rem] border-l-2 transition-all duration-300 left-1/2 ml-[130px] ${
         isNearPocket
           ? 'bg-slate-800 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
           : 'bg-slate-800/95 border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.6)]'
@@ -84,7 +87,7 @@ export const MazzoIntegratori = () => {
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
-            opacityCard = distanza <= 5 ? 1 : 0; 
+            opacityCard = distanza <= 5 ? 1 : 0;
             zIndexCard = 60 + distanza; 
           }
 
@@ -108,7 +111,7 @@ export const MazzoIntegratori = () => {
               drag={isFront ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               
-              // 3. IL CONTROLLO DEL NEON (Accende il neon solo se vai a destra di 60px)
+              // SENSORE NEON AGGIUNTO QUI: Preciso e in tempo reale (si accende oltre i 60px)
               onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 60) : undefined}
               
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
