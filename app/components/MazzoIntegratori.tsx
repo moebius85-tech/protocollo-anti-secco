@@ -34,7 +34,6 @@ export const MazzoIntegratori = () => {
   const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
   const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
 
-  // GESTORE SCROLL
   const handlePanEnd = (e: any, info: any) => {
     if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
       if (info.offset.y > 40) goNext(); 
@@ -42,20 +41,15 @@ export const MazzoIntegratori = () => {
     }
   };
 
-  // GESTORE DISPENSA (Swipe Laterale)
   const handleDragEnd = (event: any, info: any, cardId: string) => {
-    setIsNearPocket(false); // Spegne il neon al rilascio
-    
+    setIsNearPocket(false);
     const x = info.offset.x;
     if (x > 100 || x < -100) {
       if (x > 100) alert("Prodotto aggiunto alla Dispensa!");
-      
-      // Risolve il bug della sequenza: aggiorna l'indice in base alla nuova lunghezza del mazzo
-      setCards((prevCards) => {
-        const newCards = prevCards.filter((c) => c.id !== cardId);
-        setIndiceAttuale((currIdx) => currIdx >= newCards.length ? Math.max(0, newCards.length - 1) : currIdx);
-        return newCards;
-      });
+      setCards((prev) => prev.filter((c) => c.id !== cardId));
+      if (indiceAttuale >= cards.length - 1) {
+        setIndiceAttuale(Math.max(cards.length - 2, 0));
+      }
     }
   };
 
@@ -63,17 +57,20 @@ export const MazzoIntegratori = () => {
     <motion.div 
       className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
-      onClick={(e) => e.stopPropagation()} 
     >
       
-      {/* BANDA INFINITA DISPENSA */}
+      {/* 
+        BANDA INFINITA: 
+        bg-[#1e293b] è leggermente più chiaro.
+        right: -1000px nasconde i bordi tagliati all'infinito.
+      */}
       <div 
-        className={`absolute top-[-1000px] bottom-[-1000px] z-[200] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
+        className={`absolute top-[-500px] bottom-[-500px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
           isNearPocket
-            ? 'bg-slate-700 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
-            : 'bg-slate-700 border-slate-500 shadow-[-10px_0_30px_rgba(0,0,0,0.4)]'
+            ? 'bg-[#1e293b] border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
+            : 'bg-[#1e293b] border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.4)]'
         }`}
-        style={{ left: 'calc(50% + 140px)', right: '-2000px' }}
+        style={{ left: 'calc(50% + 140px)', right: '-1000px' }}
       >
         <span className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${
           isNearPocket ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'text-slate-400 drop-shadow-sm'
@@ -92,64 +89,57 @@ export const MazzoIntegratori = () => {
           let yPos = 0;
           let scaleCard = 1;
           let opacityCard = 1;
-          
-          // LA REGOLA INFALLIBILE PER I LIVELLI
           let zIndexCard = 50;
+
+          // ORDINE Z-INDEX PERFETTO
           if (isFront) {
             yPos = 0;
-            zIndexCard = 50;
+            zIndexCard = 50; 
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 40 - distanza; // Le carte da svelare stanno SEMPRE SOTTO (es. 39, 38)
+            zIndexCard = 50 - distanza; 
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
-            zIndexCard = 60 - distanza; // Le carte scartate stanno SEMPRE SOPRA (Distanza 1 = 59, copre la centrale 50!)
+            zIndexCard = 60 - distanza; // FIX: La carta appena scesa (es. 59) copre la successiva (58) e copre la centrale (50)
           }
-
-          // LA SOLUZIONE AL FLICKERING: Gestiamo le ombre come variabile animata, non come stile fisso!
-          const shadowCard = isPast 
-            ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-            : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)";
 
           return (
             <motion.div
               key={card.id}
-              className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
-              
-              // TUTTO PASSA DA ANIMATE, NIENTE PIU' SCATTI!
+              className="absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6"
+              style={{
+                // FIX FLICKERING: Lo zIndex messo qui evita il bug di calcolo di Framer Motion
+                zIndex: zIndexCard, 
+                boxShadow: isPast 
+                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
+                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
+              }}
+              // rimosso zIndex da animate
               animate={{ 
                 y: yPos, 
                 scale: scaleCard, 
-                opacity: opacityCard,
-                zIndex: zIndexCard,
-                boxShadow: shadowCard
+                opacity: opacityCard 
               }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
               drag={isFront ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               
-              // LA SOLUZIONE AL NEON: Aggiorna lo stato in tempo reale solo se cambia davvero, salvando la memoria
-              onDrag={isFront ? (e, info) => {
-                setIsNearPocket((prev) => {
-                  const near = info.offset.x > 60;
-                  return prev === near ? prev : near;
-                });
-              } : undefined}
-              
+              // FIX NEON: Abbassata la soglia a 30 per renderlo iper-sensibile nonostante l'elastico
+              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 30) : undefined}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
-              <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
+              <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl">
                 {card.icon}
               </div>
-              <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase pointer-events-none">
+              <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase">
                 {card.nome}
               </h3>
-              <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
+              <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3">
                 {card.tag}
               </span>
             </motion.div>
