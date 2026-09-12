@@ -111,11 +111,11 @@ function Carta({
     zIndexCard = 100; 
   }
 
+  // GESTISCE IL DRAG (Sulla carta frontale: archiviazione + swipe verticale)
   const handleDragEnd = (_e: any, info: any) => {
     const offX = info.offset.x;
     const offY = info.offset.y;
 
-    // Se l'utente fa swipe verticale (scorrimento mazzo)
     if (Math.abs(offY) > Math.abs(offX)) {
       onDragProgress?.(0); 
       if (offY > 40) onSwipeVerticale?.(1); 
@@ -123,12 +123,22 @@ function Carta({
       return;
     }
 
-    // Se l'utente fa swipe orizzontale (archiviazione)
     if (offX > SOGLIA_ARCHIVIAZIONE || offX < -SOGLIA_ARCHIVIAZIONE) {
       const direzione = offX > 0 ? 1 : -1;
       onArchivia?.(direzione);
     } else {
       onDragProgress?.(0);
+    }
+  };
+
+  // GESTISCE SOLO IL PAN (Sulle carte in secondo piano: rileva solo swipe verticale)
+  const handlePanEnd = (_e: any, info: any) => {
+    const offX = info.offset.x;
+    const offY = info.offset.y;
+
+    if (Math.abs(offY) > Math.abs(offX)) {
+      if (offY > 40) onSwipeVerticale?.(1); 
+      else if (offY < -40) onSwipeVerticale?.(-1); 
     }
   };
 
@@ -144,7 +154,9 @@ function Carta({
         WebkitBackfaceVisibility: 'hidden',
         transform: 'translateZ(0)',
         willChange: 'transform, opacity',
-        pointerEvents: isFront ? 'auto' : 'none',
+        // ATTENZIONE QUI: Permettiamo a tutte le carte (tranne quelle invisibili/uscite)
+        // di ricevere i tocchi, così puoi trascinare le carte di sfondo!
+        pointerEvents: isExiting || opacityCard === 0 ? 'none' : 'auto',
         boxShadow: isPast
           ? '6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)'
           : '5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)',
@@ -176,6 +188,8 @@ function Carta({
           : undefined
       }
       onDragEnd={isFront ? handleDragEnd : undefined}
+      // Le carte in secondo piano intercettano il PAN (sfioramento)
+      onPanEnd={!isFront ? handlePanEnd : undefined}
     >
       <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
         {card.icon}
@@ -231,24 +245,6 @@ export const MazzoIntegratori = () => {
   return (
     <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
       
-      {/* SFONDO INVISIBILE INTERATTIVO: Cattura gli swipe verticali ovunque 
-          fuori dalla carta principale, inclusa l'area in cima e in fondo alle carte */}
-      <motion.div
-        className="absolute touch-none"
-        style={{ top: -150, bottom: -450, left: -20, right: -20, zIndex: 10 }}
-        drag="y"
-        dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0} // Nessun movimento visibile, vogliamo solo l'evento
-        onDragEnd={(_e, info) => {
-          const offY = info.offset.y;
-          if (Math.abs(offY) > 40) {
-            if (offY > 0) goNext();
-            else goPrev();
-          }
-        }}
-      />
-
-      {/* BARRA LATERALE COLORATA */}
       <div
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem]"
         style={{
@@ -269,7 +265,6 @@ export const MazzoIntegratori = () => {
         </span>
       </div>
 
-      {/* CARTE */}
       {cards.map((card) => {
         if (card.id === exitingId) {
           return (
@@ -298,7 +293,8 @@ export const MazzoIntegratori = () => {
             distanza={distanza}
             onDragProgress={ruolo === 'front' ? setDragProgress : undefined}
             onArchivia={ruolo === 'front' ? (dir) => handleArchivia(card.id, dir) : undefined}
-            onSwipeVerticale={ruolo === 'front' ? handleSwipeVerticale : undefined}
+            // Passiamo la funzione a TUTTE le carte, non solo alla frontale
+            onSwipeVerticale={handleSwipeVerticale} 
           />
         );
       })}
