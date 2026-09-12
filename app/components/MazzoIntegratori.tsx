@@ -19,7 +19,7 @@ const integratoriMock = [
   { id: '14', nome: 'GLUTAMMINA', tag: 'SCHEDA ESTRATTA', icon: '🧪' },
   { id: '15', nome: 'GINSENG', tag: 'SCHEDA ESTRATTA', icon: '🌱' },
   { id: '16', nome: 'MACA', tag: 'SCHEDA ESTRATTA', icon: '⛰️' },
-  { id: '17', 'nome': 'L-CARNITINA', tag: 'SCHEDA ESTRATTA', icon: '🩸' },
+  { id: '17', nome: 'L-CARNITINA', tag: 'SCHEDA ESTRATTA', icon: '🩸' },
   { id: '18', nome: 'SPIRULINA', tag: 'SCHEDA ESTRATTA', icon: '🦠' },
   { id: '19', nome: 'COLLAGENE', tag: 'SCHEDA ESTRATTA', icon: '🦴' },
   { id: '20', nome: 'TRIBULUS', tag: 'SCHEDA ESTRATTA', icon: '🌿' }
@@ -59,16 +59,21 @@ export const MazzoIntegratori = () => {
       onPanEnd={handlePanEnd}
       onClick={(e) => e.stopPropagation()} 
     >
+      
+      {/* 
+        BANDA NEON POTENZIATO:
+        Ombre spinte a 0.95 (quasi 100% visibilità) ed estese (40px) per brillare sui display densi.
+      */}
       <div 
         className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
           isNearPocket
-            ? 'bg-[#1e293b] border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
+            ? 'bg-[#1e293b] border-orange-500 shadow-[-15px_0_40px_rgba(249,115,22,0.95),inset_10px_0_25px_rgba(249,115,22,0.5)]'
             : 'bg-[#1e293b] border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]'
         }`}
         style={{ left: 'calc(50% + 140px)', right: '-2000px' }}
       >
         <span className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${
-          isNearPocket ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'text-slate-400 drop-shadow-sm'
+          isNearPocket ? 'text-orange-400 drop-shadow-[0_0_15px_rgba(249,115,22,1)]' : 'text-slate-400 drop-shadow-sm'
         }`}>
           DISPENSA
         </span>
@@ -86,7 +91,6 @@ export const MazzoIntegratori = () => {
           let opacityCard = 1;
           let zIndexCard = 50;
 
-          // LA LOGICA DEI LIVELLI PERFETTA E INTATTA
           if (isFront) {
             yPos = 0;
             zIndexCard = 50; 
@@ -111,7 +115,6 @@ export const MazzoIntegratori = () => {
                 boxShadow: isPast 
                   ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
                   : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)",
-                // SCUDI ANTI-GHOSTING PER SMARTPHONE: Forzano il rendering hardware fluido
                 WebkitFontSmoothing: "antialiased",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
@@ -127,11 +130,8 @@ export const MazzoIntegratori = () => {
               
               drag={isFront ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
-              
-              // ELASTICO PIÙ MORBIDO (0.8) per permettere lo spostamento facile su smartphone
               dragElastic={0.8}
               
-              // SOGLIA NEON ABBASSATA A 20: Basta un piccolo tocco e si illumina
               onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 20) : undefined}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
