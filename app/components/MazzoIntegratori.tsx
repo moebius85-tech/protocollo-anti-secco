@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// MOCK DI 20 CARTE
 const integratoriMock = [
   { id: '1', nome: 'L-CITRULLINA', tag: 'SCHEDA ESTRATTA', icon: '💊' },
   { id: '2', nome: 'CREATINA', tag: 'SCHEDA ESTRATTA', icon: '⚡' },
@@ -20,7 +19,7 @@ const integratoriMock = [
   { id: '14', nome: 'GLUTAMMINA', tag: 'SCHEDA ESTRATTA', icon: '🧪' },
   { id: '15', nome: 'GINSENG', tag: 'SCHEDA ESTRATTA', icon: '🌱' },
   { id: '16', nome: 'MACA', tag: 'SCHEDA ESTRATTA', icon: '⛰️' },
-  { id: '17', nome: 'L-CARNITINA', tag: 'SCHEDA ESTRATTA', icon: '🩸' },
+  { id: '17', 'nome': 'L-CARNITINA', tag: 'SCHEDA ESTRATTA', icon: '🩸' },
   { id: '18', nome: 'SPIRULINA', tag: 'SCHEDA ESTRATTA', icon: '🦠' },
   { id: '19', nome: 'COLLAGENE', tag: 'SCHEDA ESTRATTA', icon: '🦴' },
   { id: '20', nome: 'TRIBULUS', tag: 'SCHEDA ESTRATTA', icon: '🌿' }
@@ -45,7 +44,7 @@ export const MazzoIntegratori = () => {
     setIsNearPocket(false);
     const x = info.offset.x;
     
-    if (x > 80 || x < -80) { // Abbassata la soglia a 80 così è facilissimo scartare anche se l'elastico tira
+    if (x > 80 || x < -80) { 
       if (x > 80) alert("Prodotto aggiunto alla Dispensa!");
       setCards((prev) => prev.filter((c) => c.id !== cardId));
       if (indiceAttuale >= cards.length - 1) {
@@ -60,8 +59,6 @@ export const MazzoIntegratori = () => {
       onPanEnd={handlePanEnd}
       onClick={(e) => e.stopPropagation()} 
     >
-      
-      {/* BANDA LATERALE INFINITA E A CONTRASTO */}
       <div 
         className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
           isNearPocket
@@ -89,36 +86,37 @@ export const MazzoIntegratori = () => {
           let opacityCard = 1;
           let zIndexCard = 50;
 
-          // ORDINE Z-INDEX PERFETTO (COME DA TUA RICHIESTA)
+          // LA LOGICA DEI LIVELLI PERFETTA E INTATTA
           if (isFront) {
             yPos = 0;
-            zIndexCard = 50; // La carta centrale sta SOTTO la tasca
+            zIndexCard = 50; 
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 50 - distanza; // Le carte da scorrere stanno ancora più sotto (49, 48...)
+            zIndexCard = 50 - distanza; 
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
-            
-            // LA MAGIA E' QUI: 50 + distanza. 
-            // Distanza 2 (scartata prima) avrà zIndex 52.
-            // Distanza 1 (appena scartata) avrà zIndex 51.
-            // Risultato: La prima copre la seconda, e la seconda copre la centrale (50).
             zIndexCard = 50 + distanza; 
           }
 
           return (
             <motion.div
               key={card.id}
-              className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
+              className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
               style={{
-                zIndex: zIndexCard, // Applicato qui elimina il flickering
+                zIndex: zIndexCard, 
                 boxShadow: isPast 
                   ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
+                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)",
+                // SCUDI ANTI-GHOSTING PER SMARTPHONE: Forzano il rendering hardware fluido
+                WebkitFontSmoothing: "antialiased",
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+                transform: "translateZ(0)",
+                willChange: "transform, opacity"
               }}
               animate={{ 
                 y: yPos, 
@@ -128,12 +126,13 @@ export const MazzoIntegratori = () => {
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
               drag={isFront ? "x" : false}
-              
-              // TORNATO A 0, 0: LA CARTA ORA TORNERA' SEMPRE AL CENTRO, NON RIMARRA' PIU' BLOCCATA A DESTRA
               dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.6}
               
-              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 60) : undefined}
+              // ELASTICO PIÙ MORBIDO (0.8) per permettere lo spostamento facile su smartphone
+              dragElastic={0.8}
+              
+              // SOGLIA NEON ABBASSATA A 20: Basta un piccolo tocco e si illumina
+              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 20) : undefined}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
