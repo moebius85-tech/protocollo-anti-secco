@@ -60,29 +60,22 @@ export const MazzoIntegratori = () => {
       onClick={(e) => e.stopPropagation()} 
     >
       
+      {/* 
+        BANDA "FLAT DESIGN" (Zero Neon, Solo Colori Solidi)
+        Ho aumentato leggermente il bordo (border-l-[4px]) per dare più soddisfazione visiva.
+      */}
       <div 
-        className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-200 ${
+        className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[4px] transition-colors duration-200 ${
           isNearPocket
-            ? 'bg-[#1e293b] border-orange-400'
-            : 'bg-[#1e293b] border-slate-600'
+            ? 'bg-slate-700 border-orange-500' // Stato Attivo: Fondo più chiaro, bordo arancione
+            : 'bg-slate-800 border-slate-600'  // Stato Inattivo: Fondo scuro, bordo grigio
         }`}
-        style={{ 
-          left: 'calc(50% + 140px)', 
-          right: '-2000px',
-          // FORZA L'OMBRA SOLIDA SENZA TRASPARENZE PER MOBILE
-          boxShadow: isNearPocket 
-            ? '-20px 0 40px #f97316, inset 10px 0 30px #f97316' 
-            : '-10px 0 30px rgba(0,0,0,0.5)'
-        }}
+        style={{ left: 'calc(50% + 140px)', right: '-2000px' }}
       >
         <span 
           className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-200 ${
-            isNearPocket ? 'text-white' : 'text-slate-400'
+            isNearPocket ? 'text-orange-500' : 'text-slate-400'
           }`}
-          style={{
-            // FILTRO ESTREMO SUL TESTO
-            filter: isNearPocket ? 'drop-shadow(0px 0px 8px #f97316) drop-shadow(0px 0px 15px #f97316)' : 'drop-shadow(0px 1px 2px rgba(0,0,0,0.8))'
-          }}
         >
           DISPENSA
         </span>
