@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from 'react';
-import { motion } from 'framer-motion'; // Rimosso AnimatePresence che causava i blocchi
+import React, { useState, useEffect } from 'react';
+import { motion, useMotionValue, animate as animateValore } from 'framer-motion';
 
 const integratoriMock = [
   { id: '1', nome: 'L-CITRULLINA', tag: 'SCHEDA ESTRATTA', icon: '💊' },
@@ -25,9 +25,10 @@ const integratoriMock = [
   { id: '20', nome: 'TRIBULUS', tag: 'SCHEDA ESTRATTA', icon: '🌿' }
 ];
 
+type Card = typeof integratoriMock[number];
+type Ruolo = 'front' | 'past' | 'future' | 'exiting';
+
 // Interpola tra due colori esadecimali in base a un valore "progress" da 0 a 1.
-// Serve per far cambiare colore il banner GRADUALMENTE mentre trascini,
-// invece di scattare di colpo a una soglia fissa.
 function interpolaColore(hexA: string, hexB: string, progress: number) {
   const p = Math.min(Math.max(progress, 0), 1);
   const a = parseInt(hexA.slice(1), 16);
@@ -40,175 +41,293 @@ function interpolaColore(hexA: string, hexB: string, progress: number) {
   return `rgb(${r}, ${g}, ${bl})`;
 }
 
-// Distanza (in px) oltre la quale la carta viene archiviata.
-// Aumentata rispetto a prima per dare più "spazio" a chi trascina piano
-// di vedere l'effetto del banner cambiare colore prima dell'archiviazione.
+// Distanza (px) oltre la quale la carta viene archiviata.
 const SOGLIA_ARCHIVIAZIONE = 120;
+// Durata MINIMA (secondi) del volo di uscita: garantisce che l'effetto sia visibile
+// anche se lo swipe fisico è stato fulmineo.
+const DURATA_USCITA = 0.28;
+// Quanto lontano vola la carta prima di sparire davvero.
+const DISTANZA_USCITA = 650;
 
-export const MazzoIntegratori = () => {
-  const [cards, setCards] = useState(integratoriMock);
-  const [indiceAttuale, setIndiceAttuale] = useState(0);
-  // Non più un booleano acceso/spento: un numero da 0 (carta ferma) a 1
-  // (carta al punto di archiviazione), aggiornato ad ogni movimento del dito.
-  const [dragProgress, setDragProgress] = useState(0);
+// ---------------------------------------------------------------------------
+// Singola carta. Ogni carta è un componente a sé stante (con la sua motion
+// value "x") così che, quando passa da "front" a "exiting", continua il moto
+// esattamente da dove il dito l'ha lasciata, senza scatti.
+// ---------------------------------------------------------------------------
+function Carta({
+  card,
+  ruolo,
+  distanza,
+  direzioneUscita,
+  onDragProgress,
+  onArchivia,
+  onSwipeVerticale,
+  onUscitaCompletata,
+}: {
+  card: Card;
+  ruolo: Ruolo;
+  distanza: number;
+  direzioneUscita?: 1 | -1;
+  onDragProgress?: (p: number) => void;
+  onArchivia?: (direzione: 1 | -1) => void;
+  onSwipeVerticale?: (direzione: 1 | -1) => void;
+  onUscitaCompletata?: () => void;
+}) {
+  const x = useMotionValue(0);
+  const isFront = ruolo === 'front';
+  const isFuture = ruolo === 'future';
+  const isPast = ruolo === 'past';
+  const isExiting = ruolo === 'exiting';
 
-  const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, cards.length - 1));
-  const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
-
-  const handlePanEnd = (e: any, info: any) => {
-    if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
-      if (info.offset.y > 40) goNext(); 
-      else if (info.offset.y < -40) goPrev();
+  // Se la carta smette di essere "front" (senza uscire dal mazzo, es. swipe
+  // verticale), azzeriamo subito la x per evitare offset residui visibili.
+  useEffect(() => {
+    if (!isFront && !isExiting) {
+      x.set(0);
     }
-  };
+  }, [isFront, isExiting, x]);
 
-  const handleDragEnd = (event: any, info: any, cardId: string) => {
-    setDragProgress(0);
-    const x = info.offset.x;
-    
-    // ARCHIVIAZIONE ISTANTANEA
-    if (x > SOGLIA_ARCHIVIAZIONE || x < -SOGLIA_ARCHIVIAZIONE) { 
-      setCards((prevCards) => {
-        const newCards = prevCards.filter((c) => c.id !== cardId);
-        setIndiceAttuale((currIdx) => {
-          if (currIdx >= newCards.length) return Math.max(0, newCards.length - 1);
-          return currIdx;
-        });
-        return newCards;
+  // Quando la carta diventa "exiting", parte il volo di uscita, con una durata
+  // fissa minima: così l'effetto si vede SEMPRE, anche con uno swipe fulmineo.
+  useEffect(() => {
+    if (isExiting && direzioneUscita) {
+      const controls = animateValore(x, direzioneUscita * DISTANZA_USCITA, {
+        duration: DURATA_USCITA,
+        ease: 'easeIn',
       });
+      controls.then(() => {
+        onUscitaCompletata?.();
+      });
+      return () => controls.stop();
+    }
+  }, [isExiting, direzioneUscita]);
+
+  let yPos = 0;
+  let scaleCard = 1;
+  let opacityCard = 1;
+  let zIndexCard = 50;
+
+  if (isFront) {
+    yPos = 0;
+    zIndexCard = 50;
+  } else if (isFuture) {
+    yPos = -distanza * 30;
+    scaleCard = 1 - distanza * 0.05;
+    opacityCard = 1 - distanza * 0.15;
+    zIndexCard = 50 - distanza;
+  } else if (isPast) {
+    yPos = 260 + distanza * 38;
+    scaleCard = 1 + distanza * 0.08;
+    opacityCard = distanza <= 5 ? 1 : 0;
+    zIndexCard = 50 + distanza;
+  } else if (isExiting) {
+    yPos = 0;
+    zIndexCard = 100; // sempre sopra a tutto mentre vola via
+  }
+
+  const handleDragEnd = (_e: any, info: any) => {
+    const offX = info.offset.x;
+    const offY = info.offset.y;
+
+    // Gesto a dominanza verticale: naviga, non archiviare.
+    if (Math.abs(offY) > Math.abs(offX)) {
+      onDragProgress?.(0);
+      if (offY > 40) onSwipeVerticale?.(1);
+      else if (offY < -40) onSwipeVerticale?.(-1);
+      return;
+    }
+
+    // Gesto orizzontale oltre soglia: archivia.
+    if (offX > SOGLIA_ARCHIVIAZIONE || offX < -SOGLIA_ARCHIVIAZIONE) {
+      const direzione = offX > 0 ? 1 : -1;
+      onArchivia?.(direzione);
+      // NB: non tocchiamo dragProgress qui, resta al massimo per tutta
+      // la durata del volo (lo azzera il genitore a fine animazione).
+    } else {
+      onDragProgress?.(0);
+      // torna al centro da sola grazie a dragConstraints
     }
   };
 
   return (
-    <motion.div 
-      className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
-      onPanEnd={handlePanEnd}
-      onClick={(e) => e.stopPropagation()} 
+    <motion.div
+      className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${
+        isFront ? 'cursor-grab active:cursor-grabbing' : ''
+      }`}
+      style={{
+        x,
+        WebkitFontSmoothing: 'antialiased',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        transform: 'translateZ(0)',
+        willChange: 'transform, opacity',
+        // Solo la carta davanti (o quella in volo) può ricevere il tocco.
+        pointerEvents: isFront ? 'auto' : 'none',
+        boxShadow: isPast
+          ? '6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)'
+          : '5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)',
+      }}
+      initial={false}
+      animate={{
+        y: yPos,
+        scale: scaleCard,
+        opacity: isExiting ? 0 : opacityCard,
+        zIndex: zIndexCard,
+      }}
+      transition={{
+        y: { type: 'tween', duration: 0.35, ease: 'easeOut' },
+        scale: { type: 'tween', duration: 0.35, ease: 'easeOut' },
+        opacity: { type: 'tween', duration: isExiting ? DURATA_USCITA : 0.35, ease: 'easeOut' },
+        // Se la carta sta DIVENTANDO "passata", lo z-index sale solo dopo
+        // che ha finito di muoversi, così non copre mai la nuova carta in
+        // primo piano durante il tragitto.
+        zIndex: { delay: isPast ? 0.35 : 0, duration: 0 },
+      }}
+      drag={isFront ? 'x' : false}
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.8}
+      onDrag={
+        isFront
+          ? (_e, info) => {
+              const progress = info.offset.x > 0 ? Math.min(info.offset.x / SOGLIA_ARCHIVIAZIONE, 1) : 0;
+              onDragProgress?.(progress);
+            }
+          : undefined
+      }
+      onDragEnd={isFront ? handleDragEnd : undefined}
     >
-      
-      {/* BARRA LATERALE COLORATA — ora cambia colore GRADUALMENTE in base a quanto trascini */}
-      <div 
+      <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
+        {card.icon}
+      </div>
+      <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase pointer-events-none">
+        {card.nome}
+      </h3>
+      <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
+        {card.tag}
+      </span>
+    </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Mazzo completo
+// ---------------------------------------------------------------------------
+export const MazzoIntegratori = () => {
+  const [cards, setCards] = useState<Card[]>(integratoriMock);
+  const [indiceAttuale, setIndiceAttuale] = useState(0);
+  const [dragProgress, setDragProgress] = useState(0);
+  const [exitingId, setExitingId] = useState<string | null>(null);
+  const [direzioneUscita, setDirezioneUscita] = useState<1 | -1>(1);
+
+  // Lista "visibile" = tutte le carte tranne quella attualmente in volo.
+  // Serve per calcolare correttamente chi è la nuova carta davanti mentre
+  // la precedente sta ancora volando via.
+  const visibleCards = exitingId ? cards.filter((c) => c.id !== exitingId) : cards;
+
+  const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, Math.max(0, visibleCards.length - 1)));
+  const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
+
+  const handleSwipeVerticale = (direzione: 1 | -1) => {
+    if (direzione === 1) goNext();
+    else goPrev();
+  };
+
+  const handleArchivia = (cardId: string, direzione: 1 | -1) => {
+    setExitingId(cardId);
+    setDirezioneUscita(direzione);
+    setDragProgress(1); // banner al massimo per tutta la durata del volo
+
+    // Se stiamo archiviando l'ultima carta rimasta, l'indice va corretto subito.
+    setIndiceAttuale((curr) => {
+      const nuovaLunghezza = cards.length - 1;
+      if (curr >= nuovaLunghezza) return Math.max(0, nuovaLunghezza - 1);
+      return curr;
+    });
+  };
+
+  const handleUscitaCompletata = () => {
+    setCards((prev) => prev.filter((c) => c.id !== exitingId));
+    setExitingId(null);
+    setDragProgress(0);
+  };
+
+  // Mappa id -> posizione nella lista visibile (esclude la carta in volo),
+  // usata per calcolare ruolo/distanza di ogni carta.
+  const indiceVisibile = new Map<string, number>();
+  visibleCards.forEach((c, i) => indiceVisibile.set(c.id, i));
+
+  return (
+    <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
+      {/* COLONNA INVISIBILE PER LO SWIPE VERTICALE.
+          Molto più alta del box visibile, così copre anche le carte già
+          "scese" in basso nella pila: da lì puoi comunque scorrere su/giù.
+          Solo la carta centrale (sopra, con pointerEvents:auto) gestisce
+          invece lo swipe laterale per l'archiviazione. */}
+      <motion.div
+        className="absolute touch-none"
+        style={{ top: -100, bottom: -420, left: 0, right: 0, zIndex: 10 }}
+        onPanEnd={(_e, info) => {
+          if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
+            if (info.offset.y > 40) goNext();
+            else if (info.offset.y < -40) goPrev();
+          }
+        }}
+      />
+
+      {/* BARRA LATERALE COLORATA — cambia colore gradualmente in base al drag,
+          e resta al massimo per tutta la durata del volo di uscita. */}
+      <div
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem]"
-        style={{ 
-          left: 'calc(50% + 140px)', 
+        style={{
+          left: 'calc(50% + 140px)',
           right: '-2000px',
           backgroundColor: interpolaColore('#1e293b', '#0f172a', dragProgress),
           borderLeftStyle: 'solid',
           borderLeftWidth: `${3 + dragProgress}px`,
           borderColor: interpolaColore('#475569', '#ff6600', dragProgress),
-          // Transizione breve: segue il dito quasi in tempo reale mentre trascini,
-          // ma quando rilasci (dragProgress torna a 0) fa un piccolo "assestamento" morbido.
           transition: 'background-color 0.12s linear, border-color 0.12s linear, border-left-width 0.12s linear',
         }}
       >
-        <span 
+        <span
           className="text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180"
-          style={{
-            color: interpolaColore('#64748b', '#ff6600', dragProgress),
-            transition: 'color 0.12s linear',
-          }}
+          style={{ color: interpolaColore('#64748b', '#ff6600', dragProgress), transition: 'color 0.12s linear' }}
         >
           DISPENSA
         </span>
       </div>
 
-      {cards.map((card, index) => {
-        const isFront = index === indiceAttuale;
-        const isFuture = index > indiceAttuale;
-        const isPast = index < indiceAttuale;
-        const distanza = Math.abs(index - indiceAttuale);
-
-        let yPos = 0;
-        let scaleCard = 1;
-        let opacityCard = 1;
-        let zIndexCard = 50;
-
-        // LA LOGICA MATEMATICA CORRETTA PER I LIVELLI
-        if (isFront) {
-          yPos = 0;
-          zIndexCard = 50; 
-        } else if (isFuture) {
-          yPos = -distanza * 30;
-          scaleCard = 1 - (distanza * 0.05);
-          opacityCard = 1 - (distanza * 0.15);
-          zIndexCard = 50 - distanza; // Più lontane nel futuro = più basse
-        } else if (isPast) {
-          yPos = 260 + (distanza * 38); 
-          scaleCard = 1 + (distanza * 0.08); 
-          opacityCard = distanza <= 5 ? 1 : 0; 
-          
-          // LA REGOLA MAGICA CHE AVEVI CHIESTO:
-          // Le carte più lontane nel passato (es. L-Citrullina, la prima scesa) hanno distanza maggiore
-          // Quindi 50 + distanza dà un livello Z-Index altissimo (Es. 53).
-          // Questo le mette IN PRIMO PIANO rispetto a quelle scese dopo (es. 52, 51).
-          zIndexCard = 50 + distanza; 
+      {cards.map((card) => {
+        if (card.id === exitingId) {
+          return (
+            <Carta
+              key={card.id}
+              card={card}
+              ruolo="exiting"
+              distanza={0}
+              direzioneUscita={direzioneUscita}
+              onUscitaCompletata={handleUscitaCompletata}
+            />
+          );
         }
 
+        const idx = indiceVisibile.get(card.id)!;
+        const isFront = idx === indiceAttuale;
+        const isFuture = idx > indiceAttuale;
+        const distanza = Math.abs(idx - indiceAttuale);
+        const ruolo: Ruolo = isFront ? 'front' : isFuture ? 'future' : 'past';
+
         return (
-          <motion.div
+          <Carta
             key={card.id}
-            className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
-            
-            // Stile Fisso per le performance: niente lag!
-            style={{
-              WebkitFontSmoothing: "antialiased",
-              backfaceVisibility: "hidden",
-              WebkitBackfaceVisibility: "hidden",
-              transform: "translateZ(0)",
-              willChange: "transform, opacity",
-              // Le carte non in primo piano non devono MAI intercettare il tocco,
-              // altrimenti possono "rubare" il gesto alla carta giusta durante la transizione.
-              pointerEvents: isFront ? "auto" : "none",
-              boxShadow: isPast 
-                ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-                : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
-            }}
-            
-            // initial={false} spegne il chaos di rimescolamento delle carte all'apertura del componente
-            initial={false}
-            animate={{ 
-              y: yPos, 
-              scale: scaleCard, 
-              opacity: opacityCard,
-              zIndex: zIndexCard
-            }}
-            transition={{ 
-              y: { type: "tween", duration: 0.35, ease: "easeOut" },
-              scale: { type: "tween", duration: 0.35, ease: "easeOut" },
-              opacity: { type: "tween", duration: 0.35, ease: "easeOut" },
-              // QUESTO è il punto chiave: se una carta sta DIVENTANDO "passata",
-              // il suo z-index sale solo DOPO che ha finito di muoversi (0.35s),
-              // così non copre mai la nuova carta in primo piano durante il tragitto.
-              // Se invece sta diventando "in primo piano" o "futura", lo z-index
-              // cambia subito, per restare sempre toccabile/coerente.
-              zIndex: { delay: isPast ? 0.35 : 0, duration: 0 }
-            }}
-            
-            drag={isFront ? "x" : false}
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.8}
-            
-            onDrag={isFront ? (e, info) => {
-              // Solo lo scorrimento verso destra "riempie" il banner della dispensa.
-              const progress = info.offset.x > 0 
-                ? Math.min(info.offset.x / SOGLIA_ARCHIVIAZIONE, 1) 
-                : 0;
-              setDragProgress(progress);
-            } : undefined}
-            onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
-          >
-            <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
-              {card.icon}
-            </div>
-            <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase pointer-events-none">
-              {card.nome}
-            </h3>
-            <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
-              {card.tag}
-            </span>
-          </motion.div>
+            card={card}
+            ruolo={ruolo}
+            distanza={distanza}
+            onDragProgress={ruolo === 'front' ? setDragProgress : undefined}
+            onArchivia={ruolo === 'front' ? (dir) => handleArchivia(card.id, dir) : undefined}
+            onSwipeVerticale={ruolo === 'front' ? handleSwipeVerticale : undefined}
+          />
         );
       })}
-    </motion.div>
+    </div>
   );
 };
