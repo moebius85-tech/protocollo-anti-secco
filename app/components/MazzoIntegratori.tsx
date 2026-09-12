@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// MOCK DI 20 CARTE
 const integratoriMock = [
   { id: '1', nome: 'L-CITRULLINA', tag: 'SCHEDA ESTRATTA', icon: '💊' },
   { id: '2', nome: 'CREATINA', tag: 'SCHEDA ESTRATTA', icon: '⚡' },
@@ -44,9 +45,8 @@ export const MazzoIntegratori = () => {
     setIsNearPocket(false);
     const x = info.offset.x;
     
-    // ARCHIVIAZIONE
-    if (x > 100 || x < -100) {
-      if (x > 100) alert("Prodotto aggiunto alla Dispensa!");
+    if (x > 80 || x < -80) { // Abbassata la soglia a 80 così è facilissimo scartare anche se l'elastico tira
+      if (x > 80) alert("Prodotto aggiunto alla Dispensa!");
       setCards((prev) => prev.filter((c) => c.id !== cardId));
       if (indiceAttuale >= cards.length - 1) {
         setIndiceAttuale(Math.max(cards.length - 2, 0));
@@ -58,20 +58,17 @@ export const MazzoIntegratori = () => {
     <motion.div 
       className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6 touch-none"
       onPanEnd={handlePanEnd}
+      onClick={(e) => e.stopPropagation()} 
     >
       
-      {/* 
-        BANDA INFINITA: 
-        bg-slate-800 per colore pieno e stacco. 
-        right: -2000px nasconde i bordi per sempre.
-      */}
+      {/* BANDA LATERALE INFINITA E A CONTRASTO */}
       <div 
         className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
           isNearPocket
-            ? 'bg-slate-800 border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
-            : 'bg-slate-800 border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]'
+            ? 'bg-[#1e293b] border-orange-500 shadow-[-10px_0_30px_rgba(249,115,22,0.6),inset_5px_0_20px_rgba(249,115,22,0.2)]'
+            : 'bg-[#1e293b] border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]'
         }`}
-        style={{ left: 'calc(50% + 130px)', right: '-2000px' }}
+        style={{ left: 'calc(50% + 140px)', right: '-2000px' }}
       >
         <span className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${
           isNearPocket ? 'text-orange-400 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'text-slate-400 drop-shadow-sm'
@@ -92,53 +89,51 @@ export const MazzoIntegratori = () => {
           let opacityCard = 1;
           let zIndexCard = 50;
 
-          // I LIVELLI ESATTI COME HAI CHIESTO TU
+          // ORDINE Z-INDEX PERFETTO (COME DA TUA RICHIESTA)
           if (isFront) {
             yPos = 0;
-            zIndexCard = 50; // La centrale sta SOTTO all'ultima scartata
+            zIndexCard = 50; // La carta centrale sta SOTTO la tasca
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 50 - distanza; // Il mazzo da sfogliare sta dietro
+            zIndexCard = 50 - distanza; // Le carte da scorrere stanno ancora più sotto (49, 48...)
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
             
-            // LA MAGIA DEI LIVELLI: 100 - distanza
-            // Distanza 1 (Appena scorsa) = Livello 99 (Sta SOPRA a tutte)
-            // Distanza 2 (Scorsa prima) = Livello 98 (Sta DIETRO alla 99)
-            // Entrambe sono > 50 (la centrale), quindi l'ordine è ineccepibile.
-            zIndexCard = 100 - distanza; 
+            // LA MAGIA E' QUI: 50 + distanza. 
+            // Distanza 2 (scartata prima) avrà zIndex 52.
+            // Distanza 1 (appena scartata) avrà zIndex 51.
+            // Risultato: La prima copre la seconda, e la seconda copre la centrale (50).
+            zIndexCard = 50 + distanza; 
           }
 
           return (
             <motion.div
               key={card.id}
               className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
-              animate={{ 
-                y: yPos, 
-                scale: scaleCard, 
-                opacity: opacityCard,
-                zIndex: zIndexCard, // Applicato fluidamente per eliminare lo sfarfallio
+              style={{
+                zIndex: zIndexCard, // Applicato qui elimina il flickering
                 boxShadow: isPast 
                   ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
                   : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
+              }}
+              animate={{ 
+                y: yPos, 
+                scale: scaleCard, 
+                opacity: opacityCard
               }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
               drag={isFront ? "x" : false}
               
-              // FIX DEL NEON: Ho aperto lo spazio a destra (right: 120) per permettere al dito di arrivarci
-              dragConstraints={{ left: 0, right: 120 }}
-              dragElastic={0.4}
+              // TORNATO A 0, 0: LA CARTA ORA TORNERA' SEMPRE AL CENTRO, NON RIMARRA' PIU' BLOCCATA A DESTRA
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.6}
               
-              onDrag={isFront ? (e, info) => {
-                if (info.offset.x > 40 && !isNearPocket) setIsNearPocket(true);
-                else if (info.offset.x <= 40 && isNearPocket) setIsNearPocket(false);
-              } : undefined}
-              
+              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 60) : undefined}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
