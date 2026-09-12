@@ -61,19 +61,20 @@ export const MazzoIntegratori = () => {
     >
       
       {/* 
-        BANDA NEON POTENZIATO:
-        Ombre spinte a 0.95 (quasi 100% visibilità) ed estese (40px) per brillare sui display densi.
+        BANDA NEON ESTREMO (IL FIX E' QUI)
+        Ho aggiunto la tripla ombra con "spread" per renderla solida e accecante.
+        Inoltre il bordo cambia in un arancione più chiaro (border-orange-400) quando acceso.
       */}
       <div 
         className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
           isNearPocket
-            ? 'bg-[#1e293b] border-orange-500 shadow-[-15px_0_40px_rgba(249,115,22,0.95),inset_10px_0_25px_rgba(249,115,22,0.5)]'
+            ? 'bg-[#1e293b] border-orange-400 shadow-[-4px_0_12px_2px_rgba(251,146,60,0.9),-10px_0_25px_5px_rgba(249,115,22,0.7),inset_6px_0_15px_rgba(249,115,22,0.6)]'
             : 'bg-[#1e293b] border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]'
         }`}
         style={{ left: 'calc(50% + 140px)', right: '-2000px' }}
       >
         <span className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${
-          isNearPocket ? 'text-orange-400 drop-shadow-[0_0_15px_rgba(249,115,22,1)]' : 'text-slate-400 drop-shadow-sm'
+          isNearPocket ? 'text-orange-300 drop-shadow-[0_0_12px_rgba(251,146,60,1)]' : 'text-slate-400 drop-shadow-sm'
         }`}>
           DISPENSA
         </span>
