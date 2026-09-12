@@ -45,11 +45,18 @@ export const MazzoIntegratori = () => {
     const x = info.offset.x;
     
     if (x > 80 || x < -80) { 
-      if (x > 80) alert("Prodotto aggiunto alla Dispensa!");
-      setCards((prev) => prev.filter((c) => c.id !== cardId));
-      if (indiceAttuale >= cards.length - 1) {
-        setIndiceAttuale(Math.max(cards.length - 2, 0));
-      }
+      // FIX PER I DISPOSITIVI MOBILE: L'alert parte un microsecondo dopo per far completare l'animazione al browser
+      if (x > 80) setTimeout(() => alert("Prodotto aggiunto alla Dispensa!"), 10);
+      
+      // FIX CAOS ARCHIVIAZIONE: Aggiornamento sincronizzato per non far impazzire l'ordine
+      setCards((prevCards) => {
+        const newCards = prevCards.filter((c) => c.id !== cardId);
+        setIndiceAttuale((currIdx) => {
+          if (currIdx >= newCards.length) return Math.max(0, newCards.length - 1);
+          return currIdx;
+        });
+        return newCards;
+      });
     }
   };
 
@@ -61,24 +68,23 @@ export const MazzoIntegratori = () => {
     >
       
       {/* 
-        BANDA LATERALE "FLAT" A CONTRASTO NETTO
-        Niente ombre, solo colori pieni che cambiano all'istante.
+        BANDA FLAT ESTREMA: Colori solidi, immediati, senza sbavature. 
       */}
       <div 
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] transition-all duration-200"
         style={{ 
           left: 'calc(50% + 140px)', 
           right: '-2000px',
-          backgroundColor: isNearPocket ? '#0f172a' : '#1e293b', // Diventa quasi nero per far risaltare l'arancione
+          backgroundColor: isNearPocket ? '#000000' : '#1e293b', // Diventa nero puro al tocco
           borderLeftStyle: 'solid',
-          borderLeftWidth: isNearPocket ? '4px' : '3px', // Si inspessisce leggermente
-          borderColor: isNearPocket ? '#ff6600' : '#475569', // Arancione puro vs Grigio
+          borderLeftWidth: isNearPocket ? '4px' : '3px', 
+          borderColor: isNearPocket ? '#ff6600' : '#334155', // Arancione fluo netto
         }}
       >
         <span 
           className="text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-200"
           style={{
-            color: isNearPocket ? '#ff6600' : '#94a3b8', // Stesso arancione del bordo
+            color: isNearPocket ? '#ff6600' : '#64748b',
           }}
         >
           DISPENSA
@@ -96,8 +102,10 @@ export const MazzoIntegratori = () => {
           let scaleCard = 1;
           let opacityCard = 1;
           let zIndexCard = 50;
+          
+          // FIX ESPANSIONE SCHERMO MOBILE: Eliminiamo dal browser le carte lontane!
+          let displayCard = "flex";
 
-          // LOGICA LIVELLI PERFETTA
           if (isFront) {
             yPos = 0;
             zIndexCard = 50; 
@@ -106,11 +114,16 @@ export const MazzoIntegratori = () => {
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
             zIndexCard = 50 - distanza; 
+            if (distanza > 3) displayCard = "none"; // Non renderizza oltre la terza futura
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
+            
+            // LOGICA ESATTA COME DA TUA RICHIESTA: 
+            // Distanza 2 = 52, Distanza 1 = 51. La 2 copre la 1.
             zIndexCard = 50 + distanza; 
+            if (distanza > 5) displayCard = "none"; // Non renderizza oltre la quinta passata
           }
 
           return (
@@ -119,9 +132,6 @@ export const MazzoIntegratori = () => {
               className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
               style={{
                 zIndex: zIndexCard, 
-                boxShadow: isPast 
-                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)",
                 WebkitFontSmoothing: "antialiased",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
@@ -131,7 +141,11 @@ export const MazzoIntegratori = () => {
               animate={{ 
                 y: yPos, 
                 scale: scaleCard, 
-                opacity: opacityCard
+                opacity: opacityCard,
+                display: displayCard,
+                boxShadow: isPast 
+                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
+                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
               }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
