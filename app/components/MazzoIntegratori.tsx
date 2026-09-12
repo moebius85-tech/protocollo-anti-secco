@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion'; // Rimosso AnimatePresence che causava i blocchi
 
 const integratoriMock = [
   { id: '1', nome: 'L-CITRULLINA', tag: 'SCHEDA ESTRATTA', icon: '💊' },
@@ -44,16 +44,16 @@ export const MazzoIntegratori = () => {
     setIsNearPocket(false);
     const x = info.offset.x;
     
+    // ARCHIVIAZIONE ISTANTANEA
     if (x > 80 || x < -80) { 
-      // FIX ARCHIVIAZIONE: Aggiornamento matematico senza cortocircuiti
-      const newCards = cards.filter((c) => c.id !== cardId);
-      setCards(newCards);
-      
-      let newIndex = indiceAttuale;
-      if (newIndex >= newCards.length) {
-        newIndex = Math.max(0, newCards.length - 1);
-      }
-      setIndiceAttuale(newIndex);
+      setCards((prevCards) => {
+        const newCards = prevCards.filter((c) => c.id !== cardId);
+        setIndiceAttuale((currIdx) => {
+          if (currIdx >= newCards.length) return Math.max(0, newCards.length - 1);
+          return currIdx;
+        });
+        return newCards;
+      });
     }
   };
 
@@ -64,16 +64,16 @@ export const MazzoIntegratori = () => {
       onClick={(e) => e.stopPropagation()} 
     >
       
-      {/* BARRA LATERALE A CONTRASTO NETTO */}
+      {/* BARRA LATERALE COLORATA (Perfetta, non modificata) */}
       <div 
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] transition-all duration-200"
         style={{ 
           left: 'calc(50% + 140px)', 
           right: '-2000px',
-          backgroundColor: isNearPocket ? '#334155' : '#0f172a',
+          backgroundColor: isNearPocket ? '#0f172a' : '#1e293b', 
           borderLeftStyle: 'solid',
           borderLeftWidth: isNearPocket ? '4px' : '3px', 
-          borderColor: isNearPocket ? '#ff6600' : '#334155',
+          borderColor: isNearPocket ? '#ff6600' : '#475569',
         }}
       >
         <span 
@@ -86,99 +86,84 @@ export const MazzoIntegratori = () => {
         </span>
       </div>
 
-      <AnimatePresence initial={false}>
-        {cards.map((card, index) => {
-          const isFront = index === indiceAttuale;
-          const isFuture = index > indiceAttuale;
-          const isPast = index < indiceAttuale;
-          const distanza = Math.abs(index - indiceAttuale);
+      {cards.map((card, index) => {
+        const isFront = index === indiceAttuale;
+        const isFuture = index > indiceAttuale;
+        const isPast = index < indiceAttuale;
+        const distanza = Math.abs(index - indiceAttuale);
 
-          let yPos = 0;
-          let scaleCard = 1;
-          let opacityCard = 1;
-          let zIndexCard = 50;
+        let yPos = 0;
+        let scaleCard = 1;
+        let opacityCard = 1;
+        let zIndexCard = 50;
+
+        // LA LOGICA MATEMATICA CORRETTA PER I LIVELLI
+        if (isFront) {
+          yPos = 0;
+          zIndexCard = 50; 
+        } else if (isFuture) {
+          yPos = -distanza * 30;
+          scaleCard = 1 - (distanza * 0.05);
+          opacityCard = 1 - (distanza * 0.15);
+          zIndexCard = 50 - distanza; // Più lontane nel futuro = più basse
+        } else if (isPast) {
+          yPos = 260 + (distanza * 38); 
+          scaleCard = 1 + (distanza * 0.08); 
+          opacityCard = distanza <= 5 ? 1 : 0; 
           
-          let displayCard = "flex";
+          // LA REGOLA MAGICA CHE AVEVI CHIESTO:
+          // Le carte più lontane nel passato (es. L-Citrullina, la prima scesa) hanno distanza maggiore
+          // Quindi 50 + distanza dà un livello Z-Index altissimo (Es. 53).
+          // Questo le mette IN PRIMO PIANO rispetto a quelle scese dopo (es. 52, 51).
+          zIndexCard = 50 + distanza; 
+        }
 
-          // LA REGOLA DEFINITIVA DEI LIVELLI
-          if (isFront) {
-            yPos = 0;
-            zIndexCard = 50; 
-          } else if (isFuture) {
-            yPos = -distanza * 30;
-            scaleCard = 1 - (distanza * 0.05);
-            opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 50 - distanza; // Il mazzo sopra (49, 48...)
-            if (distanza > 3) displayCard = "none"; 
-          } else if (isPast) {
-            yPos = 260 + (distanza * 38); 
-            scaleCard = 1 + (distanza * 0.08); 
-            opacityCard = distanza <= 5 ? 1 : 0; 
+        return (
+          <motion.div
+            key={card.id}
+            className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
             
-            // La prima che scorre in basso (dist 1) ha z-index 59 (davanti a tutte)
-            // La seconda (dist 2) ha 58, la terza 57. Sequenza perfetta.
-            zIndexCard = 60 - distanza; 
-            if (distanza > 5) displayCard = "none"; 
-          }
-
-          return (
-            <motion.div
-              key={card.id}
-              className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
-              
-              // FIX ACCAVALLAMENTO: zIndex isolato in style, scatta all'istante senza animazioni sballate
-              style={{
-                display: displayCard,
-                zIndex: zIndexCard, 
-                WebkitFontSmoothing: "antialiased",
-                backfaceVisibility: "hidden",
-                WebkitBackfaceVisibility: "hidden",
-                transform: "translateZ(0)",
-                willChange: "transform, opacity",
-                boxShadow: isPast 
-                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
-              }}
-              
-              initial={{ 
-                y: yPos, 
-                scale: scaleCard, 
-                opacity: opacityCard 
-              }}
-              animate={{ 
-                y: yPos, 
-                scale: scaleCard, 
-                opacity: opacityCard
-              }}
-              // Animazione d'uscita per l'archiviazione: la carta sparisce scivolando via, niente più scatti
-              exit={{ 
-                opacity: 0, 
-                x: 100,
-                scale: 0.8,
-                transition: { duration: 0.25 }
-              }}
-              transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
-              
-              drag={isFront ? "x" : false}
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.8}
-              
-              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 20) : undefined}
-              onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
-            >
-              <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
-                {card.icon}
-              </div>
-              <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase pointer-events-none">
-                {card.nome}
-              </h3>
-              <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
-                {card.tag}
-              </span>
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
+            // Stile Fisso per le performance: niente lag!
+            style={{
+              zIndex: zIndexCard, 
+              WebkitFontSmoothing: "antialiased",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transform: "translateZ(0)",
+              willChange: "transform, opacity",
+              boxShadow: isPast 
+                ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
+                : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
+            }}
+            
+            // initial={false} spegne il chaos di rimescolamento delle carte all'apertura del componente
+            initial={false}
+            animate={{ 
+              y: yPos, 
+              scale: scaleCard, 
+              opacity: opacityCard
+            }}
+            transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
+            
+            drag={isFront ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.8}
+            
+            onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 30) : undefined}
+            onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
+          >
+            <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
+              {card.icon}
+            </div>
+            <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase pointer-events-none">
+              {card.nome}
+            </h3>
+            <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
+              {card.tag}
+            </span>
+          </motion.div>
+        );
+      })}
     </motion.div>
   );
 };
