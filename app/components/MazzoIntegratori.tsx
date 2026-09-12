@@ -45,10 +45,8 @@ export const MazzoIntegratori = () => {
     const x = info.offset.x;
     
     if (x > 80 || x < -80) { 
-      // FIX PER I DISPOSITIVI MOBILE: L'alert parte un microsecondo dopo per far completare l'animazione al browser
       if (x > 80) setTimeout(() => alert("Prodotto aggiunto alla Dispensa!"), 10);
       
-      // FIX CAOS ARCHIVIAZIONE: Aggiornamento sincronizzato per non far impazzire l'ordine
       setCards((prevCards) => {
         const newCards = prevCards.filter((c) => c.id !== cardId);
         setIndiceAttuale((currIdx) => {
@@ -68,17 +66,19 @@ export const MazzoIntegratori = () => {
     >
       
       {/* 
-        BANDA FLAT ESTREMA: Colori solidi, immediati, senza sbavature. 
+        BANDA FLAT A CONTRASTO NETTO:
+        - Inattiva: Scurissima (#0f172a), si mimetizza
+        - Attiva: Grigio chiaro (#334155), stacca completamente dallo sfondo scuro
       */}
       <div 
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] transition-all duration-200"
         style={{ 
           left: 'calc(50% + 140px)', 
           right: '-2000px',
-          backgroundColor: isNearPocket ? '#000000' : '#1e293b', // Diventa nero puro al tocco
+          backgroundColor: isNearPocket ? '#334155' : '#0f172a',
           borderLeftStyle: 'solid',
           borderLeftWidth: isNearPocket ? '4px' : '3px', 
-          borderColor: isNearPocket ? '#ff6600' : '#334155', // Arancione fluo netto
+          borderColor: isNearPocket ? '#ff6600' : '#334155',
         }}
       >
         <span 
@@ -91,7 +91,8 @@ export const MazzoIntegratori = () => {
         </span>
       </div>
 
-      <AnimatePresence>
+      {/* initial={false} BLOCCA le animazioni caotiche quando apri la modale per la prima volta */}
+      <AnimatePresence initial={false}>
         {cards.map((card, index) => {
           const isFront = index === indiceAttuale;
           const isFuture = index > indiceAttuale;
@@ -103,7 +104,6 @@ export const MazzoIntegratori = () => {
           let opacityCard = 1;
           let zIndexCard = 50;
           
-          // FIX ESPANSIONE SCHERMO MOBILE: Eliminiamo dal browser le carte lontane!
           let displayCard = "flex";
 
           if (isFront) {
@@ -114,38 +114,44 @@ export const MazzoIntegratori = () => {
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
             zIndexCard = 50 - distanza; 
-            if (distanza > 3) displayCard = "none"; // Non renderizza oltre la terza futura
+            if (distanza > 3) displayCard = "none"; 
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
-            
-            // LOGICA ESATTA COME DA TUA RICHIESTA: 
-            // Distanza 2 = 52, Distanza 1 = 51. La 2 copre la 1.
             zIndexCard = 50 + distanza; 
-            if (distanza > 5) displayCard = "none"; // Non renderizza oltre la quinta passata
+            if (distanza > 5) displayCard = "none"; 
           }
 
           return (
             <motion.div
               key={card.id}
               className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
+              
+              // Spostato il 'display' nello style: evita i lag e i ricalcoli sballati del browser!
               style={{
+                display: displayCard,
                 zIndex: zIndexCard, 
                 WebkitFontSmoothing: "antialiased",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 transform: "translateZ(0)",
-                willChange: "transform, opacity"
+                willChange: "transform, opacity",
+                boxShadow: isPast 
+                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
+                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
+              }}
+              
+              // initial fissa la posizione a 0 senza animazioni intermedie al momento dell'apertura
+              initial={{ 
+                y: yPos, 
+                scale: scaleCard, 
+                opacity: opacityCard 
               }}
               animate={{ 
                 y: yPos, 
                 scale: scaleCard, 
-                opacity: opacityCard,
-                display: displayCard,
-                boxShadow: isPast 
-                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
+                opacity: opacityCard
               }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
