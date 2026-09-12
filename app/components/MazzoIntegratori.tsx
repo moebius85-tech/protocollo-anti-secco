@@ -115,6 +115,7 @@ function Carta({
     const offX = info.offset.x;
     const offY = info.offset.y;
 
+    // Se l'utente fa swipe verticale (scorrimento mazzo)
     if (Math.abs(offY) > Math.abs(offX)) {
       onDragProgress?.(0); 
       if (offY > 40) onSwipeVerticale?.(1); 
@@ -122,6 +123,7 @@ function Carta({
       return;
     }
 
+    // Se l'utente fa swipe orizzontale (archiviazione)
     if (offX > SOGLIA_ARCHIVIAZIONE || offX < -SOGLIA_ARCHIVIAZIONE) {
       const direzione = offX > 0 ? 1 : -1;
       onArchivia?.(direzione);
@@ -188,7 +190,6 @@ function Carta({
   );
 }
 
-// L'ESPORTAZIONE MANCANTE:
 export const MazzoIntegratori = () => {
   const [cards, setCards] = useState<Card[]>(integratoriMock);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
@@ -229,17 +230,25 @@ export const MazzoIntegratori = () => {
 
   return (
     <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
+      
+      {/* SFONDO INVISIBILE INTERATTIVO: Cattura gli swipe verticali ovunque 
+          fuori dalla carta principale, inclusa l'area in cima e in fondo alle carte */}
       <motion.div
         className="absolute touch-none"
-        style={{ top: -100, bottom: -420, left: 0, right: 0, zIndex: 10 }}
-        onPanEnd={(_e, info) => {
-          if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
-            if (info.offset.y > 40) goNext();
-            else if (info.offset.y < -40) goPrev();
+        style={{ top: -150, bottom: -450, left: -20, right: -20, zIndex: 10 }}
+        drag="y"
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={0} // Nessun movimento visibile, vogliamo solo l'evento
+        onDragEnd={(_e, info) => {
+          const offY = info.offset.y;
+          if (Math.abs(offY) > 40) {
+            if (offY > 0) goNext();
+            else goPrev();
           }
         }}
       />
 
+      {/* BARRA LATERALE COLORATA */}
       <div
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem]"
         style={{
@@ -260,6 +269,7 @@ export const MazzoIntegratori = () => {
         </span>
       </div>
 
+      {/* CARTE */}
       {cards.map((card) => {
         if (card.id === exitingId) {
           return (
