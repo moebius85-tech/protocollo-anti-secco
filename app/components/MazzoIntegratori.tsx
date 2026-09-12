@@ -1,3 +1,49 @@
+"use client";
+import React, { useState, useEffect } from 'react';
+import { motion, useMotionValue, animate as animateValore } from 'framer-motion';
+
+const integratoriMock = [
+  { id: '1', nome: 'L-CITRULLINA', tag: 'SCHEDA ESTRATTA', icon: '💊' },
+  { id: '2', nome: 'CREATINA', tag: 'SCHEDA ESTRATTA', icon: '⚡' },
+  { id: '3', nome: 'OMEGA 3', tag: 'SCHEDA ESTRATTA', icon: '🐟' },
+  { id: '4', nome: 'MAGNESIO', tag: 'SCHEDA ESTRATTA', icon: '🧬' },
+  { id: '5', nome: 'ZINCO', tag: 'SCHEDA ESTRATTA', icon: '🛡️' },
+  { id: '6', nome: 'ASHWAGANDHA', tag: 'SCHEDA ESTRATTA', icon: '🌿' },
+  { id: '7', nome: 'VITAMINA D3', tag: 'SCHEDA ESTRATTA', icon: '☀️' },
+  { id: '8', nome: 'PROTEINE WHEY', tag: 'SCHEDA ESTRATTA', icon: '🥛' },
+  { id: '9', nome: 'MULTIVITAMINICO', tag: 'SCHEDA ESTRATTA', icon: '🍎' },
+  { id: '10', nome: 'BCAA', tag: 'SCHEDA ESTRATTA', icon: '💪' },
+  { id: '11', nome: 'MELATONINA', tag: 'SCHEDA ESTRATTA', icon: '🌙' },
+  { id: '12', nome: 'CAFFEINA', tag: 'SCHEDA ESTRATTA', icon: '☕' },
+  { id: '13', nome: 'BETA ALANINA', tag: 'SCHEDA ESTRATTA', icon: '🔥' },
+  { id: '14', nome: 'GLUTAMMINA', tag: 'SCHEDA ESTRATTA', icon: '🧪' },
+  { id: '15', nome: 'GINSENG', tag: 'SCHEDA ESTRATTA', icon: '🌱' },
+  { id: '16', nome: 'MACA', tag: 'SCHEDA ESTRATTA', icon: '⛰️' },
+  { id: '17', nome: 'L-CARNITINA', tag: 'SCHEDA ESTRATTA', icon: '🩸' },
+  { id: '18', nome: 'SPIRULINA', tag: 'SCHEDA ESTRATTA', icon: '🦠' },
+  { id: '19', nome: 'COLLAGENE', tag: 'SCHEDA ESTRATTA', icon: '🦴' },
+  { id: '20', nome: 'TRIBULUS', tag: 'SCHEDA ESTRATTA', icon: '🌿' }
+];
+
+type Card = typeof integratoriMock[number];
+type Ruolo = 'front' | 'past' | 'future' | 'exiting';
+
+function interpolaColore(hexA: string, hexB: string, progress: number) {
+  const p = Math.min(Math.max(progress, 0), 1);
+  const a = parseInt(hexA.slice(1), 16);
+  const b = parseInt(hexB.slice(1), 16);
+  const rA = (a >> 16) & 255, gA = (a >> 8) & 255, bA = a & 255;
+  const rB = (b >> 16) & 255, gB = (b >> 8) & 255, bB = b & 255;
+  const r = Math.round(rA + (rB - rA) * p);
+  const g = Math.round(gA + (gB - gA) * p);
+  const bl = Math.round(bA + (bB - bA) * p);
+  return `rgb(${r}, ${g}, ${bl})`;
+}
+
+const SOGLIA_ARCHIVIAZIONE = 120;
+const DURATA_USCITA = 0.28;
+const DISTANZA_USCITA = 650;
+
 function Carta({
   card,
   ruolo,
@@ -65,20 +111,17 @@ function Carta({
     zIndexCard = 100; 
   }
 
-  // Gestione unificata del drag per TUTTE le direzioni
   const handleDragEnd = (_e: any, info: any) => {
     const offX = info.offset.x;
     const offY = info.offset.y;
 
-    // Se l'utente ha mosso il dito più in verticale che in orizzontale...
     if (Math.abs(offY) > Math.abs(offX)) {
-      onDragProgress?.(0); // Azzera l'interfaccia laterale se aperta
-      if (offY > 40) onSwipeVerticale?.(1); // Swipe verso il basso
-      else if (offY < -40) onSwipeVerticale?.(-1); // Swipe verso l'alto
+      onDragProgress?.(0); 
+      if (offY > 40) onSwipeVerticale?.(1); 
+      else if (offY < -40) onSwipeVerticale?.(-1); 
       return;
     }
 
-    // Altrimenti, se il movimento è stato prevalentemente orizzontale
     if (offX > SOGLIA_ARCHIVIAZIONE || offX < -SOGLIA_ARCHIVIAZIONE) {
       const direzione = offX > 0 ? 1 : -1;
       onArchivia?.(direzione);
@@ -118,17 +161,13 @@ function Carta({
         zIndex: { delay: isPast ? 0.35 : 0, duration: 0 },
       }}
       
-      // SBLOCCATO: Ora il drag è libero (true) su entrambi gli assi
       drag={isFront ? true : false} 
-      
-      // VINCOLI AL CENTRO: La carta farà resistenza elastica su tutti i 4 lati
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={0.8}
       
       onDrag={
         isFront
           ? (_e, info) => {
-              // Animiamo la barra laterale "DISPENSA" solo usando l'offset X
               const progress = info.offset.x > 0 ? Math.min(info.offset.x / SOGLIA_ARCHIVIAZIONE, 1) : 0;
               onDragProgress?.(progress);
             }
@@ -148,3 +187,111 @@ function Carta({
     </motion.div>
   );
 }
+
+// L'ESPORTAZIONE MANCANTE:
+export const MazzoIntegratori = () => {
+  const [cards, setCards] = useState<Card[]>(integratoriMock);
+  const [indiceAttuale, setIndiceAttuale] = useState(0);
+  const [dragProgress, setDragProgress] = useState(0);
+  const [exitingId, setExitingId] = useState<string | null>(null);
+  const [direzioneUscita, setDirezioneUscita] = useState<1 | -1>(1);
+
+  const visibleCards = exitingId ? cards.filter((c) => c.id !== exitingId) : cards;
+
+  const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, Math.max(0, visibleCards.length - 1)));
+  const goPrev = () => setIndiceAttuale((prev) => Math.max(prev - 1, 0));
+
+  const handleSwipeVerticale = (direzione: 1 | -1) => {
+    if (direzione === 1) goNext();
+    else goPrev();
+  };
+
+  const handleArchivia = (cardId: string, direzione: 1 | -1) => {
+    setExitingId(cardId);
+    setDirezioneUscita(direzione);
+    setDragProgress(1);
+
+    setIndiceAttuale((curr) => {
+      const nuovaLunghezza = cards.length - 1;
+      if (curr >= nuovaLunghezza) return Math.max(0, nuovaLunghezza - 1);
+      return curr;
+    });
+  };
+
+  const handleUscitaCompletata = () => {
+    setCards((prev) => prev.filter((c) => c.id !== exitingId));
+    setExitingId(null);
+    setDragProgress(0);
+  };
+
+  const indiceVisibile = new Map<string, number>();
+  visibleCards.forEach((c, i) => indiceVisibile.set(c.id, i));
+
+  return (
+    <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
+      <motion.div
+        className="absolute touch-none"
+        style={{ top: -100, bottom: -420, left: 0, right: 0, zIndex: 10 }}
+        onPanEnd={(_e, info) => {
+          if (Math.abs(info.offset.y) > Math.abs(info.offset.x)) {
+            if (info.offset.y > 40) goNext();
+            else if (info.offset.y < -40) goPrev();
+          }
+        }}
+      />
+
+      <div
+        className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem]"
+        style={{
+          left: 'calc(50% + 140px)',
+          right: '-2000px',
+          backgroundColor: interpolaColore('#1e293b', '#0f172a', dragProgress),
+          borderLeftStyle: 'solid',
+          borderLeftWidth: `${3 + dragProgress}px`,
+          borderColor: interpolaColore('#475569', '#ff6600', dragProgress),
+          transition: 'background-color 0.12s linear, border-color 0.12s linear, border-left-width 0.12s linear',
+        }}
+      >
+        <span
+          className="text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180"
+          style={{ color: interpolaColore('#64748b', '#ff6600', dragProgress), transition: 'color 0.12s linear' }}
+        >
+          DISPENSA
+        </span>
+      </div>
+
+      {cards.map((card) => {
+        if (card.id === exitingId) {
+          return (
+            <Carta
+              key={card.id}
+              card={card}
+              ruolo="exiting"
+              distanza={0}
+              direzioneUscita={direzioneUscita}
+              onUscitaCompletata={handleUscitaCompletata}
+            />
+          );
+        }
+
+        const idx = indiceVisibile.get(card.id)!;
+        const isFront = idx === indiceAttuale;
+        const isFuture = idx > indiceAttuale;
+        const distanza = Math.abs(idx - indiceAttuale);
+        const ruolo: Ruolo = isFront ? 'front' : isFuture ? 'future' : 'past';
+
+        return (
+          <Carta
+            key={card.id}
+            card={card}
+            ruolo={ruolo}
+            distanza={distanza}
+            onDragProgress={ruolo === 'front' ? setDragProgress : undefined}
+            onArchivia={ruolo === 'front' ? (dir) => handleArchivia(card.id, dir) : undefined}
+            onSwipeVerticale={ruolo === 'front' ? handleSwipeVerticale : undefined}
+          />
+        );
+      })}
+    </div>
+  );
+};
