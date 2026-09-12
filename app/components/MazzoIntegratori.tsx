@@ -125,12 +125,14 @@ export const MazzoIntegratori = () => {
             
             // Stile Fisso per le performance: niente lag!
             style={{
-              zIndex: zIndexCard, 
               WebkitFontSmoothing: "antialiased",
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
               transform: "translateZ(0)",
               willChange: "transform, opacity",
+              // Le carte non in primo piano non devono MAI intercettare il tocco,
+              // altrimenti possono "rubare" il gesto alla carta giusta durante la transizione.
+              pointerEvents: isFront ? "auto" : "none",
               boxShadow: isPast 
                 ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
                 : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
@@ -141,9 +143,20 @@ export const MazzoIntegratori = () => {
             animate={{ 
               y: yPos, 
               scale: scaleCard, 
-              opacity: opacityCard
+              opacity: opacityCard,
+              zIndex: zIndexCard
             }}
-            transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
+            transition={{ 
+              y: { type: "tween", duration: 0.35, ease: "easeOut" },
+              scale: { type: "tween", duration: 0.35, ease: "easeOut" },
+              opacity: { type: "tween", duration: 0.35, ease: "easeOut" },
+              // QUESTO è il punto chiave: se una carta sta DIVENTANDO "passata",
+              // il suo z-index sale solo DOPO che ha finito di muoversi (0.35s),
+              // così non copre mai la nuova carta in primo piano durante il tragitto.
+              // Se invece sta diventando "in primo piano" o "futura", lo z-index
+              // cambia subito, per restare sempre toccabile/coerente.
+              zIndex: { delay: isPast ? 0.35 : 0, duration: 0 }
+            }}
             
             drag={isFront ? "x" : false}
             dragConstraints={{ left: 0, right: 0 }}
