@@ -45,15 +45,15 @@ export const MazzoIntegratori = () => {
     const x = info.offset.x;
     
     if (x > 80 || x < -80) { 
-      if (x > 80) setTimeout(() => alert("Prodotto aggiunto alla Dispensa!"), 10);
-      
-      setCards((prevCards) => {
-        const newCards = prevCards.filter((c) => c.id !== cardId);
+      // RIMOZIONE ALERT: Niente più blocchi del browser o freeze dell'interfaccia!
+      setCards((prev) => {
+        const remainingCards = prev.filter((c) => c.id !== cardId);
+        // Aggiorna l'indice in modo sicuro senza mai sforare la lunghezza del nuovo array
         setIndiceAttuale((currIdx) => {
-          if (currIdx >= newCards.length) return Math.max(0, newCards.length - 1);
+          if (currIdx >= remainingCards.length) return Math.max(0, remainingCards.length - 1);
           return currIdx;
         });
-        return newCards;
+        return remainingCards;
       });
     }
   };
@@ -66,19 +66,18 @@ export const MazzoIntegratori = () => {
     >
       
       {/* 
-        BANDA FLAT A CONTRASTO NETTO:
-        - Inattiva: Scurissima (#0f172a), si mimetizza
-        - Attiva: Grigio chiaro (#334155), stacca completamente dallo sfondo scuro
+        BARRA LATERALE TOTALMENTE REATTIVA
+        Cambia colore di sfondo (più scuro per far risaltare il neon), e accende bordo e testo.
       */}
       <div 
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] transition-all duration-200"
         style={{ 
           left: 'calc(50% + 140px)', 
           right: '-2000px',
-          backgroundColor: isNearPocket ? '#334155' : '#0f172a',
+          backgroundColor: isNearPocket ? '#020617' : '#1e293b', 
           borderLeftStyle: 'solid',
           borderLeftWidth: isNearPocket ? '4px' : '3px', 
-          borderColor: isNearPocket ? '#ff6600' : '#334155',
+          borderColor: isNearPocket ? '#ff6600' : '#475569',
         }}
       >
         <span 
@@ -91,7 +90,6 @@ export const MazzoIntegratori = () => {
         </span>
       </div>
 
-      {/* initial={false} BLOCCA le animazioni caotiche quando apri la modale per la prima volta */}
       <AnimatePresence initial={false}>
         {cards.map((card, index) => {
           const isFront = index === indiceAttuale;
@@ -103,24 +101,25 @@ export const MazzoIntegratori = () => {
           let scaleCard = 1;
           let opacityCard = 1;
           let zIndexCard = 50;
-          
-          let displayCard = "flex";
 
+          // LA MATEMATICA DEFINITIVA DEI LIVELLI (Esattamente come l'hai chiesta)
           if (isFront) {
             yPos = 0;
-            zIndexCard = 50; 
+            zIndexCard = 50; // La carta in uso sta a 50
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 50 - distanza; 
-            if (distanza > 3) displayCard = "none"; 
+            zIndexCard = 50 - distanza; // Quelle da svelare stanno dietro (49, 48...)
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
-            zIndexCard = 50 + distanza; 
-            if (distanza > 5) displayCard = "none"; 
+            
+            // LA MAGIA: 100 - distanza. 
+            // Distanza 1 (appena scesa) = 99. Distanza 2 (scesa prima) = 98. 
+            // La 99 copre la 98. Entrambe coprono la Centrale (50). Perfetto.
+            zIndexCard = 100 - distanza; 
           }
 
           return (
@@ -128,21 +127,19 @@ export const MazzoIntegratori = () => {
               key={card.id}
               className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
               
-              // Spostato il 'display' nello style: evita i lag e i ricalcoli sballati del browser!
+              // Z-Index e Ombre inserite qui in modo fisso per prevenire ogni singolo sfarfallio
               style={{
-                display: displayCard,
                 zIndex: zIndexCard, 
+                boxShadow: isPast 
+                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
+                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)",
                 WebkitFontSmoothing: "antialiased",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 transform: "translateZ(0)",
-                willChange: "transform, opacity",
-                boxShadow: isPast 
-                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
+                willChange: "transform, opacity"
               }}
               
-              // initial fissa la posizione a 0 senza animazioni intermedie al momento dell'apertura
               initial={{ 
                 y: yPos, 
                 scale: scaleCard, 
@@ -159,7 +156,11 @@ export const MazzoIntegratori = () => {
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.8}
               
-              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 20) : undefined}
+              // IL SENSORE DEL COLORE DELLA BARRA: Si accende morbidamente
+              onDrag={isFront ? (e, info) => {
+                const isNear = info.offset.x > 30;
+                if (isNear !== isNearPocket) setIsNearPocket(isNear);
+              } : undefined}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
