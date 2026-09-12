@@ -28,7 +28,6 @@ const integratoriMock = [
 type Card = typeof integratoriMock[number];
 type Ruolo = 'front' | 'past' | 'future' | 'exiting';
 
-// Interpola tra due colori esadecimali in base a un valore "progress" da 0 a 1.
 function interpolaColore(hexA: string, hexB: string, progress: number) {
   const p = Math.min(Math.max(progress, 0), 1);
   const a = parseInt(hexA.slice(1), 16);
@@ -41,19 +40,10 @@ function interpolaColore(hexA: string, hexB: string, progress: number) {
   return `rgb(${r}, ${g}, ${bl})`;
 }
 
-// Distanza (px) oltre la quale la carta viene archiviata.
 const SOGLIA_ARCHIVIAZIONE = 120;
-// Durata MINIMA (secondi) del volo di uscita: garantisce che l'effetto sia visibile
-// anche se lo swipe fisico è stato fulmineo.
 const DURATA_USCITA = 0.28;
-// Quanto lontano vola la carta prima di sparire davvero.
 const DISTANZA_USCITA = 650;
 
-// ---------------------------------------------------------------------------
-// Singola carta. Ogni carta è un componente a sé stante (con la sua motion
-// value "x") così che, quando passa da "front" a "exiting", continua il moto
-// esattamente da dove il dito l'ha lasciata, senza scatti.
-// ---------------------------------------------------------------------------
 function Carta({
   card,
   ruolo,
@@ -79,16 +69,12 @@ function Carta({
   const isPast = ruolo === 'past';
   const isExiting = ruolo === 'exiting';
 
-  // Se la carta smette di essere "front" (senza uscire dal mazzo, es. swipe
-  // verticale), azzeriamo subito la x per evitare offset residui visibili.
   useEffect(() => {
     if (!isFront && !isExiting) {
       x.set(0);
     }
   }, [isFront, isExiting, x]);
 
-  // Quando la carta diventa "exiting", parte il volo di uscita, con una durata
-  // fissa minima: così l'effetto si vede SEMPRE, anche con uno swipe fulmineo.
   useEffect(() => {
     if (isExiting && direzioneUscita) {
       const controls = animateValore(x, direzioneUscita * DISTANZA_USCITA, {
@@ -122,30 +108,30 @@ function Carta({
     zIndexCard = 50 + distanza;
   } else if (isExiting) {
     yPos = 0;
-    zIndexCard = 100; // sempre sopra a tutto mentre vola via
+    zIndexCard = 100; 
   }
 
-  const handleDragEnd = (_e: any, info: any) => {
+  // GESTIONE PAN: dedicato solo allo swipe verticale sulla carta
+  const handlePanEnd = (_e: any, info: any) => {
     const offX = info.offset.x;
     const offY = info.offset.y;
 
-    // Gesto a dominanza verticale: naviga, non archiviare.
     if (Math.abs(offY) > Math.abs(offX)) {
       onDragProgress?.(0);
       if (offY > 40) onSwipeVerticale?.(1);
       else if (offY < -40) onSwipeVerticale?.(-1);
-      return;
     }
+  };
 
-    // Gesto orizzontale oltre soglia: archivia.
+  // GESTIONE DRAG: dedicato solo allo swipe orizzontale di archiviazione
+  const handleDragEnd = (_e: any, info: any) => {
+    const offX = info.offset.x;
+
     if (offX > SOGLIA_ARCHIVIAZIONE || offX < -SOGLIA_ARCHIVIAZIONE) {
       const direzione = offX > 0 ? 1 : -1;
       onArchivia?.(direzione);
-      // NB: non tocchiamo dragProgress qui, resta al massimo per tutta
-      // la durata del volo (lo azzera il genitore a fine animazione).
     } else {
       onDragProgress?.(0);
-      // torna al centro da sola grazie a dragConstraints
     }
   };
 
@@ -161,7 +147,6 @@ function Carta({
         WebkitBackfaceVisibility: 'hidden',
         transform: 'translateZ(0)',
         willChange: 'transform, opacity',
-        // Solo la carta davanti (o quella in volo) può ricevere il tocco.
         pointerEvents: isFront ? 'auto' : 'none',
         boxShadow: isPast
           ? '6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)'
@@ -178,14 +163,13 @@ function Carta({
         y: { type: 'tween', duration: 0.35, ease: 'easeOut' },
         scale: { type: 'tween', duration: 0.35, ease: 'easeOut' },
         opacity: { type: 'tween', duration: isExiting ? DURATA_USCITA : 0.35, ease: 'easeOut' },
-        // Se la carta sta DIVENTANDO "passata", lo z-index sale solo dopo
-        // che ha finito di muoversi, così non copre mai la nuova carta in
-        // primo piano durante il tragitto.
         zIndex: { delay: isPast ? 0.35 : 0, duration: 0 },
       }}
       drag={isFront ? 'x' : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.8}
+      // Aggiunto onPanEnd indipendente per lo scorrimento verticale
+      onPanEnd={isFront ? handlePanEnd : undefined}
       onDrag={
         isFront
           ? (_e, info) => {
@@ -209,9 +193,6 @@ function Carta({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Mazzo completo
-// ---------------------------------------------------------------------------
 export const MazzoIntegratori = () => {
   const [cards, setCards] = useState<Card[]>(integratoriMock);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
@@ -219,9 +200,6 @@ export const MazzoIntegratori = () => {
   const [exitingId, setExitingId] = useState<string | null>(null);
   const [direzioneUscita, setDirezioneUscita] = useState<1 | -1>(1);
 
-  // Lista "visibile" = tutte le carte tranne quella attualmente in volo.
-  // Serve per calcolare correttamente chi è la nuova carta davanti mentre
-  // la precedente sta ancora volando via.
   const visibleCards = exitingId ? cards.filter((c) => c.id !== exitingId) : cards;
 
   const goNext = () => setIndiceAttuale((prev) => Math.min(prev + 1, Math.max(0, visibleCards.length - 1)));
@@ -235,9 +213,8 @@ export const MazzoIntegratori = () => {
   const handleArchivia = (cardId: string, direzione: 1 | -1) => {
     setExitingId(cardId);
     setDirezioneUscita(direzione);
-    setDragProgress(1); // banner al massimo per tutta la durata del volo
+    setDragProgress(1);
 
-    // Se stiamo archiviando l'ultima carta rimasta, l'indice va corretto subito.
     setIndiceAttuale((curr) => {
       const nuovaLunghezza = cards.length - 1;
       if (curr >= nuovaLunghezza) return Math.max(0, nuovaLunghezza - 1);
@@ -251,18 +228,11 @@ export const MazzoIntegratori = () => {
     setDragProgress(0);
   };
 
-  // Mappa id -> posizione nella lista visibile (esclude la carta in volo),
-  // usata per calcolare ruolo/distanza di ogni carta.
   const indiceVisibile = new Map<string, number>();
   visibleCards.forEach((c, i) => indiceVisibile.set(c.id, i));
 
   return (
     <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
-      {/* COLONNA INVISIBILE PER LO SWIPE VERTICALE.
-          Molto più alta del box visibile, così copre anche le carte già
-          "scese" in basso nella pila: da lì puoi comunque scorrere su/giù.
-          Solo la carta centrale (sopra, con pointerEvents:auto) gestisce
-          invece lo swipe laterale per l'archiviazione. */}
       <motion.div
         className="absolute touch-none"
         style={{ top: -100, bottom: -420, left: 0, right: 0, zIndex: 10 }}
@@ -274,8 +244,6 @@ export const MazzoIntegratori = () => {
         }}
       />
 
-      {/* BARRA LATERALE COLORATA — cambia colore gradualmente in base al drag,
-          e resta al massimo per tutta la durata del volo di uscita. */}
       <div
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem]"
         style={{
