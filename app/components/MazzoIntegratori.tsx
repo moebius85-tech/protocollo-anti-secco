@@ -61,34 +61,30 @@ export const MazzoIntegratori = () => {
     >
       
       {/* 
-        BANDA NEON - CSS PURO
-        Bypassiamo i bug di Tailwind inserendo i colori, i bordi e l'ombra direttamente nello style!
-        È garantito al 100% che lo smartphone lo legga.
+        BANDA LATERALE "FLAT" A CONTRASTO NETTO
+        Niente ombre, solo colori pieni che cambiano all'istante.
       */}
       <div 
-        className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300"
+        className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] transition-all duration-200"
         style={{ 
           left: 'calc(50% + 140px)', 
           right: '-2000px',
-          backgroundColor: '#1e293b',
-          borderColor: isNearPocket ? '#f97316' : '#475569',
-          boxShadow: isNearPocket 
-            ? '-15px 0 40px 5px rgba(249,115,22,0.8), inset 10px 0 25px rgba(249,115,22,0.5)' 
-            : '-10px 0 30px rgba(0,0,0,0.5)'
+          backgroundColor: isNearPocket ? '#0f172a' : '#1e293b', // Diventa quasi nero per far risaltare l'arancione
+          borderLeftStyle: 'solid',
+          borderLeftWidth: isNearPocket ? '4px' : '3px', // Si inspessisce leggermente
+          borderColor: isNearPocket ? '#ff6600' : '#475569', // Arancione puro vs Grigio
         }}
       >
         <span 
-          className="text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-all duration-300"
+          className="text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-200"
           style={{
-            color: isNearPocket ? '#fb923c' : '#94a3b8',
-            filter: isNearPocket ? 'drop-shadow(0 0 10px rgba(249,115,22,1))' : 'none'
+            color: isNearPocket ? '#ff6600' : '#94a3b8', // Stesso arancione del bordo
           }}
         >
           DISPENSA
         </span>
       </div>
 
-      {/* LE TUE CARTE CON LA LOGICA PERFETTA, NON TOCCATE */}
       <AnimatePresence>
         {cards.map((card, index) => {
           const isFront = index === indiceAttuale;
@@ -101,6 +97,7 @@ export const MazzoIntegratori = () => {
           let opacityCard = 1;
           let zIndexCard = 50;
 
+          // LOGICA LIVELLI PERFETTA
           if (isFront) {
             yPos = 0;
             zIndexCard = 50; 
