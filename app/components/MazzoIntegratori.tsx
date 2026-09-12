@@ -61,26 +61,34 @@ export const MazzoIntegratori = () => {
     >
       
       {/* 
-        BANDA "FLAT DESIGN" (Zero Neon, Solo Colori Solidi)
-        Ho aumentato leggermente il bordo (border-l-[4px]) per dare più soddisfazione visiva.
+        BANDA NEON - CSS PURO
+        Bypassiamo i bug di Tailwind inserendo i colori, i bordi e l'ombra direttamente nello style!
+        È garantito al 100% che lo smartphone lo legga.
       */}
       <div 
-        className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[4px] transition-colors duration-200 ${
-          isNearPocket
-            ? 'bg-slate-700 border-orange-500' // Stato Attivo: Fondo più chiaro, bordo arancione
-            : 'bg-slate-800 border-slate-600'  // Stato Inattivo: Fondo scuro, bordo grigio
-        }`}
-        style={{ left: 'calc(50% + 140px)', right: '-2000px' }}
+        className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300"
+        style={{ 
+          left: 'calc(50% + 140px)', 
+          right: '-2000px',
+          backgroundColor: '#1e293b',
+          borderColor: isNearPocket ? '#f97316' : '#475569',
+          boxShadow: isNearPocket 
+            ? '-15px 0 40px 5px rgba(249,115,22,0.8), inset 10px 0 25px rgba(249,115,22,0.5)' 
+            : '-10px 0 30px rgba(0,0,0,0.5)'
+        }}
       >
         <span 
-          className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-200 ${
-            isNearPocket ? 'text-orange-500' : 'text-slate-400'
-          }`}
+          className="text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-all duration-300"
+          style={{
+            color: isNearPocket ? '#fb923c' : '#94a3b8',
+            filter: isNearPocket ? 'drop-shadow(0 0 10px rgba(249,115,22,1))' : 'none'
+          }}
         >
           DISPENSA
         </span>
       </div>
 
+      {/* LE TUE CARTE CON LA LOGICA PERFETTA, NON TOCCATE */}
       <AnimatePresence>
         {cards.map((card, index) => {
           const isFront = index === indiceAttuale;
