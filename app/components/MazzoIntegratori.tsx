@@ -43,12 +43,17 @@ export const MazzoIntegratori = () => {
   const handleDragEnd = (event: any, info: any, cardId: string) => {
     setIsNearPocket(false);
     const x = info.offset.x;
+    
     if (x > 80 || x < -80) { 
-      // LA TUA LOGICA ORIGINALE RIPRISTINATA (Nessun alert per evitare freeze)
-      setCards((prev) => prev.filter((c) => c.id !== cardId));
-      if (indiceAttuale >= cards.length - 1) {
-        setIndiceAttuale(Math.max(cards.length - 2, 0));
+      // FIX ARCHIVIAZIONE: Aggiornamento matematico senza cortocircuiti
+      const newCards = cards.filter((c) => c.id !== cardId);
+      setCards(newCards);
+      
+      let newIndex = indiceAttuale;
+      if (newIndex >= newCards.length) {
+        newIndex = Math.max(0, newCards.length - 1);
       }
+      setIndiceAttuale(newIndex);
     }
   };
 
@@ -59,16 +64,16 @@ export const MazzoIntegratori = () => {
       onClick={(e) => e.stopPropagation()} 
     >
       
-      {/* BARRA LATERALE COLORATA */}
+      {/* BARRA LATERALE A CONTRASTO NETTO */}
       <div 
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] transition-all duration-200"
         style={{ 
           left: 'calc(50% + 140px)', 
           right: '-2000px',
-          backgroundColor: isNearPocket ? '#0f172a' : '#1e293b', 
+          backgroundColor: isNearPocket ? '#334155' : '#0f172a',
           borderLeftStyle: 'solid',
           borderLeftWidth: isNearPocket ? '4px' : '3px', 
-          borderColor: isNearPocket ? '#ff6600' : '#475569',
+          borderColor: isNearPocket ? '#ff6600' : '#334155',
         }}
       >
         <span 
@@ -92,29 +97,39 @@ export const MazzoIntegratori = () => {
           let scaleCard = 1;
           let opacityCard = 1;
           let zIndexCard = 50;
+          
+          let displayCard = "flex";
 
+          // LA REGOLA DEFINITIVA DEI LIVELLI
           if (isFront) {
             yPos = 0;
-            zIndexCard = 50;
+            zIndexCard = 50; 
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 50 - distanza; 
+            zIndexCard = 50 - distanza; // Il mazzo sopra (49, 48...)
+            if (distanza > 3) displayCard = "none"; 
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
             
-            // LA TUA FORMULA ORIGINALE RIPRISTINATA (Ordine corretto)
-            zIndexCard = 60 + distanza; 
+            // La prima che scorre in basso (dist 1) ha z-index 59 (davanti a tutte)
+            // La seconda (dist 2) ha 58, la terza 57. Sequenza perfetta.
+            zIndexCard = 60 - distanza; 
+            if (distanza > 5) displayCard = "none"; 
           }
 
           return (
             <motion.div
               key={card.id}
               className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
+              
+              // FIX ACCAVALLAMENTO: zIndex isolato in style, scatta all'istante senza animazioni sballate
               style={{
+                display: displayCard,
+                zIndex: zIndexCard, 
                 WebkitFontSmoothing: "antialiased",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
@@ -124,17 +139,23 @@ export const MazzoIntegratori = () => {
                   ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
                   : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
               }}
+              
               initial={{ 
                 y: yPos, 
                 scale: scaleCard, 
-                opacity: opacityCard,
-                zIndex: zIndexCard
+                opacity: opacityCard 
               }}
               animate={{ 
                 y: yPos, 
                 scale: scaleCard, 
-                opacity: opacityCard,
-                zIndex: zIndexCard 
+                opacity: opacityCard
+              }}
+              // Animazione d'uscita per l'archiviazione: la carta sparisce scivolando via, niente più scatti
+              exit={{ 
+                opacity: 0, 
+                x: 100,
+                scale: 0.8,
+                transition: { duration: 0.25 }
               }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
@@ -142,7 +163,7 @@ export const MazzoIntegratori = () => {
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.8}
               
-              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 30) : undefined}
+              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 20) : undefined}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
