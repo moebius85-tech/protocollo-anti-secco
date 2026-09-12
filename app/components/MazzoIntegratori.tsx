@@ -60,22 +60,30 @@ export const MazzoIntegratori = () => {
       onClick={(e) => e.stopPropagation()} 
     >
       
-      {/* 
-        BANDA NEON ESTREMO (IL FIX E' QUI)
-        Ho aggiunto la tripla ombra con "spread" per renderla solida e accecante.
-        Inoltre il bordo cambia in un arancione più chiaro (border-orange-400) quando acceso.
-      */}
       <div 
-        className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-300 ${
+        className={`absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] border-l-[3px] transition-all duration-200 ${
           isNearPocket
-            ? 'bg-[#1e293b] border-orange-400 shadow-[-4px_0_12px_2px_rgba(251,146,60,0.9),-10px_0_25px_5px_rgba(249,115,22,0.7),inset_6px_0_15px_rgba(249,115,22,0.6)]'
-            : 'bg-[#1e293b] border-slate-600 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]'
+            ? 'bg-[#1e293b] border-orange-400'
+            : 'bg-[#1e293b] border-slate-600'
         }`}
-        style={{ left: 'calc(50% + 140px)', right: '-2000px' }}
+        style={{ 
+          left: 'calc(50% + 140px)', 
+          right: '-2000px',
+          // FORZA L'OMBRA SOLIDA SENZA TRASPARENZE PER MOBILE
+          boxShadow: isNearPocket 
+            ? '-20px 0 40px #f97316, inset 10px 0 30px #f97316' 
+            : '-10px 0 30px rgba(0,0,0,0.5)'
+        }}
       >
-        <span className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${
-          isNearPocket ? 'text-orange-300 drop-shadow-[0_0_12px_rgba(251,146,60,1)]' : 'text-slate-400 drop-shadow-sm'
-        }`}>
+        <span 
+          className={`text-[11px] font-black tracking-[0.4em] uppercase [writing-mode:vertical-rl] rotate-180 transition-colors duration-200 ${
+            isNearPocket ? 'text-white' : 'text-slate-400'
+          }`}
+          style={{
+            // FILTRO ESTREMO SUL TESTO
+            filter: isNearPocket ? 'drop-shadow(0px 0px 8px #f97316) drop-shadow(0px 0px 15px #f97316)' : 'drop-shadow(0px 1px 2px rgba(0,0,0,0.8))'
+          }}
+        >
           DISPENSA
         </span>
       </div>
