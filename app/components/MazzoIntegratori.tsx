@@ -43,18 +43,12 @@ export const MazzoIntegratori = () => {
   const handleDragEnd = (event: any, info: any, cardId: string) => {
     setIsNearPocket(false);
     const x = info.offset.x;
-    
     if (x > 80 || x < -80) { 
-      // RIMOZIONE ALERT: Niente più blocchi del browser o freeze dell'interfaccia!
-      setCards((prev) => {
-        const remainingCards = prev.filter((c) => c.id !== cardId);
-        // Aggiorna l'indice in modo sicuro senza mai sforare la lunghezza del nuovo array
-        setIndiceAttuale((currIdx) => {
-          if (currIdx >= remainingCards.length) return Math.max(0, remainingCards.length - 1);
-          return currIdx;
-        });
-        return remainingCards;
-      });
+      // LA TUA LOGICA ORIGINALE RIPRISTINATA (Nessun alert per evitare freeze)
+      setCards((prev) => prev.filter((c) => c.id !== cardId));
+      if (indiceAttuale >= cards.length - 1) {
+        setIndiceAttuale(Math.max(cards.length - 2, 0));
+      }
     }
   };
 
@@ -65,16 +59,13 @@ export const MazzoIntegratori = () => {
       onClick={(e) => e.stopPropagation()} 
     >
       
-      {/* 
-        BARRA LATERALE TOTALMENTE REATTIVA
-        Cambia colore di sfondo (più scuro per far risaltare il neon), e accende bordo e testo.
-      */}
+      {/* BARRA LATERALE COLORATA */}
       <div 
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem] transition-all duration-200"
         style={{ 
           left: 'calc(50% + 140px)', 
           right: '-2000px',
-          backgroundColor: isNearPocket ? '#020617' : '#1e293b', 
+          backgroundColor: isNearPocket ? '#0f172a' : '#1e293b', 
           borderLeftStyle: 'solid',
           borderLeftWidth: isNearPocket ? '4px' : '3px', 
           borderColor: isNearPocket ? '#ff6600' : '#475569',
@@ -102,53 +93,48 @@ export const MazzoIntegratori = () => {
           let opacityCard = 1;
           let zIndexCard = 50;
 
-          // LA MATEMATICA DEFINITIVA DEI LIVELLI (Esattamente come l'hai chiesta)
           if (isFront) {
             yPos = 0;
-            zIndexCard = 50; // La carta in uso sta a 50
+            zIndexCard = 50;
           } else if (isFuture) {
             yPos = -distanza * 30;
             scaleCard = 1 - (distanza * 0.05);
             opacityCard = 1 - (distanza * 0.15);
-            zIndexCard = 50 - distanza; // Quelle da svelare stanno dietro (49, 48...)
+            zIndexCard = 50 - distanza; 
           } else if (isPast) {
             yPos = 260 + (distanza * 38); 
             scaleCard = 1 + (distanza * 0.08); 
             opacityCard = distanza <= 5 ? 1 : 0; 
             
-            // LA MAGIA: 100 - distanza. 
-            // Distanza 1 (appena scesa) = 99. Distanza 2 (scesa prima) = 98. 
-            // La 99 copre la 98. Entrambe coprono la Centrale (50). Perfetto.
-            zIndexCard = 100 - distanza; 
+            // LA TUA FORMULA ORIGINALE RIPRISTINATA (Ordine corretto)
+            zIndexCard = 60 + distanza; 
           }
 
           return (
             <motion.div
               key={card.id}
               className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${isFront ? 'cursor-grab active:cursor-grabbing' : ''}`}
-              
-              // Z-Index e Ombre inserite qui in modo fisso per prevenire ogni singolo sfarfallio
               style={{
-                zIndex: zIndexCard, 
-                boxShadow: isPast 
-                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
-                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)",
                 WebkitFontSmoothing: "antialiased",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 transform: "translateZ(0)",
-                willChange: "transform, opacity"
+                willChange: "transform, opacity",
+                boxShadow: isPast 
+                  ? "6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)"
+                  : "5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)"
               }}
-              
               initial={{ 
                 y: yPos, 
                 scale: scaleCard, 
-                opacity: opacityCard 
+                opacity: opacityCard,
+                zIndex: zIndexCard
               }}
               animate={{ 
                 y: yPos, 
                 scale: scaleCard, 
-                opacity: opacityCard
+                opacity: opacityCard,
+                zIndex: zIndexCard 
               }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               
@@ -156,11 +142,7 @@ export const MazzoIntegratori = () => {
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.8}
               
-              // IL SENSORE DEL COLORE DELLA BARRA: Si accende morbidamente
-              onDrag={isFront ? (e, info) => {
-                const isNear = info.offset.x > 30;
-                if (isNear !== isNearPocket) setIsNearPocket(isNear);
-              } : undefined}
+              onDrag={isFront ? (e, info) => setIsNearPocket(info.offset.x > 30) : undefined}
               onDragEnd={isFront ? (e, info) => handleDragEnd(e, info, card.id) : undefined}
             >
               <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
