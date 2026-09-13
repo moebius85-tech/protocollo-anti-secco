@@ -21,10 +21,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           
-          {/* BOTTONE GLOBALE FISSO IN ALTO A DESTRA */}
-          <div className="fixed top-4 right-4 z-[9999]">
-            <ThemeToggle />
-          </div>
+          {/* BOTTONE GLOBALE RESPONSIVE (In basso a destra su mobile, in basso a sinistra su PC) */}
+<div className="fixed bottom-6 right-6 md:bottom-8 md:left-8 z-[999999]">
+  <ThemeToggle />
+</div>
           
           {children}
         </ThemeProvider>
