@@ -778,10 +778,15 @@ if (!usaIntegratori) {
     
     // --- MURO DI LOGIN CON TRANSIZIONE FLUIDA E ANIMAZIONI DELUXE ---
    if (!isAuthenticated) {
-          return (
-            <div className={"min-h-screen " + UI.bg + " flex items-center justify-center p-4 relative overflow-hidden font-sans"}>
+  return (
+    <div className={"min-h-screen " + UI.bg + " flex items-center justify-center p-4 relative overflow-hidden font-sans"}>
+      
+      {/* BOTTONE LOGIN - In alto a destra (o dove preferisci) */}
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
 
-              <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down..." }} />
+      <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down..." }} />
               
               {/* --- PANNELLO DI LOGIN (Scende solo quando la intro sparisce) --- */}
               <div className={UI.card + " w-full max-w-sm z-10 " + (!mostraIntro ? "anim-drop-down" : "opacity-0")}>
