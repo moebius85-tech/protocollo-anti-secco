@@ -50,6 +50,7 @@ body {
   --bordo-tenue: rgba(100, 116, 139, 0.25);
  
   /* "Velo" semi-trasparente per gli effetti vetro sopra le card (alimenti/workout) */
+  --velo-20: rgba(255, 255, 255, 0.2);
   --velo-30: rgba(255, 255, 255, 0.3);
   --velo-40: rgba(255, 255, 255, 0.4);
   --velo-50: rgba(255, 255, 255, 0.5);
@@ -75,6 +76,7 @@ body {
  
   --bordo-tenue: rgba(148, 163, 184, 0.15);
  
+  --velo-20: rgba(255, 255, 255, 0.03);
   --velo-30: rgba(255, 255, 255, 0.04);
   --velo-40: rgba(255, 255, 255, 0.06);
   --velo-50: rgba(255, 255, 255, 0.08);
@@ -100,6 +102,7 @@ body {
  
   --bordo-tenue: rgba(56, 189, 248, 0.25);
  
+  --velo-20: rgba(56, 189, 248, 0.04);
   --velo-30: rgba(56, 189, 248, 0.06);
   --velo-40: rgba(56, 189, 248, 0.08);
   --velo-50: rgba(56, 189, 248, 0.11);
