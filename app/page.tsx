@@ -9,7 +9,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-tem
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Tema principale Verde Mela
-const gradPrimary = "bg-gradient-to-r from-lime-400 to-emerald-500"; 
+const gradPrimary = "bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad"; 
 const colorBg = "bg-[var(--superficie)]";
 const shadowOutset = "shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)]";
 const shadowInset = "shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)]";
@@ -834,7 +834,7 @@ if (!usaIntegratori) {
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
                     <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(132,204,22,0.3)]">
-                      <circle cx="100" cy="100" r="75" fill="none" stroke="#84cc16" strokeWidth="38" className="anim-circle-svg" strokeLinecap="round" />
+                      <circle cx="100" cy="100" r="75" fill="none" stroke="var(--accento-1)" strokeWidth="38" className="anim-circle-svg" strokeLinecap="round" />
                     </svg>
                  </div>
                  <div className="absolute -bottom-24 -right-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-25">
@@ -861,18 +861,18 @@ if (!usaIntegratori) {
                    <div className="relative flex items-center justify-center -mr-1 z-10">
                      <svg width="65" height="65" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg">
                        <circle cx="50" cy="50" r="36" fill="var(--superficie)" />
-                       <circle cx="50" cy="50" r="36" fill="none" stroke="#84cc16" strokeWidth="22" className="anim-circle" strokeLinecap="square" />
+                       <circle cx="50" cy="50" r="36" fill="none" stroke="var(--accento-1)" strokeWidth="22" className="anim-circle" strokeLinecap="square" />
                      </svg>
                    </div>
                    <div className="flex items-center text-[65px] font-black tracking-tighter leading-none pt-1">
                       <span className="text-slate-500 anim-mni">MNI</span>
-                      <span className="text-[#84cc16] anim-fit">FIT</span>
+                      <span className="text-[var(--accento-1)] anim-fit">FIT</span>
                    </div>
                  </div>
 
                  <div className="relative px-8 py-3 rounded-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-sm anim-sub overflow-hidden border border-transparent">
                     <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 240 50" preserveAspectRatio="none">
-                       <rect x="2" y="2" width="236" height="46" rx="23" fill="none" stroke="#84cc16" strokeWidth="3" className="anim-miccia-border drop-shadow-[0_0_8px_#84cc16]" />
+                       <rect x="2" y="2" width="236" height="46" rx="23" fill="none" stroke="var(--accento-1)" strokeWidth="3" className="anim-miccia-border drop-shadow-[0_0_8px_var(--accento-1)]" />
                     </svg>
                     <p className="text-[12px] font-black text-slate-600 tracking-[0.4em] uppercase relative z-10">
                        Protocollo Evolutivo
@@ -1105,7 +1105,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         <div>
           <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">⬅️ Torna alla Home</button>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
-            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
           </h1>
           {/* SELETTORE TEMA: chiaro / scuro / neon */}
           <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
@@ -1119,7 +1119,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 onClick={() => setTema(opzione.id)}
                 className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
                   tema === opzione.id
-                    ? 'bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
+                    ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
                     : 'text-slate-400 hover:text-slate-500'
                 }`}
               >
@@ -1319,7 +1319,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         {/* COLONNA CENTRALE: Turni & Nutrizione */}
         <div className={`flex-col gap-8 lg:col-span-4 ${mobileTab === 'TURNI' || mobileTab === 'NUTRIZIONE' ? 'flex' : 'hidden'} lg:flex`}>
           <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'TURNI' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.4s'}}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lime-400 to-emerald-500 opacity-80"></div>
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad opacity-80"></div>
             
             <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-200/50 pt-2">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Incastro Turni</h2>
@@ -1334,11 +1334,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 <div className="flex space-x-5">
                   <div className="flex-1 relative">
                     <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[var(--superficie)] px-2 left-2 rounded-full shadow-sm">Inizio</span>
-                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
+                    <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-[var(--velo-40)] text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                   </div>
                   <div className="flex-1 relative">
                     <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[var(--superficie)] px-2 left-2 rounded-full shadow-sm">Fine</span>
-                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
+                    <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-[var(--velo-40)] text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                   </div>
                 </div>
               </div>
@@ -1348,11 +1348,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   <div className="flex space-x-5">
                     <div className="flex-1 relative">
                       <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[var(--superficie)] px-2 left-2 rounded-full shadow-sm">Inizio</span>
-                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
+                      <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-[var(--velo-40)] text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                     </div>
                     <div className="flex-1 relative">
                       <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[var(--superficie)] px-2 left-2 rounded-full shadow-sm">Fine</span>
-                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
+                      <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-[var(--velo-40)] text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                     </div>
                   </div>
                 </div>
@@ -1371,15 +1371,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       : "Condensa i pasti in una finestra di 8 ore (es. 13:00 - 21:00)."}
                  </p>
               </div>
-              <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer shrink-0 ${digiuno ? 'bg-gradient-to-r from-lime-400 to-emerald-500' : 'bg-slate-300'}`}>
+              <button onClick={() => setDigiuno(!digiuno)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer shrink-0 ${digiuno ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad' : 'bg-slate-300'}`}>
                 <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${digiuno ? 'translate-x-8' : 'translate-x-1'}`}></div>
               </button>
             </div>
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 block px-1">Collocazione Allenamento</span>
                 <div className="flex space-x-3 bg-[var(--superficie)] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_var(--ombra-scura),inset_-5px_-5px_10px_var(--ombra-chiara)]">
-                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Mattina</button>
-                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Pausa</button>}
-                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Sera</button>
+                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Mattina</button>
+                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Pausa</button>}
+                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Sera</button>
                 </div>
               </div>
             </div>
@@ -1520,19 +1520,19 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         </div>
 
                         {isCustom ? (
-  <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+  <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
     <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
 
     {pastiCustom[cat]?.nome ? (
       <div className="ml-2">
         <div className="flex justify-between items-center mb-4">
           <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
-          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-white/60 px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">+ Aggiungi / Modifica</button>
+          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">+ Aggiungi / Modifica</button>
         </div>
         <div className="flex gap-4 mb-2">
-          <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50 text-orange-500"} /></div>
-          <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50 text-slate-600"} /></div>
-          <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-white/50 text-slate-600"} /></div>
+          <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-orange-500"} /></div>
+          <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-slate-600"} /></div>
+          <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-slate-600"} /></div>
         </div>
       </div>
     ) : (
@@ -1594,19 +1594,19 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     </div>
                     
                     {isCustom ? (
-  <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+  <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
     <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
 
     {pastiCustom[cat]?.nome ? (
       <div className="ml-2">
         <div className="flex justify-between items-center mb-4">
           <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
-          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-white/60 px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">Cambia</button>
+          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">Cambia</button>
         </div>
         <div className="flex gap-4 mb-2">
-          <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-white/50 text-orange-500"} /></div>
-          <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-white/50 text-slate-600"} /></div>
-          <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-white/50 text-slate-600"} /></div>
+          <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-orange-500"} /></div>
+          <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-slate-600"} /></div>
+          <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-slate-600"} /></div>
         </div>
       </div>
     ) : (
@@ -1621,7 +1621,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     )}
   </div>
 ) : (
-                       <div className={`mt-2 p-5 rounded-3xl bg-white/40 backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+                       <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
                          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
                          <p className="font-bold text-[15px] text-slate-700 mb-3 ml-2 relative z-10">{itemScelto.nome}</p>
                          {finalCho === 0 && finalPro === 0 ? <p className="text-[11px] text-red-500 font-bold bg-red-50 p-3 rounded-xl inline-block shadow-sm relative z-10 ml-2">Pasto azzerato (Sgarro o Digiuno).</p> : <div className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">
@@ -1708,7 +1708,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   return raccomandazioni.map((r, idx) => (
                     <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_10px_var(--ombra-scura),-4px_-4px_10px_var(--ombra-chiara)] p-5 rounded-3xl flex flex-col gap-3 anim-pop transition-transform hover:scale-[1.02]" style={{animationDelay: `${idx * 0.15}s`}}>
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl bg-white/40 w-12 h-12 flex items-center justify-center rounded-2xl shadow-[inset_2px_2px_4px_rgba(163,177,198,0.4)] shrink-0">{r.icona}</span>
+                        <span className="text-2xl bg-[var(--velo-40)] w-12 h-12 flex items-center justify-center rounded-2xl shadow-[inset_2px_2px_4px_rgba(163,177,198,0.4)] shrink-0">{r.icona}</span>
                         <h4 className="font-black text-slate-700 text-[11px] tracking-wide uppercase leading-tight">{r.nome}</h4>
                       </div>
                       <p className="text-[10px] text-slate-500 font-bold leading-relaxed px-1 mt-1">{r.motivo}</p>
@@ -1812,30 +1812,30 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         <div className="pl-1">
                           <div className="flex justify-between items-start mb-3">
                             <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
-                            <button onClick={() => apriSwapEsercizio(es)} className="bg-white/40 shadow-[3px_3px_6px_rgba(163,177,198,0.5),-3px_-3px_6px_rgba(255,255,255,0.8)] text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_rgba(163,177,198,0.5)] border-none cursor-pointer">Swap</button>
+                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[var(--velo-40)] shadow-[3px_3px_6px_rgba(163,177,198,0.5),-3px_-3px_6px_rgba(255,255,255,0.8)] text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_rgba(163,177,198,0.5)] border-none cursor-pointer">Swap</button>
                           </div>
                           
                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 mt-4">
-                            <div className="bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0 border border-white/40"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
+                            <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0 border border-white/40"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
                             <div className="flex-1 w-full min-w-0 text-center sm:text-left">
                                <h3 className="font-bold text-[16px] text-slate-700 mb-2 truncate">{nomeAttuale}</h3>
                                <p className="text-[12px] sm:text-[11px] text-slate-600 leading-relaxed font-semibold">{currentEx.dettaglio}</p>
                             </div>
                           </div>
 
-                          <div className="mt-6 flex items-center justify-between bg-white/30 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-2xl border border-white/50">
-                             <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-white/50 shadow-[2px_2px_4px_rgba(163,177,198,0.4)] text-slate-600 tracking-widest">{repMostrate}</p>
-                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-500 px-3 py-2 bg-white/50 shadow-[2px_2px_4px_rgba(163,177,198,0.4)] rounded-xl uppercase tracking-widest">Ultima: <span className="ml-1 text-[14px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>}
+                          <div className="mt-6 flex items-center justify-between bg-[var(--velo-30)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-2xl border border-white/50">
+                             <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[var(--velo-50)] shadow-[2px_2px_4px_rgba(163,177,198,0.4)] text-slate-600 tracking-widest">{repMostrate}</p>
+                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-500 px-3 py-2 bg-[var(--velo-50)] shadow-[2px_2px_4px_rgba(163,177,198,0.4)] rounded-xl uppercase tracking-widest">Ultima: <span className="ml-1 text-[14px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>}
                           </div>
                           
-                          <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-white/50 shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/60 cursor-pointer transition-all hover:-translate-y-0.5" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
+                          <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-[var(--velo-50)] shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/60 cursor-pointer transition-all hover:-translate-y-0.5" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
 
                           <div className="mt-5 pt-5 border-t border-slate-400/20">
                             <div className="flex gap-4">
                               {Array.from({ length: numeroSetTarget }).map((_, i) => (
                                 <div key={i} className="flex-1 relative">
                                   <label className="text-[9px] text-slate-500 uppercase font-bold tracking-widest block text-center mb-2.5">Set {i+1}</label>
-                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
+                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
                                 </div>
                               ))}
                             </div>
@@ -1953,7 +1953,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                  {/* TITOLO ED ESERCIZIO CENTRATI */}
                  <div className="flex flex-col items-center justify-center text-center mb-3 gap-2">
                    {/* Ridotto da w-36 h-32 a w-28 h-20 per recuperare circa 50px di spazio verticale */}
-                   <div className="bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-2 rounded-[1rem] w-28 h-20 shrink-0 border border-white/40 flex items-center justify-center overflow-hidden">
+                   <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-2 rounded-[1rem] w-28 h-20 shrink-0 border border-white/40 flex items-center justify-center overflow-hidden">
                      <MediaVisualizer animKey={currentEx.anim || "chest_barbell_flat"} color={phaseColor} />
                    </div>
                    <div>
@@ -1961,7 +1961,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                      {/* Line-clamp-1 assicura che il testo lungo non mandi a capo e mangi spazio */}
                      <p className="text-[10px] text-slate-600 font-bold mt-1 leading-snug line-clamp-1">{currentEx.dettaglio}</p>
                      
-                     <div className="mt-2 bg-white/40 shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] px-4 py-1.5 rounded-lg border border-white/50 inline-block">
+                     <div className="mt-2 bg-[var(--velo-40)] shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] px-4 py-1.5 rounded-lg border border-white/50 inline-block">
                         <span className="text-[10px] font-black text-slate-600 tracking-widest">{repMostrate}</span>
                      </div>
                    </div>
@@ -1972,13 +1972,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         <div key={i} className="flex-1 relative">
                            <label className="text-[9px] text-slate-600 uppercase font-black tracking-widest block text-center mb-1">Set {i+1}</label>
                            {/* Padding ridotto sui set per non farli sbordare */}
-                           <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-2 px-1 text-center rounded-xl text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
+                           <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-2 px-1 text-center rounded-xl text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
                         </div>
                      ))}
                  </div>
                  
                  {/* Bottone più sottile e stretto */}
-                 <button onClick={() => setFocusWorkout(null)} className="w-full mt-4 py-3 bg-white/50 shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] text-slate-600 font-black uppercase tracking-widest text-[12px] rounded-xl transition-all border border-white/60 cursor-pointer hover:-translate-y-0.5">CHIUDI E SALVA SET</button>
+                 <button onClick={() => setFocusWorkout(null)} className="w-full mt-4 py-3 bg-[var(--velo-50)] shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] text-slate-600 font-black uppercase tracking-widest text-[12px] rounded-xl transition-all border border-white/60 cursor-pointer hover:-translate-y-0.5">CHIUDI E SALVA SET</button>
               </div>
             </div>
           </div>
@@ -2025,7 +2025,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       <p className="font-bold text-[14px] text-slate-600 group-hover:text-[#00c6ff] transition-colors pr-2 leading-snug">{alt.nome}</p>
                       <span className="text-[9px] bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)] text-[#00c6ff] px-3 py-1.5 rounded-lg font-bold tracking-widest shrink-0">{swapKcal} Kcal</span>
                     </div>
-                    <p className="text-[9px] text-slate-500 font-bold tracking-widest bg-white/40 inline-block px-3 py-1.5 rounded-lg mb-3 shadow-sm">C <span className="text-[#00c6ff]">{macroCho}g</span> <span className="mx-2 text-slate-300">|</span> P <span className="text-slate-600">{alt.pro}g</span> <span className="mx-2 text-slate-300">|</span> F <span className="text-slate-600">{alt.fat}g</span></p>
+                    <p className="text-[9px] text-slate-500 font-bold tracking-widest bg-[var(--velo-40)] inline-block px-3 py-1.5 rounded-lg mb-3 shadow-sm">C <span className="text-[#00c6ff]">{macroCho}g</span> <span className="mx-2 text-slate-300">|</span> P <span className="text-slate-600">{alt.pro}g</span> <span className="mx-2 text-slate-300">|</span> F <span className="text-slate-600">{alt.fat}g</span></p>
                     <p className="text-[11px] text-slate-500 font-medium leading-relaxed bg-[var(--superficie-alt)] p-3 rounded-xl shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)]">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
                   </button>
                  );
@@ -2047,7 +2047,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       
       {/* --- TAB E BARRA DI RICERCA --- */}
       <div className="shrink-0 mb-4">
-        <div className="flex gap-2 mb-3 bg-white/40 p-1.5 rounded-2xl shadow-inner">
+        <div className="flex gap-2 mb-3 bg-[var(--velo-40)] p-1.5 rounded-2xl shadow-inner">
           <button onClick={() => setFiltroDispensa('alimento')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer ${filtroDispensa === 'alimento' ? 'bg-gradient-to-r from-orange-400 to-rose-400 text-white shadow-md' : 'bg-transparent text-slate-500 hover:text-orange-500'}`}>🍎 Alimenti</button>
           <button onClick={() => setFiltroDispensa('integratore')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer ${filtroDispensa === 'integratore' ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-md' : 'bg-transparent text-slate-500 hover:text-cyan-500'}`}>💊 Integratori</button>
         </div>
@@ -2111,13 +2111,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       <div className="pt-4 border-t border-slate-300/50 shrink-0">
         <span className="text-[9px] uppercase font-black text-slate-400 tracking-widest block mb-3">Analizza e Salva Nuovo Prodotto</span>
         <div className="flex gap-3 mb-3 items-center">
-          <label className="bg-white/60 shadow-[2px_2px_5px_rgba(163,177,198,0.4)] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-xl transition-all border-none cursor-pointer">
+          <label className="bg-[var(--velo-60)] shadow-[2px_2px_5px_rgba(163,177,198,0.4)] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-xl transition-all border-none cursor-pointer">
             <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, 'ScannerAI')} />
             <span className="text-[16px] leading-none">📸</span>
           </label>
           
           {/* INPUT ISOLATO (Non tocca più il pasto principale finché non salvi) */}
-          <input type="text" placeholder="Es. 30g Mandorle..." value={formAInuovo.nome} onChange={e => setFormAInuovo({...formAInuovo, nome: e.target.value})} className={"w-full bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 py-3 rounded-xl text-[13px] text-slate-600 outline-none transition-all font-semibold border-none"} />
+          <input type="text" placeholder="Es. 30g Mandorle..." value={formAInuovo.nome} onChange={e => setFormAInuovo({...formAInuovo, nome: e.target.value})} className={"w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 py-3 rounded-xl text-[13px] text-slate-600 outline-none transition-all font-semibold border-none"} />
           
           <button 
             onClick={async () => {
@@ -2165,7 +2165,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               setIsCalculatingAI(false);
             }} 
             disabled={isCalculatingAI} 
-            className={"bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] font-bold !w-auto !py-3 !px-4 !rounded-xl disabled:opacity-50 border-none cursor-pointer"}
+            className={"bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)] font-bold !w-auto !py-3 !px-4 !rounded-xl disabled:opacity-50 border-none cursor-pointer"}
           >
             {isCalculatingAI ? '...' : '/ AI'}
           </button> 
@@ -2173,7 +2173,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         </div>
 
         {fileCustomPasto['ScannerAI'] && (
-          <div className="flex items-center gap-2 mb-3 p-2 bg-white/50 rounded-xl w-fit border border-white/60">
+          <div className="flex items-center gap-2 mb-3 p-2 bg-[var(--velo-50)] rounded-xl w-fit border border-white/60">
             <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]"> {fileCustomPasto['ScannerAI'].nome}</span>
             <button onClick={() => setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
           </div>
@@ -2181,11 +2181,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         {/* --- RISULTATO A.I. E SALVATAGGIO --- */}
         {formAInuovo.nome && (formAInuovo.cho !== "" || formAInuovo.pro !== "" || formAInuovo.fat !== "") && (
-          <div className="bg-white/40 p-3 rounded-xl border border-white/60 shadow-sm mt-2">
+          <div className="bg-[var(--velo-40)] p-3 rounded-xl border border-white/60 shadow-sm mt-2">
             <div className="flex gap-2 mb-3">
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Carbo</span><input type="number" value={formAInuovo.cho} onChange={e => setFormAInuovo({...formAInuovo, cho: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Pro</span><input type="number" value={formAInuovo.pro} onChange={e => setFormAInuovo({...formAInuovo, pro: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Fat</span><input type="number" value={formAInuovo.fat} onChange={e => setFormAInuovo({...formAInuovo, fat: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-white/50 !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Carbo</span><input type="number" value={formAInuovo.cho} onChange={e => setFormAInuovo({...formAInuovo, cho: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Pro</span><input type="number" value={formAInuovo.pro} onChange={e => setFormAInuovo({...formAInuovo, pro: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Fat</span><input type="number" value={formAInuovo.fat} onChange={e => setFormAInuovo({...formAInuovo, fat: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
             </div>
             <button 
               onClick={() => {
@@ -2216,7 +2216,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 setModalScegliDispensa(null);
                 setRicercaDispensa("");
               }}
-              className="w-full bg-gradient-to-r from-lime-400 to-emerald-500 text-white font-black uppercase tracking-widest text-[10px] py-3 rounded-xl shadow-[0_4px_10px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_15px_rgba(16,185,129,0.4)] transition-all border-none cursor-pointer"
+              className="w-full bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white font-black uppercase tracking-widest text-[10px] py-3 rounded-xl shadow-[0_4px_10px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_15px_rgba(16,185,129,0.4)] transition-all border-none cursor-pointer"
             >
               + Salva in {filtroDispensa === 'alimento' ? 'Alimenti' : 'Integratori'} e Usa
             </button>
@@ -2234,13 +2234,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 <h2 className="text-2xl font-black uppercase tracking-widest text-slate-700 mb-8">Admin <span className="text-red-500">Control Room</span></h2>
                 
                 {/* PANNELLO AGGIUNGI NUOVO CLIENTE */}
-                <div className="bg-white/50 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3)] p-6 rounded-3xl mb-8 border border-white/50">
+                <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3)] p-6 rounded-3xl mb-8 border border-white/50">
                   <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Nuovo Accesso Premium</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
-                    <div><label className={UI.label}>Email</label><input type="email" value={nuovoUtentePremium.email} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, email: e.target.value})} className={UI.input + " bg-white/60"} /></div>
-                    <div><label className={UI.label}>Password</label><input type="text" value={nuovoUtentePremium.password} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, password: e.target.value})} className={UI.input + " bg-white/60"} /></div>
-                    <div><label className={UI.label}>Nome Atleta (Uguale al DB)</label><input type="text" value={nuovoUtentePremium.nome_atleta} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, nome_atleta: e.target.value})} className={UI.input + " bg-white/60"} placeholder="Es. Mario" /></div>
-                    <div><label className={UI.label}>Scadenza</label><input type="date" value={nuovoUtentePremium.scadenza} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, scadenza: e.target.value})} className={UI.input + " bg-white/60"} /></div>
+                    <div><label className={UI.label}>Email</label><input type="email" value={nuovoUtentePremium.email} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, email: e.target.value})} className={UI.input + " bg-[var(--velo-60)]"} /></div>
+                    <div><label className={UI.label}>Password</label><input type="text" value={nuovoUtentePremium.password} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, password: e.target.value})} className={UI.input + " bg-[var(--velo-60)]"} /></div>
+                    <div><label className={UI.label}>Nome Atleta (Uguale al DB)</label><input type="text" value={nuovoUtentePremium.nome_atleta} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, nome_atleta: e.target.value})} className={UI.input + " bg-[var(--velo-60)]"} placeholder="Es. Mario" /></div>
+                    <div><label className={UI.label}>Scadenza</label><input type="date" value={nuovoUtentePremium.scadenza} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, scadenza: e.target.value})} className={UI.input + " bg-[var(--velo-60)]"} /></div>
                     <button onClick={async () => {
                       if (!nuovoUtentePremium.email || !nuovoUtentePremium.scadenza) return alert("Inserisci almeno Email e Scadenza.");
                       const { error } = await supabase.from('utenti_premium').insert([{ 
