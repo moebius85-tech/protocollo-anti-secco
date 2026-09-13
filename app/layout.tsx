@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// IMPORTA IL PROVIDER
-import { ThemeProvider } from "./components/ThemeProvider";
+// IMPORTA IL PROVIDER E IL BOTTONE
+import { ThemeProvider, ThemeToggle } from "./components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,8 +19,13 @@ export default function RootLayout({
   return (
     <html lang="it">
       <body className={inter.className}>
-        {/* AVVOLGI L'INTERA APP QUI */}
         <ThemeProvider>
+          
+          {/* BOTTONE GLOBALE FISSO IN ALTO A DESTRA */}
+          <div className="fixed top-4 right-4 z-[9999]">
+            <ThemeToggle />
+          </div>
+          
           {children}
         </ThemeProvider>
       </body>
