@@ -108,18 +108,20 @@ function Carta({
     zIndexCard = 50 + distanza;
   } else if (isExiting) {
     yPos = 0;
-    zIndexCard = 100; 
+    zIndexCard = 100;
   }
 
-  // GESTISCE IL DRAG (Sulla carta frontale: archiviazione + swipe verticale)
+  // GESTISCE IL DRAG (Sulla carta frontale: SOLO archiviazione orizzontale)
   const handleDragEnd = (_e: any, info: any) => {
     const offX = info.offset.x;
     const offY = info.offset.y;
 
+    // Anche se il drag è bloccato sull'asse x, controlliamo comunque offY:
+    // se il gesto era a dominanza verticale, priorità alla navigazione.
     if (Math.abs(offY) > Math.abs(offX)) {
-      onDragProgress?.(0); 
-      if (offY > 40) onSwipeVerticale?.(1); 
-      else if (offY < -40) onSwipeVerticale?.(-1); 
+      onDragProgress?.(0);
+      if (offY > 40) onSwipeVerticale?.(1);
+      else if (offY < -40) onSwipeVerticale?.(-1);
       return;
     }
 
@@ -131,14 +133,17 @@ function Carta({
     }
   };
 
-  // GESTISCE SOLO IL PAN (Sulle carte in secondo piano: rileva solo swipe verticale)
+  // GESTISCE SOLO IL PAN (su tutte le carte: rileva lo swipe verticale anche
+  // quando il drag della carta frontale, bloccato sull'asse x, non si attiva
+  // per un gesto a dominanza verticale — vedi handleDragEnd sopra che comunque
+  // lo ricontrolla come rete di sicurezza).
   const handlePanEnd = (_e: any, info: any) => {
     const offX = info.offset.x;
     const offY = info.offset.y;
 
     if (Math.abs(offY) > Math.abs(offX)) {
-      if (offY > 40) onSwipeVerticale?.(1); 
-      else if (offY < -40) onSwipeVerticale?.(-1); 
+      if (offY > 40) onSwipeVerticale?.(1);
+      else if (offY < -40) onSwipeVerticale?.(-1);
     }
   };
 
@@ -154,8 +159,6 @@ function Carta({
         WebkitBackfaceVisibility: 'hidden',
         transform: 'translateZ(0)',
         willChange: 'transform, opacity',
-        // ATTENZIONE QUI: Permettiamo a tutte le carte (tranne quelle invisibili/uscite)
-        // di ricevere i tocchi, così puoi trascinare le carte di sfondo!
         pointerEvents: isExiting || opacityCard === 0 ? 'none' : 'auto',
         boxShadow: isPast
           ? '6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)'
@@ -174,11 +177,15 @@ function Carta({
         opacity: { type: 'tween', duration: isExiting ? DURATA_USCITA : 0.35, ease: 'easeOut' },
         zIndex: { delay: isPast ? 0.35 : 0, duration: 0 },
       }}
-      
-      drag={isFront ? true : false} 
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      // IMPORTANTE: solo asse "x". Con drag=true su entrambi gli assi, la carta
+      // si muoveva fisicamente anche in verticale grazie al drag stesso,
+      // in conflitto con l'animazione "y" che la spediva nel mazzo:
+      // le due animazioni litigavano per un istante causando il glitch visivo.
+      // Bloccando il drag al solo asse x, la posizione verticale resta SEMPRE
+      // controllata unicamente dalla nostra animazione, senza conflitti.
+      drag={isFront ? 'x' : false}
+      dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.8}
-      
       onDrag={
         isFront
           ? (_e, info) => {
@@ -188,7 +195,7 @@ function Carta({
           : undefined
       }
       onDragEnd={isFront ? handleDragEnd : undefined}
-      // Le carte in secondo piano intercettano il PAN (sfioramento)
+      // Le carte non frontali intercettano il pan (sfioramento) per la verticale.
       onPanEnd={!isFront ? handlePanEnd : undefined}
     >
       <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
@@ -244,7 +251,6 @@ export const MazzoIntegratori = () => {
 
   return (
     <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
-      
       <div
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem]"
         style={{
@@ -293,8 +299,7 @@ export const MazzoIntegratori = () => {
             distanza={distanza}
             onDragProgress={ruolo === 'front' ? setDragProgress : undefined}
             onArchivia={ruolo === 'front' ? (dir) => handleArchivia(card.id, dir) : undefined}
-            // Passiamo la funzione a TUTTE le carte, non solo alla frontale
-            onSwipeVerticale={handleSwipeVerticale} 
+            onSwipeVerticale={handleSwipeVerticale}
           />
         );
       })}
