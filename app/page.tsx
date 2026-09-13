@@ -100,7 +100,7 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
           <polyline points={points} fill="none" stroke="#6366f1" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           {data.map((val, i) => {
             const x = padding + (i / (data.length - 1)) * (width - padding * 2); const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
-            return <g key={i}><circle cx={x} cy={y} r="5" fill="var(--superficie)" stroke="#6366f1" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>;
+            return <g key={i}><circle cx={x} cy={y} r="5" fill="var(--superficie)" stroke="#6366f1" strokeWidth="2" /><text x={x} y={y - 12} fill="var(--testo-debole)" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>;
           })}
        </svg>
     </div>
@@ -126,8 +126,8 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              const pos = getLabelPos(sec.angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
-                 <text x={pos.x} y={pos.y - 12} fill="#475569" fontSize="16" textAnchor="middle" fontWeight="bold" className="tracking-widest" style={{textShadow: "0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8)"}}>{sec.label}</text>
-                 <text x={pos.x} y={pos.y + 16} fill="#1e293b" fontSize="32" textAnchor="middle" fontWeight="900" style={{textShadow: "0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8)"}}>{sec.val}</text>
+                 <text x={pos.x} y={pos.y - 12} fill="var(--testo-medio)" fontSize="16" textAnchor="middle" fontWeight="bold" className="tracking-widest" style={{textShadow: "0 0 6px var(--superficie), 0 0 12px var(--superficie)"}}>{sec.label}</text>
+                 <text x={pos.x} y={pos.y + 16} fill="var(--testo-forte)" fontSize="32" textAnchor="middle" fontWeight="900" style={{textShadow: "0 0 6px var(--superficie), 0 0 12px var(--superficie)"}}>{sec.val}</text>
                </g>
              )
           })}
@@ -857,7 +857,7 @@ if (!usaIntegratori) {
               </div>
 
               <div className="flex flex-col items-center justify-center z-10 relative mt-4">
-                 <div className="flex items-center justify-center mb-5 px-8 py-4 bg-[var(--superficie)]/80 backdrop-blur-xl rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-white/60">
+                 <div className="flex items-center justify-center mb-5 px-8 py-4 bg-[var(--superficie)]/80 backdrop-blur-xl rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-[var(--velo-60)]">
                    <div className="relative flex items-center justify-center -mr-1 z-10">
                      <svg width="65" height="65" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg">
                        <circle cx="50" cy="50" r="36" fill="var(--superficie)" />
@@ -1091,7 +1091,7 @@ if (!usaIntegratori) {
 const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110 drop-shadow-[0_0_10px_rgba(132,204,22,0.5)]' : 'text-slate-400 hover:text-slate-500'}`}>
-    <div className={`relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_rgba(255,255,255,0.4)]' : 'bg-transparent'}`}>
+    <div className={`relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
        {iconSvg}
     </div>
     <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
@@ -1329,7 +1329,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
             
             <div className="space-y-6">
-              <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.7)] backdrop-blur-md p-5 rounded-[1.5rem]">
+              <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] backdrop-blur-md p-5 rounded-[1.5rem]">
                 <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
                 <div className="flex space-x-5">
                   <div className="flex-1 relative">
@@ -1343,7 +1343,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 </div>
               </div>
               {tipoTurno === 'spezzato' && (
-                <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.7)] backdrop-blur-md p-5 rounded-[1.5rem]">
+                <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] backdrop-blur-md p-5 rounded-[1.5rem]">
                   <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
                   <div className="flex space-x-5">
                     <div className="flex-1 relative">
@@ -1547,7 +1547,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     )}
   </div>
 ) : (
-                           <div className={`mt-2 p-5 rounded-3xl bg-orange-50/50 backdrop-blur-xl border border-white shadow-[inset_4px_4px_8px_rgba(255,255,255,0.8),inset_-4px_-4px_8px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
+                           <div className={`mt-2 p-5 rounded-3xl bg-orange-50/50 backdrop-blur-xl border border-white shadow-[inset_4px_4px_8px_var(--ombra-chiara),inset_-4px_-4px_8px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
                              <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
                              <div className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">
                                {renderDescrizioneConHUD(blocco.descrizione || "")}
@@ -1708,7 +1708,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   return raccomandazioni.map((r, idx) => (
                     <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_10px_var(--ombra-scura),-4px_-4px_10px_var(--ombra-chiara)] p-5 rounded-3xl flex flex-col gap-3 anim-pop transition-transform hover:scale-[1.02]" style={{animationDelay: `${idx * 0.15}s`}}>
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl bg-[var(--velo-40)] w-12 h-12 flex items-center justify-center rounded-2xl shadow-[inset_2px_2px_4px_rgba(163,177,198,0.4)] shrink-0">{r.icona}</span>
+                        <span className="text-2xl bg-[var(--velo-40)] w-12 h-12 flex items-center justify-center rounded-2xl shadow-[inset_2px_2px_4px_var(--ombra-scura)] shrink-0">{r.icona}</span>
                         <h4 className="font-black text-slate-700 text-[11px] tracking-wide uppercase leading-tight">{r.nome}</h4>
                       </div>
                       <p className="text-[10px] text-slate-500 font-bold leading-relaxed px-1 mt-1">{r.motivo}</p>
@@ -1812,30 +1812,30 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         <div className="pl-1">
                           <div className="flex justify-between items-start mb-3">
                             <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
-                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[var(--velo-40)] shadow-[3px_3px_6px_rgba(163,177,198,0.5),-3px_-3px_6px_rgba(255,255,255,0.8)] text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_rgba(163,177,198,0.5)] border-none cursor-pointer">Swap</button>
+                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[var(--velo-40)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura)] border-none cursor-pointer">Swap</button>
                           </div>
                           
                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 mt-4">
-                            <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0 border border-white/40"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
+                            <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0 border border-[var(--velo-40)]"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
                             <div className="flex-1 w-full min-w-0 text-center sm:text-left">
                                <h3 className="font-bold text-[16px] text-slate-700 mb-2 truncate">{nomeAttuale}</h3>
                                <p className="text-[12px] sm:text-[11px] text-slate-600 leading-relaxed font-semibold">{currentEx.dettaglio}</p>
                             </div>
                           </div>
 
-                          <div className="mt-6 flex items-center justify-between bg-[var(--velo-30)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-4 rounded-2xl border border-white/50">
-                             <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[var(--velo-50)] shadow-[2px_2px_4px_rgba(163,177,198,0.4)] text-slate-600 tracking-widest">{repMostrate}</p>
-                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-500 px-3 py-2 bg-[var(--velo-50)] shadow-[2px_2px_4px_rgba(163,177,198,0.4)] rounded-xl uppercase tracking-widest">Ultima: <span className="ml-1 text-[14px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>}
+                          <div className="mt-6 flex items-center justify-between bg-[var(--velo-30)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl border border-[var(--velo-50)]">
+                             <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] text-slate-600 tracking-widest">{repMostrate}</p>
+                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-500 px-3 py-2 bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] rounded-xl uppercase tracking-widest">Ultima: <span className="ml-1 text-[14px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>}
                           </div>
                           
-                          <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-[var(--velo-50)] shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-white/60 cursor-pointer transition-all hover:-translate-y-0.5" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
+                          <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-[var(--velo-50)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-[var(--velo-60)] cursor-pointer transition-all hover:-translate-y-0.5" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
 
                           <div className="mt-5 pt-5 border-t border-slate-400/20">
                             <div className="flex gap-4">
                               {Array.from({ length: numeroSetTarget }).map((_, i) => (
                                 <div key={i} className="flex-1 relative">
                                   <label className="text-[9px] text-slate-500 uppercase font-bold tracking-widest block text-center mb-2.5">Set {i+1}</label>
-                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
+                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
                                 </div>
                               ))}
                             </div>
@@ -1884,7 +1884,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       </div>
 
       {/* --- BOTTOM NAVIGATION BAR (Solo su Mobile) --- */}
-      <nav className="sm:hidden fixed bottom-0 left-0 w-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-[0_-10px_30px_rgba(163,177,198,0.4)] z-[90] pb-safe flex justify-between border-t border-white/50 px-2 pt-2">
+      <nav className="sm:hidden fixed bottom-0 left-0 w-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-[0_-10px_30px_var(--ombra-scura)] z-[90] pb-safe flex justify-between border-t border-[var(--velo-50)] px-2 pt-2">
         
         {/* ICONA DATI: Grafico a linee fluido */}
         {renderNavicon('TELEMETRIA', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>, 'Dati')}
@@ -1921,7 +1921,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         return (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 anim-pop">
-            <div className="bg-[var(--superficie)] w-full max-h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-white/20">
+            <div className="bg-[var(--superficie)] w-full max-h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-[var(--velo-20)]">
               <button onClick={() => setFocusWorkout(null)} className="absolute top-5 right-6 text-slate-400 hover:text-slate-600 text-3xl font-bold z-20 border-none bg-transparent cursor-pointer">&times;</button>
               
               {/* PARTE ALTA: TIMER NEUMORFICO (Neutra) */}
@@ -1953,7 +1953,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                  {/* TITOLO ED ESERCIZIO CENTRATI */}
                  <div className="flex flex-col items-center justify-center text-center mb-3 gap-2">
                    {/* Ridotto da w-36 h-32 a w-28 h-20 per recuperare circa 50px di spazio verticale */}
-                   <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] p-2 rounded-[1rem] w-28 h-20 shrink-0 border border-white/40 flex items-center justify-center overflow-hidden">
+                   <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-2 rounded-[1rem] w-28 h-20 shrink-0 border border-[var(--velo-40)] flex items-center justify-center overflow-hidden">
                      <MediaVisualizer animKey={currentEx.anim || "chest_barbell_flat"} color={phaseColor} />
                    </div>
                    <div>
@@ -1961,7 +1961,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                      {/* Line-clamp-1 assicura che il testo lungo non mandi a capo e mangi spazio */}
                      <p className="text-[10px] text-slate-600 font-bold mt-1 leading-snug line-clamp-1">{currentEx.dettaglio}</p>
                      
-                     <div className="mt-2 bg-[var(--velo-40)] shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] px-4 py-1.5 rounded-lg border border-white/50 inline-block">
+                     <div className="mt-2 bg-[var(--velo-40)] shadow-[inset_2px_2px_5px_var(--ombra-scura),inset_-2px_-2px_5px_var(--ombra-chiara)] px-4 py-1.5 rounded-lg border border-[var(--velo-50)] inline-block">
                         <span className="text-[10px] font-black text-slate-600 tracking-widest">{repMostrate}</span>
                      </div>
                    </div>
@@ -1972,13 +1972,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         <div key={i} className="flex-1 relative">
                            <label className="text-[9px] text-slate-600 uppercase font-black tracking-widest block text-center mb-1">Set {i+1}</label>
                            {/* Padding ridotto sui set per non farli sbordare */}
-                           <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] py-2 px-1 text-center rounded-xl text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
+                           <input type="number" value={carichiAttuali[focusWorkout.id]?.[i] || ''} onChange={(e) => updateCaricoSet(focusWorkout.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-2 px-1 text-center rounded-xl text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
                         </div>
                      ))}
                  </div>
                  
                  {/* Bottone più sottile e stretto */}
-                 <button onClick={() => setFocusWorkout(null)} className="w-full mt-4 py-3 bg-[var(--velo-50)] shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.9)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.9)] text-slate-600 font-black uppercase tracking-widest text-[12px] rounded-xl transition-all border border-white/60 cursor-pointer hover:-translate-y-0.5">CHIUDI E SALVA SET</button>
+                 <button onClick={() => setFocusWorkout(null)} className="w-full mt-4 py-3 bg-[var(--velo-50)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] text-slate-600 font-black uppercase tracking-widest text-[12px] rounded-xl transition-all border border-[var(--velo-60)] cursor-pointer hover:-translate-y-0.5">CHIUDI E SALVA SET</button>
               </div>
             </div>
           </div>
@@ -2111,13 +2111,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       <div className="pt-4 border-t border-slate-300/50 shrink-0">
         <span className="text-[9px] uppercase font-black text-slate-400 tracking-widest block mb-3">Analizza e Salva Nuovo Prodotto</span>
         <div className="flex gap-3 mb-3 items-center">
-          <label className="bg-[var(--velo-60)] shadow-[2px_2px_5px_rgba(163,177,198,0.4)] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-xl transition-all border-none cursor-pointer">
+          <label className="bg-[var(--velo-60)] shadow-[2px_2px_5px_var(--ombra-scura)] text-slate-500 hover:text-orange-500 w-12 h-12 flex items-center justify-center shrink-0 rounded-xl transition-all border-none cursor-pointer">
             <input type="file" accept="image/*" className="hidden" onChange={(e) => gestisciCaricamentoFilePasto(e, 'ScannerAI')} />
             <span className="text-[16px] leading-none">📸</span>
           </label>
           
           {/* INPUT ISOLATO (Non tocca più il pasto principale finché non salvi) */}
-          <input type="text" placeholder="Es. 30g Mandorle..." value={formAInuovo.nome} onChange={e => setFormAInuovo({...formAInuovo, nome: e.target.value})} className={"w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 py-3 rounded-xl text-[13px] text-slate-600 outline-none transition-all font-semibold border-none"} />
+          <input type="text" placeholder="Es. 30g Mandorle..." value={formAInuovo.nome} onChange={e => setFormAInuovo({...formAInuovo, nome: e.target.value})} className={"w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 py-3 rounded-xl text-[13px] text-slate-600 outline-none transition-all font-semibold border-none"} />
           
           <button 
             onClick={async () => {
@@ -2173,7 +2173,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         </div>
 
         {fileCustomPasto['ScannerAI'] && (
-          <div className="flex items-center gap-2 mb-3 p-2 bg-[var(--velo-50)] rounded-xl w-fit border border-white/60">
+          <div className="flex items-center gap-2 mb-3 p-2 bg-[var(--velo-50)] rounded-xl w-fit border border-[var(--velo-60)]">
             <span className="text-[10px] font-bold text-orange-500 truncate max-w-[150px]"> {fileCustomPasto['ScannerAI'].nome}</span>
             <button onClick={() => setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}))} className="text-red-500 hover:text-red-700 font-bold ml-2 border-none bg-transparent cursor-pointer">&times;</button>
           </div>
@@ -2181,11 +2181,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         {/* --- RISULTATO A.I. E SALVATAGGIO --- */}
         {formAInuovo.nome && (formAInuovo.cho !== "" || formAInuovo.pro !== "" || formAInuovo.fat !== "") && (
-          <div className="bg-[var(--velo-40)] p-3 rounded-xl border border-white/60 shadow-sm mt-2">
+          <div className="bg-[var(--velo-40)] p-3 rounded-xl border border-[var(--velo-60)] shadow-sm mt-2">
             <div className="flex gap-2 mb-3">
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Carbo</span><input type="number" value={formAInuovo.cho} onChange={e => setFormAInuovo({...formAInuovo, cho: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Pro</span><input type="number" value={formAInuovo.pro} onChange={e => setFormAInuovo({...formAInuovo, pro: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
-              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Fat</span><input type="number" value={formAInuovo.fat} onChange={e => setFormAInuovo({...formAInuovo, fat: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.8)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Carbo</span><input type="number" value={formAInuovo.cho} onChange={e => setFormAInuovo({...formAInuovo, cho: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Pro</span><input type="number" value={formAInuovo.pro} onChange={e => setFormAInuovo({...formAInuovo, pro: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
+              <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Fat</span><input type="number" value={formAInuovo.fat} onChange={e => setFormAInuovo({...formAInuovo, fat: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
             </div>
             <button 
               onClick={() => {
@@ -2234,7 +2234,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 <h2 className="text-2xl font-black uppercase tracking-widest text-slate-700 mb-8">Admin <span className="text-red-500">Control Room</span></h2>
                 
                 {/* PANNELLO AGGIUNGI NUOVO CLIENTE */}
-                <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3)] p-6 rounded-3xl mb-8 border border-white/50">
+                <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura)] p-6 rounded-3xl mb-8 border border-[var(--velo-50)]">
                   <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Nuovo Accesso Premium</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
                     <div><label className={UI.label}>Email</label><input type="email" value={nuovoUtentePremium.email} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, email: e.target.value})} className={UI.input + " bg-[var(--velo-60)]"} /></div>
