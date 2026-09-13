@@ -10,11 +10,11 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Tema principale Verde Mela
 const gradPrimary = "bg-gradient-to-r from-lime-400 to-emerald-500"; 
-const colorBg = "bg-[#E0E5EC]";
-const shadowOutset = "shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff]";
-const shadowInset = "shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff]";
-const shadowOutsetSm = "shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff]";
-const shadowInsetSm = "shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]";
+const colorBg = "bg-[var(--superficie)]";
+const shadowOutset = "shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)]";
+const shadowInset = "shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)]";
+const shadowOutsetSm = "shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)]";
+const shadowInsetSm = "shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)]";
 
 const UI = {
   bg: colorBg,
@@ -100,7 +100,7 @@ const SvgLineChart = ({ data, label }: { data: number[], label: string }) => {
           <polyline points={points} fill="none" stroke="#6366f1" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           {data.map((val, i) => {
             const x = padding + (i / (data.length - 1)) * (width - padding * 2); const y = height - padding - ((val - minVal) / range) * (height - padding * 2);
-            return <g key={i}><circle cx={x} cy={y} r="5" fill="#E0E5EC" stroke="#6366f1" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>;
+            return <g key={i}><circle cx={x} cy={y} r="5" fill="var(--superficie)" stroke="#6366f1" strokeWidth="2" /><text x={x} y={y - 12} fill="#64748b" fontSize="10" textAnchor="middle" fontWeight="bold">{val}</text></g>;
           })}
        </svg>
     </div>
@@ -148,6 +148,21 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
+
+  // --- SELETTORE TEMA (chiaro / scuro / neon) ---
+  // Non tocca nessuna logica dell'app: cambia solo un attributo sull'elemento
+  // <html>, che le variabili CSS in globals.css leggono per decidere i colori.
+  const [tema, setTema] = useState<'chiaro' | 'scuro' | 'neon'>('chiaro');
+
+  useEffect(() => {
+    const temaSalvato = localStorage.getItem('omnifit-tema') as 'chiaro' | 'scuro' | 'neon' | null;
+    if (temaSalvato) setTema(temaSalvato);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', tema);
+    localStorage.setItem('omnifit-tema', tema);
+  }, [tema]);
   
   // --- STATO SPLASH SCREEN INTRO ---
   const [mostraIntro, setMostraIntro] = useState(true);
@@ -814,7 +829,7 @@ if (!usaIntegratori) {
           </div>
 
           {/* --- SPLASH SCREEN INTRO (Non si distrugge, ma sfuma lentamente) --- */}
-          <div className={"fixed inset-0 z-[9999] bg-[#E0E5EC] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out " + (mostraIntro ? "opacity-100" : "opacity-0 pointer-events-none")}>
+          <div className={"fixed inset-0 z-[9999] bg-[var(--superficie)] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out " + (mostraIntro ? "opacity-100" : "opacity-0 pointer-events-none")}>
               
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
@@ -842,10 +857,10 @@ if (!usaIntegratori) {
               </div>
 
               <div className="flex flex-col items-center justify-center z-10 relative mt-4">
-                 <div className="flex items-center justify-center mb-5 px-8 py-4 bg-[#E0E5EC]/80 backdrop-blur-xl rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-white/60">
+                 <div className="flex items-center justify-center mb-5 px-8 py-4 bg-[var(--superficie)]/80 backdrop-blur-xl rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-white/60">
                    <div className="relative flex items-center justify-center -mr-1 z-10">
                      <svg width="65" height="65" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg">
-                       <circle cx="50" cy="50" r="36" fill="#E0E5EC" />
+                       <circle cx="50" cy="50" r="36" fill="var(--superficie)" />
                        <circle cx="50" cy="50" r="36" fill="none" stroke="#84cc16" strokeWidth="22" className="anim-circle" strokeLinecap="square" />
                      </svg>
                    </div>
@@ -855,7 +870,7 @@ if (!usaIntegratori) {
                    </div>
                  </div>
 
-                 <div className="relative px-8 py-3 rounded-full bg-[#E0E5EC]/90 backdrop-blur-xl shadow-sm anim-sub overflow-hidden border border-transparent">
+                 <div className="relative px-8 py-3 rounded-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-sm anim-sub overflow-hidden border border-transparent">
                     <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 240 50" preserveAspectRatio="none">
                        <rect x="2" y="2" width="236" height="46" rx="23" fill="none" stroke="#84cc16" strokeWidth="3" className="anim-miccia-border drop-shadow-[0_0_8px_#84cc16]" />
                     </svg>
@@ -885,7 +900,7 @@ if (!usaIntegratori) {
                  <div className="flex justify-between items-center mb-2 px-2">
                    <label className={UI.label + " !mb-0 !px-0"}>1. Seleziona Atleta</label>
                    {utenteCorrente !== "Leonardo" && (
-                     <button onClick={eliminaAtleta} className="text-[9px] bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-600 px-3 py-1.5 rounded-full font-bold uppercase transition-all">🗑️ Elimina</button>
+                     <button onClick={eliminaAtleta} className="text-[9px] bg-[#e8eef3] shadow-[3px_3px_6px_#c1c9d2,-3px_-3px_6px_var(--ombra-chiara)] text-red-500 hover:text-red-600 px-3 py-1.5 rounded-full font-bold uppercase transition-all">🗑️ Elimina</button>
                    )}
                  </div>
                  <select value={utenteCorrente} onChange={e => setUtenteCorrente(e.target.value)} className={UI.input}>
@@ -945,7 +960,7 @@ if (!usaIntegratori) {
                  </select>
               </div>
               
-              <div className="bg-[#E0E5EC] shadow-[5px_5px_10px_#a3b1c6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4 anim-pop" style={{animationDelay: '0.3s'}}>
+              <div className="bg-[var(--superficie)] shadow-[5px_5px_10px_var(--ombra-scura),-5px_-5px_10px_var(--ombra-chiara)] p-4 rounded-2xl flex items-center gap-4 anim-pop" style={{animationDelay: '0.3s'}}>
                  <input type="checkbox" id="metabolismoMain" checked={metabolismoBloccato} onChange={async (e) => {
                     const bloccato = e.target.checked;
                     setMetabolismoBloccato(bloccato);
@@ -1034,7 +1049,7 @@ if (!usaIntegratori) {
                      </select>
                    </div>
                    
-                   <div className="bg-[#E0E5EC] shadow-[5px_5px_10px_#a3b1c6,-5px_-5px_10px_#ffffff] p-4 rounded-2xl flex items-center gap-4">
+                   <div className="bg-[var(--superficie)] shadow-[5px_5px_10px_var(--ombra-scura),-5px_-5px_10px_var(--ombra-chiara)] p-4 rounded-2xl flex items-center gap-4">
                      <input type="checkbox" id="metabolismo" checked={datiWizard.metabolismoBloccato} onChange={e=>setDatiWizard({...datiWizard, metabolismoBloccato: e.target.checked})} className="w-5 h-5 accent-lime-500 rounded cursor-pointer shadow-inner" />
                      <label htmlFor="metabolismo" className="text-xs text-slate-500 font-bold tracking-widest cursor-pointer uppercase">Stallo Metabolico?</label>
                    </div>
@@ -1042,11 +1057,11 @@ if (!usaIntegratori) {
                    <div className={UI.panelInset + " flex flex-col gap-4"}>
                      <div>
                         <p className={UI.label + " !px-0"}>📸 Condizione Attuale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#E0E5EC] file:text-lime-500 hover:file:text-lime-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] file:text-[10px] file:font-bold file:tracking-widest file:bg-[var(--superficie)] file:text-lime-500 hover:file:text-lime-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoPartenza} />
                      </div>
                      <div className="border-t border-slate-200/50 pt-4">
                         <p className={UI.label + " !px-0"}>📸 Obiettivo Ideale</p>
-                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] file:text-[10px] file:font-bold file:tracking-widest file:bg-[#E0E5EC] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
+                        <input type="file" className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-none file:shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] file:text-[10px] file:font-bold file:tracking-widest file:bg-[var(--superficie)] file:text-purple-500 hover:file:text-purple-600 transition-all cursor-pointer uppercase" accept="image/*" onChange={gestisciCaricamentoArrivo} />
                      </div>
                    </div>
                    <div className="flex gap-4 pt-4">
@@ -1084,14 +1099,34 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 );
 
   return (
-    <main className="min-h-screen bg-[#E0E5EC] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
+    <main className="min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
       <header className="mb-6 pb-4 flex justify-between items-center relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
         <div>
-          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[#E0E5EC] px-4 py-2 rounded-full shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">⬅️ Torna alla Home</button>
+          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">⬅️ Torna alla Home</button>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
             OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
           </h1>
+          {/* SELETTORE TEMA: chiaro / scuro / neon */}
+          <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
+            {([
+              { id: 'chiaro', label: '☀️ Chiaro' },
+              { id: 'scuro', label: '🌙 Scuro' },
+              { id: 'neon', label: '⚡ Neon' },
+            ] as const).map((opzione) => (
+              <button
+                key={opzione.id}
+                onClick={() => setTema(opzione.id)}
+                className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
+                  tema === opzione.id
+                    ? 'bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
+                    : 'text-slate-400 hover:text-slate-500'
+                }`}
+              >
+                {opzione.label}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="text-right">
           {/* BOTTONE SEGRETO ADMIN */}
@@ -1102,8 +1137,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
           <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
           <div className="flex flex-col items-end gap-2.5">
-             <span className="text-sm font-bold text-slate-600 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
-             <div className="flex gap-2 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] px-3 py-1.5 rounded-full">
+             <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+             <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
                 <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
                 {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
              </div>
@@ -1117,11 +1152,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         {/* COLONNA SINISTRA: Telemetria & Coach IA */}
         <div className={`flex-col gap-8 lg:col-span-3 ${mobileTab === 'TELEMETRIA' || mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`}>
           
-          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex-col relative overflow-hidden anim-pop ${mobileTab === 'TELEMETRIA' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.2s'}}>
+          <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 rounded-3xl flex-col relative overflow-hidden anim-pop ${mobileTab === 'TELEMETRIA' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.2s'}}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 relative z-10">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Telemetria</h2>
-              <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={`px-4 py-2 text-[9px] font-bold uppercase tracking-widest rounded-full transition-all border-none cursor-pointer shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] ${vistaTelemetria === 'STORICO' ? 'text-indigo-500 active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]' : 'text-slate-500 hover:text-indigo-500'}`}>
+              <button onClick={() => setVistaTelemetria(vistaTelemetria === 'FORM' ? 'STORICO' : 'FORM')} className={`px-4 py-2 text-[9px] font-bold uppercase tracking-widest rounded-full transition-all border-none cursor-pointer shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] ${vistaTelemetria === 'STORICO' ? 'text-indigo-500 active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)]' : 'text-slate-500 hover:text-indigo-500'}`}>
                 {vistaTelemetria === 'STORICO' ? 'Torna al Form' : 'Vedi Storico'}
               </button>
             </div>
@@ -1138,7 +1173,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                    <p className="text-[10px] text-indigo-500 uppercase font-bold tracking-widest block mb-3 px-1">Misure Base</p>
                    <div className="grid grid-cols-2 gap-4">
                      {misureBase.map((m) => (
-                         <div key={m.id} className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-3.5 rounded-2xl">
+                         <div key={m.id} className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-3.5 rounded-2xl">
                            <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-2">{m.label} <span className="text-slate-400/50">{m.unit}</span></label>
                            <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-600 outline-none focus:text-indigo-500 transition-colors text-center appearance-none" placeholder="-" />
                          </div>
@@ -1150,7 +1185,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                    <p className="text-[10px] text-indigo-500 uppercase font-bold tracking-widest block mb-3 px-1 mt-4">BIA (Opzionale)</p>
                    <div className="grid grid-cols-2 gap-4">
                      {misureBIA.map((m) => (
-                         <div key={m.id} className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] p-3.5 rounded-2xl">
+                         <div key={m.id} className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-3.5 rounded-2xl">
                            <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-2">{m.label} <span className="text-slate-400/50">{m.unit}</span></label>
                            <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-indigo-500 outline-none focus:text-indigo-600 transition-colors text-center appearance-none" placeholder="-" />
                          </div>
@@ -1174,14 +1209,14 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   placeholder="Cerca una data (es. 15/09/2026)..." 
                   value={ricercaTelemetria}
                   onChange={(e) => setRicercaTelemetria(e.target.value)}
-                  className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-600 text-xs font-bold pl-10 pr-4 py-3 rounded-full outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all border-none"
+                  className="w-full bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] text-slate-600 text-xs font-bold pl-10 pr-4 py-3 rounded-full outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all border-none"
                />
             </div>
 
             {/* MOTORE DI RAGGRUPPAMENTO E RENDER */}
             {(() => {
               if (storicoMisure.length === 0) {
-                return <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessun dato registrato.</p>;
+                return <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] rounded-[2rem]">Nessun dato registrato.</p>;
               }
 
               // 1. Applica il filtro della ricerca
@@ -1191,7 +1226,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               });
 
               if (filtrate.length === 0) {
-                 return <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessuna misurazione trovata.</p>;
+                 return <p className="text-[11px] text-slate-400 italic font-bold text-center p-6 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] rounded-[2rem]">Nessuna misurazione trovata.</p>;
               }
 
               // 2. Raggruppa per "Mese Anno"
@@ -1209,7 +1244,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     {/* INTESTAZIONE CARTELLA */}
                     <button 
                       onClick={() => setMeseApertoTele(meseApertoTele === meseAnno ? null : meseAnno)}
-                      className="w-full flex justify-between items-center bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] p-4 rounded-2xl border-none cursor-pointer transition-all"
+                      className="w-full flex justify-between items-center bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] p-4 rounded-2xl border-none cursor-pointer transition-all"
                     >
                       <span className="text-[11px] font-black text-slate-600 tracking-widest">{meseAnno}</span>
                       <div className="flex items-center gap-3">
@@ -1224,20 +1259,20 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         {misure.map((mis: any, idx: number) => {
                            const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
                            return (
-                              <div key={mis.id} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex flex-col gap-4 p-5 rounded-[1.5rem] anim-pop" style={{animationDelay: `${idx * 0.05}s`}}>
+                              <div key={mis.id} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] flex flex-col gap-4 p-5 rounded-[1.5rem] anim-pop" style={{animationDelay: `${idx * 0.05}s`}}>
                                 <div className="flex justify-between items-center mb-2 border-b border-slate-200/50 pb-3">
-                                  <p className="text-[11px] font-bold text-indigo-500 tracking-widest bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
-                                  <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[18px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] w-8 h-8 flex items-center justify-center rounded-full active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">&times;</button>
+                                  <p className="text-[11px] font-bold text-indigo-500 tracking-widest bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
+                                  <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[18px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] w-8 h-8 flex items-center justify-center rounded-full active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">&times;</button>
                                 </div>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Peso</span> <strong className="text-slate-600 text-xs">{mis.peso || '-'}kg</strong></p>
-                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Petto</span> <strong className="text-slate-600 text-xs">{circ.petto || '-'}cm</strong></p>
-                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Spalle</span> <strong className="text-slate-600 text-xs">{circ.spalle || '-'}cm</strong></p>
-                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600 text-xs">{circ.braccia || '-'}cm</strong></p>
-                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600 text-xs">{circ.gambe || '-'}cm</strong></p>
-                                   <p className="bg-[#E0E5EC] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600 text-xs">{circ.glutei || '-'}cm</strong></p>
-                                   <p className="bg-indigo-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-indigo-600 flex justify-between items-center"><span>Vita</span> <strong className="text-indigo-600 text-xs">{circ.vita || '-'}cm</strong></p>
-                                   <p className="bg-purple-50 shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] p-3 rounded-xl text-purple-600 flex justify-between items-center"><span>BIA</span> <strong className="text-purple-600 text-xs">{circ.bodyFat || '-'}%</strong></p>
+                                   <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Peso</span> <strong className="text-slate-600 text-xs">{mis.peso || '-'}kg</strong></p>
+                                   <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Petto</span> <strong className="text-slate-600 text-xs">{circ.petto || '-'}cm</strong></p>
+                                   <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Spalle</span> <strong className="text-slate-600 text-xs">{circ.spalle || '-'}cm</strong></p>
+                                   <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600 text-xs">{circ.braccia || '-'}cm</strong></p>
+                                   <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600 text-xs">{circ.gambe || '-'}cm</strong></p>
+                                   <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600 text-xs">{circ.glutei || '-'}cm</strong></p>
+                                   <p className="bg-indigo-50 shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl text-indigo-600 flex justify-between items-center"><span>Vita</span> <strong className="text-indigo-600 text-xs">{circ.vita || '-'}cm</strong></p>
+                                   <p className="bg-purple-50 shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl text-purple-600 flex justify-between items-center"><span>BIA</span> <strong className="text-purple-600 text-xs">{circ.bodyFat || '-'}%</strong></p>
                                 </div>
                               </div>
                            );
@@ -1251,15 +1286,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             )}
           </section>
 
-          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 rounded-3xl flex-col h-[480px] anim-pop ${mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.3s'}}>
+          <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 rounded-3xl flex-col h-[480px] anim-pop ${mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.3s'}}>
             <h2 className="text-base font-bold tracking-widest uppercase text-slate-700 mb-6 flex items-center gap-3 border-b border-slate-200/50 pb-4">
               <span className="w-3 h-3 rounded-full bg-[#00c6ff] animate-pulse shadow-[0_0_10px_#00c6ff]"></span> A.I. Coach
             </h2>
-            <div className="flex-1 overflow-y-auto space-y-4 p-5 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem] mb-6 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto space-y-4 p-5 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] rounded-[2rem] mb-6 custom-scrollbar">
               {chatLog.map((msg, i) => (
                 <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} anim-pop`} style={{animationDelay: `${0.1 * i}s`}}>
                   <span className={`text-[9px] uppercase font-black tracking-widest mb-2 ${msg.role === 'user' ? 'text-slate-400 pr-2' : 'text-[#00c6ff] pl-2'}`}>{msg.role === 'user' ? utenteCorrente : 'Coach'}</span>
-                  <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] ${msg.role === 'user' ? 'bg-[#E0E5EC] text-slate-600 rounded-tr-sm' : 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white rounded-tl-sm shadow-[0_8px_15px_rgba(6,182,212,0.3)]'}`}>{msg.text}</div>
+                  <div className={`p-4 rounded-[1.5rem] text-[13px] leading-relaxed max-w-[90%] font-semibold shadow-[4px_4px_10px_var(--ombra-scura),-4px_-4px_10px_var(--ombra-chiara)] ${msg.role === 'user' ? 'bg-[var(--superficie)] text-slate-600 rounded-tr-sm' : 'bg-gradient-to-br from-cyan-400 to-blue-500 text-white rounded-tl-sm shadow-[0_8px_15px_rgba(6,182,212,0.3)]'}`}>{msg.text}</div>
                 </div>
               ))}
               {isTyping && <div className="text-[10px] text-[#00c6ff] font-bold tracking-widest pl-2 animate-pulse mt-2">Elaborazione in corso...</div>}
@@ -1267,15 +1302,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
             
             {fileAllegato && (
-              <div className="flex items-center gap-2 mb-4 p-3 bg-[#E0E5EC] shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] rounded-2xl w-fit anim-pop">
+              <div className="flex items-center gap-2 mb-4 p-3 bg-[var(--superficie)] shadow-[4px_4px_10px_var(--ombra-scura),-4px_-4px_10px_var(--ombra-chiara)] rounded-2xl w-fit anim-pop">
                 <span className="text-xs text-[#0072ff] font-bold tracking-widest truncate max-w-[180px]">📎 {fileAllegato.nome}</span>
                 <button onClick={() => setFileAllegato(null)} className="text-slate-400 hover:text-red-500 font-bold ml-3 transition-colors border-none bg-transparent cursor-pointer">&times;</button>
               </div>
             )}
             <div className="flex gap-2 relative items-center w-full">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={gestisciCaricamentoFile} />
-              <button onClick={() => fileInputRef.current?.click()} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] text-slate-500 hover:text-[#00c6ff] w-12 h-12 flex items-center justify-center shrink-0 rounded-full transition-all border-none cursor-pointer">📎</button>
-              <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Scrivi..." className="flex-1 min-w-0 bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] px-4 py-3 h-12 rounded-full text-[12px] text-slate-600 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none" />
+              <button onClick={() => fileInputRef.current?.click()} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] text-slate-500 hover:text-[#00c6ff] w-12 h-12 flex items-center justify-center shrink-0 rounded-full transition-all border-none cursor-pointer">📎</button>
+              <input type="text" value={inputChat} onChange={e => setInputChat(e.target.value)} onKeyDown={e => e.key === 'Enter' && inviaMessaggioIA()} placeholder="Scrivi..." className="flex-1 min-w-0 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 py-3 h-12 rounded-full text-[12px] text-slate-600 outline-none focus:ring-2 focus:ring-cyan-400/40 transition-all font-semibold placeholder:text-slate-400 border-none" />
               <button onClick={inviaMessaggioIA} disabled={isTyping || (!inputChat.trim() && !fileAllegato)} className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold w-12 h-12 shrink-0 flex items-center justify-center rounded-full shadow-[0_4px_10px_rgba(6,182,212,0.3)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 transition-all border-none cursor-pointer">→</button>
             </div>
           </section>
@@ -1283,12 +1318,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         {/* COLONNA CENTRALE: Turni & Nutrizione */}
         <div className={`flex-col gap-8 lg:col-span-4 ${mobileTab === 'TURNI' || mobileTab === 'NUTRIZIONE' ? 'flex' : 'hidden'} lg:flex`}>
-          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'TURNI' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.4s'}}>
+          <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'TURNI' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.4s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lime-400 to-emerald-500 opacity-80"></div>
             
             <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-200/50 pt-2">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Incastro Turni</h2>
-              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[#E0E5EC] text-[10px] text-lime-600 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] appearance-none border-none cursor-pointer">
+              <select value={tipoTurno} onChange={(e) => setTipoTurno(e.target.value)} className="bg-[var(--superficie)] text-[10px] text-lime-600 font-bold uppercase tracking-widest py-3 px-5 rounded-full outline-none transition-all shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] appearance-none border-none cursor-pointer">
                 <option value="diretto">Turno Diretto</option><option value="spezzato">Turno Spezzato</option>
               </select>
             </div>
@@ -1298,11 +1333,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
                 <div className="flex space-x-5">
                   <div className="flex-1 relative">
-                    <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-2 left-2 rounded-full shadow-sm">Inizio</span>
+                    <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[var(--superficie)] px-2 left-2 rounded-full shadow-sm">Inizio</span>
                     <input type="time" value={inizio1} onChange={e => setInizio1(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                   </div>
                   <div className="flex-1 relative">
-                    <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-2 left-2 rounded-full shadow-sm">Fine</span>
+                    <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[var(--superficie)] px-2 left-2 rounded-full shadow-sm">Fine</span>
                     <input type="time" value={fine1} onChange={e => setFine1(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                   </div>
                 </div>
@@ -1312,11 +1347,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
                   <div className="flex space-x-5">
                     <div className="flex-1 relative">
-                      <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-2 left-2 rounded-full shadow-sm">Inizio</span>
+                      <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[var(--superficie)] px-2 left-2 rounded-full shadow-sm">Inizio</span>
                       <input type="time" value={inizio2} onChange={e => setInizio2(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                     </div>
                     <div className="flex-1 relative">
-                      <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[#E0E5EC] px-2 left-2 rounded-full shadow-sm">Fine</span>
+                      <span className="text-[8px] text-slate-500 uppercase font-bold absolute -top-2 bg-[var(--superficie)] px-2 left-2 rounded-full shadow-sm">Fine</span>
                       <input type="time" value={fine2} onChange={e => setFine2(e.target.value)} className="w-full bg-white/40 text-sm font-bold text-slate-700 p-2.5 rounded-xl border border-lime-400/50 outline-none focus:ring-2 focus:ring-lime-400 transition-colors text-center shadow-inner" />
                     </div>
                   </div>
@@ -1324,7 +1359,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               )}
               <div className="pt-2 mt-4 border-t border-slate-200/50">
                 {/* BLOCCO DIGIUNO INTERMITTENTE MIGLIORATO */}
-            <div className="flex justify-between items-center mb-8 bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff]">
+            <div className="flex justify-between items-center mb-8 bg-[var(--superficie)] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)]">
               <div className="flex flex-col pr-4">
                  <div className="flex items-center gap-2 mb-1.5">
                     <span className="text-[11px] text-slate-600 uppercase font-black tracking-widest">Digiuno</span>
@@ -1341,16 +1376,16 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               </button>
             </div>
                 <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 block px-1">Collocazione Allenamento</span>
-                <div className="flex space-x-3 bg-[#E0E5EC] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#a3b1c6,inset_-5px_-5px_10px_#ffffff]">
-                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Mattina</button>
-                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Pausa</button>}
-                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff]'}`}>Sera</button>
+                <div className="flex space-x-3 bg-[var(--superficie)] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_var(--ombra-scura),inset_-5px_-5px_10px_var(--ombra-chiara)]">
+                  <button onClick={() => setQuandoTiAlleni('mattina')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'mattina' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Mattina</button>
+                  {tipoTurno === 'spezzato' && <button onClick={() => setQuandoTiAlleni('pausa')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'pausa' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Pausa</button>}
+                  <button onClick={() => setQuandoTiAlleni('sera')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-3xl transition-all duration-300 border-none cursor-pointer ${quandoTiAlleni === 'sera' ? 'bg-gradient-to-br from-lime-400 to-emerald-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'text-slate-500 hover:text-emerald-500 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)]'}`}>Sera</button>
                 </div>
               </div>
             </div>
           </section>
 
-          <section className={`bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'NUTRIZIONE' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.5s'}}>
+          <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'NUTRIZIONE' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.5s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-rose-400 opacity-80"></div>
             
             <div className="flex flex-col mb-8 pt-2">
@@ -1364,7 +1399,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                           const next = current === 150 ? 250 : (current === 250 ? 350 : 150);
                           setGerardoCarbOverride(next);
                        }}
-                       className="text-[9px] bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-rose-500 px-4 py-2.5 rounded-full font-black uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer"
+                       className="text-[9px] bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] text-rose-500 px-4 py-2.5 rounded-full font-black uppercase tracking-widest transition-all hover:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer"
                      >
                        🔄 Ciclo: {targetCho}g
                      </button>
@@ -1380,26 +1415,26 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         await supabase.from("check_utente").insert([payload]);
                       }
                     }}
-                    className={`text-[9px] font-bold px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] border-none ${
+                    className={`text-[9px] font-bold px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_var(--ombra-scura),-6px_-6px_12px_var(--ombra-chiara)] border-none ${
                       (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
-                        ? 'bg-[#E0E5EC] text-slate-400' 
+                        ? 'bg-[var(--superficie)] text-slate-400' 
                         : `bg-gradient-to-r from-orange-400 to-rose-400 shadow-[0_8px_15px_rgba(249,115,22,0.25)] text-white`
                     }`}
                   >
-                  <option value="Equilibrata" className="bg-[#E0E5EC] text-slate-700">⚖️ Equilibrata</option>
-                  <option value="Keto" className="bg-[#E0E5EC] text-slate-700">🥩 Keto</option>
-                  <option value="LowCarb" className="bg-[#E0E5EC] text-slate-700">🥑 Low Carb</option>
-                  <option value="Zona" className="bg-[#E0E5EC] text-slate-700">🧩 Zona</option>
-                  <option value="HighCarb" className="bg-[#E0E5EC] text-slate-700">🍚 High Carb</option>
+                  <option value="Equilibrata" className="bg-[var(--superficie)] text-slate-700">⚖️ Equilibrata</option>
+                  <option value="Keto" className="bg-[var(--superficie)] text-slate-700">🥩 Keto</option>
+                  <option value="LowCarb" className="bg-[var(--superficie)] text-slate-700">🥑 Low Carb</option>
+                  <option value="Zona" className="bg-[var(--superficie)] text-slate-700">🧩 Zona</option>
+                  <option value="HighCarb" className="bg-[var(--superficie)] text-slate-700">🍚 High Carb</option>
                 </select>
                 </div>
               </div>
               <div className="flex gap-4 mt-2">
-                <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex-1 text-center p-4 rounded-[1.5rem]">
+                <div className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex-1 text-center p-4 rounded-[1.5rem]">
                    <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
                    <span className="text-[14px] text-slate-600 font-bold"><AnimatedCounter value={bmr} /></span>
                 </div>
-                <div className="bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex-1 text-center p-4 rounded-[1.5rem]">
+                <div className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex-1 text-center p-4 rounded-[1.5rem]">
                    <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
                    <span className="text-[14px] text-slate-600 font-bold"><AnimatedCounter value={baseTdee} /></span>
                 </div>
@@ -1411,7 +1446,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
 
             {/* INTERRUTTORE USO INTEGRATORI */}
-          <div className="flex justify-between items-center bg-[#E0E5EC] p-5 rounded-[1.5rem] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] mt-6 mb-2">
+          <div className="flex justify-between items-center bg-[var(--superficie)] p-5 rounded-[1.5rem] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] mt-6 mb-2">
              <div className="flex flex-col pr-4">
                 <div className="flex items-center gap-2 mb-1.5">
                    <span className="text-[11px] text-slate-600 uppercase font-black tracking-widest">Protocollo Integratori</span>
@@ -1429,12 +1464,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             
             
             {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
-               <div className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-5 rounded-[1.5rem] mb-8 bg-amber-50/30 anim-pop" style={{animationDelay: '0.6s'}}>
+               <div className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-[1.5rem] mb-8 bg-amber-50/30 anim-pop" style={{animationDelay: '0.6s'}}>
                   <div className="flex justify-between items-center mb-4">
                      <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
                      <span className="text-sm font-bold text-slate-600"><AnimatedCounter value={Math.round(actualIntakeKcal * 0.2)} /> Kcal</span>
                   </div>
-                  <div className="w-full bg-[#E0E5EC] h-3 rounded-full overflow-hidden flex shadow-[inset_2px_2px_5px_#a3b1c6]">
+                  <div className="w-full bg-[var(--superficie)] h-3 rounded-full overflow-hidden flex shadow-[inset_2px_2px_5px_var(--ombra-scura)]">
                      <div className={`bg-gradient-to-r from-orange-400 to-rose-400 h-full w-[80%]`}></div>
                      <div className="bg-gradient-to-r from-amber-400 to-yellow-500 h-full w-[20%] shadow-[0_0_12px_#fbbf24]"></div>
                   </div>
@@ -1454,7 +1489,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 if (blocco.isIntra) {
                   if (blocco.titolo === "⏱️ DIGIUNO 16:8") {
                     return (
-                      <div key={`intra-${idx}`} className={`bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                      <div key={`intra-${idx}`} className={`bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
                         <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
                         <div className="flex justify-between items-start mb-4">
                           <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
@@ -1470,16 +1505,16 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     const intraKcal = Math.round((appliedIntraCho*4)+(appliedIntraPro*4)+(appliedIntraFat*9));
 
                     return (
-                      <div key={`intra-${idx}`} className={`bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] relative overflow-hidden p-6 rounded-3xl anim-pop ring-2 ring-orange-300/50`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                      <div key={`intra-${idx}`} className={`bg-[var(--superficie)] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden p-6 rounded-3xl anim-pop ring-2 ring-orange-300/50`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
                         <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
                         
                         <div className="flex justify-between items-center mb-5">
                           <span className="text-[12px] uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
                           <div className="flex gap-3">
                             {!isCustom ? (
-                              <button onClick={() => toggleCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Custom</button>
+                              <button onClick={() => toggleCustomMeal(cat)} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Custom</button>
                             ) : (
-                               <button onClick={() => resetCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">🗑️ Reset</button>
+                               <button onClick={() => resetCustomMeal(cat)} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-red-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">🗑️ Reset</button>
                             )}
                           </div>
                         </div>
@@ -1543,17 +1578,17 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 const isCustom = pastiCustom[cat].attivo;
 
                 return (
-                  <div key={`${cat}-${idx}`} className={`bg-[#E0E5EC] shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] p-6 rounded-3xl ${isPW ? 'ring-2 ring-rose-300/50' : ''} anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                  <div key={`${cat}-${idx}`} className={`bg-[var(--superficie)] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] p-6 rounded-3xl ${isPW ? 'ring-2 ring-rose-300/50' : ''} anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
                     <div className="flex justify-between items-center mb-5">
                       <span className={`text-[12px] uppercase font-black tracking-widest ${isPW ? 'text-rose-500' : 'text-slate-400'}`}>{blocco.titoloUI}</span>
                       <div className="flex gap-3">
                         {!isCustom ? (
                           <>
-                            <button onClick={() => toggleCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Custom</button>
-                            <button onClick={() => apriSwapAlimento(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-orange-500 hover:text-rose-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">Swap</button>
+                            <button onClick={() => toggleCustomMeal(cat)} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Custom</button>
+                            <button onClick={() => apriSwapAlimento(cat)} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-orange-500 hover:text-rose-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Swap</button>
                           </>
                         ) : (
-                           <button onClick={() => resetCustomMeal(cat)} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">🗑️ Reset</button>
+                           <button onClick={() => resetCustomMeal(cat)} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-red-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">🗑️ Reset</button>
                         )}
                       </div>
                     </div>
@@ -1671,7 +1706,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   }
 
                   return raccomandazioni.map((r, idx) => (
-                    <div key={idx} className="bg-[#E0E5EC] shadow-[4px_4px_10px_#a3b1c6,-4px_-4px_10px_#ffffff] p-5 rounded-3xl flex flex-col gap-3 anim-pop transition-transform hover:scale-[1.02]" style={{animationDelay: `${idx * 0.15}s`}}>
+                    <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_10px_var(--ombra-scura),-4px_-4px_10px_var(--ombra-chiara)] p-5 rounded-3xl flex flex-col gap-3 anim-pop transition-transform hover:scale-[1.02]" style={{animationDelay: `${idx * 0.15}s`}}>
                       <div className="flex items-center gap-3">
                         <span className="text-2xl bg-white/40 w-12 h-12 flex items-center justify-center rounded-2xl shadow-[inset_2px_2px_4px_rgba(163,177,198,0.4)] shrink-0">{r.icona}</span>
                         <h4 className="font-black text-slate-700 text-[11px] tracking-wide uppercase leading-tight">{r.nome}</h4>
@@ -1679,7 +1714,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       <p className="text-[10px] text-slate-500 font-bold leading-relaxed px-1 mt-1">{r.motivo}</p>
                       
                       <div className="mt-auto pt-3">
-                         <div className="bg-slate-200/50 p-3 rounded-2xl shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff]">
+                         <div className="bg-slate-200/50 p-3 rounded-2xl shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)]">
                             <span className="text-[8px] uppercase font-black text-indigo-400 tracking-widest block mb-2">Esempi Consigliati (Cerca questi):</span>
                             <ul className="list-disc pl-4 text-[9px] font-bold text-slate-600 space-y-1.5">
                               {r.esempi.map((es, i) => <li key={i}>{es}</li>)}
@@ -1700,12 +1735,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
         <div className={`flex-col gap-8 lg:col-span-5 ${mobileTab === 'ALLENAMENTO' ? 'flex' : 'hidden'} lg:flex`}>
-          <section className="bg-[#E0E5EC] shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1 anim-pop" style={{animationDelay: '0.6s'}}>
+          <section className="bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1 anim-pop" style={{animationDelay: '0.6s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
 
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 pt-2 shrink-0">
               <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Programma {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
-              <div className="flex gap-3 bg-[#E0E5EC] p-1.5 rounded-full shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]">
+              <div className="flex gap-3 bg-[var(--superficie)] p-1.5 rounded-full shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)]">
                 <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaStorico && !vistaGraficiCarichi ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-cyan-500'}`}>
                   {vistaStorico && !vistaGraficiCarichi ? 'Oggi' : 'Storico'}
                 </button>
@@ -1717,12 +1752,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
             {!vistaStorico ? (
               <>
-                <div className="bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] mb-6 flex justify-between items-center p-5 rounded-[1.5rem] shrink-0">
+                <div className="bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] mb-6 flex justify-between items-center p-5 rounded-[1.5rem] shrink-0">
                   <div className="px-2">
                     <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest block mb-1.5">Durata Stimata</span>
                     <p className="text-[16px] font-bold text-slate-600 flex items-center gap-2">⏱️ ~<AnimatedCounter value={calcolaTempoScheda()} /> min <span className="text-[10px] text-slate-400 font-bold ml-1">(Recuperi incl.)</span></p>
                   </div>
-                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 border-none cursor-pointer shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] ${fastWorkout ? 'bg-gradient-to-br from-red-400 to-rose-500 text-white shadow-[0_8px_15px_rgba(244,63,94,0.3)]' : 'bg-[#E0E5EC] text-slate-500 hover:text-cyan-500 active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff]'}`}>
+                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 border-none cursor-pointer shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] ${fastWorkout ? 'bg-gradient-to-br from-red-400 to-rose-500 text-white shadow-[0_8px_15px_rgba(244,63,94,0.3)]' : 'bg-[var(--superficie)] text-slate-500 hover:text-cyan-500 active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)]'}`}>
                     {fastWorkout ? '⚡ Fast Mode' : 'Taglia Tempi'}
                   </button>
                 </div>
@@ -1731,7 +1766,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-3 px-1">Giorno di Allenamento</p>
                   <div className="grid grid-cols-3 gap-3">
                     {giorniSettimana.map((gg: string) => (
-                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`py-3 text-[12px] rounded-[1rem] transition-all duration-300 border-none cursor-pointer shadow-sm ${giornoCalendario === gg ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] text-slate-500 font-bold hover:text-cyan-500'}`}>{gg}</button>
+                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`py-3 text-[12px] rounded-[1rem] transition-all duration-300 border-none cursor-pointer shadow-sm ${giornoCalendario === gg ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] text-slate-500 font-bold hover:text-cyan-500'}`}>{gg}</button>
                     ))}
                   </div>
                 </div>
@@ -1740,7 +1775,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                    <HumanHeatmap scheda={schedaAttiva} />
                 </div>
                 
-                <div className="mb-6 flex gap-4 bg-[#E0E5EC] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_#a3b1c6,inset_-5px_-5px_10px_#ffffff] shrink-0 anim-pop" style={{animationDelay: '0.7s'}}>
+                <div className="mb-6 flex gap-4 bg-[var(--superficie)] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_var(--ombra-scura),inset_-5px_-5px_10px_var(--ombra-chiara)] shrink-0 anim-pop" style={{animationDelay: '0.7s'}}>
                   {['Spinta', 'Tirata', 'Gambe'].map((sch: string) => (
                     <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-5 py-4 text-[11px] font-black uppercase tracking-widest rounded-[1.5rem] flex-1 transition-all duration-300 border-none cursor-pointer ${schedaAttiva === sch ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-400 hover:text-slate-700'}`}>{sch}</button>
                   ))}
@@ -1773,7 +1808,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     const numeroSetTarget = getNumeroSet(repMostrate);
 
                     return (
-                      <div key={`${es.id}-${nomeAttuale}`} className={`${phaseTint} backdrop-blur-md shadow-[6px_6px_14px_#a3b1c6,-6px_-6px_14px_#ffffff] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
+                      <div key={`${es.id}-${nomeAttuale}`} className={`${phaseTint} backdrop-blur-md shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
                         <div className="pl-1">
                           <div className="flex justify-between items-start mb-3">
                             <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
@@ -1815,9 +1850,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </>
           ) : vistaGraficiCarichi ? (
             <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
-               <div className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-6 rounded-[1.5rem]">
+               <div className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
                  <label className="text-[10px] text-slate-400 font-bold uppercase block mb-3 px-1 tracking-widest">Seleziona Esercizio:</label>
-                 <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-700 text-[13px] font-bold p-4 rounded-2xl border-none outline-none mb-6 appearance-none">
+                 <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className="w-full bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] text-slate-700 text-[13px] font-bold p-4 rounded-2xl border-none outline-none mb-6 appearance-none">
                    {Object.values(baseDbAllenamento).flatMap(g => g.esercizi).map(es => (<option key={es.id} value={es.id}>{eserciziModificati[es.id] || es.nome}</option>))}
                  </select>
                  <SvgLineChart data={getDataGraficoEsercizio()} label={Object.values(baseDbAllenamento).flatMap(g => g.esercizi).find(e => e.id === esercizioGraficoSelezionato)?.nome || "Esercizio"} />
@@ -1825,14 +1860,14 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
-              {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] rounded-[2rem]">Nessuna sessione salvata.</p> : (
+              {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] rounded-[2rem]">Nessuna sessione salvata.</p> : (
                 [...storicoSessioni].reverse().map((sess) => (
-                  <div key={sess.oraId} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-6 rounded-[1.5rem]">
+                  <div key={sess.oraId} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
                     <span className="font-bold text-cyan-500 drop-shadow-sm block text-[14px] tracking-wide uppercase">{sess.giorno} - Scheda {sess.scheda}</span>
                     <span className="text-[10px] text-slate-400 font-bold mb-5 block tracking-widest mt-1">{sess.data}</span>
                     <div className="space-y-4">
                       {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
-                        <div key={idEs} className="bg-[#e4ebf5] shadow-[inset_3px_3px_6px_#c3d0e0,inset_-3px_-3px_6px_#ffffff] p-3 rounded-2xl flex justify-between items-center gap-4">
+                        <div key={idEs} className="bg-[var(--superficie-alt)] shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-2xl flex justify-between items-center gap-4">
                           <span className="text-slate-500 text-[12px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
                           <span className="font-bold text-white bg-gradient-to-r from-cyan-400 to-blue-500 px-3 py-1.5 rounded-xl shadow-md text-xs">{pesoStr as string} kg</span>
                         </div>
@@ -1849,7 +1884,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       </div>
 
       {/* --- BOTTOM NAVIGATION BAR (Solo su Mobile) --- */}
-      <nav className="sm:hidden fixed bottom-0 left-0 w-full bg-[#E0E5EC]/90 backdrop-blur-xl shadow-[0_-10px_30px_rgba(163,177,198,0.4)] z-[90] pb-safe flex justify-between border-t border-white/50 px-2 pt-2">
+      <nav className="sm:hidden fixed bottom-0 left-0 w-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-[0_-10px_30px_rgba(163,177,198,0.4)] z-[90] pb-safe flex justify-between border-t border-white/50 px-2 pt-2">
         
         {/* ICONA DATI: Grafico a linee fluido */}
         {renderNavicon('TELEMETRIA', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>, 'Dati')}
@@ -1886,16 +1921,16 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         return (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 anim-pop">
-            <div className="bg-[#E0E5EC] w-full max-h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-white/20">
+            <div className="bg-[var(--superficie)] w-full max-h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-white/20">
               <button onClick={() => setFocusWorkout(null)} className="absolute top-5 right-6 text-slate-400 hover:text-slate-600 text-3xl font-bold z-20 border-none bg-transparent cursor-pointer">&times;</button>
               
               {/* PARTE ALTA: TIMER NEUMORFICO (Neutra) */}
-              <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-[#E0E5EC] relative shrink-0 pt-16 pb-8">
+              <div className="flex flex-col items-center justify-center p-6 sm:p-8 bg-[var(--superficie)] relative shrink-0 pt-16 pb-8">
                  <p className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-6 drop-shadow-sm">Rest Interval</p>
                  
-                 <div className="relative flex items-center justify-center w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-[#E0E5EC] shadow-[10px_10px_20px_#a3b1c6,-10px_-10px_20px_#ffffff] mb-8 shrink-0 aspect-square">
-                   <div className="absolute inset-4 rounded-full bg-[#E0E5EC] shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff] flex items-center justify-center">
-                      <div className="absolute inset-6 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] flex items-center justify-center">
+                 <div className="relative flex items-center justify-center w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-[var(--superficie)] shadow-[10px_10px_20px_var(--ombra-scura),-10px_-10px_20px_var(--ombra-chiara)] mb-8 shrink-0 aspect-square">
+                   <div className="absolute inset-4 rounded-full bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] flex items-center justify-center">
+                      <div className="absolute inset-6 rounded-full bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] flex items-center justify-center">
                           <span className="text-5xl font-light text-slate-700 font-mono tracking-widest drop-shadow-md">{formatTime(timeLeft)}</span>
                       </div>
                    </div>
@@ -1906,9 +1941,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                  </div>
                  
                  <div className="flex gap-8 items-center">
-                    <button onClick={() => { setTimeLeft(totalTimeRef.current); setTimerActive(false); }} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-400 font-black border-none cursor-pointer">⏹</button>
-                    <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[#E0E5EC] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] flex items-center justify-center font-black border-none cursor-pointer text-2xl pl-1" style={{color: phaseColor}}>{timerActive ? '⏸' : '▶'}</button>
-                    <button onClick={() => setTimeLeft(t => t + 15)} className="w-14 h-14 rounded-full bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] flex items-center justify-center text-slate-500 font-black text-xs border-none cursor-pointer">+15</button>
+                    <button onClick={() => { setTimeLeft(totalTimeRef.current); setTimerActive(false); }} className="w-14 h-14 rounded-full bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] flex items-center justify-center text-slate-400 font-black border-none cursor-pointer">⏹</button>
+                    <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[var(--superficie)] shadow-[6px_6px_12px_var(--ombra-scura),-6px_-6px_12px_var(--ombra-chiara)] active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex items-center justify-center font-black border-none cursor-pointer text-2xl pl-1" style={{color: phaseColor}}>{timerActive ? '⏸' : '▶'}</button>
+                    <button onClick={() => setTimeLeft(t => t + 15)} className="w-14 h-14 rounded-full bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] flex items-center justify-center text-slate-500 font-black text-xs border-none cursor-pointer">+15</button>
                  </div>
               </div>
 
@@ -1953,7 +1988,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* --- MODALI SWAP --- */}
       {modalEsercizio && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[150] p-4">
-          <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
+          <div className="bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
             <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
               <h3 className="font-bold text-xl uppercase tracking-widest text-slate-600">Sostituisci Esercizio</h3>
               <button onClick={() => setModalEsercizio(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
@@ -1961,7 +1996,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {esercizioDaCambiare.alternative.map((alt: any, i: number) => (
-                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-5 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer">
+                <button key={i} onClick={() => confermaSwapEsercizio(alt.nome)} className="w-full text-left p-5 bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_var(--ombra-scura-alt),inset_-4px_-4px_8px_var(--ombra-chiara)] group transition-all duration-300 border-none cursor-pointer">
                   <p className="font-bold text-[14px] text-slate-600 group-hover:text-[#00c6ff] transition-colors drop-shadow-sm">{alt.nome}</p>
                   <p className="text-[9px] text-[#0072ff] mt-2 uppercase font-bold tracking-widest mb-2">{alt.note}</p>
                   <p className="text-[11px] text-slate-500 leading-relaxed font-medium">{alt.dettaglio}</p>
@@ -1974,7 +2009,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
       {modalAlimento && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[150] p-4">
-          <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
+          <div className="bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
             <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
               <h3 className="font-bold text-xl uppercase tracking-widest text-slate-600">Sostituisci Pasto</h3>
               <button onClick={() => setModalAlimento(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
@@ -1985,13 +2020,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                  const macroCho = alt.baseCarbo * moltiplicatoreCarbo;
                  const swapKcal = Math.round((macroCho * 4) + (alt.pro * 4) + (alt.fat * 9));
                  return (
-                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-5 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer">
+                  <button key={i} onClick={() => confermaSwapAlimento(i)} className="w-full text-left p-5 bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_var(--ombra-scura-alt),inset_-4px_-4px_8px_var(--ombra-chiara)] group transition-all duration-300 border-none cursor-pointer">
                     <div className="flex justify-between items-start mb-3">
                       <p className="font-bold text-[14px] text-slate-600 group-hover:text-[#00c6ff] transition-colors pr-2 leading-snug">{alt.nome}</p>
-                      <span className="text-[9px] bg-[#e4ebf5] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[#00c6ff] px-3 py-1.5 rounded-lg font-bold tracking-widest shrink-0">{swapKcal} Kcal</span>
+                      <span className="text-[9px] bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)] text-[#00c6ff] px-3 py-1.5 rounded-lg font-bold tracking-widest shrink-0">{swapKcal} Kcal</span>
                     </div>
                     <p className="text-[9px] text-slate-500 font-bold tracking-widest bg-white/40 inline-block px-3 py-1.5 rounded-lg mb-3 shadow-sm">C <span className="text-[#00c6ff]">{macroCho}g</span> <span className="mx-2 text-slate-300">|</span> P <span className="text-slate-600">{alt.pro}g</span> <span className="mx-2 text-slate-300">|</span> F <span className="text-slate-600">{alt.fat}g</span></p>
-                    <p className="text-[11px] text-slate-500 font-medium leading-relaxed bg-[#e4ebf5] p-3 rounded-xl shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff]">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
+                    <p className="text-[11px] text-slate-500 font-medium leading-relaxed bg-[var(--superficie-alt)] p-3 rounded-xl shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)]">{alt.dettaglioGrammi(macroCho, alt.pro, alt.fat)}</p>
                   </button>
                  );
               })}
@@ -2002,7 +2037,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* === MODALE SCELTA DALLA DISPENSA === */}
 {modalScegliDispensa && (
   <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[150] p-4">
-    <div className="bg-[#E0E5EC] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-6 w-full max-w-md relative anim-pop max-h-[90vh] flex flex-col">
+    <div className="bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-6 w-full max-w-md relative anim-pop max-h-[90vh] flex flex-col">
       <div className="flex justify-between items-center mb-4 border-b border-slate-300/50 pb-4 shrink-0">
         <h3 className="font-black text-lg uppercase tracking-widest text-slate-600 flex items-center gap-2">
           📦 La Tua Dispensa
@@ -2021,7 +2056,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           placeholder={`Cerca tra i tuoi ${filtroDispensa === 'alimento' ? 'alimenti' : 'integratori'}...`} 
           value={ricercaDispensa} 
           onChange={e => setRicercaDispensa(e.target.value)} 
-          className="w-full bg-[#e4ebf5] shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] text-slate-600 text-xs font-bold px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/40 transition-all border-none"
+          className="w-full bg-[var(--superficie-alt)] shadow-[inset_4px_4px_8px_var(--ombra-scura-alt),inset_-4px_-4px_8px_var(--ombra-chiara)] text-slate-600 text-xs font-bold px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/40 transition-all border-none"
         />
       </div>
 
@@ -2059,13 +2094,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 setModalScegliDispensa(null);
                 setRicercaDispensa(""); 
               }}
-              className="w-full text-left p-4 bg-[#e4ebf5] shadow-[4px_4px_8px_#c3d0e0,-4px_-4px_8px_#ffffff] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_#c3d0e0,inset_-4px_-4px_8px_#ffffff] group transition-all duration-300 border-none cursor-pointer flex flex-col gap-3"
+              className="w-full text-left p-4 bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_var(--ombra-scura-alt),inset_-4px_-4px_8px_var(--ombra-chiara)] group transition-all duration-300 border-none cursor-pointer flex flex-col gap-3"
             >
               <p className="font-bold text-[14px] text-slate-700 group-hover:text-orange-500 transition-colors">{item.nome}</p>
               <div className="flex gap-2">
-                <span className="bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">C <span className="text-orange-500">{item.cho}g</span></span>
-                <span className="bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">P <span className="text-slate-600">{item.pro}g</span></span>
-                <span className="bg-[#E0E5EC] shadow-[inset_2px_2px_4px_#c3d0e0,inset_-2px_-2px_4px_#ffffff] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">F <span className="text-slate-600">{item.fat}g</span></span>
+                <span className="bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">C <span className="text-orange-500">{item.cho}g</span></span>
+                <span className="bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">P <span className="text-slate-600">{item.pro}g</span></span>
+                <span className="bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">F <span className="text-slate-600">{item.fat}g</span></span>
               </div>
             </button>
           ))
@@ -2194,7 +2229,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* === ADMIN CONTROL ROOM (MODALE) === */}
           {showAdmin && (
             <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[9999] p-4 sm:p-8 overflow-y-auto custom-scrollbar flex flex-col items-center">
-              <div className="w-full max-w-5xl bg-[#E0E5EC] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-10 mb-10">
+              <div className="w-full max-w-5xl bg-[var(--superficie)] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-10 mb-10">
                 <button onClick={() => setShowAdmin(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 text-3xl font-black transition-colors border-none bg-transparent cursor-pointer">&times;</button>
                 <h2 className="text-2xl font-black uppercase tracking-widest text-slate-700 mb-8">Admin <span className="text-red-500">Control Room</span></h2>
                 
@@ -2237,7 +2272,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                            placeholder="Cerca per nome o email..." 
                            value={ricercaAdmin}
                            onChange={(e) => setRicercaAdmin(e.target.value)}
-                           className="w-full bg-[#E0E5EC] shadow-[inset_4px_4px_8px_#a3b1c6,inset_-4px_-4px_8px_#ffffff] text-slate-600 text-xs font-bold pl-10 pr-4 py-3 rounded-full outline-none focus:ring-2 focus:ring-lime-500/40 transition-all border-none"
+                           className="w-full bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] text-slate-600 text-xs font-bold pl-10 pr-4 py-3 rounded-full outline-none focus:ring-2 focus:ring-lime-500/40 transition-all border-none"
                         />
                      </div>
                   </div>
@@ -2262,7 +2297,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         }
 
                         return (
-                        <div key={idx} className="bg-[#E0E5EC] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 transition-all hover:shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff]">
+                        <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 transition-all hover:shadow-[6px_6px_12px_var(--ombra-scura),-6px_-6px_12px_var(--ombra-chiara)]">
                           
                           <div className="flex-1 text-center sm:text-left flex flex-col sm:flex-row items-center gap-4">
                             <div className="flex flex-col items-center justify-center shrink-0">
@@ -2292,7 +2327,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                                 await supabase.from('utenti_premium').delete().eq('id', u.id);
                                 apriAdmin();
                               }
-                            }} className="bg-[#E0E5EC] shadow-[3px_3px_6px_#a3b1c6,-3px_-3px_6px_#ffffff] text-red-500 hover:text-red-700 font-bold px-4 py-3 rounded-xl uppercase tracking-widest text-[10px] transition-all active:shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-none cursor-pointer">
+                            }} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-red-500 hover:text-red-700 font-bold px-4 py-3 rounded-xl uppercase tracking-widest text-[10px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">
                               ELIMINA
                             </button>
                           </div>
