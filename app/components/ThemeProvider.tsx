@@ -75,7 +75,6 @@ export const useTheme = () => {
 };
 
 // 3. IL BOTTONE GLOBALE STILE NEUMORFISMO A 3 STATI
-import { motion } from 'framer-motion'; // Assicurati che l'import di motion sia presente in cima al file se non c'è
 
 export const ThemeToggle = () => {
   const { temaCorrente, cambiaTema } = useTheme();
