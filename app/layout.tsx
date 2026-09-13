@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 // IMPORTA IL PROVIDER E IL BOTTONE
-import { ThemeProvider, ThemeToggle } from "./components/ThemeProvider";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,10 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           
-          {/* BOTTONE GLOBALE RESPONSIVE (In basso a destra su mobile, in basso a sinistra su PC) */}
-<div className="fixed bottom-6 right-6 md:bottom-8 md:left-8 z-[999999]">
-  <ThemeToggle />
-</div>
+        
           
           {children}
         </ThemeProvider>
