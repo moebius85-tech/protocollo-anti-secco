@@ -144,7 +144,7 @@ function Carta({
 
   return (
     <motion.div
-      className={`absolute w-[240px] h-[310px] bg-[#E0E5EC] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${
+      className={`absolute w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${
         isFront ? 'cursor-grab active:cursor-grabbing' : ''
       }`}
       style={{
@@ -158,8 +158,8 @@ function Carta({
         // di ricevere i tocchi, così puoi trascinare le carte di sfondo!
         pointerEvents: isExiting || opacityCard === 0 ? 'none' : 'auto',
         boxShadow: isPast
-          ? '6px 6px 14px rgba(163,177,198,0.4), -6px -6px 14px rgba(255,255,255,0.6)'
-          : '5px 5px 12px rgba(163,177,198,0.35), -5px -5px 12px rgba(255,255,255,0.55)',
+          ? '6px 6px 14px var(--ombra-scura), -6px -6px 14px var(--ombra-chiara)'
+          : '5px 5px 12px var(--ombra-scura), -5px -5px 12px var(--ombra-chiara)',
       }}
       initial={false}
       animate={{
@@ -191,7 +191,7 @@ function Carta({
       // Le carte in secondo piano intercettano il PAN (sfioramento)
       onPanEnd={!isFront ? handlePanEnd : undefined}
     >
-      <div className="w-20 h-20 bg-[#E0E5EC] rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(163,177,198,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
+      <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6 text-4xl pointer-events-none">
         {card.icon}
       </div>
       <h3 className="text-slate-800 font-black tracking-widest text-lg text-center uppercase pointer-events-none">
