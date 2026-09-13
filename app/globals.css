@@ -24,3 +24,107 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* =========================================================================
+   SISTEMA TEMI: chiaro (default) / scuro / neon
+   Riusiamo la STESSA struttura neumorfica (doppia ombra chiara+scura) già
+   presente in tutta l'app: cambiano solo i VALORI dei colori, non la logica
+   né la struttura del componente. Per il tema "neon" la "luce" diventa un
+   bagliore ciano/viola invece di un riflesso bianco: lo stesso identico
+   meccanismo di ombre produce un effetto "glow" invece che "soft UI".
+   ========================================================================= */
+
+:root,
+[data-theme="chiaro"] {
+  --superficie: #E0E5EC;
+  --superficie-alt: #e4ebf5;
+  --ombra-scura: #a3b1c6;
+  --ombra-scura-alt: #c3d0e0;
+  --ombra-chiara: #ffffff;
+
+  --testo-forte: #334155;
+  --testo-medio: #475569;
+  --testo-debole: #64748b;
+  --testo-tenue: #94a3b8;
+
+  --bordo-tenue: rgba(100, 116, 139, 0.25);
+}
+
+[data-theme="scuro"] {
+  --superficie: #2a2f3a;
+  --superficie-alt: #232730;
+  --ombra-scura: #1c1f27;
+  --ombra-scura-alt: #17191f;
+  --ombra-chiara: #363c48;
+
+  --testo-forte: #e2e8f0;
+  --testo-medio: #cbd5e1;
+  --testo-debole: #94a3b8;
+  --testo-tenue: #64748b;
+
+  --bordo-tenue: rgba(148, 163, 184, 0.15);
+}
+
+[data-theme="neon"] {
+  --superficie: #141824;
+  --superficie-alt: #10131c;
+  --ombra-scura: rgba(0, 0, 0, 0.6);
+  --ombra-scura-alt: rgba(0, 0, 0, 0.65);
+  --ombra-chiara: rgba(56, 189, 248, 0.35);
+
+  --testo-forte: #f0f9ff;
+  --testo-medio: #bae6fd;
+  --testo-debole: #7dd3fc;
+  --testo-tenue: #38bdf8;
+
+  --bordo-tenue: rgba(56, 189, 248, 0.25);
+}
+
+/* Il body segue il tema: fondamentale per scuro/neon, dove lo sfondo non è
+   più il chiaro di default. */
+[data-theme="scuro"] body,
+[data-theme="neon"] body {
+  background: var(--superficie);
+}
+
+/* Override delle classi Tailwind "text-slate-*" / "border-slate-*" più usate
+   nell'app: permette al testo di restare leggibile sui temi scuro/neon senza
+   dover riscrivere ogni singola classNam nel codice esistente. */
+[data-theme="scuro"] .text-slate-700,
+[data-theme="scuro"] .text-slate-800,
+[data-theme="neon"] .text-slate-700,
+[data-theme="neon"] .text-slate-800 {
+  color: var(--testo-forte) !important;
+}
+
+[data-theme="scuro"] .text-slate-600,
+[data-theme="neon"] .text-slate-600 {
+  color: var(--testo-medio) !important;
+}
+
+[data-theme="scuro"] .text-slate-500,
+[data-theme="neon"] .text-slate-500 {
+  color: var(--testo-debole) !important;
+}
+
+[data-theme="scuro"] .text-slate-400,
+[data-theme="scuro"] .text-slate-300,
+[data-theme="neon"] .text-slate-400,
+[data-theme="neon"] .text-slate-300 {
+  color: var(--testo-tenue) !important;
+}
+
+[data-theme="scuro"] .border-slate-200,
+[data-theme="scuro"] .border-slate-300,
+[data-theme="neon"] .border-slate-200,
+[data-theme="neon"] .border-slate-300 {
+  border-color: var(--bordo-tenue) !important;
+}
+
+/* Nel tema neon, un leggero bagliore diffuso in più sulle card principali,
+   oltre alla doppia ombra colorata: rifinisce l'effetto "vetro luminoso"
+   senza toccare la struttura dei componenti. */
+[data-theme="neon"] .anim-pop {
+  filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12));
+}
+
