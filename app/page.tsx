@@ -10,11 +10,11 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Tema principale Verde Mela
 const gradPrimary = "bg-gradient-to-r from-lime-400 to-emerald-500"; 
-const colorBg = "bg-[var(--theme-bg)] text-[var(--theme-text)]";
-const shadowOutset = "shadow-[var(--theme-shadow-outset)]";
-const shadowInset = "shadow-[var(--theme-shadow-inset)]";
-const shadowOutsetSm = "shadow-[var(--theme-shadow-outset-sm)]";
-const shadowInsetSm = "shadow-[var(--theme-shadow-inset-sm)]";
+const colorBg = "theme-bg";
+const shadowOutset = "theme-shadow-outset";
+const shadowInset = "theme-shadow-inset";
+const shadowOutsetSm = "theme-shadow-outset-sm";
+const shadowInsetSm = "theme-shadow-inset-sm";
 
 const UI = {
   bg: colorBg,
