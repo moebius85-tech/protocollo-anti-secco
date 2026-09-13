@@ -25,12 +25,40 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* --- TRANSIZIONI TEMA GLOBALE --- */
-html, body {
-  transition: background-color 0.5s ease, color 0.5s ease;
-  min-height: 100vh;
+/* --- VARIABILI TEMA GLOBALI --- */
+:root, html.chiaro {
+  --theme-bg: #E0E5EC;
+  --theme-text: #334155;
+  --theme-shadow-outset: 8px 8px 16px #a3b1c6, -8px -8px 16px #ffffff;
+  --theme-shadow-inset: inset 6px 6px 12px #a3b1c6, inset -6px -6px 12px #ffffff;
+  --theme-shadow-outset-sm: 4px 4px 8px #a3b1c6, -4px -4px 8px #ffffff;
+  --theme-shadow-inset-sm: inset 3px 3px 6px #a3b1c6, inset -3px -3px 6px #ffffff;
 }
 
-html.chiaro body { background-color: #f8fafc; color: #0f172a; }
-html.scuro body { background-color: #020617; color: #f8fafc; }
-html.neon body { background-color: #000000; color: #e879f9; }
+html.scuro {
+  --theme-bg: #1E293B;
+  --theme-text: #f1f5f9;
+  --theme-shadow-outset: 8px 8px 16px rgba(0,0,0,0.5), -8px -8px 16px rgba(255,255,255,0.05);
+  --theme-shadow-inset: inset 6px 6px 12px rgba(0,0,0,0.6), inset -6px -6px 12px rgba(255,255,255,0.1);
+  --theme-shadow-outset-sm: 4px 4px 8px rgba(0,0,0,0.5), -4px -4px 8px rgba(255,255,255,0.05);
+  --theme-shadow-inset-sm: inset 3px 3px 6px rgba(0,0,0,0.6), inset -3px -3px 6px rgba(255,255,255,0.1);
+}
+
+html.neon {
+  --theme-bg: #09090B;
+  --theme-text: #e879f9;
+  --theme-shadow-outset: 0px 0px 15px rgba(192,38,211,0.2), 0px 0px 5px rgba(34,211,238,0.1);
+  --theme-shadow-inset: inset 2px 2px 5px rgba(0,0,0,0.8), inset -1px -1px 3px rgba(255,255,255,0.05);
+  --theme-shadow-outset-sm: 0px 0px 10px rgba(192,38,211,0.2), 0px 0px 3px rgba(34,211,238,0.1);
+  --theme-shadow-inset-sm: inset 2px 2px 4px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.05);
+}
+
+body {
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Magia Nera: anima morbidamente tutti i colori senza scatti */
+* {
+  transition: background-color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease, color 0.3s ease;
+}
