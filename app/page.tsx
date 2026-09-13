@@ -780,10 +780,6 @@ if (!usaIntegratori) {
    if (!isAuthenticated) {
           return (
             <div className={"min-h-screen " + UI.bg + " flex items-center justify-center p-4 relative overflow-hidden font-sans"}>
-              
-              <div className="absolute top-4 right-4 z-50">
-                <ThemeToggle />
-              </div>
 
               <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down..." }} />
               
