@@ -3,18 +3,18 @@ import { useState, useEffect, useRef } from 'react';
 import { createClient } from "@supabase/supabase-js";
 import { MediaVisualizer } from './animations';
 import { MazzoIntegratori } from './components/MazzoIntegratori';
-import { ThemeToggle } from './components/ThemeProvider';
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtxfkahzyduq.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Tema principale Verde Mela
 const gradPrimary = "bg-gradient-to-r from-lime-400 to-emerald-500"; 
-const colorBg = "theme-bg";
-const shadowOutset = "theme-shadow-outset";
-const shadowInset = "theme-shadow-inset";
-const shadowOutsetSm = "theme-shadow-outset-sm";
-const shadowInsetSm = "theme-shadow-inset-sm";
+const colorBg = "bg-[#E0E5EC]";
+const shadowOutset = "shadow-[8px_8px_16px_#a3b1c6,-8px_-8px_16px_#ffffff]";
+const shadowInset = "shadow-[inset_6px_6px_12px_#a3b1c6,inset_-6px_-6px_12px_#ffffff]";
+const shadowOutsetSm = "shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff]";
+const shadowInsetSm = "shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]";
 
 const UI = {
   bg: colorBg,
@@ -777,19 +777,14 @@ if (!usaIntegratori) {
   if (appState === 'HOME') {
     
     // --- MURO DI LOGIN CON TRANSIZIONE FLUIDA E ANIMAZIONI DELUXE ---
-   if (!isAuthenticated) {
-  return (
-    <div className={"min-h-screen " + UI.bg + " flex items-center justify-center p-4 relative overflow-hidden font-sans"}>
-      
-      {/* BOTTONE LOGIN - In alto a destra (o dove preferisci) */}
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
+    if (!isAuthenticated) {
+      return (
+        <div className={"min-h-screen " + UI.bg + " flex items-center justify-center p-4 relative overflow-hidden font-sans"}>
+          
+          <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down { animation: dropDownPanel 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes dropDownPanel { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } } .anim-circle-svg { stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawCircleSvg 6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; } .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; } .anim-mni { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.4s forwards; } .anim-fit { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.6s forwards; } .anim-sub { opacity: 0; transform: translateY(15px); animation: slideUp 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 1.1s forwards; } .anim-bg-ltr { animation: slideLeftToRight 8.5s linear forwards; } .anim-bg-rtl { animation: slideRightToLeft 8.5s linear forwards; } @keyframes drawCircleSvg { to { stroke-dashoffset: 0; } } @keyframes drawMiccia { to { stroke-dashoffset: 0; } } @keyframes slideText { to { opacity: 1; transform: translateX(0); } } @keyframes slideUp { to { opacity: 1; transform: translateY(0); } } @keyframes slideLeftToRight { 0% { transform: translateX(-15%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(5%); opacity: 0; } } @keyframes slideRightToLeft { 0% { transform: translateX(5%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(-15%); opacity: 0; } }" }} />
 
-      <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down..." }} />
-              
-              {/* --- PANNELLO DI LOGIN (Scende solo quando la intro sparisce) --- */}
-              <div className={UI.card + " w-full max-w-sm z-10 " + (!mostraIntro ? "anim-drop-down" : "opacity-0")}>
+          {/* --- PANNELLO DI LOGIN (Scende solo quando la intro sparisce) --- */}
+          <div className={UI.card + " w-full max-w-sm z-10 " + (!mostraIntro ? "anim-drop-down" : "opacity-0")}>
              <div className="flex justify-center items-center mb-10">
                 <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
                   OMNI<span className="text-lime-500 drop-shadow-sm font-black">FIT</span>
