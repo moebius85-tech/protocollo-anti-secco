@@ -1271,8 +1271,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                                    <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Braccia</span> <strong className="text-slate-600 text-xs">{circ.braccia || '-'}cm</strong></p>
                                    <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Gambe</span> <strong className="text-slate-600 text-xs">{circ.gambe || '-'}cm</strong></p>
                                    <p className="bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl flex justify-between items-center"><span>Glutei</span> <strong className="text-slate-600 text-xs">{circ.glutei || '-'}cm</strong></p>
-                                   <p className="bg-indigo-50 shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl text-indigo-600 flex justify-between items-center"><span>Vita</span> <strong className="text-indigo-600 text-xs">{circ.vita || '-'}cm</strong></p>
-                                   <p className="bg-purple-50 shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl text-purple-600 flex justify-between items-center"><span>BIA</span> <strong className="text-purple-600 text-xs">{circ.bodyFat || '-'}%</strong></p>
+                                   <p className="bg-[var(--superficie-alt)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl text-indigo-600 flex justify-between items-center"><span>Vita</span> <strong className="text-indigo-600 text-xs">{circ.vita || '-'}cm</strong></p>
+                                   <p className="bg-[var(--superficie-alt)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-xl text-purple-600 flex justify-between items-center"><span>BIA</span> <strong className="text-purple-600 text-xs">{circ.bodyFat || '-'}%</strong></p>
                                 </div>
                               </div>
                            );
@@ -1464,7 +1464,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             
             
             {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
-               <div className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-[1.5rem] mb-8 bg-amber-50/30 anim-pop" style={{animationDelay: '0.6s'}}>
+               <div className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-[1.5rem] mb-8 bg-[var(--velo-30)] anim-pop" style={{animationDelay: '0.6s'}}>
                   <div className="flex justify-between items-center mb-4">
                      <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
                      <span className="text-sm font-bold text-slate-600"><AnimatedCounter value={Math.round(actualIntakeKcal * 0.2)} /> Kcal</span>
@@ -1520,14 +1520,14 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         </div>
 
                         {isCustom ? (
-  <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+  <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-[var(--velo-60)] shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
     <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
 
     {pastiCustom[cat]?.nome ? (
       <div className="ml-2">
         <div className="flex justify-between items-center mb-4">
           <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
-          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">+ Aggiungi / Modifica</button>
+          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-[var(--velo-60)] hover:bg-[var(--superficie)] transition-all cursor-pointer shrink-0">+ Aggiungi / Modifica</button>
         </div>
         <div className="flex gap-4 mb-2">
           <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-orange-500"} /></div>
@@ -1547,7 +1547,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     )}
   </div>
 ) : (
-                           <div className={`mt-2 p-5 rounded-3xl bg-orange-50/50 backdrop-blur-xl border border-white shadow-[inset_4px_4px_8px_var(--ombra-chiara),inset_-4px_-4px_8px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
+                           <div className={`mt-2 p-5 rounded-3xl bg-[var(--superficie-alt)] backdrop-blur-xl border border-[var(--velo-60)] shadow-[inset_4px_4px_8px_var(--ombra-chiara),inset_-4px_-4px_8px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
                              <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
                              <div className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">
                                {renderDescrizioneConHUD(blocco.descrizione || "")}
@@ -1594,14 +1594,14 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     </div>
                     
                     {isCustom ? (
-  <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+  <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-[var(--velo-60)] shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
     <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
 
     {pastiCustom[cat]?.nome ? (
       <div className="ml-2">
         <div className="flex justify-between items-center mb-4">
           <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
-          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-white hover:bg-white transition-all cursor-pointer shrink-0">Cambia</button>
+          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-[var(--velo-60)] hover:bg-[var(--superficie)] transition-all cursor-pointer shrink-0">Cambia</button>
         </div>
         <div className="flex gap-4 mb-2">
           <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-orange-500"} /></div>
@@ -1621,10 +1621,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     )}
   </div>
 ) : (
-                       <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-white shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
+                       <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-[var(--velo-60)] shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
                          <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
                          <p className="font-bold text-[15px] text-slate-700 mb-3 ml-2 relative z-10">{itemScelto.nome}</p>
-                         {finalCho === 0 && finalPro === 0 ? <p className="text-[11px] text-red-500 font-bold bg-red-50 p-3 rounded-xl inline-block shadow-sm relative z-10 ml-2">Pasto azzerato (Sgarro o Digiuno).</p> : <div className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">
+                         {finalCho === 0 && finalPro === 0 ? <p className="text-[11px] text-red-500 font-bold bg-[var(--superficie-alt)] p-3 rounded-xl inline-block shadow-sm relative z-10 ml-2">Pasto azzerato (Sgarro o Digiuno).</p> : <div className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">
   {renderDescrizioneConHUD(itemScelto.dettaglioGrammi(finalCho, finalPro, finalFat) || "")}
 </div>}
                        </div>
@@ -1714,7 +1714,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       <p className="text-[10px] text-slate-500 font-bold leading-relaxed px-1 mt-1">{r.motivo}</p>
                       
                       <div className="mt-auto pt-3">
-                         <div className="bg-slate-200/50 p-3 rounded-2xl shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)]">
+                         <div className="bg-[var(--superficie-alt)] p-3 rounded-2xl shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)]">
                             <span className="text-[8px] uppercase font-black text-indigo-400 tracking-widest block mb-2">Esempi Consigliati (Cerca questi):</span>
                             <ul className="list-disc pl-4 text-[9px] font-bold text-slate-600 space-y-1.5">
                               {r.esempi.map((es, i) => <li key={i}>{es}</li>)}
