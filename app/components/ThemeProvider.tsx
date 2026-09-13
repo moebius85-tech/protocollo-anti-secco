@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { motion } from 'framer-motion'; // <-- ECCOLO QUI!
 
 // 1. IL DIZIONARIO DEI TEMI (Centralizzato per tutta l'app)
 export const TEMI = {
