@@ -58,7 +58,9 @@ body {
   color: var(--theme-text);
 }
 
-/* Magia Nera: anima morbidamente tutti i colori senza scatti */
-* {
-  transition: background-color 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease, color 0.3s ease;
-}
+/* CLASSI SICURE CHE NON ROMPONO TAILWIND E ANIMANO SOLO I COLORI */
+.theme-bg { background-color: var(--theme-bg); color: var(--theme-text); transition: background-color 0.4s ease, color 0.4s ease; }
+.theme-shadow-outset { box-shadow: var(--theme-shadow-outset); transition: box-shadow 0.4s ease; }
+.theme-shadow-inset { box-shadow: var(--theme-shadow-inset); transition: box-shadow 0.4s ease; }
+.theme-shadow-outset-sm { box-shadow: var(--theme-shadow-outset-sm); transition: box-shadow 0.4s ease; }
+.theme-shadow-inset-sm { box-shadow: var(--theme-shadow-inset-sm); transition: box-shadow 0.4s ease; }
