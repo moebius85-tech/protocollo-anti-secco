@@ -884,7 +884,7 @@ if (!usaIntegratori) {
 
                  {/* IL CENTRO DI GRAVITÀ: La "O" (Tutto è ancorato qui) */}
                  {/* Fase 4: Slitta verso sinistra per fare spazio a MNIFIT */}
-                 <div className={`relative flex items-center justify-center transition-transform duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${faseIntro >= 3 ? 'translate-x-[-125px] scale-[0.85]' : 'translate-x-0 scale-100'}`}>
+                 <div className={`relative flex items-center justify-center transition-transform duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${faseIntro >= 3 ? 'translate-x-[-125px] scale-[0.85]' : 'translate-x-0 scale-100'}`}>
 
                     {/* FASE 1: La "I" verde. 
                         Parte come uno schermo verde gigante (scale 80), poi fa zoom out. 
@@ -895,14 +895,14 @@ if (!usaIntegratori) {
                        ${faseIntro >= 3 ? 'scale-100 opacity-0' : ''}
                     `}>
                        <svg viewBox="0 0 100 180" className="w-[70px] h-[126px] text-lime-500 fill-current drop-shadow-sm">
-                           <path d="M 0 0 H 100 V 35 H 65 V 145 H 100 V 180 H 0 V 145 H 35 V 35 H 0 Z" />
+                           <path d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" />
                        </svg>
                     </div>
 
                     {/* FASE 2: La "A" grigio scuro. 
                         Scende dall'alto (translate-y -100px). 
                         Alla Fase 4 svanisce. */}
-                    <div className={`absolute top-[calc(50%-75px)] z-0 transition-all duration-[1200ms] cubic-bezier(0.34, 1.56, 0.64, 1)
+                    <div className={`absolute top-[calc(50%-63px)] z-0 transition-all duration-[1200ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]
                        ${faseIntro < 1 ? 'translate-y-[-100px] opacity-0' : ''}
                        ${faseIntro >= 1 && faseIntro < 3 ? 'translate-y-0 opacity-100' : ''}
                        ${faseIntro >= 3 ? 'translate-y-0 opacity-0' : ''}
@@ -954,7 +954,7 @@ if (!usaIntegratori) {
 
                  {/* FASE 4: La scritta "MNIFIT".
                      Slitta da destra verso sinistra per agganciarsi alla "O". */}
-                 <div className={`absolute top-1/2 -translate-y-1/2 overflow-hidden flex items-center transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) 
+                 <div className={`absolute top-1/2 -translate-y-1/2 overflow-hidden flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] 
                     ${faseIntro >= 3 ? 'w-[250px] opacity-100 translate-x-[40px]' : 'w-0 opacity-0 translate-x-[80px]'}
                  `}>
                     <div className="flex items-center text-[74px] font-black tracking-tighter leading-none pt-1 whitespace-nowrap pl-1">
