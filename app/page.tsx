@@ -851,8 +851,16 @@ if (!usaIntegratori) {
 
           {/* --- SPLASH SCREEN INTRO --- */}
           <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out ${faseIntro < 6 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-              
-              {/* === SFONDO ANIMATO ORIGINALE (Visibile solo in Fase 4 e 5) === */}
+
+              {/* FASE 1: SCHERMO VERDE A PIENO SCHERMO CHE SI RITRAE.
+                  Copertura dedicata (non più uno scale estremo sulla "I" stessa,
+                  che su schermi larghi lasciava vedere il bordo/taglio netto
+                  verde-grigio): questo div copre SEMPRE l'intero viewport in
+                  Fase 0, poi si restringe e sparisce rivelando la "I" già
+                  presente, a dimensione reale, esattamente dietro di lui. */}
+              <div className={`fixed inset-0 z-[70] bg-lime-500 pointer-events-none origin-center transition-all duration-[1100ms] ease-[cubic-bezier(0.65,0,0.35,1)] ${faseIntro === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} />
+
+              {/* === SFONDO ANIMATO (Visibile da Fase 4 in poi) === */}
               <div className={`absolute inset-0 overflow-hidden pointer-events-none z-[1] transition-opacity duration-[1500ms] ${faseIntro >= 3 ? 'opacity-100' : 'opacity-0'}`}>
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
                     <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(132,204,22,0.3)]">
@@ -879,81 +887,79 @@ if (!usaIntegratori) {
               </div>
 
               {/* === CONTAINER CENTRALE ASSOLUTO === */}
-              {/* Il Box OMNIFIT diventa una "Glassbox" alla Fase 4 */}
               <div className={`relative flex items-center justify-center h-[300px] z-10 transition-all duration-[1200ms] ease-in-out ${faseIntro >= 3 ? 'bg-[var(--superficie)]/80 backdrop-blur-xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-[var(--velo-60)] px-8 py-4 rounded-3xl mt-4' : 'bg-transparent border-transparent px-0 py-0 mt-0'}`}>
 
                  {/* IL CENTRO DI GRAVITÀ: La "O" (Tutto è ancorato qui) */}
-                 {/* Fase 4: Slitta verso sinistra per fare spazio a MNIFIT */}
                  <div className={`relative flex items-center justify-center transition-transform duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${faseIntro >= 3 ? 'translate-x-[-125px] scale-[0.85]' : 'translate-x-0 scale-100'}`}>
 
-                    {/* FASE 1: La "I" verde. 
-                        Parte come uno schermo verde gigante (scale 80), poi fa zoom out. 
-                        Alla Fase 4 svanisce (opacity-0). */}
-                    <div className={`absolute bottom-[100%] mb-[12px] origin-bottom transition-all duration-[1500ms] ease-in-out z-0
-                       ${faseIntro === 0 ? 'scale-[80] opacity-100' : ''}
-                       ${faseIntro >= 1 && faseIntro < 3 ? 'scale-100 opacity-100' : ''}
-                       ${faseIntro >= 3 ? 'scale-100 opacity-0' : ''}
-                    `}>
+                    {/* FASE 1: La "I" verde — già a dimensione reale da subito,
+                        semplicemente nascosta dal velo verde qui sopra finché
+                        faseIntro non passa a 1. Niente più scale estremi. */}
+                    <div className={`absolute bottom-[100%] mb-[12px] transition-opacity duration-[600ms] ease-in-out z-0 ${faseIntro >= 1 && faseIntro < 3 ? 'opacity-100' : 'opacity-0'}`}>
                        <svg viewBox="0 0 100 180" className="w-[70px] h-[126px] text-lime-500 fill-current drop-shadow-sm">
                            <path d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" />
                        </svg>
                     </div>
 
-                    {/* FASE 2: La "A" grigio scuro. 
-                        Scende dall'alto (translate-y -100px). 
-                        Alla Fase 4 svanisce. */}
+                    {/* FASE 2: La "A" — forma PIENA, SENZA il consueto foro
+                        triangolare: è un trapezio pieno a punta piatta.
+                        Il "buco" rotondo non appartiene a questa forma: lo
+                        crea il cerchio bianco della "O" che le viene
+                        sovrapposto sopra, esattamente come da specifica
+                        ("normalmente ci sarebbe un triangolo, troviamo invece
+                        un taglio circolare" — il taglio è un layer separato). */}
                     <div className={`absolute top-[calc(50%-63px)] z-0 transition-all duration-[1200ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]
                        ${faseIntro < 1 ? 'translate-y-[-100px] opacity-0' : ''}
                        ${faseIntro >= 1 && faseIntro < 3 ? 'translate-y-0 opacity-100' : ''}
                        ${faseIntro >= 3 ? 'translate-y-0 opacity-0' : ''}
                     `}>
                        <svg viewBox="0 0 140 180" className="w-[115px] h-[148px] text-slate-700 fill-current drop-shadow-md">
-                           <path d="M 35 0 H 105 L 140 180 H 100 L 70 50 L 40 180 H 0 Z" />
+                           <path d="M 35 0 H 105 L 140 180 H 0 Z" />
                        </svg>
                     </div>
 
-                    {/* FASE 3: La "O" (Il Piano Intermedio e Frontale).
-                        Il cerchio bianco buca visivamente la "A". Il bordo verde si disegna. */}
+                    {/* FASE 3: La "O" — disco bianco pieno (il "taglio circolare")
+                        + anello verde che vi si disegna attorno, perfettamente
+                        adiacenti (nessuno spiraglio, nessun residuo triangolare
+                        della "A" visibile). */}
                     <div className="relative w-[115px] h-[115px] flex items-center justify-center z-10">
                        <svg width="115" height="115" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg absolute inset-0">
-                          {/* Cerchio "Vuoto" (Sfondo superficie) */}
-                          <circle cx="50" cy="50" r="39" fill="var(--superficie)" className={`transition-opacity duration-1000 ${faseIntro >= 2 ? 'opacity-100' : 'opacity-0'}`} />
-                          {/* Anello Pieno Verde */}
-                          <circle cx="50" cy="50" r="39" fill="none" stroke="#84cc16" strokeWidth="22" strokeLinecap="square"
-                             strokeDasharray="245"
-                             strokeDashoffset={faseIntro >= 2 ? 0 : 245}
-                             style={{ transition: 'stroke-dashoffset 1s ease-out' }}
+                          {/* Il "taglio" circolare: disco pieno color superficie */}
+                          <circle cx="50" cy="50" r="32" fill="var(--superficie)" className={`transition-opacity duration-500 ${faseIntro >= 2 ? 'opacity-100' : 'opacity-0'}`} />
+                          {/* L'anello verde che si disegna, adiacente al bordo del disco bianco */}
+                          <circle cx="50" cy="50" r="42" fill="none" stroke="#84cc16" strokeWidth="20" strokeLinecap="round"
+                             strokeDasharray="264"
+                             strokeDashoffset={faseIntro >= 2 ? 0 : 264}
+                             style={{ transition: 'stroke-dashoffset 1.1s ease-out' }}
                           />
                        </svg>
 
-                       {/* FASE 3 & 4: Il Logo Interno (Omino e Foglie).
-                           Svanisce nella Fase 5. */}
+                       {/* FASE 3 & 4: Il Logo Interno (Omino e Foglie). Svanisce in Fase 5. */}
                        <div className={`absolute inset-0 flex items-center justify-center z-20 transition-opacity duration-700 
                           ${faseIntro >= 2 && faseIntro < 4 ? 'opacity-100 delay-500' : 'opacity-0'}
                        `}>
-                          <svg viewBox="0 0 100 100" className="w-[55px] h-[55px] stroke-lime-500 fill-none" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
-                             {/* Foglie */}
-                             <path d="M 50 85 C 30 85 15 70 15 55 C 30 55 45 70 50 85 Z" />
-                             <path d="M 50 85 C 70 85 85 70 85 55 C 70 55 55 70 50 85 Z" />
-                             {/* Omino: Testa */}
-                             <circle cx="65" cy="30" r="5" />
-                             {/* Omino: Corpo e Gambe */}
-                             <path d="M 45 42 Q 35 55 45 70" />
-                             <path d="M 45 70 L 35 60 L 25 70" />
-                             <path d="M 45 70 L 55 80 L 55 90" />
-                             {/* Omino: Braccio */}
-                             <path d="M 45 45 L 55 55 L 65 42" />
+                          <svg viewBox="0 0 100 100" className="w-[46px] h-[46px] stroke-lime-500 fill-none" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+                             {/* Foglie, speculari, appoggiate alla curvatura del cerchio bianco */}
+                             <path d="M 50 88 C 28 88 12 72 12 54 C 32 54 48 70 50 88 Z" />
+                             <path d="M 50 88 C 72 88 88 72 88 54 C 68 54 52 70 50 88 Z" />
+                             {/* Omino: testa */}
+                             <circle cx="63" cy="26" r="5.5" />
+                             {/* Omino: busto e gambe */}
+                             <path d="M 44 40 Q 33 52 42 66" />
+                             <path d="M 42 66 L 30 58 L 20 66" />
+                             <path d="M 42 66 L 54 76 L 54 88" />
+                             {/* Omino: braccio verso il bilanciere */}
+                             <path d="M 44 43 L 55 52 L 63 38" />
                              {/* Bilanciere */}
-                             <line x1="15" y1="42" x2="85" y2="42" />
-                             <line x1="20" y1="36" x2="20" y2="48" />
-                             <line x1="80" y1="36" x2="80" y2="48" />
+                             <line x1="12" y1="38" x2="88" y2="38" />
+                             <line x1="18" y1="31" x2="18" y2="45" />
+                             <line x1="82" y1="31" x2="82" y2="45" />
                           </svg>
                        </div>
                     </div>
                  </div>
 
-                 {/* FASE 4: La scritta "MNIFIT".
-                     Slitta da destra verso sinistra per agganciarsi alla "O". */}
+                 {/* FASE 4: La scritta "MNIFIT". Slitta da destra per agganciarsi alla "O". */}
                  <div className={`absolute top-1/2 -translate-y-1/2 overflow-hidden flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] 
                     ${faseIntro >= 3 ? 'w-[250px] opacity-100 translate-x-[40px]' : 'w-0 opacity-0 translate-x-[80px]'}
                  `}>
