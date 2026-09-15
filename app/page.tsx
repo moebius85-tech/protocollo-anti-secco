@@ -16,16 +16,6 @@ export default function LineArtLogo() {
     setTimeout(() => setIsDrawing(true), 100);
   };
 
-  // Stile base per tutte le linee (Spessore, colore e arrotondamenti identici all'immagine)
-  const pathStyle = {
-    fill: "none",
-    stroke: "#84cc16",
-    strokeWidth: "6",
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    strokeDasharray: 400,
-  };
-
   return (
     <div className="min-h-screen bg-[#f1f5f9] flex flex-col items-center justify-center font-sans p-4">
       
@@ -47,13 +37,17 @@ export default function LineArtLogo() {
       {/* CONTENITORE DELL'ANIMAZIONE */}
       <div className="relative flex items-center justify-center w-[400px] h-[400px] border-2 border-dashed border-slate-300 rounded-3xl bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] overflow-hidden">
         
-        {/* ViewBox calibrato sulle esatte proporzioni del disegno (0-210) */}
+        {/* ViewBox calibrato sulle esatte proporzioni del disegno */}
         <svg viewBox="0 0 210 210" className="w-[80%] h-[80%] overflow-visible">
             
             {/* ========================================================= */}
             {/* 1. IL BILANCIERE E I DISCHI (Ritardo: 0s)                 */}
             {/* ========================================================= */}
-            <g style={{ ...pathStyle, strokeDashoffset: isDrawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0s' }}>
+            {/* Gli stili sono stati passati come attributi SVG puri per far felice TypeScript */}
+            <g 
+               fill="none" stroke="#84cc16" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="400"
+               style={{ strokeDashoffset: isDrawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0s' }}
+            >
                 {/* Asta centrale */}
                 <path d="M 35 60 L 175 60" />
                 {/* Dischi Sinistri (Interno più alto, esterno più basso) */}
@@ -67,7 +61,10 @@ export default function LineArtLogo() {
             {/* ========================================================= */}
             {/* 2. LA TESTA E IL BRACCIO POSTERIORE (Ritardo: 0.3s)       */}
             {/* ========================================================= */}
-            <g style={{ ...pathStyle, strokeDashoffset: isDrawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s' }}>
+            <g 
+               fill="none" stroke="#84cc16" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="400"
+               style={{ strokeDashoffset: isDrawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s' }}
+            >
                 {/* Testa */}
                 <circle cx="115" cy="35" r="7.5" />
                 {/* Braccio sinistro (Quello dietro che afferra la barra) */}
@@ -77,7 +74,10 @@ export default function LineArtLogo() {
             {/* ========================================================= */}
             {/* 3. IL CORPO, LA GAMBA E IL BRACCIO FRONTALE (Ritardo: 0.6s)*/}
             {/* ========================================================= */}
-            <g style={{ ...pathStyle, strokeDashoffset: isDrawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.6s' }}>
+            <g 
+               fill="none" stroke="#84cc16" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="400"
+               style={{ strokeDashoffset: isDrawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.6s' }}
+            >
                 {/* Torso e Gamba Sinistra (Singola curva armonica a C) */}
                 <path d="M 115 65 Q 65 110 45 130" />
                 
@@ -91,9 +91,11 @@ export default function LineArtLogo() {
             {/* ========================================================= */}
             {/* 4. LE FOGLIE INFERIORI (Ritardo: 0.9s)                    */}
             {/* ========================================================= */}
-            <g style={{ ...pathStyle, strokeDashoffset: isDrawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.9s' }}>
+            <g 
+               fill="none" stroke="#84cc16" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="400"
+               style={{ strokeDashoffset: isDrawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.9s' }}
+            >
                 {/* Curva inferiore unica (Unisce perfettamente i due lati) */}
-                {/* Matematicamente il centro esatto in basso è a X=105, Y=195 */}
                 <path d="M 35 150 C 70 210, 140 210, 175 150" />
                 
                 {/* Bordo superiore Foglia Sinistra (Parte dalla punta e si unisce al centro esatto) */}
