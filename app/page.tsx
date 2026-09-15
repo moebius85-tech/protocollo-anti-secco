@@ -9,102 +9,103 @@ export default function TestLogo() {
       
       {/* PANNELLO DI CONTROLLO MANUALE */}
       <div className="absolute top-10 flex flex-wrap justify-center gap-3 bg-white p-4 rounded-2xl shadow-xl z-50">
-        <button onClick={() => setFase(0)} className="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-300 transition-all">0. Start (Solo I)</button>
+        <button onClick={() => setFase(0)} className="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-300 transition-all">0. Reset (Solo I)</button>
         <button onClick={() => setFase(1)} className="px-4 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-all">1. Scende A</button>
-        <button onClick={() => setFase(2)} className="px-4 py-2 bg-lime-500 text-white font-bold rounded-lg hover:bg-lime-600 transition-all">2. Incastro O + Logo</button>
+        <button onClick={() => setFase(2)} className="px-4 py-2 bg-lime-500 text-white font-bold rounded-lg hover:bg-lime-600 transition-all">2. Incastro Perfetto (O + Logo)</button>
         <button onClick={() => setFase(3)} className="px-4 py-2 bg-indigo-500 text-white font-bold rounded-lg hover:bg-indigo-600 transition-all">3. Trasforma in MNIFIT</button>
       </div>
 
-      <div className="text-center mb-8 mt-24">
-         <p className="text-slate-400 font-bold tracking-widest uppercase">Laboratorio 5 Livelli</p>
-         <p className="text-slate-500 text-sm mt-2">Test dell'incastro perfetto I-A-O</p>
+      <div className="text-center mb-6 mt-20">
+         <p className="text-slate-400 font-bold tracking-widest uppercase text-xs">Laboratorio Incastro Geometrico</p>
+         <p className="text-slate-700 font-black text-lg mt-1">Verifica Tangenze e Piani di Sovrapposizione</p>
       </div>
 
-      {/* CONTENITORE DELL'ANIMAZIONE (Griglia 400x600 per contenere I e A in verticale) */}
-      <div className="relative flex items-center justify-center w-[500px] h-[550px] border-2 border-dashed border-slate-300 rounded-3xl bg-[#f1f5f9] shadow-[inset_0_0_20px_rgba(0,0,0,0.05)] overflow-hidden">
+      {/* CONTENITORE DELL'ANIMAZIONE */}
+      <div className="relative flex items-center justify-center w-[460px] h-[540px] border-2 border-dashed border-slate-300 rounded-3xl bg-[#f1f5f9] shadow-[inset_0_0_20px_rgba(0,0,0,0.05)] overflow-hidden">
         
-        <svg viewBox="0 -100 400 500" className="w-full h-full overflow-visible">
+        <svg viewBox="0 0 400 480" className="w-full h-full overflow-visible">
             
-            {/* GRUPPO CENTRALE. Slitta a sinistra nella Fase 3 */}
-            <g className={`transition-transform duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${fase >= 3 ? 'translate-x-[-90px]' : 'translate-x-0'}`}>
+            {/* GRUPPO CENTRALE: Slitta verso sinistra nella Fase 3 */}
+            <g className={`transition-transform duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${fase >= 3 ? 'translate-x-[-100px]' : 'translate-x-0'}`}>
 
                {/* ========================================================= */}
-               {/* L1: LIVELLO 1 - CERCHIO VERDE DIETRO                      */}
+               {/* LIVELLO 1 (DIETRO): IL CERCHIO VERDE DELLA "O"            */}
                {/* ========================================================= */}
-               <circle cx="200" cy="200" r="90" fill="none" stroke="#84cc16" strokeWidth="40"
-                   strokeDasharray="566" strokeDashoffset={fase >= 2 ? 0 : 566}
-                   style={{ transition: 'stroke-dashoffset 1.2s ease-out' }}
+               {/* Passa dietro la A. Risulta visibile sui lati esterni e     */}
+               {/* nell'angolo superiore interno (vertice del triangolo).    */}
+               <circle 
+                   cx="200" cy="245" r="98" fill="none" stroke="#84cc16" strokeWidth="36"
+                   strokeDasharray="616" strokeDashoffset={fase >= 2 ? 0 : 616}
+                   style={{ transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)' }}
                />
 
                {/* ========================================================= */}
-               {/* L2: LIVELLO 2 - LA LETTERA "A" COMPLETA                   */}
-               {/* Svanisce nella Fase 3 per far restare solo la O           */}
+               {/* LIVELLO 2 (INTERMEDIO): LA LETTERA "A" INTEGRATA          */}
                {/* ========================================================= */}
-               <path className={`transition-all duration-1000 ease-out 
-                   ${fase < 1 ? 'translate-y-[-100px] opacity-0' : 'translate-y-0 opacity-100'}
-                   ${fase >= 3 ? '!opacity-0' : ''}
+               {/* È un unico tracciato vettoriale solido (fillRule evenodd). */}
+               {/* La sbarra orizzontale è continua e robusta da lato a lato. */}
+               <path 
+                  className={`transition-all duration-1000 ease-out 
+                     ${fase < 1 ? 'translate-y-[-60px] opacity-0' : 'translate-y-0 opacity-100'}
+                     ${fase >= 3 ? '!opacity-0' : ''}
                   `}
-                  d="M 160 40 H 240 L 350 370 H 290 L 276.7 330 H 123.3 L 110 370 H 50 Z M 200 100 L 143.3 270 H 256.7 Z"
+                  d="
+                     M 172 110 H 228 L 340 410 H 285 L 255 330 H 145 L 115 410 H 60 Z 
+                     M 200 138 L 248 275 H 152 Z
+                  "
                   fill="#334155"
+                  fillRule="evenodd"
                />
 
                {/* ========================================================= */}
-               {/* L3: LIVELLO 3 - CERCHIO VERDE DAVANTI                     */}
-               {/* Disegnato insieme a L1, passa SOPRA la A appena disegnata */}
+               {/* LIVELLO 3 (PRIMO PIANO): IL CERCHIO CHIARO (OBLÒ)         */}
                {/* ========================================================= */}
-               <circle cx="200" cy="200" r="90" fill="none" stroke="#84cc16" strokeWidth="40"
-                   strokeDasharray="566" strokeDashoffset={fase >= 2 ? 0 : 566}
-                   style={{ transition: 'stroke-dashoffset 1.2s ease-out' }}
+               {/* Ha r=80. A Y=245 i lati esterni della A distano 80 dal     */}
+               {/* centro: la A è esattamente TANGENTE al cerchio chiaro!     */}
+               <circle 
+                   cx="200" cy="245" r="80" fill="#f1f5f9" 
+                   className={`transition-opacity duration-700 ${fase >= 2 ? 'opacity-100' : 'opacity-0'}`}
                />
 
                {/* ========================================================= */}
-               {/* L4: LIVELLO 4 - PUNTA E SBARRA DELLA A (L'INCASTRO)       */}
-               {/* Passano sopra L3, nascondendo il cerchio sopra e sotto!   */}
-               {/* Svaniscono insieme alla A nella Fase 3                    */}
+               {/* LIVELLO 4: IL LOGO CENTRALE (OMINO E FOGLIE)              */}
                {/* ========================================================= */}
-               <g className={`transition-opacity duration-1000 ${fase >= 3 ? 'opacity-0' : 'opacity-100'}`}>
-                  {/* Punta della A (Nasconde il cerchio superiore) */}
-                  <polygon points="160,40 240,40 270,130 200,100 130,130" fill="#334155" />
-                  {/* Barra orizzontale (Nasconde il cerchio inferiore) */}
-                  <polygon points="143.3,270 256.7,270 276.7,330 123.3,330" fill="#334155" />
-               </g>
-
-               {/* ========================================================= */}
-               {/* L5: LIVELLO 5 - CERCHIO PIENO SFONDO + LOGO OMINO         */}
-               {/* ========================================================= */}
-               <g className={`transition-opacity duration-1000 ${fase >= 2 ? 'opacity-100' : 'opacity-0'}`}>
+               <g 
+                  className={`transition-opacity duration-700 ${fase >= 2 && fase < 3 ? 'opacity-100 delay-300' : 'opacity-0'}`} 
+                  stroke="#84cc16" fill="none" strokeLinecap="round" strokeLinejoin="round"
+               >
+                  {/* Foglie inferiori ricalcate sulla curvatura interna */}
+                  <path d="M 200 316 C 168 316 154 298 154 288 C 174 288 188 302 200 316 Z" strokeWidth="3.8" />
+                  <path d="M 200 316 C 232 316 246 298 246 288 C 226 288 212 302 200 316 Z" strokeWidth="3.8" />
                   
-                  {/* Cerchio "vuoto" grigio chiaro */}
-                  <circle cx="200" cy="200" r="70" fill="#f1f5f9" />
-
-                  {/* Logo Verde Centrale (Svanisce in Fase 3, lasciando la O) */}
-                  <g className={`transition-opacity duration-700 ${fase >= 3 ? 'opacity-0' : 'opacity-100'}`} stroke="#84cc16" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                     {/* Foglie inferiori */}
-                     <path d="M 200 260 C 165 260 150 240 150 230 C 170 230 185 245 200 260 Z" strokeWidth="4" />
-                     <path d="M 200 260 C 235 260 250 240 250 230 C 230 230 215 245 200 260 Z" strokeWidth="4" />
-                     {/* Bilanciere */}
-                     <line x1="150" y1="185" x2="250" y2="185" strokeWidth="4.5" />
-                     <line x1="155" y1="178" x2="155" y2="192" strokeWidth="4.5" />
-                     <line x1="245" y1="178" x2="245" y2="192" strokeWidth="4.5" />
-                     {/* Testa dell'omino */}
-                     <circle cx="220" cy="165" r="6" strokeWidth="4" />
-                     {/* Corpo e Braccia */}
-                     <path d="M 195 185 Q 185 205 195 225" strokeWidth="4.5" />
-                     <path d="M 195 190 L 210 200 L 225 185" strokeWidth="4" />
-                     {/* Gambe */}
-                     <path d="M 195 225 L 175 210 L 160 225" strokeWidth="4" />
-                     <path d="M 195 225 L 215 240 L 225 240" strokeWidth="4" />
-                  </g>
+                  {/* Bilanciere */}
+                  <line x1="148" y1="230" x2="252" y2="230" strokeWidth="4" />
+                  <line x1="153" y1="223" x2="153" y2="237" strokeWidth="4" />
+                  <line x1="247" y1="223" x2="247" y2="237" strokeWidth="4" />
+                  
+                  {/* Atleta: Testa */}
+                  <circle cx="218" cy="212" r="5.5" strokeWidth="3.5" />
+                  
+                  {/* Atleta: Schiena e Braccia */}
+                  <path d="M 194 230 Q 185 248 194 268" strokeWidth="4" />
+                  <path d="M 194 234 L 208 244 L 222 230" strokeWidth="3.8" />
+                  
+                  {/* Atleta: Gambe in affondo */}
+                  <path d="M 194 268 L 176 254 L 162 268" strokeWidth="3.8" />
+                  <path d="M 194 268 L 214 282 L 226 282" strokeWidth="3.8" />
                </g>
 
                {/* ========================================================= */}
-               {/* LA LETTERA "I" (Incolonnata sopra la A)                   */}
+               {/* LIVELLO SUPERIORE: LA LETTERA "I"                         */}
                {/* ========================================================= */}
                <g className={`transition-all duration-[1200ms] ease-out origin-top
-                  ${fase === 0 ? 'scale-[20] opacity-100 translate-y-[150px]' : 'scale-100 opacity-100 translate-y-0'}
+                  ${fase === 0 ? 'scale-[15] opacity-100 translate-y-[120px]' : 'scale-100 opacity-100 translate-y-0'}
                   ${fase >= 3 ? 'opacity-0' : ''}
                `}>
-                  <path d="M 140 -80 H 260 V -60 H 220 V 0 H 260 V 20 H 140 V 0 H 180 V -60 H 140 Z" fill="#84cc16" />
+                  <path 
+                     d="M 170 25 H 230 V 37 H 212 V 83 H 230 V 95 H 170 V 83 H 188 V 37 H 170 Z" 
+                     fill="#84cc16" 
+                  />
                </g>
 
             </g>
@@ -113,9 +114,9 @@ export default function TestLogo() {
             {/* SCRITTA "MNIFIT" (Slitta da destra nella Fase 3)          */}
             {/* ========================================================= */}
             <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1)
-               ${fase >= 3 ? 'opacity-100 translate-x-[20px]' : 'opacity-0 translate-x-[80px]'}
+               ${fase >= 3 ? 'opacity-100 translate-x-[15px]' : 'opacity-0 translate-x-[70px]'}
             `}>
-               <text x="210" y="235" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="110" letterSpacing="-4" fill="#334155">
+               <text x="210" y="278" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="105" letterSpacing="-4" fill="#334155">
                   MNI<tspan fill="#84cc16">FIT</tspan>
                </text>
             </g>
