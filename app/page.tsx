@@ -164,32 +164,32 @@ export default function Home() {
     localStorage.setItem('omnifit-tema', tema);
   }, [tema]);
   
-  // --- STATO SPLASH SCREEN INTRO (LE 6 FASI DEL TUO STORYBOARD) ---
+  // --- STATO SPLASH SCREEN INTRO (SEQUENZA 6 FASI - ARCHITETTURA A PIANI) ---
   const [faseIntro, setFaseIntro] = useState(0);
 
   useEffect(() => {
     if (faseIntro === 0) {
-      // Fase 1: Lo schermo verde fa zoom-out e si rivela essere la I
+      // FASE 1: Schermo verde che fa zoom-out rivelando la I
       const timer = setTimeout(() => setFaseIntro(1), 1500); 
       return () => clearTimeout(timer);
     } else if (faseIntro === 1) {
-      // Fase 2: Scende la A grigia
+      // FASE 2: Scende la A (Struttura portante grigio antracite)
       const timer = setTimeout(() => setFaseIntro(2), 1200); 
       return () => clearTimeout(timer);
     } else if (faseIntro === 2) {
-      // Fase 3: Disegna l'anello verde, lo sfondo bianco e l'omino
-      const timer = setTimeout(() => setFaseIntro(3), 1500); 
+      // FASE 3: Si disegna l'oblò (O) creando il Piano Intermedio, appare il logo (Piano Frontale)
+      const timer = setTimeout(() => setFaseIntro(3), 1800); 
       return () => clearTimeout(timer);
     } else if (faseIntro === 3) {
-      // Fase 4: Fade-out I e A, O slitta a sx, MNIFIT e sfondi compaiono
-      const timer = setTimeout(() => setFaseIntro(4), 2000); 
+      // FASE 4: I e A svaniscono. O slitta a sx, MNIFIT compare. Appaiono sfondi e pillola.
+      const timer = setTimeout(() => setFaseIntro(4), 2200); 
       return () => clearTimeout(timer);
     } else if (faseIntro === 4) {
-      // Fase 5: L'omino scompare, pulizia del logo
+      // FASE 5: Pulizia (omino e foglie svaniscono)
       const timer = setTimeout(() => setFaseIntro(5), 1500); 
       return () => clearTimeout(timer);
     } else if (faseIntro === 5) {
-      // Fase 6: L'intro sparisce, scende il Login
+      // FASE 6: Tutta la composizione svanisce, scende il Login
       const timer = setTimeout(() => setFaseIntro(6), 2500); 
       return () => clearTimeout(timer);
     }
@@ -851,16 +851,8 @@ if (!usaIntegratori) {
 
           {/* --- SPLASH SCREEN INTRO --- */}
           <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out ${faseIntro < 6 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-
-              {/* FASE 1: SCHERMO VERDE A PIENO SCHERMO CHE SI RITRAE.
-                  Copertura dedicata (non più uno scale estremo sulla "I" stessa,
-                  che su schermi larghi lasciava vedere il bordo/taglio netto
-                  verde-grigio): questo div copre SEMPRE l'intero viewport in
-                  Fase 0, poi si restringe e sparisce rivelando la "I" già
-                  presente, a dimensione reale, esattamente dietro di lui. */}
-              <div className={`fixed inset-0 z-[70] bg-lime-500 pointer-events-none origin-center transition-all duration-[1100ms] ease-[cubic-bezier(0.65,0,0.35,1)] ${faseIntro === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} />
-
-              {/* === SFONDO ANIMATO (Visibile da Fase 4 in poi) === */}
+              
+              {/* === BACKGROUND ANIMATO (Attivo in Fase 4 e 5) === */}
               <div className={`absolute inset-0 overflow-hidden pointer-events-none z-[1] transition-opacity duration-[1500ms] ${faseIntro >= 3 ? 'opacity-100' : 'opacity-0'}`}>
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
                     <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(132,204,22,0.3)]">
@@ -886,99 +878,87 @@ if (!usaIntegratori) {
                  </div>
               </div>
 
-              {/* === CONTAINER CENTRALE ASSOLUTO ===
-                  Altezza condizionale: alta quando I+A sono impilate in
-                  verticale (fase < 3), compatta quando resta solo la riga
-                  orizzontale O+MNIFIT (fase >= 3) — prima era fissa a 300px
-                  sempre, e restava un riquadro alto e vuoto anche a
-                  composizione ormai orizzontale (il "fantasma" nei tuoi
-                  screenshot). */}
-              <div className={`relative flex items-center justify-center z-10 transition-all duration-[1200ms] ease-in-out ${faseIntro >= 3 ? 'h-[130px] bg-[var(--superficie)]/80 backdrop-blur-xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-[var(--velo-60)] px-8 py-4 rounded-3xl mt-4' : 'h-[340px] bg-transparent border-transparent px-0 py-0 mt-0'}`}>
+              {/* === CONTAINER CENTRALE (Architettura a Piani) === */}
+              {/* Il Box OMNIFIT diventa una "Glassbox" alla Fase 4 */}
+              <div className={`relative flex items-center justify-center z-10 transition-all duration-[1200ms] ease-in-out ${faseIntro >= 3 ? 'bg-[var(--superficie)]/80 backdrop-blur-xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-[var(--velo-60)] px-8 py-5 rounded-[2rem] mt-4' : 'bg-transparent border-transparent px-0 py-0 mt-0'}`}>
 
-                 {/* IL CENTRO DI GRAVITÀ: La "O" (120x120), sempre la stessa
-                     dimensione: è LEI che definisce lo spazio occupato nel
-                     flusso — I e A sono overlay assoluti "agganciati" a
-                     precise coordinate relative a questo riquadro, così la
-                     geometria resta sempre coerente indipendentemente dallo
-                     schermo. Tutti i numeri sotto sono calcolati da un unico
-                     sistema di riferimento condiviso, non indovinati singolarmente. */}
-                 <div className={`relative w-[120px] h-[120px] transition-transform duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${faseIntro >= 3 ? 'translate-x-[-125px] scale-[0.85]' : 'translate-x-0 scale-100'}`}>
+                 {/* IL CENTRO DI GRAVITÀ: L'incastro A + O */}
+                 {/* Fase 4: Tutto il blocco slitta verso sinistra per fare spazio a MNIFIT */}
+                 <div className={`relative flex items-center justify-center transition-transform duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${faseIntro >= 3 ? 'translate-x-[-125px] scale-[0.85]' : 'translate-x-0 scale-100'}`}>
 
-                    {/* FASE 1: La "I" verde.
-                        Base del riquadro O = y:0. La "I" (alta 126) sta
-                        appena sopra, con soli 8px di distanza dalla cima
-                        della "A" (che parte a y:15) → I finisce a y:7,
-                        quindi il suo top è a 7-126 = -119px. */}
-                    <div className={`absolute top-[-119px] left-1/2 -translate-x-1/2 w-[70px] h-[126px] transition-opacity duration-[600ms] ease-in-out z-0 ${faseIntro >= 1 && faseIntro < 3 ? 'opacity-100' : 'opacity-0'}`}>
-                       <svg viewBox="0 0 100 180" className="w-full h-full text-lime-500 fill-current drop-shadow-sm">
-                           <path d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" />
+                    {/* FASE 1: La "I" verde. 
+                        Parte da schermo intero (scale 80), fa zoom out. 
+                        Alla Fase 4 svanisce (opacity-0). */}
+                    <div className={`absolute bottom-full mb-[15px] origin-bottom transition-all duration-[1500ms] ease-in-out z-0
+                       ${faseIntro === 0 ? 'scale-[80] opacity-100' : ''}
+                       ${faseIntro >= 1 && faseIntro < 3 ? 'scale-100 opacity-100' : ''}
+                       ${faseIntro >= 3 ? 'scale-100 opacity-0' : ''}
+                    `}>
+                       {/* Vettore I esatto */}
+                       <svg viewBox="0 0 100 130" className="w-[60px] h-[78px] text-lime-500 fill-current drop-shadow-sm">
+                           <path d="M 0 0 H 100 V 25 H 65 V 105 H 100 V 130 H 0 V 105 H 35 V 25 H 0 Z" />
                        </svg>
                     </div>
 
-                    {/* FASE 2: La "A" — trapezio PIENO, punta piatta,
-                        SENZA foro triangolare (il "taglio" è la "O" bianca
-                        sovrapposta sopra, come da specifica). Parte a
-                        y:15px (così la "O", che va da y:2 a y:118, sporge
-                        13px sopra la punta della A — l'incastro "a
-                        cavallo" richiesto) e si estende ben oltre la base
-                        della O (fino a y:215) lasciando le gambe visibili
-                        sotto, come nel riferimento. */}
-                    <div className={`absolute top-[15px] left-1/2 -translate-x-1/2 w-[170px] h-[200px] z-0 transition-all duration-[1200ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]
-                       ${faseIntro < 1 ? 'translate-y-[-170px] opacity-0' : ''}
+                    {/* FASE 2: La "A" grigio antracite (PIANO DI FONDO). 
+                        Scende dall'alto (translate-y -100px). 
+                        Ha la sbarra orizzontale! Alla Fase 4 svanisce. */}
+                    <div className={`relative z-0 transition-all duration-[1200ms] cubic-bezier(0.34, 1.56, 0.64, 1)
+                       ${faseIntro < 1 ? 'translate-y-[-100px] opacity-0' : ''}
                        ${faseIntro >= 1 && faseIntro < 3 ? 'translate-y-0 opacity-100' : ''}
                        ${faseIntro >= 3 ? 'translate-y-0 opacity-0' : ''}
                     `}>
-                       <svg viewBox="0 0 170 200" className="w-full h-full text-slate-700 fill-current drop-shadow-md">
-                           <path d="M 50 0 H 120 L 170 200 H 0 Z" />
+                       <svg viewBox="0 0 140 180" className="w-[125px] h-[160px] text-slate-700 fill-current drop-shadow-md">
+                           {/* Vettore A con sbarra orizzontale e punta tronca */}
+                           <path d="M 45 0 H 95 L 140 180 H 105 L 92 125 H 48 L 35 180 H 0 Z M 55 90 H 85 L 70 30 Z" />
                        </svg>
                     </div>
 
-                    {/* FASE 3: La "O" — disco pieno color superficie (il
-                        "taglio circolare") + anello verde che vi si
-                        disegna attorno, con il raggio dell'anello che
-                        combacia ESATTAMENTE col bordo del disco (38 +
-                        metà dello spessore 20 = 48): zero spiragli, zero
-                        residui della "A" visibili. */}
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                       <svg width="120" height="120" viewBox="0 0 120 120" className="-rotate-90 drop-shadow-lg absolute inset-0">
-                          <circle cx="60" cy="60" r="38" fill="var(--superficie)" className={`transition-opacity duration-500 ${faseIntro >= 2 ? 'opacity-100' : 'opacity-0'}`} />
-                          <circle cx="60" cy="60" r="48" fill="none" stroke="#84cc16" strokeWidth="20" strokeLinecap="round"
-                             strokeDasharray="302"
-                             strokeDashoffset={faseIntro >= 2 ? 0 : 302}
-                             style={{ transition: 'stroke-dashoffset 1.1s ease-out' }}
+                    {/* FASE 3: L'Oblò (PIANO INTERMEDIO) e il Logo (PIANO FRONTALE).
+                        Questo elemento è ancorato esattamente al centro/basso della A,
+                        coprendo la sbarra orizzontale. */}
+                    <div className="absolute top-[85px] w-[130px] h-[130px] flex items-center justify-center z-10">
+                       <svg width="130" height="130" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg absolute inset-0">
+                          {/* PIANO INTERMEDIO: Il cerchio "Vuoto" che funge da tela e maschera la sbarra della A */}
+                          <circle cx="50" cy="50" r="39" fill="var(--superficie)" className={`transition-opacity duration-700 ${faseIntro >= 2 ? 'opacity-100' : 'opacity-0'}`} />
+                          
+                          {/* L'Anello Verde Pieno (Cornice dell'oblò) */}
+                          <circle cx="50" cy="50" r="39" fill="none" stroke="#84cc16" strokeWidth="22" strokeLinecap="square"
+                             strokeDasharray="245"
+                             strokeDashoffset={faseIntro >= 2 ? 0 : 245}
+                             style={{ transition: 'stroke-dashoffset 1s ease-out' }}
                           />
                        </svg>
 
-                       {/* FASE 3 & 4: Il Logo Interno (Omino e Foglie), ingrandito
-                           e semplificato per restare leggibile alla dimensione
-                           finale (prima il bilanciere era troppo piccolo per
-                           essere riconoscibile). Svanisce in Fase 5. */}
+                       {/* PIANO FRONTALE: Il Logo Interno (Omino e Foglie).
+                           Svanisce nella Fase 5. */}
                        <div className={`absolute inset-0 flex items-center justify-center z-20 transition-opacity duration-700 
                           ${faseIntro >= 2 && faseIntro < 4 ? 'opacity-100 delay-500' : 'opacity-0'}
                        `}>
-                          <svg viewBox="0 0 100 100" className="w-[58px] h-[58px] stroke-lime-500 fill-none" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
-                             {/* Foglie, speculari, appoggiate alla curvatura del cerchio bianco */}
-                             <path d="M 50 86 C 30 86 15 71 15 55 C 33 55 47 70 50 86 Z" />
-                             <path d="M 50 86 C 70 86 85 71 85 55 C 67 55 53 70 50 86 Z" />
-                             {/* Omino: testa */}
-                             <circle cx="60" cy="24" r="6" />
-                             {/* Omino: busto e gambe */}
-                             <path d="M 42 38 Q 30 50 40 64" />
-                             <path d="M 40 64 L 27 57 L 17 64" />
-                             <path d="M 40 64 L 53 74 L 53 88" />
-                             {/* Omino: braccio verso il bilanciere */}
-                             <path d="M 42 41 L 53 50 L 60 36" />
-                             {/* Bilanciere, ben visibile e distinto dal corpo */}
-                             <line x1="10" y1="36" x2="90" y2="36" strokeWidth="7" />
-                             <line x1="17" y1="28" x2="17" y2="44" strokeWidth="7" />
-                             <line x1="83" y1="28" x2="83" y2="44" strokeWidth="7" />
+                          <svg viewBox="0 0 100 100" className="w-[60px] h-[60px] stroke-lime-500 fill-none" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+                             {/* Foglie tagliate sulla curva */}
+                             <path d="M 50 85 C 30 85 15 70 15 55 C 30 55 45 70 50 85 Z" />
+                             <path d="M 50 85 C 70 85 85 70 85 55 C 70 55 55 70 50 85 Z" />
+                             {/* Omino: Testa */}
+                             <circle cx="65" cy="30" r="5" />
+                             {/* Omino: Corpo e Gambe */}
+                             <path d="M 45 42 Q 35 55 45 70" />
+                             <path d="M 45 70 L 35 60 L 25 70" />
+                             <path d="M 45 70 L 55 80 L 55 90" />
+                             {/* Omino: Braccio */}
+                             <path d="M 45 45 L 55 55 L 65 42" />
+                             {/* Bilanciere */}
+                             <line x1="15" y1="42" x2="85" y2="42" />
+                             <line x1="20" y1="36" x2="20" y2="48" />
+                             <line x1="80" y1="36" x2="80" y2="48" />
                           </svg>
                        </div>
                     </div>
                  </div>
 
-                 {/* FASE 4: La scritta "MNIFIT". Slitta da destra per agganciarsi alla "O". */}
-                 <div className={`absolute top-1/2 -translate-y-1/2 overflow-hidden flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] 
+                 {/* FASE 4: La scritta "MNIFIT".
+                     Slitta da destra verso sinistra per agganciarsi alla "O" che ora è isolata. */}
+                 <div className={`absolute top-1/2 -translate-y-1/2 overflow-hidden flex items-center transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) 
                     ${faseIntro >= 3 ? 'w-[250px] opacity-100 translate-x-[40px]' : 'w-0 opacity-0 translate-x-[80px]'}
                  `}>
                     <div className="flex items-center text-[74px] font-black tracking-tighter leading-none pt-1 whitespace-nowrap pl-1">
