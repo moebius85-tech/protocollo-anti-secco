@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 /* ------------------------------------------------------------------
    LOGO OMNIFIT — line art che si compone
    Tracciati vettorializzati dal logo originale.
-   I contorni si disegnano come linea, poi si riempiono di verde.
+   I contorni si disegnano come linea sottile, poi si riempiono di verde.
    ------------------------------------------------------------------ */
 
 type Tratto = { nome: string; durata: number; pausa: number; d: string };
@@ -16,11 +16,15 @@ const TRATTI: Tratto[] = [
 ];
 
 export default function TestLogo() {
-  const [fase, setFase] = useState(0);
+  const [attivo, setAttivo] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f1f5f9] flex flex-col items-center justify-center font-sans p-4">
       
+      <div className="absolute top-10 flex flex-wrap justify-center gap-3 bg-white p-4 rounded-2xl shadow-xl z-50 text-sm">
+        <button onClick={() => { setAttivo(false); setTimeout(() => setAttivo(true), 100); }} className="px-5 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-all">Riavvia Line Art</button>
+      </div>
+
       <div className="text-center mb-8 mt-16">
          <p className="text-slate-400 font-bold tracking-widest uppercase text-xs">Laboratorio Geometria Pura</p>
          <p className="text-slate-700 font-black text-lg mt-1">Animazione Vettoriale (Line Art)</p>
@@ -29,7 +33,7 @@ export default function TestLogo() {
       {/* CONTENITORE DELL'ANIMAZIONE */}
       <div className="relative flex items-center justify-center w-[500px] h-[500px] border-2 border-dashed border-slate-300 rounded-3xl bg-[#f1f5f9] shadow-[inset_0_0_20px_rgba(0,0,0,0.05)] overflow-hidden">
         
-        <LogoOmnifit attivo={true} dimensione={250} colore="#84cc16" spessore={1.4} />
+        <LogoOmnifit attivo={attivo} dimensione={250} colore="#84cc16" spessore={0.4} />
 
       </div>
     </div>
