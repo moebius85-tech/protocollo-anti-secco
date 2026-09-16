@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 
 /* ==================================================================
-   1. DATI DEL LOGO INTERNO (TRACCIATI ORIGINALI + MASCHERE ANIMATE)
+   1. DATI DEL LOGO INTERNO E COMPONENTE OMINO (INTATTO)
 ================================================================== */
 type Tratto = { nome: string; durata: number; pausa: number; d: string; maskD: string };
 
@@ -48,7 +48,7 @@ function LogoInterno({ attivo = false }: { attivo: boolean }) {
       p.style.transition = "none";
       p.style.strokeDasharray = String(L);
       p.style.strokeDashoffset = String(L);
-      p.getBoundingClientRect();
+      p.getBoundingClientRect(); // reflow
     });
 
     if (!attivo) return;
@@ -104,7 +104,7 @@ export default function TestLogo() {
       const timer = setTimeout(() => setFase(3), 1100);
       return () => clearTimeout(timer);
     } else if (fase === 3) {
-      // Fase 4: Svanisce la A e l'omino, entra MNIFIT
+      // Fase 4: Svanisce la A e l'omino, la O si sposta e appare MNIFIT
       const timer = setTimeout(() => setFase(4), 4800); 
       return () => clearTimeout(timer);
     }
@@ -113,47 +113,68 @@ export default function TestLogo() {
   return (
     <div className="min-h-screen bg-[#f1f5f9] flex flex-col items-center justify-center font-sans p-4">
       
-      <div className="absolute top-10 flex flex-wrap justify-center gap-3 bg-white p-4 rounded-2xl shadow-xl z-50 text-sm">
+      <div className="absolute top-10 flex flex-wrap justify-center gap-3 bg-white p-4 rounded-2xl shadow-xl z-50 text-sm z-[100]">
         <button onClick={() => setFase(0)} className="px-5 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-all">
           Riavvia Animazione Totale
         </button>
       </div>
 
-      <div className="relative flex items-center justify-center w-[600px] h-[500px] border-2 border-dashed border-slate-300 rounded-3xl bg-[#f1f5f9] shadow-[inset_0_0_20px_rgba(0,0,0,0.05)] overflow-hidden">
-        <svg viewBox="0 0 600 500" className="w-full h-full overflow-visible">
+      <div className="text-center mb-8 mt-16 z-[100]">
+         <p className="text-slate-400 font-bold tracking-widest uppercase text-xs">Laboratorio Geometria Pura</p>
+         <p className="text-slate-700 font-black text-lg mt-1">Costruzione Finale MNIFIT (Proporzioni Esatte)</p>
+      </div>
+
+      {/* CONTENITORE PRINCIPALE (Spazio allargato per far scorrere la scritta) */}
+      <div className="relative flex items-center justify-center w-full max-w-[800px] h-[500px]">
+        
+        {/* LA CARTA BIANCA DIETRO TUTTO (Si allarga solo in Fase 4) */}
+        <div 
+          className={`absolute bg-white shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[70px] transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${
+            fase >= 4 ? 'w-[740px] h-[180px] opacity-100' : 'w-[200px] h-[200px] opacity-0 scale-50'
+          }`}
+        />
+
+        <svg viewBox="0 0 800 500" className="absolute w-[800px] h-[500px] overflow-visible z-10">
           
-          {/* GRUPPO CENTRALE: A, Anello e Omino. In Fase 4 si sposta a sinistra */}
-          <g className={`transition-transform duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${fase >= 4 ? 'translate-x-[-140px]' : 'translate-x-0'}`}>
+          {/* GRUPPO CENTRALE (A + O + Omino) */}
+          <g 
+            className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) origin-center ${
+              fase >= 4 ? 'translate-x-[-300px] scale-[0.45]' : 'translate-x-0 scale-100'
+            }`}
+            style={{ transformOrigin: '400px 250px' }} // Il centro esatto nel nuovo viewBox da 800
+          >
              
-            {/* L'ANIMAZIONE DELLA "A" */}
+            {/* L'ANIMAZIONE DELLA "A" SPOSTATA AL CENTRO DEL VIEWBOX (X: 400, Y: 250) */}
             <g className={`transition-all duration-[1200ms] cubic-bezier(0.34, 1.56, 0.64, 1) ${fase < 1 ? 'translate-y-[-80px] opacity-0' : 'translate-y-0 opacity-100'}`}>
-              <circle cx="250" cy="250" r="109" fill="none" stroke="#84cc16" strokeWidth="48" strokeDasharray="685" strokeDashoffset={fase >= 2 ? 0 : 685} style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+              <circle cx="400" cy="250" r="109" fill="none" stroke="#84cc16" strokeWidth="48" strokeDasharray="685" strokeDashoffset={fase >= 2 ? 0 : 685} style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />
               
-              {/* Questa è la A grigia: in fase 4 scompare! */}
-              <path className={`transition-opacity duration-1000 ${fase >= 4 ? 'opacity-0' : 'opacity-100'}`} fillRule="evenodd" d="M 226.66 85 H 273.33 L 423.33 445 H 381.33 L 356.34 385 H 143.66 L 118.67 445 H 76.66 Z M 250 129.8 L 164.5 335 H 335.5 Z" fill="#334155" />
+              {/* Questa è la A grigia (In Fase 4 svanisce per lasciare solo la O) */}
+              <path className={`transition-opacity duration-1000 ${fase >= 4 ? 'opacity-0' : 'opacity-100'}`} fillRule="evenodd" d="M 376.66 85 H 423.33 L 573.33 445 H 531.33 L 506.34 385 H 293.66 L 268.67 445 H 226.66 Z M 400 129.8 L 314.5 335 H 485.5 Z" fill="#334155" />
               
-              <circle cx="250" cy="250" r="109" fill="none" stroke="#84cc16" strokeWidth="48" strokeDasharray="685" strokeDashoffset={fase >= 2 ? 0 : 685} style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+              <circle cx="400" cy="250" r="109" fill="none" stroke="#84cc16" strokeWidth="48" strokeDasharray="685" strokeDashoffset={fase >= 2 ? 0 : 685} style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />
               
-              {/* Le toppe grigie: in fase 4 scompaiono! */}
+              {/* Le toppe grigie maschera (Svaniscono in Fase 4) */}
               <g className={`transition-opacity duration-1000 ${fase >= 4 ? 'opacity-0' : 'opacity-100'}`}>
-                <path d="M 226.66 85 H 273.33 L 329.59 220 H 287.59 L 250 129.8 L 212.41 220 H 170.41 Z" fill="#334155" />
-                <polygon points="122.5,335 377.5,335 398.34,385 101.66,385" fill="#334155" />
+                <path d="M 376.66 85 H 423.33 L 479.59 220 H 437.59 L 400 129.8 L 362.41 220 H 320.41 Z" fill="#334155" />
+                <polygon points="272.5,335 527.5,335 548.34,385 251.66,385" fill="#334155" />
               </g>
             </g>
 
-            {/* Sfondo bianco: in fase 4 scompare, lasciando l'interno della "O" trasparente */}
-            <circle cx="250" cy="250" r="85" fill="#f1f5f9" className={`transition-all duration-[1200ms] ease-out origin-center ${fase >= 4 ? 'opacity-0' : fase >= 2 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`} style={{ transformOrigin: '250px 250px' }} />
+            {/* Sfondo cerchio bianco omino (Svanisce in Fase 4 per appoggiarsi alla Card Bianca) */}
+            <circle cx="400" cy="250" r="85" fill="#f1f5f9" className={`transition-all duration-[1200ms] ease-out origin-center ${fase >= 4 ? 'opacity-0' : fase >= 2 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`} style={{ transformOrigin: '400px 250px' }} />
 
-            {/* L'OMINO: in fase 4 scompare! */}
-            <g className={`transition-opacity duration-1000 ${fase >= 4 ? 'opacity-0' : 'opacity-100'}`}>
+            {/* L'OMINO CHE COMPAIE (In Fase 4 svanisce dolcemente) */}
+            <g className={`transition-opacity duration-1000 ${fase >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transform: 'translate(150px, 0)' }}>
+               {/* Traslato di +150px in X per compensare il nuovo viewBox centrato a 400 invece di 250 */}
                <LogoInterno attivo={fase >= 3} />
             </g>
 
           </g>
 
-          {/* TESTO "MNIFIT" CHE ENTRA IN FASE 4 */}
-          <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${fase >= 4 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[50px]'}`}>
-             <text x="265" y="298" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-5" fill="#475569">
+          {/* SCRITTA "MNIFIT" CHE SCIVOLA ED ENTRA DA DESTRA (Alta esattamente quanto la "O") */}
+          <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${fase >= 4 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[40px]'}`}>
+             {/* Il fontSize="140" crea esattamente l'altezza di 98px della O rimpicciolita! */}
+             <text x="165" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
                 MNI<tspan fill="#84cc16">FIT</tspan>
              </text>
           </g>
