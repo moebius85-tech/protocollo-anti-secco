@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 /* ------------------------------------------------------------------
    LOGO OMNIFIT — line art che si compone
    Tracciati vettorializzati dal logo originale (Fedeltà 100%).
-   Rendering ottimizzato per eliminare lo sfrigolio.
+   Rendering OTTIMIZZATO PER DISEGNO TECNICO (Linee affilate).
    ------------------------------------------------------------------ */
 
 type Tratto = { nome: string; durata: number; pausa: number; d: string };
@@ -100,6 +100,7 @@ function LogoOmnifit({
       width={dimensione}
       height={dimensione}
       className={className}
+      style={{ shapeRendering: "geometricPrecision" }}
     >
       {TRATTI.map((t) => (
         <path
@@ -109,8 +110,9 @@ function LogoOmnifit({
           fillRule="evenodd"
           stroke={colore}
           strokeWidth={spessore}
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          strokeLinecap="butt"
+          strokeLinejoin="miter"
+          strokeMiterlimit={10}
         />
       ))}
     </svg>
@@ -135,7 +137,7 @@ export default function TestLogo() {
       {/* CONTENITORE DELL'ANIMAZIONE */}
       <div className="relative flex items-center justify-center w-[500px] h-[500px] border-2 border-dashed border-slate-300 rounded-3xl bg-[#f1f5f9] shadow-[inset_0_0_20px_rgba(0,0,0,0.05)] overflow-hidden">
         
-        <LogoOmnifit attivo={attivo} dimensione={250} colore="#84cc16" spessore={0.4} />
+        <LogoOmnifit attivo={attivo} dimensione={250} colore="#84cc16" spessore={0.2} />
 
       </div>
     </div>
