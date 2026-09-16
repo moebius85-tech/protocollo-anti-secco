@@ -31,7 +31,7 @@ type Props = {
   className?: string;
 };
 
-export default function LogoOmnifit({
+function LogoOmnifit({
   attivo = true,
   dimensione = 160,
   colore = "#84cc16",
