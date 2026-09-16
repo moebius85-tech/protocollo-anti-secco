@@ -140,4 +140,23 @@ export default function TestLogo() {
       </div>
     </div>
   );
-}
+}The Vercel build is failing because Turbopack caught a syntax error in your Next.js project. 
+
+Specifically, in **`./app/page.tsx`**, you are using `export default` more than once. In JavaScript/TypeScript, a single file can only have one default export, and Next.js relies on this single default export to render the page component.
+
+### How to fix it
+
+1. Open `./app/page.tsx`.
+2. Scroll up from line 120 and look for another function or variable that is exported using `export default`.
+3. Decide which component is the actual main page structure. 
+4. Remove the `default` keyword from the secondary component to turn it into a named export (or remove `export` entirely if it is only used locally inside that file).
+
+**Example Scenario A: `TestLogo` is a sub-component**
+If `TestLogo` is just a section being used by the main page, remove `default`:
+```tsx
+// Before (Line 120)
+export default function TestLogo() { ... }
+
+// After 
+export function TestLogo() { ... } 
+// OR just: function TestLogo() { ... }
