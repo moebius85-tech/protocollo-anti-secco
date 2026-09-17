@@ -284,7 +284,7 @@ export default function Home() {
       const timer = setTimeout(() => setFaseIntro(3), 1200);
       return () => clearTimeout(timer);
     } else if (faseIntro === 3) {
-      const timer = setTimeout(() => setFaseIntro(4), 3000); 
+      const timer = setTimeout(() => setFaseIntro(4), 5000); 
       return () => clearTimeout(timer);
     } else if (faseIntro === 4) {
       const timer = setTimeout(() => setFaseIntro(5), 2500); 
@@ -990,26 +990,25 @@ if (!usaIntegratori) {
               <div className="relative flex items-center justify-center w-full max-w-[800px] h-[500px] z-10">
                 {/* CARTA BIANCA DIETRO TUTTO */}
                 <div className={`absolute bg-[var(--superficie)] shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[70px] transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${
-                  faseIntro >= 4 ? 'w-[740px] h-[180px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
+                  faseIntro >= 4 ? 'w-[620px] h-[180px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
                 }`} />
 
                 <svg viewBox="0 0 800 500" className="absolute w-full h-full overflow-visible z-10">
                   {/* GRUPPO CENTRALE (I + A + O + Omino) */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) origin-center ${
-                      faseIntro >= 4 ? 'translate-x-[-300px] scale-[0.45]' : 'translate-x-0 scale-100'
+                      faseIntro >= 4 ? 'translate-x-[-210px] scale-[0.45]' : 'translate-x-0 scale-100'
                     }`}
                     style={{ transformOrigin: '400px 250px' }}
                   >
-                     {/* LA I VERDE / SCHERMO VERDE (Now properly fades to 0 opacity in Fase 4) */}
-                     <g className={`transition-all duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)] origin-center ${faseIntro === 0 ? 'scale-[100] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px 40px' }}>
-                       <path transform="translate(375, -5) scale(0.5)" d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" fill="#84cc16"/>
+                     {/* LA I VERDE / SCHERMO VERDE */}
+                     <g className={`transition-all duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)] origin-center ${faseIntro === 0 ? 'scale-[250] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px 40px' }}>
+                       <path transform="translate(365, -56) scale(0.7)" d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" fill="#84cc16"/>
                      </g>
 
                      {/* LA A GRIGIA */}
                      <g className={`transition-all duration-[1000ms] cubic-bezier(0.34, 1.56, 0.64, 1) ${faseIntro < 2 ? 'translate-y-[-80px] opacity-0' : 'translate-y-0 opacity-100'}`}>
                        <circle cx="400" cy="250" r="109" fill="none" stroke="#84cc16" strokeWidth="48" strokeDasharray="685" strokeDashoffset={faseIntro >= 3 ? 0 : 685} style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />
                        
-                       {/* The Gray A and patches fade to opacity-0 in fase 4 */}
                        <path className={`transition-opacity duration-1000 ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} fillRule="evenodd" d="M 376.66 85 H 423.33 L 573.33 445 H 531.33 L 506.34 385 H 293.66 L 268.67 445 H 226.66 Z M 400 129.8 L 314.5 335 H 485.5 Z" fill="#334155" />
                        
                        <circle cx="400" cy="250" r="109" fill="none" stroke="#84cc16" strokeWidth="48" strokeDasharray="685" strokeDashoffset={faseIntro >= 3 ? 0 : 685} style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />
@@ -1031,7 +1030,7 @@ if (!usaIntegratori) {
 
                   {/* TESTO MNIFIT */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${faseIntro >= 4 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[40px]'}`}>
-                     <text x="165" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
+                     <text x="255" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
                         MNI<tspan fill="#84cc16">FIT</tspan>
                      </text>
                   </g>
