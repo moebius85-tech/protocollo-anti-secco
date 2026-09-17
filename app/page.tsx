@@ -159,7 +159,7 @@ const TRATTI: Tratto[] = [
   },
 ];
 
-function LogoInterno({ attivo = false }: { attivo: boolean }) {
+function LogoInterno({ attivo = false, x = 340, y = 190 }: { attivo?: boolean, x?: number, y?: number }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -201,30 +201,16 @@ function LogoInterno({ attivo = false }: { attivo: boolean }) {
   }, [attivo]);
 
   return (
-    <svg x="190" y="190" width="120" height="120" viewBox="0 0 200 200" ref={svgRef} className="overflow-visible">
+    <svg x={x} y={y} width="120" height="120" viewBox="0 0 200 200" ref={svgRef} className="overflow-visible">
       <defs>
         {TRATTI.map((t) => (
           <mask id={`mask-${t.nome}`} key={`mask-${t.nome}`}>
-            <path
-              className="mask-path"
-              d={t.maskD}
-              fill="none"
-              stroke="white"
-              strokeWidth={35}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            <path className="mask-path" d={t.maskD} fill="none" stroke="white" strokeWidth={35} strokeLinecap="round" strokeLinejoin="round" />
           </mask>
         ))}
       </defs>
-
       {TRATTI.map((t) => (
-        <path
-          key={t.nome}
-          d={t.d}
-          fill="#84cc16"
-          mask={`url(#mask-${t.nome})`}
-        />
+        <path key={t.nome} d={t.d} fill="#84cc16" mask={`url(#mask-${t.nome})`} />
       ))}
     </svg>
   );
@@ -893,7 +879,18 @@ if (!usaIntegratori) {
       return (
         <div className={"min-h-screen " + UI.bg + " flex items-center justify-center p-4 relative overflow-hidden font-sans"}>
           
-          <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down { animation: dropDownPanel 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes dropDownPanel { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } } .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; } @keyframes drawMiccia { to { stroke-dashoffset: 0; } }" }} />
+          <style dangerouslySetInnerHTML={{ __html: `
+            .anim-drop-down { animation: dropDownPanel 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; } 
+            @keyframes dropDownPanel { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } } 
+            .anim-circle-svg { stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawCircleSvg 6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; } 
+            .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; } 
+            .anim-bg-ltr { animation: slideLeftToRight 8.5s linear forwards; } 
+            .anim-bg-rtl { animation: slideRightToLeft 8.5s linear forwards; } 
+            @keyframes drawCircleSvg { to { stroke-dashoffset: 0; } } 
+            @keyframes drawMiccia { to { stroke-dashoffset: 0; } } 
+            @keyframes slideLeftToRight { 0% { transform: translateX(-15%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(5%); opacity: 0; } } 
+            @keyframes slideRightToLeft { 0% { transform: translateX(5%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(-15%); opacity: 0; } }
+          ` }} />
 
           {/* --- PANNELLO DI LOGIN (Scende solo in Fase 5) --- */}
           <div className={UI.card + " w-full max-w-sm z-10 " + (faseIntro >= 5 ? "anim-drop-down" : "opacity-0 pointer-events-none absolute")}>
@@ -928,12 +925,29 @@ if (!usaIntegratori) {
           {/* --- SPLASH SCREEN INTRO ANIMATO --- */}
           <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out ${faseIntro < 5 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
               
-              {/* Sfondo Astratto Leggero */}
+              {/* Sfondo Astratto Leggero e Scritte Scorrevoli ripristinate */}
               <div className={`absolute inset-0 overflow-hidden pointer-events-none z-[1] transition-opacity duration-[1500ms] ${faseIntro >= 3 && faseIntro < 5 ? 'opacity-100' : 'opacity-0'}`}>
+                 {/* Cerchi laterali */}
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
                     <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(132,204,22,0.3)]">
-                      <circle cx="100" cy="100" r="75" fill="none" stroke="var(--accento-1)" strokeWidth="38" strokeLinecap="round" />
+                      <circle cx="100" cy="100" r="75" fill="none" stroke="var(--accento-1)" strokeWidth="38" className={faseIntro >= 3 ? "anim-circle-svg" : ""} strokeLinecap="round" />
                     </svg>
+                 </div>
+                 <div className="absolute -bottom-24 -right-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-25">
+                    <svg viewBox="0 0 200 200" className="w-full h-full rotate-90 drop-shadow-[0_0_15px_rgba(100,116,139,0.3)]">
+                      <circle cx="100" cy="100" r="75" fill="none" stroke="#64748b" strokeWidth="38" className={faseIntro >= 3 ? "anim-circle-svg" : ""} strokeLinecap="round" style={{animationDelay: '0.5s'}} />
+                    </svg>
+                 </div>
+
+                 {/* Testo in Movimento */}
+                 <div className={`absolute top-[12%] left-0 whitespace-nowrap text-[80px] sm:text-[130px] font-black text-slate-400 leading-none ${faseIntro >= 3 ? "anim-bg-ltr" : "opacity-0"}`}>
+                    AI COACH • AI COACH • AI COACH • AI COACH
+                 </div>
+                 <div className={`absolute top-[30%] right-0 whitespace-nowrap text-[90px] sm:text-[150px] font-black text-lime-500 leading-none ${faseIntro >= 3 ? "anim-bg-rtl" : "opacity-0"}`}>
+                    ESERCIZI • ESERCIZI • ESERCIZI • ESERCIZI
+                 </div>
+                 <div className={`absolute bottom-[12%] left-0 whitespace-nowrap text-[75px] sm:text-[120px] font-black text-slate-400 leading-none ${faseIntro >= 3 ? "anim-bg-ltr" : "opacity-0"}`} style={{animationDelay: '0.2s'}}>
+                    ANALISI CORPOREA • ANALISI CORPOREA • ANALISI CORPOREA
                  </div>
               </div>
 
@@ -951,12 +965,12 @@ if (!usaIntegratori) {
                     }`}
                     style={{ transformOrigin: '400px 250px' }}
                   >
-                     {/* LA I VERDE / SCHERMO VERDE */}
-                     <g className={`transition-all duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)] origin-center ${faseIntro === 0 ? 'scale-[100] opacity-100' : 'scale-100 opacity-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px 40px' }}>
+                     {/* LA I VERDE / SCHERMO VERDE (Bug FIX: in Fase 4 la opacity svanisce) */}
+                     <g className={`transition-all duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)] origin-center ${faseIntro === 0 ? 'scale-[100] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px 40px' }}>
                        <path transform="translate(375, -5) scale(0.5)" d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" fill="#84cc16"/>
                      </g>
 
-                     {/* LA A GRIGIA CHE SCENDE DA SOTTO LA I */}
+                     {/* LA A GRIGIA */}
                      <g className={`transition-all duration-[1000ms] cubic-bezier(0.34, 1.56, 0.64, 1) ${faseIntro < 2 ? 'translate-y-[-80px] opacity-0' : 'translate-y-0 opacity-100'}`}>
                        <circle cx="400" cy="250" r="109" fill="none" stroke="#84cc16" strokeWidth="48" strokeDasharray="685" strokeDashoffset={faseIntro >= 3 ? 0 : 685} style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)' }} />
                        <path className={`transition-opacity duration-1000 ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} fillRule="evenodd" d="M 376.66 85 H 423.33 L 573.33 445 H 531.33 L 506.34 385 H 293.66 L 268.67 445 H 226.66 Z M 400 129.8 L 314.5 335 H 485.5 Z" fill="#334155" />
@@ -970,11 +984,9 @@ if (!usaIntegratori) {
                      {/* CERCHIO BIANCO SFONDO OMINO */}
                      <circle cx="400" cy="250" r="85" fill="var(--superficie)" className={`transition-all duration-[1200ms] ease-out origin-center ${faseIntro >= 4 ? 'opacity-0' : faseIntro >= 3 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`} style={{ transformOrigin: '400px 250px' }} />
 
-                     {/* OMINO (Svanisce in Fase 4) */}
+                     {/* L'OMINO CHE COMPAIE E SVANISCE IN FASE 4 (Bug Fix coordinate X Y corrette a mano) */}
                      <g className={`transition-opacity duration-1000 ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`}>
-                        <g style={{ transform: 'translate(150px, 0)' }}>
-                           <LogoInterno attivo={faseIntro >= 3} />
-                        </g>
+                        <LogoInterno attivo={faseIntro >= 3} x={340} y={190} />
                      </g>
                   </g>
 
