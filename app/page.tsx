@@ -275,16 +275,16 @@ export default function Home() {
 
   useEffect(() => {
     if (faseIntro === 0) {
-      const timer = setTimeout(() => setFaseIntro(1), 2500); // L'ingresso della I è stato addolcito
+      const timer = setTimeout(() => setFaseIntro(1), 800); // INGRESSO RAPIDO SCHERMO VERDE
       return () => clearTimeout(timer);
     } else if (faseIntro === 1) {
-      const timer = setTimeout(() => setFaseIntro(2), 1000); 
+      const timer = setTimeout(() => setFaseIntro(2), 1000);
       return () => clearTimeout(timer);
     } else if (faseIntro === 2) {
-      const timer = setTimeout(() => setFaseIntro(3), 1200); 
+      const timer = setTimeout(() => setFaseIntro(3), 1200);
       return () => clearTimeout(timer);
     } else if (faseIntro === 3) {
-      const timer = setTimeout(() => setFaseIntro(4), 5500); // Diamo ben 5.5s all'omino e alle foglie per formarsi!
+      const timer = setTimeout(() => setFaseIntro(4), 4400); // SCATTA APPENA FINISCONO LE FOGLIE
       return () => clearTimeout(timer);
     } else if (faseIntro === 4) {
       const timer = setTimeout(() => setFaseIntro(5), 2500); 
@@ -988,20 +988,20 @@ if (!usaIntegratori) {
 
               {/* CONTAINER PRINCIPALE SVG */}
               <div className="relative flex items-center justify-center w-full max-w-[800px] h-[500px] z-10">
-                {/* CARTA BIANCA DIETRO TUTTO */}
+                {/* CARTA BIANCA DIETRO TUTTO (Larghezza ricalibrata a 580px per abbracciare il testo) */}
                 <div className={`absolute bg-[var(--superficie)] shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[70px] transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${
-                  faseIntro >= 4 ? 'w-[720px] h-[180px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
+                  faseIntro >= 4 ? 'w-[580px] h-[180px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
                 }`} />
 
                 <svg viewBox="0 0 800 500" className="absolute w-full h-full overflow-visible z-10">
-                  {/* GRUPPO CENTRALE (I + A + O + Omino) */}
+                  {/* GRUPPO CENTRALE (I + A + O + Omino) - Traslazione aggiustata per centrare in 580px */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) origin-center ${
-                      faseIntro >= 4 ? 'translate-x-[-250px] scale-[0.45]' : 'translate-x-0 scale-100'
+                      faseIntro >= 4 ? 'translate-x-[-220px] scale-[0.45]' : 'translate-x-0 scale-100'
                     }`}
                     style={{ transformOrigin: '400px 250px' }}
                   >
-                     {/* LA I VERDE / SCHERMO VERDE (Scale aumentato a 400 per coprire tutto e dimensione finale 1.4) */}
-                     <g className={`transition-all duration-[2500ms] ease-[cubic-bezier(0.65,0,0.35,1)] origin-center ${faseIntro === 0 ? 'scale-[400] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px 40px' }}>
+                     {/* LA I VERDE / SCHERMO VERDE (Transizione abbassata a 800ms) */}
+                     <g className={`transition-all duration-[800ms] ease-[cubic-bezier(0.65,0,0.35,1)] origin-center ${faseIntro === 0 ? 'scale-[400] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px 40px' }}>
                        <path transform="translate(330, -177) scale(1.4)" d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" fill="#84cc16"/>
                      </g>
 
@@ -1028,17 +1028,17 @@ if (!usaIntegratori) {
                      </g>
                   </g>
 
-                  {/* TESTO MNIFIT */}
+                  {/* TESTO MNIFIT (Spostato a x=245 per chiudere il gap con la O) */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${faseIntro >= 4 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[40px]'}`}>
-                     <text x="260" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
+                     <text x="245" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
                         MNI<tspan fill="#84cc16">FIT</tspan>
                      </text>
                   </g>
                 </svg>
               </div>
 
-              {/* PILLOLA PROTOCOLLO EVOLUTIVO (Ora più vicina al logo: bottom-[28%]) */}
-              <div className={`absolute bottom-[28%] px-8 py-3 rounded-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-sm overflow-hidden border border-[var(--velo-60)] transition-all duration-[1200ms] ease-in-out z-20 ${faseIntro >= 4 && faseIntro < 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+              {/* PILLOLA PROTOCOLLO EVOLUTIVO (Alzato da bottom-[28%] a bottom-[34%]) */}
+              <div className={`absolute bottom-[34%] px-8 py-3 rounded-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-sm overflow-hidden border border-[var(--velo-60)] transition-all duration-[1200ms] ease-in-out z-20 ${faseIntro >= 4 && faseIntro < 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                  <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 240 50" preserveAspectRatio="none">
                     <rect x="2" y="2" width="236" height="46" rx="23" fill="none" stroke="var(--accento-1)" strokeWidth="3" className="anim-miccia-border drop-shadow-[0_0_8px_var(--accento-1)]" />
                  </svg>
