@@ -164,36 +164,15 @@ export default function Home() {
     localStorage.setItem('omnifit-tema', tema);
   }, [tema]);
   
-  // --- STATO SPLASH SCREEN INTRO (LE 6 FASI DEL TUO STORYBOARD) ---
-  const [faseIntro, setFaseIntro] = useState(0);
+  // --- STATO SPLASH SCREEN INTRO ---
+  const [mostraIntro, setMostraIntro] = useState(true);
 
   useEffect(() => {
-    if (faseIntro === 0) {
-      // Fase 1: Lo schermo verde fa zoom-out e si rivela essere la I
-      const timer = setTimeout(() => setFaseIntro(1), 1500); 
-      return () => clearTimeout(timer);
-    } else if (faseIntro === 1) {
-      // Fase 2: Scende la A grigia
-      const timer = setTimeout(() => setFaseIntro(2), 1200); 
-      return () => clearTimeout(timer);
-    } else if (faseIntro === 2) {
-      // Fase 3: Disegna l'anello verde, lo sfondo bianco e l'omino
-      const timer = setTimeout(() => setFaseIntro(3), 1500); 
-      return () => clearTimeout(timer);
-    } else if (faseIntro === 3) {
-      // Fase 4: Fade-out I e A, O slitta a sx, MNIFIT e sfondi compaiono
-      const timer = setTimeout(() => setFaseIntro(4), 2000); 
-      return () => clearTimeout(timer);
-    } else if (faseIntro === 4) {
-      // Fase 5: L'omino scompare, pulizia del logo
-      const timer = setTimeout(() => setFaseIntro(5), 1500); 
-      return () => clearTimeout(timer);
-    } else if (faseIntro === 5) {
-      // Fase 6: L'intro sparisce, scende il Login
-      const timer = setTimeout(() => setFaseIntro(6), 2500); 
-      return () => clearTimeout(timer);
-    }
-  }, [faseIntro]);
+    const timer = setTimeout(() => {
+      setMostraIntro(false);
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, []);
   // --- STATI LOGIN E AUTENTICAZIONE ---
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
@@ -817,10 +796,10 @@ if (!usaIntegratori) {
       return (
         <div className={"min-h-screen " + UI.bg + " flex items-center justify-center p-4 relative overflow-hidden font-sans"}>
           
-          <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down { animation: dropDownPanel 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes dropDownPanel { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } } .anim-circle-svg { stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawCircleSvg 6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; } .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; } .anim-bg-ltr { animation: slideLeftToRight 8.5s linear forwards; } .anim-bg-rtl { animation: slideRightToLeft 8.5s linear forwards; } @keyframes drawCircleSvg { to { stroke-dashoffset: 0; } } @keyframes drawMiccia { to { stroke-dashoffset: 0; } } @keyframes slideLeftToRight { 0% { transform: translateX(-15%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(5%); opacity: 0; } } @keyframes slideRightToLeft { 0% { transform: translateX(5%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(-15%); opacity: 0; } }" }} />
+          <style dangerouslySetInnerHTML={{ __html: ".anim-drop-down { animation: dropDownPanel 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; } @keyframes dropDownPanel { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } } .anim-circle-svg { stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawCircleSvg 6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; } .anim-miccia-border { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawMiccia 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; } .anim-mni { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.4s forwards; } .anim-fit { opacity: 0; transform: translateX(-30px); animation: slideText 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 0.6s forwards; } .anim-sub { opacity: 0; transform: translateY(15px); animation: slideUp 0.6s cubic-bezier(0.1, 0.8, 0.2, 1) 1.1s forwards; } .anim-bg-ltr { animation: slideLeftToRight 8.5s linear forwards; } .anim-bg-rtl { animation: slideRightToLeft 8.5s linear forwards; } @keyframes drawCircleSvg { to { stroke-dashoffset: 0; } } @keyframes drawMiccia { to { stroke-dashoffset: 0; } } @keyframes slideText { to { opacity: 1; transform: translateX(0); } } @keyframes slideUp { to { opacity: 1; transform: translateY(0); } } @keyframes slideLeftToRight { 0% { transform: translateX(-15%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(5%); opacity: 0; } } @keyframes slideRightToLeft { 0% { transform: translateX(5%); opacity: 0; } 20% { opacity: 0.14; } 80% { opacity: 0.14; } 100% { transform: translateX(-15%); opacity: 0; } }" }} />
 
-          {/* --- FASE 6: PANNELLO DI LOGIN (Scende alla fine) --- */}
-          <div className={UI.card + " w-full max-w-sm z-10 " + (faseIntro === 6 ? "anim-drop-down" : "opacity-0 pointer-events-none")}>
+          {/* --- PANNELLO DI LOGIN (Scende solo quando la intro sparisce) --- */}
+          <div className={UI.card + " w-full max-w-sm z-10 " + (!mostraIntro ? "anim-drop-down" : "opacity-0")}>
              <div className="flex justify-center items-center mb-10">
                 <h1 className="text-4xl font-bold tracking-tighter uppercase text-center flex-1 text-slate-500">
                   OMNI<span className="text-lime-500 drop-shadow-sm font-black">FIT</span>
@@ -849,163 +828,63 @@ if (!usaIntegratori) {
              </div>
           </div>
 
-          {/* --- SPLASH SCREEN INTRO --- */}
-          <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out ${faseIntro < 6 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-
-              {/* FASE 1: SCHERMO VERDE A PIENO SCHERMO CHE SI RITRAE.
-                  Copertura dedicata (non più uno scale estremo sulla "I" stessa,
-                  che su schermi larghi lasciava vedere il bordo/taglio netto
-                  verde-grigio): questo div copre SEMPRE l'intero viewport in
-                  Fase 0, poi si restringe e sparisce rivelando la "I" già
-                  presente, a dimensione reale, esattamente dietro di lui. */}
-              <div
-                 className={`fixed inset-0 z-[70] bg-lime-500 pointer-events-none transition-all duration-[1100ms] ease-[cubic-bezier(0.65,0,0.35,1)] ${faseIntro === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
-                 style={{ transformOrigin: '50% calc(50% - 116px)' }}
-              />
-
-              {/* === SFONDO ANIMATO (Visibile da Fase 4 in poi) === */}
-              <div className={`absolute inset-0 overflow-hidden pointer-events-none z-[1] transition-opacity duration-[1500ms] ${faseIntro >= 3 ? 'opacity-100' : 'opacity-0'}`}>
+          {/* --- SPLASH SCREEN INTRO (Non si distrugge, ma sfuma lentamente) --- */}
+          <div className={"fixed inset-0 z-[9999] bg-[var(--superficie)] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out " + (mostraIntro ? "opacity-100" : "opacity-0 pointer-events-none")}>
+              
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
                  <div className="absolute -top-24 -left-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-30">
                     <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(132,204,22,0.3)]">
-                      <circle cx="100" cy="100" r="75" fill="none" stroke="var(--accento-1)" strokeWidth="38" className={faseIntro >= 3 ? "anim-circle-svg" : ""} strokeLinecap="round" />
+                      <circle cx="100" cy="100" r="75" fill="none" stroke="var(--accento-1)" strokeWidth="38" className="anim-circle-svg" strokeLinecap="round" />
                     </svg>
                  </div>
                  <div className="absolute -bottom-24 -right-24 w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] opacity-25">
                     <svg viewBox="0 0 200 200" className="w-full h-full rotate-90 drop-shadow-[0_0_15px_rgba(100,116,139,0.3)]">
-                      <circle cx="100" cy="100" r="75" fill="none" stroke="#64748b" strokeWidth="38" className={faseIntro >= 3 ? "anim-circle-svg" : ""} strokeLinecap="round" style={{animationDelay: '0.5s'}} />
+                      <circle cx="100" cy="100" r="75" fill="none" stroke="#64748b" strokeWidth="38" className="anim-circle-svg" strokeLinecap="round" style={{animationDelay: '0.5s'}} />
                     </svg>
                  </div>
               </div>
 
-              <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 transition-opacity duration-[1500ms] ${faseIntro >= 3 ? 'opacity-100' : 'opacity-0'}`}>
-                 <div className={`absolute top-[12%] left-0 whitespace-nowrap text-[80px] sm:text-[130px] font-black text-slate-400 leading-none ${faseIntro >= 3 ? "anim-bg-ltr" : ""}`}>
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                 <div className="absolute top-[12%] left-0 whitespace-nowrap text-[80px] sm:text-[130px] font-black text-slate-400 leading-none anim-bg-ltr opacity-0">
                     AI COACH • AI COACH • AI COACH • AI COACH
                  </div>
-                 <div className={`absolute top-[30%] right-0 whitespace-nowrap text-[90px] sm:text-[150px] font-black text-lime-500 leading-none ${faseIntro >= 3 ? "anim-bg-rtl" : ""}`}>
+                 <div className="absolute top-[30%] right-0 whitespace-nowrap text-[90px] sm:text-[150px] font-black text-lime-500 leading-none anim-bg-rtl opacity-0">
                     ESERCIZI • ESERCIZI • ESERCIZI • ESERCIZI
                  </div>
-                 <div className={`absolute bottom-[12%] left-0 whitespace-nowrap text-[75px] sm:text-[120px] font-black text-slate-400 leading-none ${faseIntro >= 3 ? "anim-bg-ltr" : ""}`} style={{animationDelay: '0.2s'}}>
+                 <div className="absolute bottom-[12%] left-0 whitespace-nowrap text-[75px] sm:text-[120px] font-black text-slate-400 leading-none anim-bg-ltr opacity-0" style={{animationDelay: '0.2s'}}>
                     ANALISI CORPOREA • ANALISI CORPOREA • ANALISI CORPOREA
                  </div>
               </div>
 
-              {/* === CONTAINER CENTRALE ASSOLUTO ===
-                  Altezza condizionale: alta quando I+A sono impilate in
-                  verticale (fase < 3), compatta quando resta solo la riga
-                  orizzontale O+MNIFIT (fase >= 3) — prima era fissa a 300px
-                  sempre, e restava un riquadro alto e vuoto anche a
-                  composizione ormai orizzontale (il "fantasma" nei tuoi
-                  screenshot). */}
-              <div className={`relative flex items-center justify-center z-10 transition-all duration-[1200ms] ease-in-out ${faseIntro >= 3 ? 'h-[130px] bg-[var(--superficie)]/80 backdrop-blur-xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-[var(--velo-60)] px-8 py-4 rounded-3xl mt-4' : 'h-[340px] bg-transparent border-transparent px-0 py-0 mt-0'}`}>
-
-                 {/* IL CENTRO DI GRAVITÀ: La "O" (120x120), sempre la stessa
-                     dimensione: è LEI che definisce lo spazio occupato nel
-                     flusso — I e A sono overlay assoluti "agganciati" a
-                     precise coordinate relative a questo riquadro, così la
-                     geometria resta sempre coerente indipendentemente dallo
-                     schermo. Tutti i numeri sotto sono calcolati da un unico
-                     sistema di riferimento condiviso, non indovinati singolarmente. */}
-                 <div className={`relative w-[120px] h-[120px] transition-transform duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${faseIntro >= 3 ? 'translate-x-[-125px] scale-[0.85]' : 'translate-x-0 scale-100'}`}>
-
-                    {/* FASE 1: La "I" verde.
-                        Base del riquadro O = y:0. La "I" (alta 126) sta
-                        appena sopra, con soli 8px di distanza dalla cima
-                        della "A" (che parte a y:15) → I finisce a y:7,
-                        quindi il suo top è a 7-126 = -119px. */}
-                    <div className={`absolute top-[-119px] left-1/2 -translate-x-1/2 w-[70px] h-[126px] transition-opacity duration-[1100ms] ease-[cubic-bezier(0.65,0,0.35,1)] z-0 ${faseIntro >= 1 && faseIntro < 3 ? 'opacity-100' : 'opacity-0'}`}>
-                       <svg viewBox="0 0 100 180" className="w-full h-full text-lime-500 fill-current drop-shadow-sm">
-                           <path d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" />
-                       </svg>
-                    </div>
-
-                    {/* FASE 2: La "A" — trapezio PIENO, punta piatta,
-                        SENZA foro triangolare (il "taglio" è la "O" bianca
-                        sovrapposta sopra, come da specifica). Parte a
-                        y:15px (così la "O", che va da y:2 a y:118, sporge
-                        13px sopra la punta della A — l'incastro "a
-                        cavallo" richiesto) e si estende ben oltre la base
-                        della O (fino a y:215) lasciando le gambe visibili
-                        sotto, come nel riferimento. */}
-                    <div className={`absolute top-[15px] left-1/2 -translate-x-1/2 w-[170px] h-[200px] z-0 transition-all duration-[1200ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]
-                       ${faseIntro < 1 ? 'translate-y-[-170px] opacity-0' : ''}
-                       ${faseIntro >= 1 && faseIntro < 3 ? 'translate-y-0 opacity-100' : ''}
-                       ${faseIntro >= 3 ? 'translate-y-0 opacity-0' : ''}
-                    `}>
-                       <svg viewBox="0 0 170 200" className="w-full h-full text-slate-700 fill-current drop-shadow-md">
-                           <path d="M 50 0 H 120 L 170 200 H 0 Z" />
-                       </svg>
-                    </div>
-
-                    {/* FASE 3: La "O" — disco pieno color superficie (il
-                        "taglio circolare") + anello verde che vi si
-                        disegna attorno, con il raggio dell'anello che
-                        combacia ESATTAMENTE col bordo del disco (38 +
-                        metà dello spessore 20 = 48): zero spiragli, zero
-                        residui della "A" visibili. */}
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                       <svg width="120" height="120" viewBox="0 0 120 120" className="-rotate-90 drop-shadow-lg absolute inset-0">
-                          <circle cx="60" cy="60" r="38" fill="var(--superficie)" className={`transition-opacity duration-500 ${faseIntro >= 2 ? 'opacity-100' : 'opacity-0'}`} />
-                          <circle cx="60" cy="60" r="48" fill="none" stroke="#84cc16" strokeWidth="20" strokeLinecap="round"
-                             strokeDasharray="302"
-                             strokeDashoffset={faseIntro >= 2 ? 0 : 302}
-                             style={{ transition: 'stroke-dashoffset 1.1s ease-out' }}
-                          />
-                       </svg>
-
-                       {/* FASE 3 & 4: Il Logo Interno (Omino e Foglie), ingrandito
-                           e semplificato per restare leggibile alla dimensione
-                           finale (prima il bilanciere era troppo piccolo per
-                           essere riconoscibile). Svanisce in Fase 5. */}
-                       <div className={`absolute inset-0 flex items-center justify-center z-20 transition-opacity duration-700 
-                          ${faseIntro >= 2 && faseIntro < 4 ? 'opacity-100 delay-500' : 'opacity-0'}
-                       `}>
-                          <svg viewBox="0 0 100 100" className="w-[58px] h-[58px] stroke-lime-500 fill-none" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
-                             {/* Foglie, speculari, appoggiate alla curvatura del cerchio bianco */}
-                             <path d="M 50 86 C 30 86 15 71 15 55 C 33 55 47 70 50 86 Z" />
-                             <path d="M 50 86 C 70 86 85 71 85 55 C 67 55 53 70 50 86 Z" />
-                             {/* Omino: testa */}
-                             <circle cx="60" cy="24" r="6" />
-                             {/* Omino: busto e gambe */}
-                             <path d="M 42 38 Q 30 50 40 64" />
-                             <path d="M 40 64 L 27 57 L 17 64" />
-                             <path d="M 40 64 L 53 74 L 53 88" />
-                             {/* Omino: braccio verso il bilanciere */}
-                             <path d="M 42 41 L 53 50 L 60 36" />
-                             {/* Bilanciere, ben visibile e distinto dal corpo */}
-                             <line x1="10" y1="36" x2="90" y2="36" strokeWidth="7" />
-                             <line x1="17" y1="28" x2="17" y2="44" strokeWidth="7" />
-                             <line x1="83" y1="28" x2="83" y2="44" strokeWidth="7" />
-                          </svg>
-                       </div>
-                    </div>
+              <div className="flex flex-col items-center justify-center z-10 relative mt-4">
+                 <div className="flex items-center justify-center mb-5 px-8 py-4 bg-[var(--superficie)]/80 backdrop-blur-xl rounded-3xl shadow-[0_10px_30px_rgb(0,0,0,0.08)] border border-[var(--velo-60)]">
+                   <div className="relative flex items-center justify-center -mr-1 z-10">
+                     <svg width="65" height="65" viewBox="0 0 100 100" className="-rotate-90 drop-shadow-lg">
+                       <circle cx="50" cy="50" r="36" fill="var(--superficie)" />
+                       <circle cx="50" cy="50" r="36" fill="none" stroke="var(--accento-1)" strokeWidth="22" className="anim-circle" strokeLinecap="square" />
+                     </svg>
+                   </div>
+                   <div className="flex items-center text-[65px] font-black tracking-tighter leading-none pt-1">
+                      <span className="text-slate-500 anim-mni">MNI</span>
+                      <span className="text-[var(--accento-1)] anim-fit">FIT</span>
+                   </div>
                  </div>
 
-                 {/* FASE 4: La scritta "MNIFIT". Slitta da destra per agganciarsi alla "O". */}
-                 <div className={`absolute top-1/2 -translate-y-1/2 overflow-hidden flex items-center transition-all duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] 
-                    ${faseIntro >= 3 ? 'w-[250px] opacity-100 translate-x-[40px]' : 'w-0 opacity-0 translate-x-[80px]'}
-                 `}>
-                    <div className="flex items-center text-[74px] font-black tracking-tighter leading-none pt-1 whitespace-nowrap pl-1">
-                       <span className="text-slate-500">MNI</span>
-                       <span className="text-lime-500">FIT</span>
-                    </div>
+                 <div className="relative px-8 py-3 rounded-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-sm anim-sub overflow-hidden border border-transparent">
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 240 50" preserveAspectRatio="none">
+                       <rect x="2" y="2" width="236" height="46" rx="23" fill="none" stroke="var(--accento-1)" strokeWidth="3" className="anim-miccia-border drop-shadow-[0_0_8px_var(--accento-1)]" />
+                    </svg>
+                    <p className="text-[12px] font-black text-slate-600 tracking-[0.4em] uppercase relative z-10">
+                       Protocollo Evolutivo
+                    </p>
                  </div>
-
-              </div>
-
-              {/* FASE 4: PILLOLA PROTOCOLLO EVOLUTIVO */}
-              <div className={`absolute bottom-[20%] px-8 py-3 rounded-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-sm overflow-hidden border border-transparent transition-all duration-[1200ms] ease-in-out ${faseIntro >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                 <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 240 50" preserveAspectRatio="none">
-                    <rect x="2" y="2" width="236" height="46" rx="23" fill="none" stroke="var(--accento-1)" strokeWidth="3" className="anim-miccia-border drop-shadow-[0_0_8px_var(--accento-1)]" />
-                 </svg>
-                 <p className="text-[12px] font-black text-slate-600 tracking-[0.4em] uppercase relative z-10">
-                    Protocollo Evolutivo
-                 </p>
               </div>
 
           </div>
         </div>
       );
     }
+
     // --- SE SEI AUTENTICATO, VEDI LA TUA VECCHIA HOME ---
     return (
       <div className={`min-h-screen ${UI.bg} flex items-center justify-center p-4 relative overflow-hidden font-sans`}>
@@ -2481,4 +2360,3 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     </main>
   );
 }
-
