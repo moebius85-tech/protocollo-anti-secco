@@ -987,15 +987,15 @@ if (!usaIntegratori) {
                  </div>
               </div>
 
-                            {/* CONTAINER PRINCIPALE SVG */}
+              {/* CONTAINER PRINCIPALE SVG */}
               <div className="relative flex items-center justify-center w-full max-w-[800px] h-[500px] z-10">
-                {/* CARTA BIANCA DIETRO TUTTO (Larghezza ricalibrata a 640px, centratura assoluta) */}
+                {/* CARTA BIANCA DIETRO TUTTO */}
                 <div className={`absolute bg-[var(--superficie)] shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[70px] transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${
                   faseIntro >= 4 ? 'w-[640px] h-[180px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
                 }`} />
 
                 <svg viewBox="0 0 800 500" className="absolute w-full h-full overflow-visible z-10">
-                  {/* GRUPPO CENTRALE (I + A + O + Omino) - Traslazione matematica perfetta per centrare il blocco O+MNIFIT */}
+                  {/* GRUPPO CENTRALE (I + A + O + Omino) */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) origin-center ${
                       faseIntro >= 4 ? 'translate-x-[-210px] scale-[0.45]' : 'translate-x-0 scale-100'
                     }`}
@@ -1029,7 +1029,7 @@ if (!usaIntegratori) {
                      </g>
                   </g>
 
-                  {/* TESTO MNIFIT (Ravvicinato alla O, distacco ridotto a 10px, x=285) */}
+                  {/* TESTO MNIFIT */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${faseIntro >= 4 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[40px]'}`}>
                      <text x="285" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
                         MNI<tspan fill="#84cc16">FIT</tspan>
@@ -1038,7 +1038,7 @@ if (!usaIntegratori) {
                 </svg>
               </div>
 
-              {/* PILLOLA PROTOCOLLO EVOLUTIVO (Isolata in un contenitore flex per centratura assoluta senza accavallamenti) */}
+              {/* PILLOLA PROTOCOLLO EVOLUTIVO */}
               <div className={`absolute bottom-[22%] left-0 w-full flex justify-center transition-all duration-[1200ms] ease-in-out z-20 ${faseIntro >= 4 && faseIntro < 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                  <div className="relative px-8 py-3 rounded-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-sm overflow-hidden border border-[var(--velo-60)]">
                    <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 240 50" preserveAspectRatio="none">
@@ -1050,6 +1050,8 @@ if (!usaIntegratori) {
                  </div>
               </div>
 
+          </div>
+        </div>
       );
     }
 
