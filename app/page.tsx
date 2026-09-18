@@ -1001,9 +1001,9 @@ if (!usaIntegratori) {
                     }`}
                     style={{ transformOrigin: '400px 250px' }}
                   >
-                     {/* LA I VERDE / SCHERMO VERDE (Animazione armonica sincronizzata, proporzione ridimensionata e alzata) */}
-                     <g className={`transition-all duration-[1200ms] ease-in-out origin-center ${faseIntro === 0 ? 'scale-[300] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px 40px' }}>
-                       <path transform="translate(355, -100) scale(0.9)" d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" fill="#84cc16"/>
+                     {/* LA I VERDE / SCHERMO VERDE (Altezza identica alla A: 360px, e distanziata matematicamente) */}
+                     <g className={`transition-all duration-[1200ms] ease-in-out origin-center ${faseIntro === 0 ? 'scale-[300] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px -140px' }}>
+                       <path transform="translate(300, -320) scale(2)" d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" fill="#84cc16"/>
                      </g>
 
                      {/* LA A GRIGIA */}
