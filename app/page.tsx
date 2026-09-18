@@ -989,21 +989,21 @@ if (!usaIntegratori) {
 
               {/* CONTAINER PRINCIPALE SVG */}
               <div className="relative flex items-center justify-center w-full max-w-[800px] h-[500px] z-10">
-                {/* CARTA BIANCA DIETRO TUTTO */}
+                {/* CARTA BIANCA DIETRO TUTTO (Altezza e larghezza ridotte per stringere il logo in modo compatto) */}
                 <div className={`absolute bg-[var(--superficie)] shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[70px] transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${
-                  faseIntro >= 4 ? 'w-[640px] h-[180px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
+                  faseIntro >= 4 ? 'w-[610px] h-[155px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
                 }`} />
 
                 <svg viewBox="0 0 800 500" className="absolute w-full h-full overflow-visible z-10">
-                  {/* GRUPPO CENTRALE (I + A + O + Omino) */}
+                  {/* GRUPPO CENTRALE (I + A + O + Omino) - Traslazione ridotta per avvicinare la O alla M */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) origin-center ${
-                      faseIntro >= 4 ? 'translate-x-[-210px] scale-[0.45]' : 'translate-x-0 scale-100'
+                      faseIntro >= 4 ? 'translate-x-[-190px] scale-[0.45]' : 'translate-x-0 scale-100'
                     }`}
                     style={{ transformOrigin: '400px 250px' }}
                   >
-                     {/* LA I VERDE / SCHERMO VERDE (Altezza identica alla A: 360px, e distanziata matematicamente) */}
-                     <g className={`transition-all duration-[1200ms] ease-in-out origin-center ${faseIntro === 0 ? 'scale-[300] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px -140px' }}>
-                       <path transform="translate(300, -320) scale(2)" d="M 8 0 H 92 Q 100 0 100 8 V 27 Q 100 35 92 35 H 73 Q 65 35 65 43 V 137 Q 65 145 73 145 H 92 Q 100 145 100 153 V 172 Q 100 180 92 180 H 8 Q 0 180 0 172 V 153 Q 0 145 8 145 H 27 Q 35 145 35 137 V 43 Q 35 35 27 35 H 8 Q 0 35 0 27 V 8 Q 0 0 8 0 Z" fill="#84cc16"/>
+                     {/* LA I VERDE / SCHERMO VERDE (Nuovo tracciato: rettangolo puro, spesso 46.67px e alto 360px, identico alla A) */}
+                     <g className={`transition-all duration-[1200ms] ease-in-out origin-center ${faseIntro === 0 ? 'scale-[200] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px -125px' }}>
+                       <path d="M 376.66 -305 H 423.33 V 55 H 376.66 Z" fill="#84cc16"/>
                      </g>
 
                      {/* LA A GRIGIA */}
@@ -1029,22 +1029,19 @@ if (!usaIntegratori) {
                      </g>
                   </g>
 
-                  {/* TESTO MNIFIT */}
+                  {/* TESTO MNIFIT (X=275 chiude perfettamente il gap tra la O e la M) */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${faseIntro >= 4 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[40px]'}`}>
-                     <text x="285" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
+                     <text x="275" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
                         MNI<tspan fill="#84cc16">FIT</tspan>
                      </text>
                   </g>
                 </svg>
               </div>
 
-              {/* PILLOLA PROTOCOLLO EVOLUTIVO */}
-              <div className={`absolute bottom-[22%] left-0 w-full flex justify-center transition-all duration-[1200ms] ease-in-out z-20 ${faseIntro >= 4 && faseIntro < 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                 <div className="relative px-8 py-3 rounded-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-sm overflow-hidden border border-[var(--velo-60)]">
-                   <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" viewBox="0 0 240 50" preserveAspectRatio="none">
-                      <rect x="2" y="2" width="236" height="46" rx="23" fill="none" stroke="var(--accento-1)" strokeWidth="3" className="anim-miccia-border drop-shadow-[0_0_8px_var(--accento-1)]" />
-                   </svg>
-                   <p className="text-[12px] font-black text-slate-600 tracking-[0.4em] uppercase relative z-10">
+              {/* PILLOLA PROTOCOLLO EVOLUTIVO (Ora costruita in puro CSS: più compatta, font a 10px e mai più accavallamenti) */}
+              <div className={`absolute bottom-[24%] left-0 w-full flex justify-center transition-all duration-[1200ms] ease-in-out z-20 ${faseIntro >= 4 && faseIntro < 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                 <div className="relative px-6 py-2 rounded-full bg-[var(--superficie)]/95 backdrop-blur-xl shadow-[0_4px_15px_rgba(0,0,0,0.05)] border-2 border-lime-400/90 hover:shadow-[0_0_12px_rgba(132,204,22,0.6)] transition-shadow">
+                   <p className="text-[10px] font-black text-slate-600 tracking-[0.3em] uppercase m-0 leading-none py-1">
                       Protocollo Evolutivo
                    </p>
                  </div>
