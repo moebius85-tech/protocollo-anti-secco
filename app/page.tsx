@@ -989,15 +989,15 @@ if (!usaIntegratori) {
 
               {/* CONTAINER PRINCIPALE SVG */}
               <div className="relative flex items-center justify-center w-full max-w-[800px] h-[500px] z-10">
-                {/* CARTA BIANCA DIETRO TUTTO (Larghezza ricalibrata a 680px per dare margini identici e simmetrici) */}
+                {/* CARTA BIANCA DIETRO TUTTO (Larghezza ricalibrata a 740px per incorniciare tutto con margini identici) */}
                 <div className={`absolute bg-[var(--superficie)] shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[70px] transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${
-                  faseIntro >= 4 ? 'w-[680px] h-[155px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
+                  faseIntro >= 4 ? 'w-[740px] h-[155px] opacity-100 border border-[var(--velo-60)]' : 'w-[200px] h-[200px] opacity-0 scale-50'
                 }`} />
 
                 <svg viewBox="0 0 800 500" className="absolute w-full h-full overflow-visible z-10">
-                  {/* GRUPPO CENTRALE (I + A + O + Omino) - Traslazione spostata in blocco a destra (-170px) per centrare il tutto */}
+                  {/* GRUPPO CENTRALE (I + A + O + Omino) - Traslazione in blocco a -240px per spostare tutto al centro perfetto */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) origin-center ${
-                      faseIntro >= 4 ? 'translate-x-[-170px] scale-[0.45]' : 'translate-x-0 scale-100'
+                      faseIntro >= 4 ? 'translate-x-[-240px] scale-[0.45]' : 'translate-x-0 scale-100'
                     }`}
                     style={{ transformOrigin: '400px 250px' }}
                   >
@@ -1029,9 +1029,9 @@ if (!usaIntegratori) {
                      </g>
                   </g>
 
-                  {/* TESTO MNIFIT (Coordinata X spostata in blocco a destra a 300 per mantenere il gap intatto) */}
+                  {/* TESTO MNIFIT (Coordinata X spostata in sincrono a 230 per muoversi insieme alla O senza alterare il gap) */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${faseIntro >= 4 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[40px]'}`}>
-                     <text x="300" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
+                     <text x="230" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
                         MNI<tspan fill="#84cc16">FIT</tspan>
                      </text>
                   </g>
