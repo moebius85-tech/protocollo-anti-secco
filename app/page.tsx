@@ -989,19 +989,19 @@ if (!usaIntegratori) {
 
               {/* CONTAINER PRINCIPALE SVG */}
               <div className="relative flex items-center justify-center w-full max-w-[800px] aspect-[16/10] sm:aspect-auto sm:h-[500px] z-10">
-                {/* CARTA BIANCA DIETRO TUTTO (Misure percentuali per adattarsi perfettamente su smartphone verticali/orizzontali) */}
+                {/* CARTA BIANCA DIETRO TUTTO (Dimensioni percentuali fluide e max-width calcolato a 600px per incorniciare esattamente) */}
                 <div className={`absolute bg-[var(--superficie)] shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[3rem] sm:rounded-[70px] transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${
-                  faseIntro >= 4 ? 'w-[90%] sm:w-[680px] h-[35%] sm:h-[155px] opacity-100 border border-[var(--velo-60)]' : 'w-[20%] h-[20%] opacity-0 scale-50'
+                  faseIntro >= 4 ? 'w-[82%] sm:w-[600px] h-[32%] sm:h-[145px] opacity-100 border border-[var(--velo-60)]' : 'w-[20%] h-[20%] opacity-0 scale-50'
                 }`} />
 
                 <svg viewBox="0 0 800 500" className="absolute w-full h-full overflow-visible z-10">
-                  {/* GRUPPO CENTRALE (I + A + O + Omino) - Traslazione matematica a -190px per centratura assoluta */}
+                  {/* GRUPPO CENTRALE (I + A + O + Omino) - Traslazione matematica a -220px per centratura assoluta */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) origin-center ${
-                      faseIntro >= 4 ? 'translate-x-[-190px] scale-[0.45]' : 'translate-x-0 scale-100'
+                      faseIntro >= 4 ? 'translate-x-[-220px] scale-[0.45]' : 'translate-x-0 scale-100'
                     }`}
                     style={{ transformOrigin: '400px 250px' }}
                   >
-                     {/* LA I VERDE (Rettangolo con grazie perfette) */}
+                     {/* LA I VERDE / SCHERMO VERDE */}
                      <g className={`transition-all duration-[1200ms] ease-in-out origin-center ${faseIntro === 0 ? 'scale-[200] opacity-100' : 'scale-100'} ${faseIntro >= 4 ? 'opacity-0' : 'opacity-100'}`} style={{ transformOrigin: '400px -140px' }}>
                        <path d="M 345 -320 H 455 V -285 H 423.33 V 5 H 455 V 40 H 345 V 5 H 376.66 V -285 H 345 Z" fill="#84cc16"/>
                      </g>
@@ -1026,19 +1026,19 @@ if (!usaIntegratori) {
                      </g>
                   </g>
 
-                  {/* TESTO MNIFIT (Coordinata X=330 per agganciarsi alla O con un gap esatto da 11px) */}
+                  {/* TESTO MNIFIT (Coordinata X=250 per mantenere il gap e la centratura perfetta) */}
                   <g className={`transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${faseIntro >= 4 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[40px]'}`}>
-                     <text x="330" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
+                     <text x="250" y="298" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="900" fontSize="140" letterSpacing="-4" fill="#475569">
                         MNI<tspan fill="#84cc16">FIT</tspan>
                      </text>
                   </g>
                 </svg>
               </div>
 
-              {/* PILLOLA PROTOCOLLO EVOLUTIVO (Centrata in CSS assoluto per adattarsi ovunque) */}
-              <div className={`absolute bottom-[10%] sm:bottom-[15%] left-1/2 -translate-x-1/2 transition-all duration-[1200ms] ease-in-out z-20 ${faseIntro >= 4 && faseIntro < 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                 <div className="px-6 py-3 sm:px-8 sm:py-3.5 rounded-full bg-[var(--superficie)]/95 backdrop-blur-xl shadow-[0_10px_25px_rgba(0,0,0,0.1)] border-[3px] sm:border-[4px] border-[#84cc16] hover:shadow-[0_0_15px_rgba(132,204,22,0.5)] transition-shadow whitespace-nowrap">
-                   <p className="text-[11px] sm:text-[13px] font-black text-slate-700 tracking-[0.3em] sm:tracking-[0.4em] uppercase m-0 leading-none">
+              {/* PILLOLA PROTOCOLLO EVOLUTIVO (Ancorata al centro assoluto in modo adattivo) */}
+              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 mt-[19%] sm:mt-[88px] transition-all duration-[1200ms] ease-in-out z-20 ${faseIntro >= 4 && faseIntro < 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                 <div className="px-6 py-2 sm:px-8 sm:py-3.5 rounded-full bg-[var(--superficie)]/95 backdrop-blur-xl shadow-[0_10px_25px_rgba(0,0,0,0.1)] border-[3px] sm:border-[4px] border-[#84cc16] hover:shadow-[0_0_15px_rgba(132,204,22,0.5)] transition-shadow whitespace-nowrap">
+                   <p className="text-[10px] sm:text-[12px] font-black text-slate-700 tracking-[0.3em] sm:tracking-[0.4em] uppercase m-0 leading-none">
                       Protocollo Evolutivo
                    </p>
                  </div>
