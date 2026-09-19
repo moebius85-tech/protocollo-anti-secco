@@ -989,9 +989,9 @@ if (!usaIntegratori) {
 
               {/* CONTAINER PRINCIPALE SVG */}
               <div className="relative flex items-center justify-center w-full max-w-[800px] aspect-[16/10] sm:aspect-auto sm:h-[500px] z-10">
-                {/* CARTA BIANCA DIETRO TUTTO (Larghezza ricalibrata a 660px per avere margini laterali identici e simmetrici) */}
+                {/* CARTA BIANCA DIETRO TUTTO (Larghezza aumentata a 720px / 92% per dare un respiro elegante e simmetrico alla scritta) */}
                 <div className={`absolute bg-[var(--superficie)] shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[3rem] sm:rounded-[70px] transition-all duration-[1200ms] cubic-bezier(0.25, 1, 0.5, 1) ${
-                  faseIntro >= 4 ? 'w-[85%] sm:w-[660px] h-[32%] sm:h-[145px] opacity-100 border border-[var(--velo-60)]' : 'w-[20%] h-[20%] opacity-0 scale-50'
+                  faseIntro >= 4 ? 'w-[92%] sm:w-[720px] h-[32%] sm:h-[145px] opacity-100 border border-[var(--velo-60)]' : 'w-[20%] h-[20%] opacity-0 scale-50'
                 }`} />
 
                 <svg viewBox="0 0 800 500" className="absolute w-full h-full overflow-visible z-10">
