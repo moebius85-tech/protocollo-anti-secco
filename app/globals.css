@@ -26,7 +26,7 @@ body {
 }
  
 /* =========================================================================
-   SISTEMA TEMI: chiaro (default) / scuro / neon
+   SISTEMA TEMI: chiaro (default) / scuro (Palette Custom) / neon
    ========================================================================= */
 
 :root,
@@ -51,35 +51,39 @@ body {
   --accento-glow: rgba(16, 185, 129, 0.35);
 }
 
+/* -------------------------------------------------------------------------
+   IL NUOVO TEMA: OCEANIC & SAFFRON (Piani Solidi, No Vetro)
+   ------------------------------------------------------------------------- */
 [data-theme="scuro"] {
-  /* Sfondi UI dalla palette */
+  /* Sfondo Base */
   --superficie: #172B36; /* Oceanic Noir */
+  /* Pannelli Elevati */
   --superficie-alt: #114C5A; /* Nocturnal Expedition */
   
-  /* Ombre calcolate su Oceanic Noir per un neumorfismo fuso con lo sfondo */
-  --ombra-scura: #0d191f; 
-  --ombra-scura-alt: #091216;
-  --ombra-chiara: #213d4d;
+  /* Ombre ricalibrate su Oceanic Noir per neumorfismo solido */
+  --ombra-scura: #0c171d; 
+  --ombra-scura-alt: #0a1217;
+  --ombra-chiara: #223f4f;
  
-  /* Colori Testo dalla palette */
-  --testo-forte: #F1F6F4; /* Arctic Powder */
-  --testo-medio: #D9E8E2; /* Mystic Mint */
-  --testo-debole: #8ab7ad; /* Mystic Mint attenuato */
-  --testo-tenue: #5e848f; /* Mix tra Nocturnal e Mint */
+  /* Colori Testo dalla Palette */
+  --testo-forte: #F1F6F4; /* Arctic Powder - Massimo contrasto */
+  --testo-medio: #D9E8E2; /* Mystic Mint - Lettura fluida */
+  --testo-debole: rgba(217, 232, 226, 0.75); /* Mystic Mint attenuato */
+  --testo-tenue: rgba(217, 232, 226, 0.5);
  
-  --bordo-tenue: rgba(217, 232, 226, 0.15); /* Mystic Mint opacizzato */
+  --bordo-tenue: rgba(241, 246, 244, 0.1); /* Arctic Powder semi-trasp. per linee divisorie */
  
-  /* Annullamento effetto vetro: colori solidi basati su Oceanic Noir */
-  --velo-20: #142630;
-  --velo-30: #12212a;
-  --velo-40: #0f1c24;
-  --velo-50: #0d171d;
-  --velo-60: #0a1217;
+  /* SOSTITUZIONE VELI CON COLORI SOLIDI (Uccide il Glassmorphism) */
+  --velo-20: #114C5A; /* Forza i box interni a usare Nocturnal Expedition */
+  --velo-30: #114C5A; 
+  --velo-40: #114C5A;
+  --velo-50: #143c4a; /* Via di mezzo solida */
+  --velo-60: #172B36; /* Ritorno al fondo Oceanic Noir */
  
-  /* Colori Accento dalla palette */
+  /* Colori d'azione */
   --accento-1: #FF9932; /* Deep Saffron */
   --accento-2: #FFC801; /* Forsythia */
-  --accento-glow: transparent; /* No bagliori neon */
+  --accento-glow: transparent;
 }
 
 [data-theme="neon"] {
@@ -105,26 +109,60 @@ body {
 
 [data-theme="scuro"] body, [data-theme="neon"] body { background: var(--superficie); }
 
-/* Override colori testo neutri standard */
-[data-theme="scuro"] .text-slate-700, [data-theme="scuro"] .text-slate-800, [data-theme="neon"] .text-slate-700, [data-theme="neon"] .text-slate-800 { color: var(--testo-forte) !important; }
-[data-theme="scuro"] .text-slate-600, [data-theme="neon"] .text-slate-600 { color: var(--testo-medio) !important; }
-[data-theme="scuro"] .text-slate-500, [data-theme="neon"] .text-slate-500 { color: var(--testo-debole) !important; }
-[data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300, [data-theme="neon"] .text-slate-400, [data-theme="neon"] .text-slate-300 { color: var(--testo-tenue) !important; }
-[data-theme="scuro"] .border-slate-200, [data-theme="scuro"] .border-slate-300, [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
-[data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
-
 /* =========================================================================
-   KILLER OVERRIDES: MAPPATURA COLORI PER TEMA SCURO E NEON
-   Sostituisce i colori Tailwind hardcodati nel page.tsx con la nostra palette
+   MAPPATURA TESTI GLOBALI
+   Forza i colori della palette sui testi predefiniti di Tailwind
    ========================================================================= */
 
-/* Forzatura NO-VETRO per tema scuro */
+/* Colori chiari per Neon */
+[data-theme="neon"] .text-slate-700, [data-theme="neon"] .text-slate-800 { color: var(--testo-forte) !important; }
+[data-theme="neon"] .text-slate-600 { color: var(--testo-medio) !important; }
+[data-theme="neon"] .text-slate-500 { color: var(--testo-debole) !important; }
+[data-theme="neon"] .text-slate-400, [data-theme="neon"] .text-slate-300 { color: var(--testo-tenue) !important; }
+[data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
+[data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
+
+/* Mappatura rigorosa per il Tema Custom (Oceanic) */
+[data-theme="scuro"] .text-slate-700, 
+[data-theme="scuro"] .text-slate-800 { 
+  color: #F1F6F4 !important; /* Arctic Powder puro per Massima Gerarchia */
+}
+[data-theme="scuro"] .text-slate-500, 
+[data-theme="scuro"] .text-slate-600 { 
+  color: #D9E8E2 !important; /* Mystic Mint per Testo Medio/Normale */
+}
+[data-theme="scuro"] .text-slate-400, 
+[data-theme="scuro"] .text-slate-300 { 
+  color: rgba(217, 232, 226, 0.7) !important; /* Mystic Mint attenuato per Label */
+}
+[data-theme="scuro"] .border-slate-200, 
+[data-theme="scuro"] .border-slate-300,
+[data-theme="scuro"] .border-slate-400\/20 { 
+  border-color: rgba(241, 246, 244, 0.15) !important; /* Divisori Arctic Powder trasparenti */
+}
+
+/* =========================================================================
+   OVERRIDE FORZATI SUI COMPONENTI JSX (Pulsanti, Backgrounds, Box)
+   ========================================================================= */
+
+/* 1. Uccide l'effetto Vetro (Blur) per creare Piani Solidi */
 [data-theme="scuro"] .backdrop-blur-xl, 
 [data-theme="scuro"] .backdrop-blur-md { 
   backdrop-filter: none !important; 
 }
 
-/* 1. Mappatura Gradienti -> Saffron e Forsythia */
+/* 2. Forza i Pannelli Turni, Modal, e Box Interni ad usare Nocturnal Expedition solido */
+[data-theme="scuro"] .bg-lime-400\/15, 
+[data-theme="scuro"] .bg-cyan-400\/15, 
+[data-theme="scuro"] .bg-orange-400\/15, 
+[data-theme="scuro"] .bg-red-400\/15,
+[data-theme="scuro"] .bg-\[var\(--velo-30\)\],
+[data-theme="scuro"] .bg-\[var\(--velo-40\)\] {
+  background-color: var(--superficie-alt) !important; /* Nocturnal Expedition */
+  border-color: rgba(241, 246, 244, 0.1) !important; /* Arctic border */
+}
+
+/* 3. Mappatura Gradienti (Bottoni Principali, Selezioni) -> Saffron & Forsythia */
 [data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br,
 [data-theme="neon"] .bg-gradient-to-r, [data-theme="neon"] .bg-gradient-to-br {
   background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
@@ -133,38 +171,34 @@ body {
   background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
 }
 
-/* 2. Mappatura Testi Accento (icone, valori chiave) -> Deep Saffron e Forsythia */
+/* 4. Mappatura Colori d'Accento Solidi (Testi UI, Badge, Icone) */
 [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500,
 [data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 {
-  color: var(--accento-1) !important;
+  color: var(--accento-1) !important; /* Deep Saffron */
 }
 [data-theme="scuro"] .text-indigo-400, [data-theme="neon"] .text-indigo-400 {
-  color: var(--accento-2) !important; /* Forsythia per dettagli secondari */
+  color: var(--accento-2) !important; /* Forsythia */
 }
 
-/* 3. Mappatura Pannelli Semitrasparenti (Card turni, Modali) -> Nocturnal Expedition */
-[data-theme="scuro"] .bg-lime-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-red-400\/15 {
-  background-color: var(--superficie-alt) !important; 
-  border-color: var(--bordo-tenue) !important;
-}
-[data-theme="neon"] .bg-lime-400\/15, [data-theme="neon"] .bg-cyan-400\/15, [data-theme="neon"] .bg-orange-400\/15, [data-theme="neon"] .bg-red-400\/15 {
-  background-color: rgba(34, 211, 238, 0.1) !important;
-  border-color: rgba(34, 211, 238, 0.3) !important;
-}
-
-/* 4. Mappatura Colori Solidi (Badge, Bottoni) -> Deep Saffron */
-[data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-indigo-100, [data-theme="scuro"] .bg-rose-500,
-[data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 {
+/* Mantiene leggibili i testi neri sopra l'arancione dei badge */
+[data-theme="scuro"] .bg-indigo-100 { 
   background-color: var(--accento-1) !important;
+  color: #172B36 !important; /* Oceanic Noir text su sfondo Saffron */
 }
-/* Testo interno ai badge solidi: usa Oceanic Noir per contrastare sul Saffron */
-[data-theme="scuro"] .bg-indigo-100 { color: var(--superficie) !important; }
 
-/* 5. Mappatura Omino SVG / Gradienti interni */
+/* 5. Rimozione bagliori residui del tema chiaro/neon */
+[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\],
+[data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\],
+[data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { 
+  box-shadow: none !important; 
+}
+[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: var(--accento-1) !important; }
+
+/* 6. Adattamento Colori SVG (Omino Human Heatmap) */
 [data-theme="scuro"] #gradPrimary stop:first-child, [data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
 [data-theme="scuro"] #gradPrimary stop:last-child, [data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
 
-/* 6. Mappatura Bordi e Interazioni */
+/* 7. Hover e Bordi interagibili */
 [data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400, [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 {
   border-color: var(--accento-1) !important;
 }
@@ -177,36 +211,3 @@ body {
 [data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus, [data-theme="neon"] .focus\:ring-emerald-400\/40:focus, [data-theme="neon"] .focus\:ring-cyan-400\/40:focus {
   --tw-ring-color: var(--accento-glow) !important;
 }
-
-/* 7. Rimozione chirurgica bagliori ciano intrusi nel tema scuro */
-[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\] { box-shadow: none !important; }
-[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: var(--accento-1) !important; }
-[data-theme="scuro"] .text-\[\#00c6ff\] { color: var(--accento-1) !important; }
-
-[data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 {
-  background-color: var(--accento-1) !important;
-}
-[data-theme="scuro"] .bg-indigo-100 { color: var(--superficie) !important; }
-
-/* 5. Forzatura gradienti lineari interni agli SVG (Omino Heatmap) */
-[data-theme="scuro"] #gradPrimary stop:first-child, [data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
-[data-theme="scuro"] #gradPrimary stop:last-child, [data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
-
-/* 6. Forzature varie (bordi, ring, hover state) */
-[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400, [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 {
-  border-color: var(--accento-1) !important;
-}
-[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400, [data-theme="neon"] .ring-lime-400, [data-theme="neon"] .ring-lime-500, [data-theme="neon"] .ring-cyan-400 {
-  --tw-ring-color: var(--accento-1) !important;
-}
-[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover, [data-theme="neon"] .hover\:text-emerald-500:hover, [data-theme="neon"] .hover\:text-cyan-500:hover {
-  color: var(--accento-1) !important;
-}
-[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus, [data-theme="neon"] .focus\:ring-emerald-400\/40:focus, [data-theme="neon"] .focus\:ring-cyan-400\/40:focus {
-  --tw-ring-color: var(--accento-glow) !important;
-}
-
-/* 7. Elimina i bagliori ciano hardcodati */
-[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\] { box-shadow: none !important; }
-[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: var(--accento-1) !important; }
-[data-theme="scuro"] .text-\[\#00c6ff\] { color: var(--accento-1) !important; }
