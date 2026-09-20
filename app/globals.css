@@ -55,54 +55,59 @@ body {
   --accento-glow: rgba(16, 185, 129, 0.35);
 }
 
+/* =========================================================================
+   TEMA SCURO: "Oceanic Noir & Deep Saffron" (Palette Esatta, NO VETRO)
+   ========================================================================= */
 [data-theme="scuro"] {
-  /* Sfondi Matte Black assoluti per un distacco totale dal Neon */
-  --superficie: #141414;
-  --superficie-alt: #1c1c1c;
-  --ombra-scura: #080808;
-  --ombra-scura-alt: #050505;
-  --ombra-chiara: #242424;
+  /* Sfondi esatti dalla tua palette */
+  --superficie: #172B36; /* Oceanic Noir */
+  --superficie-alt: #114C5A; /* Nocturnal Expedition */
+  
+  /* Ombre calcolate sul color petrolio per un neumorfismo solido e opaco */
+  --ombra-scura: #0e1a21;
+  --ombra-scura-alt: #0a1318;
+  --ombra-chiara: #203c4b;
  
-  /* Testi caldi per un'estetica Premium Noir */
-  --testo-forte: #FDE68A;
-  --testo-medio: #D1D5DB;
-  --testo-debole: #9CA3AF;
-  --testo-tenue: #6B7280;
+  /* Testi basati su Arctic Powder e Mystic Mint */
+  --testo-forte: #F1F6F4;
+  --testo-medio: #D9E8E2;
+  --testo-debole: #8AB3AC;
+  --testo-tenue: #4b7a86;
  
-  --bordo-tenue: rgba(253, 230, 138, 0.1);
+  --bordo-tenue: rgba(217, 232, 226, 0.15);
  
-  --velo-20: rgba(0, 0, 0, 0.3);
-  --velo-30: rgba(0, 0, 0, 0.4);
-  --velo-40: rgba(0, 0, 0, 0.6);
-  --velo-50: rgba(0, 0, 0, 0.8);
-  --velo-60: rgba(0, 0, 0, 0.9);
+  /* TRUCCO ANTI-VETRO: Sostituiamo le trasparenze (--velo) con colori SOLIDI della stessa palette */
+  --velo-20: #192f3b;
+  --velo-30: #152832;
+  --velo-40: #12222a;
+  --velo-50: #0e1a21;
+  --velo-60: #0a1318;
  
-  /* Colore "firma": Zafferano / Oro */
-  --accento-1: #F59E0B;
-  --accento-2: #B45309;
-  --accento-glow: rgba(245, 158, 11, 0.1);
+  /* Colori d'accento: Deep Saffron e Forsythia */
+  --accento-1: #FF9932;
+  --accento-2: #FFC801;
+  --accento-glow: transparent; /* Zero bagliori/neon */
 }
 
+/* =========================================================================
+   TEMA NEON: "Cyber Glass" (Invariato)
+   ========================================================================= */
 [data-theme="neon"] {
   --superficie: #141824;
   --superficie-alt: #10131c;
   --ombra-scura: rgba(0, 0, 0, 0.6);
   --ombra-scura-alt: rgba(0, 0, 0, 0.65);
   --ombra-chiara: rgba(56, 189, 248, 0.35);
- 
   --testo-forte: #f0f9ff;
   --testo-medio: #bae6fd;
   --testo-debole: #7dd3fc;
   --testo-tenue: #38bdf8;
- 
   --bordo-tenue: rgba(56, 189, 248, 0.25);
- 
   --velo-20: rgba(56, 189, 248, 0.04);
   --velo-30: rgba(56, 189, 248, 0.06);
   --velo-40: rgba(56, 189, 248, 0.08);
   --velo-50: rgba(56, 189, 248, 0.11);
   --velo-60: rgba(56, 189, 248, 0.14);
- 
   --accento-1: #22d3ee;
   --accento-2: #e879f9;
   --accento-glow: rgba(34, 211, 238, 0.45);
@@ -116,16 +121,26 @@ body {
 [data-theme="scuro"] .text-slate-500, [data-theme="neon"] .text-slate-500 { color: var(--testo-debole) !important; }
 [data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300, [data-theme="neon"] .text-slate-400, [data-theme="neon"] .text-slate-300 { color: var(--testo-tenue) !important; }
 [data-theme="scuro"] .border-slate-200, [data-theme="scuro"] .border-slate-300, [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
+
+/* Effetto glow solo per il neon */
 [data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
 
 /* =========================================================================
-   KILLER OVERRIDES: FORZATURA TOTALE COLORI PER TEMA SCURO E NEON
-   Uccide le classi Tailwind hardcodate su page.tsx (bg-lime-400, text-cyan-500, ecc.)
+   KILLER OVERRIDES: FORZATURA TOTALE COLORI 
    ========================================================================= */
+
+/* Disattiva in blocco l'effetto vetro (blur) nel tema scuro */
+[data-theme="scuro"] .backdrop-blur-xl, 
+[data-theme="scuro"] .backdrop-blur-md { 
+  backdrop-filter: none !important; 
+}
 
 /* 1. Sostituzione di TUTTI i gradienti */
 [data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br,
 [data-theme="neon"] .bg-gradient-to-r, [data-theme="neon"] .bg-gradient-to-br {
+  background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
+}
+[data-theme="scuro"] .accento-grad, [data-theme="neon"] .accento-grad {
   background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
 }
 
@@ -134,15 +149,14 @@ body {
 [data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 {
   color: var(--accento-1) !important;
 }
-
 [data-theme="scuro"] .text-indigo-400, [data-theme="neon"] .text-indigo-400 {
   color: var(--accento-2) !important;
 }
 
 /* 3. Sostituzione sfondi semitrasparenti (box turni, schede esercizi) */
 [data-theme="scuro"] .bg-lime-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-red-400\/15 {
-  background-color: rgba(245, 158, 11, 0.05) !important;
-  border-color: rgba(245, 158, 11, 0.15) !important;
+  background-color: var(--superficie-alt) !important; /* Colore Nocturnal Expedition solido, no trasparenza */
+  border-color: var(--bordo-tenue) !important;
 }
 [data-theme="neon"] .bg-lime-400\/15, [data-theme="neon"] .bg-cyan-400\/15, [data-theme="neon"] .bg-orange-400\/15, [data-theme="neon"] .bg-red-400\/15 {
   background-color: rgba(34, 211, 238, 0.1) !important;
@@ -154,7 +168,7 @@ body {
 [data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 {
   background-color: var(--accento-1) !important;
 }
-[data-theme="scuro"] .bg-indigo-100, [data-theme="neon"] .bg-indigo-100 { color: #000 !important; }
+[data-theme="scuro"] .bg-indigo-100 { color: var(--superficie) !important; }
 
 /* 5. Forzatura gradienti lineari interni agli SVG (Omino Heatmap) */
 [data-theme="scuro"] #gradPrimary stop:first-child, [data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
@@ -174,7 +188,7 @@ body {
   --tw-ring-color: var(--accento-glow) !important;
 }
 
-/* 7. Elimina i bagliori ciano hardcodati (es. pallino AI coach) */
-[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\] { box-shadow: 0 0 10px var(--accento-1) !important; }
+/* 7. Elimina i bagliori ciano hardcodati */
+[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\] { box-shadow: none !important; }
 [data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: var(--accento-1) !important; }
 [data-theme="scuro"] .text-\[\#00c6ff\] { color: var(--accento-1) !important; }
