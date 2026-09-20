@@ -63,18 +63,22 @@ body {
 }
  
 [data-theme="scuro"] {
-  --superficie: #2a2f3a;
-  --superficie-alt: #232730;
-  --ombra-scura: #1c1f27;
-  --ombra-scura-alt: #17191f;
-  --ombra-chiara: #363c48;
+  /* Sfondi Oceanic Noir e Nocturnal Expedition */
+  --superficie: #172B36; 
+  --superficie-alt: #114C5A;
+  
+  /* Ombre ricalibrate sui toni petrolio per mantenere l'effetto neumorfico */
+  --ombra-scura: #0e1a21;
+  --ombra-scura-alt: #0a1318;
+  --ombra-chiara: #203c4b;
  
-  --testo-forte: #e2e8f0;
-  --testo-medio: #cbd5e1;
-  --testo-debole: #94a3b8;
-  --testo-tenue: #64748b;
+  /* Testi basati sul Mystic Mint per massima leggibilità */
+  --testo-forte: #F1F6F4;
+  --testo-medio: #D9E8E2;
+  --testo-debole: #8AB3AC;
+  --testo-tenue: #4b7a86;
  
-  --bordo-tenue: rgba(148, 163, 184, 0.15);
+  --bordo-tenue: rgba(217, 232, 226, 0.15);
  
   --velo-20: rgba(255, 255, 255, 0.03);
   --velo-30: rgba(255, 255, 255, 0.04);
@@ -82,10 +86,10 @@ body {
   --velo-50: rgba(255, 255, 255, 0.08);
   --velo-60: rgba(255, 255, 255, 0.1);
  
-  /* Colore "firma" del tema scuro: indaco -> viola, al posto del verde lime */
-  --accento-1: #818cf8;
-  --accento-2: #c084fc;
-  --accento-glow: rgba(129, 140, 248, 0.35);
+  /* Accenti zafferano e giallo Forsythia al posto del verde/viola */
+  --accento-1: #FF9932;
+  --accento-2: #FFC801;
+  --accento-glow: rgba(255, 153, 50, 0.35);
 }
  
 [data-theme="neon"] {
