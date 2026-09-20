@@ -36,62 +36,52 @@ body {
   --ombra-scura: #a3b1c6;
   --ombra-scura-alt: #c3d0e0;
   --ombra-chiara: #ffffff;
- 
   --testo-forte: #334155;
   --testo-medio: #475569;
   --testo-debole: #64748b;
   --testo-tenue: #94a3b8;
- 
   --bordo-tenue: rgba(100, 116, 139, 0.25);
- 
   --velo-20: rgba(255, 255, 255, 0.2);
   --velo-30: rgba(255, 255, 255, 0.3);
   --velo-40: rgba(255, 255, 255, 0.4);
   --velo-50: rgba(255, 255, 255, 0.5);
   --velo-60: rgba(255, 255, 255, 0.6);
- 
   --accento-1: #a3e635;
   --accento-2: #10b981;
   --accento-glow: rgba(16, 185, 129, 0.35);
 }
 
-/* =========================================================================
-   TEMA SCURO: "Oceanic Noir & Deep Saffron" (Palette Esatta, NO VETRO)
-   ========================================================================= */
 [data-theme="scuro"] {
-  /* Sfondi esatti dalla tua palette */
+  /* Sfondi UI dalla palette */
   --superficie: #172B36; /* Oceanic Noir */
   --superficie-alt: #114C5A; /* Nocturnal Expedition */
   
-  /* Ombre calcolate sul color petrolio per un neumorfismo solido e opaco */
-  --ombra-scura: #0e1a21;
-  --ombra-scura-alt: #0a1318;
-  --ombra-chiara: #203c4b;
+  /* Ombre calcolate su Oceanic Noir per un neumorfismo fuso con lo sfondo */
+  --ombra-scura: #0d191f; 
+  --ombra-scura-alt: #091216;
+  --ombra-chiara: #213d4d;
  
-  /* Testi basati su Arctic Powder e Mystic Mint */
-  --testo-forte: #F1F6F4;
-  --testo-medio: #D9E8E2;
-  --testo-debole: #8AB3AC;
-  --testo-tenue: #4b7a86;
+  /* Colori Testo dalla palette */
+  --testo-forte: #F1F6F4; /* Arctic Powder */
+  --testo-medio: #D9E8E2; /* Mystic Mint */
+  --testo-debole: #8ab7ad; /* Mystic Mint attenuato */
+  --testo-tenue: #5e848f; /* Mix tra Nocturnal e Mint */
  
-  --bordo-tenue: rgba(217, 232, 226, 0.15);
+  --bordo-tenue: rgba(217, 232, 226, 0.15); /* Mystic Mint opacizzato */
  
-  /* TRUCCO ANTI-VETRO: Sostituiamo le trasparenze (--velo) con colori SOLIDI della stessa palette */
-  --velo-20: #192f3b;
-  --velo-30: #152832;
-  --velo-40: #12222a;
-  --velo-50: #0e1a21;
-  --velo-60: #0a1318;
+  /* Annullamento effetto vetro: colori solidi basati su Oceanic Noir */
+  --velo-20: #142630;
+  --velo-30: #12212a;
+  --velo-40: #0f1c24;
+  --velo-50: #0d171d;
+  --velo-60: #0a1217;
  
-  /* Colori d'accento: Deep Saffron e Forsythia */
-  --accento-1: #FF9932;
-  --accento-2: #FFC801;
-  --accento-glow: transparent; /* Zero bagliori/neon */
+  /* Colori Accento dalla palette */
+  --accento-1: #FF9932; /* Deep Saffron */
+  --accento-2: #FFC801; /* Forsythia */
+  --accento-glow: transparent; /* No bagliori neon */
 }
 
-/* =========================================================================
-   TEMA NEON: "Cyber Glass" (Invariato)
-   ========================================================================= */
 [data-theme="neon"] {
   --superficie: #141824;
   --superficie-alt: #10131c;
@@ -115,27 +105,26 @@ body {
 
 [data-theme="scuro"] body, [data-theme="neon"] body { background: var(--superficie); }
 
-/* Override colori testo neutri */
+/* Override colori testo neutri standard */
 [data-theme="scuro"] .text-slate-700, [data-theme="scuro"] .text-slate-800, [data-theme="neon"] .text-slate-700, [data-theme="neon"] .text-slate-800 { color: var(--testo-forte) !important; }
 [data-theme="scuro"] .text-slate-600, [data-theme="neon"] .text-slate-600 { color: var(--testo-medio) !important; }
 [data-theme="scuro"] .text-slate-500, [data-theme="neon"] .text-slate-500 { color: var(--testo-debole) !important; }
 [data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300, [data-theme="neon"] .text-slate-400, [data-theme="neon"] .text-slate-300 { color: var(--testo-tenue) !important; }
 [data-theme="scuro"] .border-slate-200, [data-theme="scuro"] .border-slate-300, [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
-
-/* Effetto glow solo per il neon */
 [data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
 
 /* =========================================================================
-   KILLER OVERRIDES: FORZATURA TOTALE COLORI 
+   KILLER OVERRIDES: MAPPATURA COLORI PER TEMA SCURO E NEON
+   Sostituisce i colori Tailwind hardcodati nel page.tsx con la nostra palette
    ========================================================================= */
 
-/* Disattiva in blocco l'effetto vetro (blur) nel tema scuro */
+/* Forzatura NO-VETRO per tema scuro */
 [data-theme="scuro"] .backdrop-blur-xl, 
 [data-theme="scuro"] .backdrop-blur-md { 
   backdrop-filter: none !important; 
 }
 
-/* 1. Sostituzione di TUTTI i gradienti */
+/* 1. Mappatura Gradienti -> Saffron e Forsythia */
 [data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br,
 [data-theme="neon"] .bg-gradient-to-r, [data-theme="neon"] .bg-gradient-to-br {
   background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
@@ -144,18 +133,18 @@ body {
   background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
 }
 
-/* 2. Sostituzione di tutti i testi colorati (blu, verdi, arancio, ecc.) */
+/* 2. Mappatura Testi Accento (icone, valori chiave) -> Deep Saffron e Forsythia */
 [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500,
 [data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 {
   color: var(--accento-1) !important;
 }
 [data-theme="scuro"] .text-indigo-400, [data-theme="neon"] .text-indigo-400 {
-  color: var(--accento-2) !important;
+  color: var(--accento-2) !important; /* Forsythia per dettagli secondari */
 }
 
-/* 3. Sostituzione sfondi semitrasparenti (box turni, schede esercizi) */
+/* 3. Mappatura Pannelli Semitrasparenti (Card turni, Modali) -> Nocturnal Expedition */
 [data-theme="scuro"] .bg-lime-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-red-400\/15 {
-  background-color: var(--superficie-alt) !important; /* Colore Nocturnal Expedition solido, no trasparenza */
+  background-color: var(--superficie-alt) !important; 
   border-color: var(--bordo-tenue) !important;
 }
 [data-theme="neon"] .bg-lime-400\/15, [data-theme="neon"] .bg-cyan-400\/15, [data-theme="neon"] .bg-orange-400\/15, [data-theme="neon"] .bg-red-400\/15 {
@@ -163,8 +152,37 @@ body {
   border-color: rgba(34, 211, 238, 0.3) !important;
 }
 
-/* 4. Sostituzione colori solidi (Badge e bottoni) */
+/* 4. Mappatura Colori Solidi (Badge, Bottoni) -> Deep Saffron */
 [data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-indigo-100, [data-theme="scuro"] .bg-rose-500,
+[data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 {
+  background-color: var(--accento-1) !important;
+}
+/* Testo interno ai badge solidi: usa Oceanic Noir per contrastare sul Saffron */
+[data-theme="scuro"] .bg-indigo-100 { color: var(--superficie) !important; }
+
+/* 5. Mappatura Omino SVG / Gradienti interni */
+[data-theme="scuro"] #gradPrimary stop:first-child, [data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
+[data-theme="scuro"] #gradPrimary stop:last-child, [data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
+
+/* 6. Mappatura Bordi e Interazioni */
+[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400, [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 {
+  border-color: var(--accento-1) !important;
+}
+[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400, [data-theme="neon"] .ring-lime-400, [data-theme="neon"] .ring-lime-500, [data-theme="neon"] .ring-cyan-400 {
+  --tw-ring-color: var(--accento-1) !important;
+}
+[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover, [data-theme="neon"] .hover\:text-emerald-500:hover, [data-theme="neon"] .hover\:text-cyan-500:hover {
+  color: var(--accento-1) !important;
+}
+[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus, [data-theme="neon"] .focus\:ring-emerald-400\/40:focus, [data-theme="neon"] .focus\:ring-cyan-400\/40:focus {
+  --tw-ring-color: var(--accento-glow) !important;
+}
+
+/* 7. Rimozione chirurgica bagliori ciano intrusi nel tema scuro */
+[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\] { box-shadow: none !important; }
+[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: var(--accento-1) !important; }
+[data-theme="scuro"] .text-\[\#00c6ff\] { color: var(--accento-1) !important; }
+
 [data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 {
   background-color: var(--accento-1) !important;
 }
