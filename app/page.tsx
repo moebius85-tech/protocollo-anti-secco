@@ -956,6 +956,29 @@ if (!usaIntegratori) {
                    ACCEDI AL SISTEMA
                 </button>
              </div>
+
+             {/* SELETTORE TEMA: chiaro / scuro / neon */}
+             <div className="flex justify-center w-full mt-8 border-t border-[var(--bordo-tenue)] pt-6">
+               <div className="flex gap-1.5 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
+                 {([
+                   { id: 'chiaro', label: '☀️ Chiaro' },
+                   { id: 'scuro', label: '🌙 Scuro' },
+                   { id: 'neon', label: '⚡ Neon' },
+                 ] as const).map((opzione) => (
+                   <button
+                     key={opzione.id}
+                     onClick={() => setTema(opzione.id)}
+                     className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
+                       tema === opzione.id
+                         ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
+                         : 'text-slate-400 hover:text-slate-500'
+                     }`}
+                   >
+                     {opzione.label}
+                   </button>
+                 ))}
+               </div>
+             </div>
           </div>
 
           {/* --- SPLASH SCREEN INTRO ANIMATO --- */}
