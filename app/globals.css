@@ -27,13 +27,8 @@ body {
  
 /* =========================================================================
    SISTEMA TEMI: chiaro (default) / scuro / neon
-   Riusiamo la STESSA struttura neumorfica (doppia ombra chiara+scura) già
-   presente in tutta l'app: cambiano solo i VALORI dei colori, non la logica
-   né la struttura del componente. Per il tema "neon" la "luce" diventa un
-   bagliore ciano/viola invece di un riflesso bianco: lo stesso identico
-   meccanismo di ombre produce un effetto "glow" invece che "soft UI".
    ========================================================================= */
- 
+
 :root,
 [data-theme="chiaro"] {
   --superficie: #E0E5EC;
@@ -49,49 +44,45 @@ body {
  
   --bordo-tenue: rgba(100, 116, 139, 0.25);
  
-  /* "Velo" semi-trasparente per gli effetti vetro sopra le card (alimenti/workout) */
   --velo-20: rgba(255, 255, 255, 0.2);
   --velo-30: rgba(255, 255, 255, 0.3);
   --velo-40: rgba(255, 255, 255, 0.4);
   --velo-50: rgba(255, 255, 255, 0.5);
   --velo-60: rgba(255, 255, 255, 0.6);
  
-  /* Colore "firma" dell'app: verde lime -> smeraldo, invariato nel tema chiaro */
   --accento-1: #a3e635;
   --accento-2: #10b981;
   --accento-glow: rgba(16, 185, 129, 0.35);
 }
- 
+
 [data-theme="scuro"] {
-  /* Sfondi Oceanic Noir e Nocturnal Expedition */
-  --superficie: #172B36; 
-  --superficie-alt: #114C5A;
-  
-  /* Ombre ricalibrate sui toni petrolio per mantenere l'effetto neumorfico */
-  --ombra-scura: #0e1a21;
-  --ombra-scura-alt: #0a1318;
-  --ombra-chiara: #203c4b;
+  /* Sfondi Matte Black assoluti per un distacco totale dal Neon */
+  --superficie: #141414;
+  --superficie-alt: #1c1c1c;
+  --ombra-scura: #080808;
+  --ombra-scura-alt: #050505;
+  --ombra-chiara: #242424;
  
-  /* Testi basati sul Mystic Mint per massima leggibilità */
-  --testo-forte: #F1F6F4;
-  --testo-medio: #D9E8E2;
-  --testo-debole: #8AB3AC;
-  --testo-tenue: #4b7a86;
+  /* Testi caldi per un'estetica Premium Noir */
+  --testo-forte: #FDE68A;
+  --testo-medio: #D1D5DB;
+  --testo-debole: #9CA3AF;
+  --testo-tenue: #6B7280;
  
-  --bordo-tenue: rgba(217, 232, 226, 0.15);
+  --bordo-tenue: rgba(253, 230, 138, 0.1);
  
-  --velo-20: rgba(255, 255, 255, 0.03);
-  --velo-30: rgba(255, 255, 255, 0.04);
-  --velo-40: rgba(255, 255, 255, 0.06);
-  --velo-50: rgba(255, 255, 255, 0.08);
-  --velo-60: rgba(255, 255, 255, 0.1);
+  --velo-20: rgba(0, 0, 0, 0.3);
+  --velo-30: rgba(0, 0, 0, 0.4);
+  --velo-40: rgba(0, 0, 0, 0.6);
+  --velo-50: rgba(0, 0, 0, 0.8);
+  --velo-60: rgba(0, 0, 0, 0.9);
  
-  /* Accenti zafferano e giallo Forsythia al posto del verde/viola */
-  --accento-1: #FF9932;
-  --accento-2: #FFC801;
-  --accento-glow: rgba(255, 153, 50, 0.35);
+  /* Colore "firma": Zafferano / Oro */
+  --accento-1: #F59E0B;
+  --accento-2: #B45309;
+  --accento-glow: rgba(245, 158, 11, 0.1);
 }
- 
+
 [data-theme="neon"] {
   --superficie: #141824;
   --superficie-alt: #10131c;
@@ -112,111 +103,78 @@ body {
   --velo-50: rgba(56, 189, 248, 0.11);
   --velo-60: rgba(56, 189, 248, 0.14);
  
-  /* Colore "firma" del tema neon: ciano -> magenta, coerente col riferimento "liquid glass" */
   --accento-1: #22d3ee;
   --accento-2: #e879f9;
   --accento-glow: rgba(34, 211, 238, 0.45);
 }
- 
-/* Il body segue il tema: fondamentale per scuro/neon, dove lo sfondo non è
-   più il chiaro di default. */
-[data-theme="scuro"] body,
-[data-theme="neon"] body {
-  background: var(--superficie);
-}
- 
-/* Override delle classi Tailwind "text-slate-*" / "border-slate-*" più usate
-   nell'app: permette al testo di restare leggibile sui temi scuro/neon senza
-   dover riscrivere ogni singola classNam nel codice esistente. */
-[data-theme="scuro"] .text-slate-700,
-[data-theme="scuro"] .text-slate-800,
-[data-theme="neon"] .text-slate-700,
-[data-theme="neon"] .text-slate-800 {
-  color: var(--testo-forte) !important;
-}
- 
-[data-theme="scuro"] .text-slate-600,
-[data-theme="neon"] .text-slate-600 {
-  color: var(--testo-medio) !important;
-}
- 
-[data-theme="scuro"] .text-slate-500,
-[data-theme="neon"] .text-slate-500 {
-  color: var(--testo-debole) !important;
-}
- 
-[data-theme="scuro"] .text-slate-400,
-[data-theme="scuro"] .text-slate-300,
-[data-theme="neon"] .text-slate-400,
-[data-theme="neon"] .text-slate-300 {
-  color: var(--testo-tenue) !important;
-}
- 
-[data-theme="scuro"] .border-slate-200,
-[data-theme="scuro"] .border-slate-300,
-[data-theme="neon"] .border-slate-200,
-[data-theme="neon"] .border-slate-300 {
-  border-color: var(--bordo-tenue) !important;
-}
- 
-/* Nel tema neon, un leggero bagliore diffuso in più sulle card principali,
-   oltre alla doppia ombra colorata: rifinisce l'effetto "vetro luminoso"
-   senza toccare la struttura dei componenti. */
-[data-theme="neon"] .anim-pop {
-  filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12));
-}
- 
+
+[data-theme="scuro"] body, [data-theme="neon"] body { background: var(--superficie); }
+
+/* Override colori testo neutri */
+[data-theme="scuro"] .text-slate-700, [data-theme="scuro"] .text-slate-800, [data-theme="neon"] .text-slate-700, [data-theme="neon"] .text-slate-800 { color: var(--testo-forte) !important; }
+[data-theme="scuro"] .text-slate-600, [data-theme="neon"] .text-slate-600 { color: var(--testo-medio) !important; }
+[data-theme="scuro"] .text-slate-500, [data-theme="neon"] .text-slate-500 { color: var(--testo-debole) !important; }
+[data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300, [data-theme="neon"] .text-slate-400, [data-theme="neon"] .text-slate-300 { color: var(--testo-tenue) !important; }
+[data-theme="scuro"] .border-slate-200, [data-theme="scuro"] .border-slate-300, [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
+[data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
+
 /* =========================================================================
-   COLORE "FIRMA": nei temi scuro/neon il verde lime/smeraldo dell'app viene
-   sostituito dal colore d'accento del tema (vedi variabili --accento-1/2
-   sopra), sia per i solidi che per i gradienti, senza dover riscrivere ogni
-   singolo bottone/badge nel codice.
+   KILLER OVERRIDES: FORZATURA TOTALE COLORI PER TEMA SCURO E NEON
+   Uccide le classi Tailwind hardcodate su page.tsx (bg-lime-400, text-cyan-500, ecc.)
    ========================================================================= */
- 
-/* Gradiente principale: aggiunta la classe "accento-grad" accanto alle
-   classi Tailwind esistenti (bg-gradient-to-r/br from-lime-400 to-emerald-500)
-   ovunque compaiano — il gradiente resta identico nel tema chiaro, cambia
-   colore negli altri due. */
-[data-theme="scuro"] .accento-grad,
-[data-theme="neon"] .accento-grad {
+
+/* 1. Sostituzione di TUTTI i gradienti */
+[data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br,
+[data-theme="neon"] .bg-gradient-to-r, [data-theme="neon"] .bg-gradient-to-br {
   background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
 }
- 
-/* Testi, sfondi, bordi e anelli solidi in verde lime/smeraldo */
-[data-theme="scuro"] .text-lime-500,
-[data-theme="scuro"] .text-lime-600,
-[data-theme="neon"] .text-lime-500,
-[data-theme="neon"] .text-lime-600 {
+
+/* 2. Sostituzione di tutti i testi colorati (blu, verdi, arancio, ecc.) */
+[data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500,
+[data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 {
   color: var(--accento-1) !important;
 }
- 
-[data-theme="scuro"] .bg-lime-400,
-[data-theme="scuro"] .bg-lime-500,
-[data-theme="scuro"] .bg-emerald-500,
-[data-theme="neon"] .bg-lime-400,
-[data-theme="neon"] .bg-lime-500,
-[data-theme="neon"] .bg-emerald-500 {
+
+[data-theme="scuro"] .text-indigo-400, [data-theme="neon"] .text-indigo-400 {
+  color: var(--accento-2) !important;
+}
+
+/* 3. Sostituzione sfondi semitrasparenti (box turni, schede esercizi) */
+[data-theme="scuro"] .bg-lime-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-red-400\/15 {
+  background-color: rgba(245, 158, 11, 0.05) !important;
+  border-color: rgba(245, 158, 11, 0.15) !important;
+}
+[data-theme="neon"] .bg-lime-400\/15, [data-theme="neon"] .bg-cyan-400\/15, [data-theme="neon"] .bg-orange-400\/15, [data-theme="neon"] .bg-red-400\/15 {
+  background-color: rgba(34, 211, 238, 0.1) !important;
+  border-color: rgba(34, 211, 238, 0.3) !important;
+}
+
+/* 4. Sostituzione colori solidi (Badge e bottoni) */
+[data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-indigo-100, [data-theme="scuro"] .bg-rose-500,
+[data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 {
   background-color: var(--accento-1) !important;
 }
- 
-[data-theme="scuro"] .border-lime-400,
-[data-theme="neon"] .border-lime-400 {
+[data-theme="scuro"] .bg-indigo-100, [data-theme="neon"] .bg-indigo-100 { color: #000 !important; }
+
+/* 5. Forzatura gradienti lineari interni agli SVG (Omino Heatmap) */
+[data-theme="scuro"] #gradPrimary stop:first-child, [data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
+[data-theme="scuro"] #gradPrimary stop:last-child, [data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
+
+/* 6. Forzature varie (bordi, ring, hover state) */
+[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400, [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 {
   border-color: var(--accento-1) !important;
 }
- 
-[data-theme="scuro"] .ring-lime-400,
-[data-theme="scuro"] .ring-lime-500,
-[data-theme="neon"] .ring-lime-400,
-[data-theme="neon"] .ring-lime-500 {
+[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400, [data-theme="neon"] .ring-lime-400, [data-theme="neon"] .ring-lime-500, [data-theme="neon"] .ring-cyan-400 {
   --tw-ring-color: var(--accento-1) !important;
 }
- 
-[data-theme="scuro"] .hover\:text-emerald-500:hover,
-[data-theme="neon"] .hover\:text-emerald-500:hover {
+[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover, [data-theme="neon"] .hover\:text-emerald-500:hover, [data-theme="neon"] .hover\:text-cyan-500:hover {
   color: var(--accento-1) !important;
 }
- 
-[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus,
-[data-theme="neon"] .focus\:ring-emerald-400\/40:focus {
+[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus, [data-theme="neon"] .focus\:ring-emerald-400\/40:focus, [data-theme="neon"] .focus\:ring-cyan-400\/40:focus {
   --tw-ring-color: var(--accento-glow) !important;
 }
+
+/* 7. Elimina i bagliori ciano hardcodati (es. pallino AI coach) */
+[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\] { box-shadow: 0 0 10px var(--accento-1) !important; }
+[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: var(--accento-1) !important; }
+[data-theme="scuro"] .text-\[\#00c6ff\] { color: var(--accento-1) !important; }
