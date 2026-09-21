@@ -47,32 +47,33 @@
 
 /* -------------------------------------------------------------------------
    TEMA SCURO: "NAVY & SUNSET" (Palette Dopeycolors 164)
-   Fondo Abissale, Testi Ghiaccio, Azioni Fuoco.
+   Profondità 3D reale: Sfondo Abissale -> Card Navy -> Caselle Teal.
    ------------------------------------------------------------------------- */
 [data-theme="scuro"] {
-  /* Sfondi base e Card: Deep Navy */
+  /* Card Principale (La zona centrale): Deep Navy */
   --superficie: #023047; 
-  --superficie-alt: #012436; 
+  /* Caselle Interne (BMR, Turni, Input): Teal/Ciano per massimo stacco */
+  --superficie-alt: #209EBB; 
   
-  /* Ombre calcolate sul Navy per un neumorfismo fuso ed elegante */
-  --ombra-scura: #01151f; 
-  --ombra-scura-alt: #011018;
-  --ombra-chiara: #034b6f;
+  /* Ombre calcolate sul Navy per dare spessore fisico alla card */
+  --ombra-scura: #011a26; 
+  --ombra-scura-alt: #01141d;
+  --ombra-chiara: #034668;
  
-  /* Colori Testo: Light Blue per massimo contrasto */
+  /* Colori Testo Generali: Light Blue per massimo contrasto sul Navy */
   --testo-forte: #BECAE6; 
-  --testo-medio: #8ba7d4; 
-  --testo-debole: #209EBB; /* Teal per dettagli secondari */
+  --testo-medio: #9ab4d6; 
+  --testo-debole: #209EBB; 
   --testo-tenue: #126378; 
  
-  --bordo-tenue: rgba(32, 158, 187, 0.3); /* Teal semitrasparente */
+  --bordo-tenue: rgba(32, 158, 187, 0.4); /* Bordi Teal per evidenziare i tagli */
  
-  /* Veli trasformati in colori solidi Navy/Teal */
-  --velo-20: #033c59; 
-  --velo-30: #04496b; 
-  --velo-40: #05557d; 
-  --velo-50: #011b29; /* Sfondo scuro per gli input box */
-  --velo-60: #209EBB; 
+  /* Annulliamo l'effetto vetro: i veli diventano blocchi solidi Teal */
+  --velo-20: #209EBB; 
+  --velo-30: #209EBB; 
+  --velo-40: #209EBB; 
+  --velo-50: #209EBB; 
+  --velo-60: #01151F; /* Pulsantini interni scurissimi */
  
   /* Colori d'azione: Orange & Yellow */
   --accento-1: #FC8500; 
@@ -102,13 +103,13 @@
 }
 
 /* =========================================================================
-   GESTIONE BACKGROUND (BODY)
+   GESTIONE BACKGROUND ASSOLUTO (Livello 0)
    ========================================================================= */
 body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
 [data-theme="chiaro"] body { background: var(--superficie); }
 [data-theme="neon"] body { background: var(--superficie); }
-/* Sfondo assoluto per Tema Scuro, leggermente più scuro delle card */
-[data-theme="scuro"] body { background-color: #011f2e !important; }
+/* CRITICO PER LA PROFONDITÀ: Lo sfondo dietro le card è un Navy nerissimo */
+[data-theme="scuro"] body { background-color: #01151F !important; }
 
 
 /* =========================================================================
@@ -123,49 +124,57 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
 [data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
 
-/* Colori Testi Tema Scuro: Forzati su Light Blue e Teal */
+/* Colori Testi Tema Scuro: Forzati su Light Blue */
 [data-theme="scuro"] .text-slate-700, 
 [data-theme="scuro"] .text-slate-800,
 [data-theme="scuro"] .text-white { 
-  color: #BECAE6 !important; /* Light Blue */
+  color: #BECAE6 !important; 
 }
 [data-theme="scuro"] .text-slate-600 { color: #BECAE6 !important; }
-[data-theme="scuro"] .text-slate-500 { color: #209EBB !important; } /* Teal per testi di supporto */
+[data-theme="scuro"] .text-slate-500 { color: #8ba7d4 !important; } 
 [data-theme="scuro"] .text-slate-400, 
-[data-theme="scuro"] .text-slate-300 { color: #166f85 !important; } /* Dark Teal per label */
+[data-theme="scuro"] .text-slate-300 { color: #209EBB !important; } 
 
 [data-theme="scuro"] .border-slate-200, 
 [data-theme="scuro"] .border-slate-300,
-[data-theme="scuro"] .border-slate-400\/20 { border-color: rgba(32, 158, 187, 0.3) !important; }
+[data-theme="scuro"] .border-slate-400\/20 { border-color: rgba(32, 158, 187, 0.4) !important; }
 
 
 /* =========================================================================
-   KILLER OVERRIDES: FORZATURA STRUTTURALE COLORI
+   KILLER OVERRIDES: GIOCO DI PIANI CROMATICI (Livello 1 vs Livello 2)
    ========================================================================= */
 
-/* 1. Uccide l'effetto Vetro (Blur) per creare Piani Solidi */
+/* 1. Uccide l'effetto Vetro (Blur) */
 [data-theme="scuro"] .backdrop-blur-xl, 
 [data-theme="scuro"] .backdrop-blur-md { 
   backdrop-filter: none !important; 
 }
 
-/* 2. Sfondi Semitrasparenti (Turni, Modal) diventano pannelli Deep Navy solidi */
+/* 2. CASELLE IN SECONDO PIANO (BMR, Turni, ecc): Diventano Teal Solido (#209EBB) */
 [data-theme="scuro"] .bg-lime-400\/15, 
 [data-theme="scuro"] .bg-cyan-400\/15, 
 [data-theme="scuro"] .bg-orange-400\/15, 
-[data-theme="scuro"] .bg-red-400\/15 {
-  background-color: #033d5a !important; 
-  border-color: #209EBB !important; /* Bordo Teal */
-}
-
-/* 3. Input Box diventano scuri */
+[data-theme="scuro"] .bg-red-400\/15,
+[data-theme="scuro"] .bg-\[var\(--superficie-alt\)\],
 [data-theme="scuro"] .bg-\[var\(--velo-40\)\],
 [data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
-  background-color: #011b29 !important; 
-  border-color: #034b6f !important;
+  background-color: #209EBB !important; 
+  border-color: #BECAE6 !important; /* Bordino Light Blue per definirle */
+  box-shadow: none !important; /* Rimuove le ombre interne per un look piatto e moderno */
 }
 
-/* 4. Mappatura Gradienti (Bottoni Principali, Selezioni) -> Orange to Yellow */
+/* CRITICO: I testi DENTRO le caselle Teal devono diventare Navy scuro per essere letti! */
+[data-theme="scuro"] .bg-lime-400\/15 *, 
+[data-theme="scuro"] .bg-cyan-400\/15 *, 
+[data-theme="scuro"] .bg-orange-400\/15 *, 
+[data-theme="scuro"] .bg-red-400\/15 *,
+[data-theme="scuro"] .bg-\[var\(--superficie-alt\)\] *,
+[data-theme="scuro"] .bg-\[var\(--velo-40\)\] *,
+[data-theme="scuro"] .bg-\[var\(--velo-50\)\] * {
+  color: #023047 !important;
+}
+
+/* 3. Mappatura Gradienti (Bottoni) -> Orange to Yellow */
 [data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br,
 [data-theme="neon"] .bg-gradient-to-r, [data-theme="neon"] .bg-gradient-to-br {
   background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
@@ -174,7 +183,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
 }
 
-/* Contrasto perfetto: Il testo dentro i bottoni arancioni DEVE essere Navy profondo */
+/* Testo dentro i bottoni arancioni = Navy profondo */
 [data-theme="scuro"] button.bg-gradient-to-r, 
 [data-theme="scuro"] button.bg-gradient-to-br,
 [data-theme="scuro"] div.bg-gradient-to-r, 
@@ -188,7 +197,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   color: #023047 !important; 
 }
 
-/* 5. Mappatura Colori UI Attivi -> Orange (#FC8500) per elementi chiave */
+/* 4. Colori UI Attivi (Icone, Badge) -> Orange (#FC8500) */
 [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500 {
   color: #FC8500 !important; 
 }
@@ -201,7 +210,6 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   background-color: #FC8500 !important;
   color: #023047 !important;
 }
-/* Badge piccoli -> Yellow */
 [data-theme="scuro"] .bg-indigo-100 { 
   background-color: #FFB701 !important;
   color: #023047 !important;
@@ -212,7 +220,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 { background-color: var(--accento-1) !important; }
 [data-theme="neon"] .bg-indigo-100 { color: #000 !important; }
 
-/* 6. Fix specifici bagliori (Annullamento bagliori neon nel tema scuro) */
+/* 5. Rimozione bagliori neon nel tema scuro */
 [data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\],
 [data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\],
 [data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { 
@@ -221,7 +229,13 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: #FC8500 !important; }
 [data-theme="scuro"] .text-\[\#00c6ff\] { color: #FC8500 !important; }
 
-/* 7. Bordi e Interazioni Hover */
+/* 6. Adattamento Gradienti Omino Human Heatmap */
+[data-theme="scuro"] #gradPrimary stop:first-child { stop-color: #FC8500 !important; }
+[data-theme="scuro"] #gradPrimary stop:last-child { stop-color: #FFB701 !important; }
+[data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
+[data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
+
+/* 7. Bordi e Interazioni */
 [data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: #FC8500 !important; }
 [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 { border-color: var(--accento-1) !important; }
 
@@ -231,16 +245,13 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover { color: #FC8500 !important; }
 [data-theme="neon"] .hover\:text-emerald-500:hover, [data-theme="neon"] .hover\:text-cyan-500:hover { color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: transparent !important; }
-[data-theme="neon"] .focus\:ring-emerald-400\/40:focus, [data-theme="neon"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: var(--accento-glow) !important; }
-
 
 /* =========================================================================
-   RICOLORAZIONE SPLASH SCREEN ANIMATO (I / A / OMNIFIT)
-   Forza i colori hardcodati negli SVG ad adattarsi al tema scelto
+   FORZATURA SVG INTRO E LOGO "OMNIFIT" (Adattamento Dinamico ai Temi)
+   Risolve il problema dei colori che non cambiavano durante l'animazione.
    ========================================================================= */
 
-/* TEMA SCURO: La 'I' e 'O' diventano Orange, la 'A' e 'MNIFIT' diventano Light Blue */
+/* TEMA SCURO: La 'I' e 'O' diventano Arancioni, la 'A' e 'MNIFIT' diventano Light Blue */
 [data-theme="scuro"] svg path[fill="#84cc16"],
 [data-theme="scuro"] svg tspan[fill="#84cc16"] { 
   fill: #FC8500 !important; 
@@ -255,7 +266,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   fill: #BECAE6 !important; 
 }
 
-/* TEMA NEON: La 'I' e 'O' diventano Ciano, la 'A' e 'MNIFIT' diventano Bianco */
+/* TEMA NEON: La 'I' e 'O' diventano Ciano, la 'A' e 'MNIFIT' diventano Bianco/Azzurrino */
 [data-theme="neon"] svg path[fill="#84cc16"],
 [data-theme="neon"] svg tspan[fill="#84cc16"] { 
   fill: var(--accento-1) !important; 
