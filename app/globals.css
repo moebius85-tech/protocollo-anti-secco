@@ -20,7 +20,7 @@
 }
  
 /* =========================================================================
-   SISTEMA TEMI: chiaro (default) / scuro (Illuminated Glass) / neon
+   SISTEMA TEMI: chiaro (default) / scuro (Navy & Sunset) / neon
    ========================================================================= */
 
 :root,
@@ -46,42 +46,40 @@
 }
 
 /* -------------------------------------------------------------------------
-   TEMA SCURO PRO: "OBSIDIAN & FROSTED CREAM" 
-   Usa TUTTA la palette. Background Dark Navy, Card in Vetro Crema, 
-   Pannelli interni Ardesia, Bottoni Ocra/Ruggine.
+   TEMA SCURO: "NAVY & SUNSET" (Palette Dopeycolors 164)
+   Fondo Abissale, Testi Ghiaccio, Azioni Fuoco.
    ------------------------------------------------------------------------- */
 [data-theme="scuro"] {
-  /* Le superfici principali diventano VETRO CREMA (#E5E5DF) */
-  --superficie: rgba(229, 229, 223, 0.85); 
-  --superficie-alt: rgba(57, 68, 77, 0.85); /* Slate Gray per i pannelli interni */
+  /* Sfondi base e Card: Deep Navy */
+  --superficie: #023047; 
+  --superficie-alt: #012436; 
   
-  /* Ombre calcolate per il contrasto sulle card chiare */
-  --ombra-scura: rgba(0, 0, 0, 0.25); 
-  --ombra-scura-alt: rgba(0, 0, 0, 0.35);
-  --ombra-chiara: rgba(255, 255, 255, 0.8); 
+  /* Ombre calcolate sul Navy per un neumorfismo fuso ed elegante */
+  --ombra-scura: #01151f; 
+  --ombra-scura-alt: #011018;
+  --ombra-chiara: #034b6f;
  
-  /* Testi Globali (impostati su Chiaro per il Background Navy) */
-  --testo-forte: #E5E5DF; 
-  --testo-medio: #E5E5DF; 
-  --testo-debole: #5D5D5D; 
-  --testo-tenue: #39444D; 
+  /* Colori Testo: Light Blue per massimo contrasto */
+  --testo-forte: #BECAE6; 
+  --testo-medio: #8ba7d4; 
+  --testo-debole: #209EBB; /* Teal per dettagli secondari */
+  --testo-tenue: #126378; 
  
-  --bordo-tenue: rgba(57, 68, 77, 0.2); 
+  --bordo-tenue: rgba(32, 158, 187, 0.3); /* Teal semitrasparente */
  
-  /* Veli per le profondità */
-  --velo-20: rgba(57, 68, 77, 0.1); 
-  --velo-30: rgba(57, 68, 77, 0.2); 
-  --velo-40: rgba(7, 17, 29, 0.8); /* Dark Navy per gli input */
-  --velo-50: rgba(7, 17, 29, 0.9); 
-  --velo-60: rgba(219, 153, 65, 0.15); /* Riflesso Ocra */
+  /* Veli trasformati in colori solidi Navy/Teal */
+  --velo-20: #033c59; 
+  --velo-30: #04496b; 
+  --velo-40: #05557d; 
+  --velo-50: #011b29; /* Sfondo scuro per gli input box */
+  --velo-60: #209EBB; 
  
-  /* Colori d'Azione */
-  --accento-1: #DB9941; /* Ocra */
-  --accento-2: #AE2C11; /* Ruggine */
-  --accento-glow: rgba(219, 153, 65, 0.4); 
+  /* Colori d'azione: Orange & Yellow */
+  --accento-1: #FC8500; 
+  --accento-2: #FFB701; 
+  --accento-glow: transparent;
 }
 
-/* TEMA NEON (Invariato per non romperlo) */
 [data-theme="neon"] {
   --superficie: #141824;
   --superficie-alt: #10131c;
@@ -104,25 +102,20 @@
 }
 
 /* =========================================================================
-   IL SEGRETO DEL VETRO ILLUMINATO: BACKGROUND BODY
+   GESTIONE BACKGROUND (BODY)
    ========================================================================= */
 body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
 [data-theme="chiaro"] body { background: var(--superficie); }
 [data-theme="neon"] body { background: var(--superficie); }
+/* Sfondo assoluto per Tema Scuro, leggermente più scuro delle card */
+[data-theme="scuro"] body { background-color: #011f2e !important; }
 
-/* Sfondo Dark Navy (#07111D) + Luci diffuse (Ocra e Ruggine) per illuminare il vetro */
-[data-theme="scuro"] body { 
-  background-color: #07111D !important; 
-  background-image: 
-    radial-gradient(circle at 10% 10%, rgba(229, 229, 223, 0.15), transparent 40%),
-    radial-gradient(circle at 90% 90%, rgba(219, 153, 65, 0.2), transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(174, 44, 17, 0.15), transparent 60%) !important;
-  background-attachment: fixed !important;
-}
 
 /* =========================================================================
-   MAPPATURA TESTI NEON E GLOBALI
+   MAPPATURA TESTI GLOBALI
    ========================================================================= */
+
+/* Colori Testi Tema Neon */
 [data-theme="neon"] .text-slate-700, [data-theme="neon"] .text-slate-800 { color: var(--testo-forte) !important; }
 [data-theme="neon"] .text-slate-600 { color: var(--testo-medio) !important; }
 [data-theme="neon"] .text-slate-500 { color: var(--testo-debole) !important; }
@@ -130,121 +123,149 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
 [data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
 
+/* Colori Testi Tema Scuro: Forzati su Light Blue e Teal */
+[data-theme="scuro"] .text-slate-700, 
+[data-theme="scuro"] .text-slate-800,
+[data-theme="scuro"] .text-white { 
+  color: #BECAE6 !important; /* Light Blue */
+}
+[data-theme="scuro"] .text-slate-600 { color: #BECAE6 !important; }
+[data-theme="scuro"] .text-slate-500 { color: #209EBB !important; } /* Teal per testi di supporto */
+[data-theme="scuro"] .text-slate-400, 
+[data-theme="scuro"] .text-slate-300 { color: #166f85 !important; } /* Dark Teal per label */
+
+[data-theme="scuro"] .border-slate-200, 
+[data-theme="scuro"] .border-slate-300,
+[data-theme="scuro"] .border-slate-400\/20 { border-color: rgba(32, 158, 187, 0.3) !important; }
+
+
 /* =========================================================================
-   KILLER OVERRIDES: LENTI DI VETRO CREMA E INCASTRI
+   KILLER OVERRIDES: FORZATURA STRUTTURALE COLORI
    ========================================================================= */
 
-/* 1. CARD PRINCIPALI: LENTI DI VETRO CREMA (#E5E5DF) (Livello 1) */
-[data-theme="scuro"] .bg-\[var\(--superficie\)\] {
-  background: rgba(229, 229, 223, 0.85) !important; 
-  backdrop-filter: blur(24px) saturate(120%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(120%) !important;
-  
-  /* Bordo illuminato per l'effetto spessore cristallo */
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 2px 20px rgba(255, 255, 255, 0.5) !important;
-  color: #07111D !important; /* Forza testo scuro di base sulla card chiara */
+/* 1. Uccide l'effetto Vetro (Blur) per creare Piani Solidi */
+[data-theme="scuro"] .backdrop-blur-xl, 
+[data-theme="scuro"] .backdrop-blur-md { 
+  backdrop-filter: none !important; 
 }
 
-/* Poiché le card sono Crema, forziamo tutti i testi principali al loro interno in Dark Navy e Ardesia */
-[data-theme="scuro"] .bg-\[var\(--superficie\)\] .text-slate-700,
-[data-theme="scuro"] .bg-\[var\(--superficie\)\] .text-slate-800 { color: #07111D !important; }
-[data-theme="scuro"] .bg-\[var\(--superficie\)\] .text-slate-600 { color: #39444D !important; }
-[data-theme="scuro"] .bg-\[var\(--superficie\)\] .text-slate-500 { color: #5D5D5D !important; }
-[data-theme="scuro"] .bg-\[var\(--superficie\)\] .text-slate-400 { color: #5D5D5D !important; opacity: 0.8; }
-
-
-/* 2. CASELLE INTERNE IN SECONDO PIANO: SLATE GRAY (#39444D) (Livello 2) */
-/* Es: Box Turni, Schede Workout, sfondi modali */
-[data-theme="scuro"] .bg-lime-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-red-400\/15,
-[data-theme="scuro"] .bg-\[var\(--superficie-alt\)\],
-[data-theme="scuro"] .shadow-\[inset_4px_4px_8px_var\(--ombra-scura\)\,inset_-4px_-4px_8px_var\(--ombra-chiara\)\] {
-  background-color: rgba(57, 68, 77, 0.9) !important; /* Ardesia Vetro */
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(229, 229, 223, 0.2) !important; 
-  box-shadow: inset 0 4px 15px rgba(7, 17, 29, 0.8) !important; /* Scavo nel vetro crema */
+/* 2. Sfondi Semitrasparenti (Turni, Modal) diventano pannelli Deep Navy solidi */
+[data-theme="scuro"] .bg-lime-400\/15, 
+[data-theme="scuro"] .bg-cyan-400\/15, 
+[data-theme="scuro"] .bg-orange-400\/15, 
+[data-theme="scuro"] .bg-red-400\/15 {
+  background-color: #033d5a !important; 
+  border-color: #209EBB !important; /* Bordo Teal */
 }
 
-/* Siccome le caselle interne sono Ardesia, i testi al loro interno TORNANO Crema (#E5E5DF) */
-[data-theme="scuro"] .bg-lime-400\/15 *:not(svg):not(path), 
-[data-theme="scuro"] .bg-cyan-400\/15 *:not(svg):not(path), 
-[data-theme="scuro"] .bg-orange-400\/15 *:not(svg):not(path), 
-[data-theme="scuro"] .bg-red-400\/15 *:not(svg):not(path),
-[data-theme="scuro"] .bg-\[var\(--superficie-alt\)\] *:not(svg):not(path),
-[data-theme="scuro"] .shadow-\[inset_4px_4px_8px_var\(--ombra-scura\)\,inset_-4px_-4px_8px_var\(--ombra-chiara\)\] *:not(svg):not(path) {
-  color: #E5E5DF !important;
+/* 3. Input Box diventano scuri */
+[data-theme="scuro"] .bg-\[var\(--velo-40\)\],
+[data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
+  background-color: #011b29 !important; 
+  border-color: #034b6f !important;
 }
 
-
-/* 3. INPUT BOX E SELECT: SCURI (Livello 3) */
-[data-theme="scuro"] input, [data-theme="scuro"] select,
-[data-theme="scuro"] .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
-  background-color: rgba(7, 17, 29, 0.8) !important; /* Navy */
-  border: 1px solid #5D5D5D !important;
-  box-shadow: inset 0 2px 10px rgba(0,0,0,1) !important;
-  color: #DB9941 !important; /* Testo digitato in Ocra */
+/* 4. Mappatura Gradienti (Bottoni Principali, Selezioni) -> Orange to Yellow */
+[data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br,
+[data-theme="neon"] .bg-gradient-to-r, [data-theme="neon"] .bg-gradient-to-br {
+  background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
 }
-[data-theme="scuro"] input::placeholder { color: #5D5D5D !important; }
-[data-theme="scuro"] .bg-\[var\(--velo-30\)\] *:not(svg):not(path), [data-theme="scuro"] .bg-\[var\(--velo-40\)\] *:not(svg):not(path), [data-theme="scuro"] .bg-\[var\(--velo-50\)\] *:not(svg):not(path) {
-  color: #E5E5DF !important;
+[data-theme="scuro"] .accento-grad, [data-theme="neon"] .accento-grad {
+  background-image: linear-gradient(to right, var(--accento-1), var(--accento-2)) !important;
 }
 
+/* Contrasto perfetto: Il testo dentro i bottoni arancioni DEVE essere Navy profondo */
+[data-theme="scuro"] button.bg-gradient-to-r, 
+[data-theme="scuro"] button.bg-gradient-to-br,
+[data-theme="scuro"] div.bg-gradient-to-r, 
+[data-theme="scuro"] div.bg-gradient-to-br {
+  color: #023047 !important; 
+}
+[data-theme="scuro"] button.bg-gradient-to-r *, 
+[data-theme="scuro"] button.bg-gradient-to-br *,
+[data-theme="scuro"] div.bg-gradient-to-r *, 
+[data-theme="scuro"] div.bg-gradient-to-br * {
+  color: #023047 !important; 
+}
 
-/* 4. HIGHLIGHTS, DATI CHIAVE E ICONE -> OCRA (#DB9941) E RUGGINE (#AE2C11) */
+/* 5. Mappatura Colori UI Attivi -> Orange (#FC8500) per elementi chiave */
 [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500 {
-  color: #DB9941 !important; 
-  text-shadow: 0 0 10px rgba(219, 153, 65, 0.3) !important; 
+  color: #FC8500 !important; 
 }
-[data-theme="scuro"] .text-indigo-400 { color: #AE2C11 !important; }
+[data-theme="scuro"] .text-indigo-400 { color: #FFB701 !important; }
 
-
-/* 5. GRADIENTI E BOTTONI AZIONE -> DA OCRA A RUGGINE */
-[data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br, [data-theme="scuro"] .accento-grad,
-[data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500, [data-theme="scuro"] .bg-rose-500 {
-  background-image: linear-gradient(135deg, #DB9941, #AE2C11) !important;
-  color: #E5E5DF !important;
-  border: 1px solid rgba(229, 229, 223, 0.4) !important;
-  border-top: 1px solid rgba(229, 229, 223, 0.8) !important; /* Specchio sul bottone */
-  box-shadow: 0 8px 25px rgba(174, 44, 17, 0.4) !important;
+/* Badge Solidi -> Orange */
+[data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, 
+[data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-rose-500,
+[data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500 {
+  background-color: #FC8500 !important;
+  color: #023047 !important;
 }
-[data-theme="scuro"] .bg-gradient-to-r *, [data-theme="scuro"] .bg-gradient-to-br *, [data-theme="scuro"] .accento-grad * { color: #E5E5DF !important; text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
-
+/* Badge piccoli -> Yellow */
 [data-theme="scuro"] .bg-indigo-100 { 
-  background-image: none !important;
-  background-color: rgba(174, 44, 17, 0.2) !important;
-  color: #DB9941 !important;
-  border: 1px solid rgba(174, 44, 17, 0.5) !important;
+  background-color: #FFB701 !important;
+  color: #023047 !important;
 }
 
-
-/* MAPPATURE PER NEON (RESTANO COME PRIMA) */
 [data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 { color: var(--accento-1) !important; }
 [data-theme="neon"] .text-indigo-400 { color: var(--accento-2) !important; }
 [data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 { background-color: var(--accento-1) !important; }
 [data-theme="neon"] .bg-indigo-100 { color: #000 !important; }
 
+/* 6. Fix specifici bagliori (Annullamento bagliori neon nel tema scuro) */
+[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\],
+[data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\],
+[data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { 
+  box-shadow: none !important; 
+}
+[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: #FC8500 !important; }
+[data-theme="scuro"] .text-\[\#00c6ff\] { color: #FC8500 !important; }
 
-/* 6. PULIZIA BAGLIORI E DETTAGLI VECCHI TEMA NEON */
-[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\], [data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\], [data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { box-shadow: none !important; }
-[data-theme="scuro"] .bg-\[\#00c6ff\] { background-image: none !important; background-color: #DB9941 !important; }
-[data-theme="scuro"] .text-\[\#00c6ff\] { color: #DB9941 !important; text-shadow: 0 0 10px rgba(219,153,65,0.4) !important; }
-
-/* 7. ADATTAMENTO OMINO SVG E BORDI INTERATTIVI */
-[data-theme="scuro"] #gradPrimary stop:first-child { stop-color: #DB9941 !important; }
-[data-theme="scuro"] #gradPrimary stop:last-child { stop-color: #AE2C11 !important; }
-[data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
-[data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
-
-[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: rgba(219, 153, 65, 0.4) !important; }
+/* 7. Bordi e Interazioni Hover */
+[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: #FC8500 !important; }
 [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 { border-color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400 { --tw-ring-color: rgba(219, 153, 65, 0.5) !important; }
+[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400 { --tw-ring-color: #FC8500 !important; }
 [data-theme="neon"] .ring-lime-400, [data-theme="neon"] .ring-lime-500, [data-theme="neon"] .ring-cyan-400 { --tw-ring-color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover { color: #DB9941 !important; }
+[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover { color: #FC8500 !important; }
 [data-theme="neon"] .hover\:text-emerald-500:hover, [data-theme="neon"] .hover\:text-cyan-500:hover { color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: rgba(219, 153, 65, 0.3) !important; }
+[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: transparent !important; }
 [data-theme="neon"] .focus\:ring-emerald-400\/40:focus, [data-theme="neon"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: var(--accento-glow) !important; }
+
+
+/* =========================================================================
+   RICOLORAZIONE SPLASH SCREEN ANIMATO (I / A / OMNIFIT)
+   Forza i colori hardcodati negli SVG ad adattarsi al tema scelto
+   ========================================================================= */
+
+/* TEMA SCURO: La 'I' e 'O' diventano Orange, la 'A' e 'MNIFIT' diventano Light Blue */
+[data-theme="scuro"] svg path[fill="#84cc16"],
+[data-theme="scuro"] svg tspan[fill="#84cc16"] { 
+  fill: #FC8500 !important; 
+}
+[data-theme="scuro"] svg circle[stroke="#84cc16"],
+[data-theme="scuro"] svg path[stroke="#84cc16"] { 
+  stroke: #FC8500 !important; 
+}
+[data-theme="scuro"] svg path[fill="#334155"],
+[data-theme="scuro"] svg polygon[fill="#334155"],
+[data-theme="scuro"] svg text[fill="#475569"] { 
+  fill: #BECAE6 !important; 
+}
+
+/* TEMA NEON: La 'I' e 'O' diventano Ciano, la 'A' e 'MNIFIT' diventano Bianco */
+[data-theme="neon"] svg path[fill="#84cc16"],
+[data-theme="neon"] svg tspan[fill="#84cc16"] { 
+  fill: var(--accento-1) !important; 
+}
+[data-theme="neon"] svg circle[stroke="#84cc16"],
+[data-theme="neon"] svg path[stroke="#84cc16"] { 
+  stroke: var(--accento-1) !important; 
+}
+[data-theme="neon"] svg path[fill="#334155"],
+[data-theme="neon"] svg polygon[fill="#334155"],
+[data-theme="neon"] svg text[fill="#475569"] { 
+  fill: var(--testo-forte) !important; 
+}
