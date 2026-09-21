@@ -20,7 +20,7 @@
 }
  
 /* =========================================================================
-   SISTEMA TEMI: chiaro (default) / scuro (Navy & Sunset) / neon
+   SISTEMA TEMI: chiaro (default) / scuro (Industrial Gold) / neon
    ========================================================================= */
 
 :root,
@@ -46,34 +46,38 @@
 }
 
 /* -------------------------------------------------------------------------
-   TEMA SCURO: "NAVY & SUNSET" (Palette Dopelycolors 164)
-   Risolve l'appiattimento usando i 5 colori su piani solidi (NO VETRO).
-   Sfondo: Navy / Pannelli: Teal / Input: Light Blue / Bottoni: Orange.
+   TEMA SCURO: "INDUSTRIAL GOLD" (Palette Bold. Reliable. Professional.)
+   Nessun effetto vetro. Stile tattico, meccanico e solido.
    ------------------------------------------------------------------------- */
 [data-theme="scuro"] {
-  --superficie: #023047; /* Livello 1: Card Navy */
-  --superficie-alt: #209EBB; /* Livello 2: Pannelli interni Teal */
+  /* Sfondi Principali: Midnight Black */
+  --superficie: #111111; 
+  --superficie-alt: #1a1a1a; 
   
-  --ombra-scura: #011621;
-  --ombra-chiara: #034a6d;
+  /* Ombre meccaniche, dure e opache */
+  --ombra-scura: #050505; 
+  --ombra-scura-alt: #000000;
+  --ombra-chiara: #1d1d1d;
  
-  --testo-forte: #BECAE6; /* Light Blue su Navy */
-  --testo-medio: #8ba7d4;
-  --testo-debole: #209EBB;
-  --testo-tenue: #126378;
+  /* Colori Testo: Bianchi e Grigio Acciaio per contrastare il nero/verde */
+  --testo-forte: #ffffff; 
+  --testo-medio: #e5e5e5; 
+  --testo-debole: #6B6B6B; /* Steel Gray per i testi secondari */
+  --testo-tenue: #4A5D3A; /* Industrial Green per i dettagli tenui */
  
-  --bordo-tenue: rgba(190, 202, 230, 0.2);
+  --bordo-tenue: #6B6B6B; /* Bordi in Steel Gray solido */
  
-  /* I veli diventano solidi Light Blue per gli input */
-  --velo-20: #209EBB; 
-  --velo-30: #209EBB; 
-  --velo-40: #BECAE6; 
-  --velo-50: #BECAE6; 
-  --velo-60: #BECAE6; 
+  /* Annullamento Vetro: Veli sostituiti da colori solidi strutturali */
+  --velo-20: #1a1a1a; 
+  --velo-30: #222222; 
+  --velo-40: #111111; /* Sfondo input nero */
+  --velo-50: #111111; 
+  --velo-60: #6B6B6B; /* Elementi UI grigio acciaio */
  
-  --accento-1: #FC8500; /* Orange */
-  --accento-2: #FFB701; /* Yellow */
-  --accento-glow: transparent;
+  /* Colori d'azione: Classic Gold puro */
+  --accento-1: #D4AF37; 
+  --accento-2: #c5a02e; /* Oro leggermente scurito per gradienti */
+  --accento-glow: transparent; /* Zero bagliori, stile opaco/matte */
 }
 
 [data-theme="neon"] {
@@ -97,13 +101,18 @@
   --accento-glow: rgba(34, 211, 238, 0.45);
 }
 
+/* =========================================================================
+   GESTIONE BACKGROUND (BODY)
+   ========================================================================= */
 body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
 [data-theme="chiaro"] body { background: var(--superficie); }
 [data-theme="neon"] body { background: var(--superficie); }
-[data-theme="scuro"] body { background-color: #011621 !important; } /* Sfondo Livello 0: Ultra Navy */
+
+/* Lo sfondo assoluto (Livello 0) è un nero scurissimo per far risaltare il Midnight Black delle Card */
+[data-theme="scuro"] body { background-color: #050505 !important; }
 
 /* =========================================================================
-   MAPPATURA TESTI E NEON (Neon resta invariato)
+   MAPPATURA TESTI GLOBALI E NEON (Neon resta invariato)
    ========================================================================= */
 [data-theme="neon"] .text-slate-700, [data-theme="neon"] .text-slate-800 { color: var(--testo-forte) !important; }
 [data-theme="neon"] .text-slate-600 { color: var(--testo-medio) !important; }
@@ -112,111 +121,151 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
 [data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
 
-/* Testi principali Scuro */
-[data-theme="scuro"] .text-slate-700, [data-theme="scuro"] .text-slate-800, [data-theme="scuro"] .text-white { color: #BECAE6 !important; }
-[data-theme="scuro"] .text-slate-600 { color: #8ba7d4 !important; }
-[data-theme="scuro"] .text-slate-500 { color: #209EBB !important; }
-[data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300 { color: #126378 !important; }
+/* TESTI TEMA SCURO: Forzati su Bianco e Steel Gray (#6B6B6B) */
+[data-theme="scuro"] .text-slate-700, 
+[data-theme="scuro"] .text-slate-800 { 
+  color: #ffffff !important; 
+}
+[data-theme="scuro"] .text-slate-600 { color: #e5e5e5 !important; }
+[data-theme="scuro"] .text-slate-500, 
+[data-theme="scuro"] .text-slate-400, 
+[data-theme="scuro"] .text-slate-300 { 
+  color: #6B6B6B !important; /* Steel Gray usato in modo rigoroso per le label */
+}
+[data-theme="scuro"] .border-slate-200, 
+[data-theme="scuro"] .border-slate-300,
+[data-theme="scuro"] .border-slate-400\/20 { 
+  border-color: #6B6B6B !important; /* Divisori netti in Steel Gray */
+}
 
 /* =========================================================================
-   KILLER OVERRIDES: PIANI CROMATICI A CONTRASTO NETTO
-   Risolve l'appiattimento forzando ogni livello a un colore diverso.
+   KILLER OVERRIDES: PIANI CROMATICI TATTICI E MILITARI
    ========================================================================= */
 
-/* 0. Disattivazione del Vetro */
-[data-theme="scuro"] .backdrop-blur-xl, [data-theme="scuro"] .backdrop-blur-md { backdrop-filter: none !important; }
+/* 0. Disattivazione Vetro: Uccide tutti i blur per un look Matte */
+[data-theme="scuro"] .backdrop-blur-xl, 
+[data-theme="scuro"] .backdrop-blur-md { 
+  backdrop-filter: none !important; 
+}
 
-/* 1. LIVELLO 2: PANNELLI INTERNI E SCHEDE (Diventano TEAL #209EBB) */
-[data-theme="scuro"] .bg-lime-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-red-400\/15,
+/* 1. CASELLE IN SECONDO PIANO (Es. Box Turni, Schede Workout) -> INDUSTRIAL GREEN (#4A5D3A) */
+[data-theme="scuro"] .bg-lime-400\/15, 
+[data-theme="scuro"] .bg-cyan-400\/15, 
+[data-theme="scuro"] .bg-orange-400\/15, 
+[data-theme="scuro"] .bg-red-400\/15,
 [data-theme="scuro"] .bg-\[var\(--superficie-alt\)\],
 [data-theme="scuro"] .shadow-\[inset_4px_4px_8px_var\(--ombra-scura\)\,inset_-4px_-4px_8px_var\(--ombra-chiara\)\] {
-  background-color: #209EBB !important;
-  border: 2px solid #023047 !important;
-  box-shadow: 4px 4px 0px #011621 !important; /* Ombra netta per distacco */
+  background-color: #4A5D3A !important;
+  border: 1px solid #6B6B6B !important; /* Bordo Steel Gray */
+  box-shadow: 4px 4px 0px #050505 !important; /* Ombra netta stile industriale/brutalista */
 }
 
-/* I testi dentro i box Teal DEVONO essere Navy scuro per contrasto */
-[data-theme="scuro"] .bg-lime-400\/15 *, [data-theme="scuro"] .bg-cyan-400\/15 *, [data-theme="scuro"] .bg-orange-400\/15 *, [data-theme="scuro"] .bg-red-400\/15 *,
+/* I testi dentro i box Industrial Green devono essere bianchi per leggibilità */
+[data-theme="scuro"] .bg-lime-400\/15 *, 
+[data-theme="scuro"] .bg-cyan-400\/15 *, 
+[data-theme="scuro"] .bg-orange-400\/15 *, 
+[data-theme="scuro"] .bg-red-400\/15 *,
 [data-theme="scuro"] .bg-\[var\(--superficie-alt\)\] *,
 [data-theme="scuro"] .shadow-\[inset_4px_4px_8px_var\(--ombra-scura\)\,inset_-4px_-4px_8px_var\(--ombra-chiara\)\] * {
-  color: #023047 !important;
+  color: #ffffff !important;
 }
 
-/* 2. LIVELLO 3: INPUTS, SELECT E BOTTONI MINORI (Diventano LIGHT BLUE #BECAE6) */
+/* Titoli specifici dentro i box Verdi diventano Oro */
+[data-theme="scuro"] .bg-lime-400\/15 .text-lime-600,
+[data-theme="scuro"] .bg-lime-400\/15 .text-slate-500,
+[data-theme="scuro"] .shadow-\[inset_4px_4px_8px_var\(--ombra-scura\)\,inset_-4px_-4px_8px_var\(--ombra-chiara\)\] .text-slate-400 {
+  color: #D4AF37 !important; /* Classic Gold */
+}
+
+/* 2. INPUT BOX, SELECT E BOTTONI MINORI -> MIDNIGHT BLACK + STEEL GRAY */
 [data-theme="scuro"] input, [data-theme="scuro"] select,
-[data-theme="scuro"] .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
-  background-color: #BECAE6 !important;
-  border: 2px solid #023047 !important;
-  box-shadow: none !important;
-  color: #023047 !important;
+[data-theme="scuro"] .bg-\[var\(--velo-30\)\], 
+[data-theme="scuro"] .bg-\[var\(--velo-40\)\], 
+[data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
+  background-color: #111111 !important; /* Torna al Midnight Black */
+  border: 1px solid #6B6B6B !important; /* Bordo metallico Steel Gray */
+  box-shadow: inset 2px 2px 6px #050505 !important; /* Scavo netto */
+  color: #D4AF37 !important; /* Testo degli input in Oro */
 }
-/* I testi dentro le input/veli Light Blue DEVONO essere Navy scuro */
-[data-theme="scuro"] .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-\[var\(--velo-50\)\] * {
-  color: #023047 !important;
+/* I testi dentro le input/veli neri DEVONO essere Classic Gold */
+[data-theme="scuro"] .bg-\[var\(--velo-30\)\] *, 
+[data-theme="scuro"] .bg-\[var\(--velo-40\)\] *, 
+[data-theme="scuro"] .bg-\[var\(--velo-50\)\] * {
+  color: #D4AF37 !important;
 }
-[data-theme="scuro"] input::placeholder { color: #209EBB !important; }
+[data-theme="scuro"] input::placeholder { color: #6B6B6B !important; } /* Steel Gray placeholder */
 
-/* Bottoni selezione (es. Lunedì, Martedì) non attivi */
+/* Bottoni di selezione secondari (es. bottoni Turni o Menù in alto) */
 [data-theme="scuro"] button.bg-\[var\(--superficie\)\] {
-  background-color: #209EBB !important;
-  color: #023047 !important;
+  background-color: #111111 !important;
+  color: #6B6B6B !important;
+  border: 1px solid #6B6B6B !important;
   box-shadow: none !important;
-  border: 2px solid #023047 !important;
 }
 [data-theme="scuro"] button.bg-\[var\(--superficie\)\]:hover {
-  background-color: #BECAE6 !important;
+  background-color: #6B6B6B !important;
+  color: #ffffff !important;
 }
 
-/* 3. LIVELLO 4: AZIONI PRIMARIE E BOTTONI (Diventano ORANGE #FC8500) */
+/* 3. AZIONI PRIMARIE E BOTTONI PRINCIPALI -> CLASSIC GOLD (#D4AF37) */
 [data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br, [data-theme="scuro"] .accento-grad {
-  background-image: linear-gradient(to right, #FC8500, #FFB701) !important;
-  color: #023047 !important;
+  background-image: linear-gradient(to right, #D4AF37, #c5a02e) !important;
+  color: #111111 !important; /* Testo Nero su bottone Oro */
   border: none !important;
-  box-shadow: 0 4px 15px rgba(252, 133, 0, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2) !important;
 }
 [data-theme="scuro"] .bg-gradient-to-r *, [data-theme="scuro"] .bg-gradient-to-br *, [data-theme="scuro"] .accento-grad * {
-  color: #023047 !important;
+  color: #111111 !important;
 }
 
-/* 4. BADGE E ICONE COLORATE (Diventano Orange e Yellow) */
-[data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, 
-[data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500, [data-theme="scuro"] .bg-rose-500 {
-  background-color: #FC8500 !important;
-  color: #023047 !important;
+/* 4. MAPPATURA COLORI UI -> Classic Gold (#D4AF37) per elementi chiave */
+[data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500 {
+  color: #D4AF37 !important; 
+}
+[data-theme="scuro"] .text-indigo-400 { color: #4A5D3A !important; } /* Industrial Green usato come accento secondario */
+
+/* Badge Solidi (Kcal, Focus, ecc.) -> Diventano Classic Gold */
+[data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, 
+[data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-rose-500,
+[data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500 {
+  background-color: #D4AF37 !important;
+  color: #111111 !important;
   box-shadow: none !important;
 }
+/* Badge piccoli -> Steel Gray */
 [data-theme="scuro"] .bg-indigo-100 { 
-  background-color: #FFB701 !important;
-  color: #023047 !important;
+  background-color: #6B6B6B !important;
+  color: #ffffff !important;
 }
 
-/* 5. TESTI D'ACCENTO (Es. "ATTIVO", "16:8") -> Orange */
-[data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, 
-[data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, 
-[data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500 {
-  color: #FC8500 !important; 
+[data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 { color: var(--accento-1) !important; }
+[data-theme="neon"] .text-indigo-400 { color: var(--accento-2) !important; }
+[data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 { background-color: var(--accento-1) !important; }
+[data-theme="neon"] .bg-indigo-100 { color: #000 !important; }
+
+/* 5. FIX SPECIFICI: Rimozione totale di qualsiasi alone colorato estraneo */
+[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\], 
+[data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\], 
+[data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { 
+  box-shadow: none !important; 
 }
-[data-theme="scuro"] .text-indigo-400 { color: #FFB701 !important; }
+[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: #D4AF37 !important; }
+[data-theme="scuro"] .text-\[\#00c6ff\] { color: #D4AF37 !important; }
 
-/* 6. PULIZIA BAGLIORI E DETTAGLI NEON CHE ERANO RIMASTI */
-[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\], [data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\], [data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { box-shadow: none !important; }
-[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: #FC8500 !important; }
-[data-theme="scuro"] .text-\[\#00c6ff\] { color: #FC8500 !important; }
-
-/* Gradienti interni SVG Omino */
-[data-theme="scuro"] #gradPrimary stop:first-child { stop-color: #FC8500 !important; }
-[data-theme="scuro"] #gradPrimary stop:last-child { stop-color: #FFB701 !important; }
+/* Gradienti interni SVG Omino (Diventa Oro) */
+[data-theme="scuro"] #gradPrimary stop:first-child { stop-color: #D4AF37 !important; }
+[data-theme="scuro"] #gradPrimary stop:last-child { stop-color: #c5a02e !important; }
 [data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
 [data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
 
-/* Bordi interagibili */
-[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: #FC8500 !important; }
+/* 6. Bordi e Interazioni */
+[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: #D4AF37 !important; }
 [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 { border-color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400 { --tw-ring-color: #FC8500 !important; }
+[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400 { --tw-ring-color: #D4AF37 !important; }
 [data-theme="neon"] .ring-lime-400, [data-theme="neon"] .ring-lime-500, [data-theme="neon"] .ring-cyan-400 { --tw-ring-color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover { color: #FC8500 !important; }
+[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover { color: #D4AF37 !important; }
 [data-theme="neon"] .hover\:text-emerald-500:hover, [data-theme="neon"] .hover\:text-cyan-500:hover { color: var(--accento-1) !important; }
 
 [data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: transparent !important; }
