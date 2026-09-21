@@ -46,38 +46,39 @@
 }
 
 /* -------------------------------------------------------------------------
-   TEMA SCURO PRO: "VIOLET & LIME GLASSMORPHISM"
-   Look Premium. Sfondo nero, pannelli in vetro sfocato, luci viola e lime.
+   TEMA SCURO: "NEBULA GLASS" (Violet & Lime)
+   Risolve il problema del nero piatto iniettando luci nello sfondo e 
+   rendendo le card lenti trasparenti ad alta saturazione.
    ------------------------------------------------------------------------- */
 [data-theme="scuro"] {
-  /* Sfondi base traslucidi per far funzionare il Glassmorphism */
-  --superficie: rgba(18, 18, 22, 0.65); /* Nero trasparente elegante */
-  --superficie-alt: rgba(125, 59, 226, 0.08); /* Vetro leggermente tinto di viola */
+  /* Le superfici non sono più colori solidi, ma vettori di trasparenza */
+  --superficie: rgba(20, 15, 35, 0.45); /* Base leggermente violacea e molto trasparente */
+  --superficie-alt: rgba(125, 59, 226, 0.15); /* Pannelli interni più tinti di viola */
   
-  /* Ombre modificate per il vetro: ombra scurissima + riflesso viola in alto a sinistra */
-  --ombra-scura: rgba(0, 0, 0, 0.9); 
-  --ombra-scura-alt: rgba(0, 0, 0, 0.95);
-  --ombra-chiara: rgba(125, 59, 226, 0.15); /* Luce ambientale Violet */
+  /* Ombre nette verso il basso per staccare i livelli */
+  --ombra-scura: rgba(0, 0, 0, 0.8); 
+  --ombra-scura-alt: rgba(0, 0, 0, 0.9);
+  --ombra-chiara: rgba(255, 255, 255, 0.02);
  
-  /* Colori Testo dalla Palette */
-  --testo-forte: #FFFFFF; /* White puro */
-  --testo-medio: #cbd5e1; 
-  --testo-debole: #a78bfa; /* Violetto chiaro per supporti */
+  /* Colori Testo (Massimo contrasto) */
+  --testo-forte: #FFFFFF; 
+  --testo-medio: #e2e8f0; 
+  --testo-debole: #a78bfa; 
   --testo-tenue: #64748b; 
  
-  --bordo-tenue: rgba(255, 255, 255, 0.05);
+  --bordo-tenue: rgba(255, 255, 255, 0.08); /* Bordi di divisione fini come cristallo */
  
-  /* Veli per input e box interni, sempre basati sulla trasparenza del Violet */
-  --velo-20: rgba(125, 59, 226, 0.05); 
-  --velo-30: rgba(125, 59, 226, 0.1); 
-  --velo-40: rgba(0, 0, 0, 0.3); /* Sfondo profondo per gli input */
-  --velo-50: rgba(0, 0, 0, 0.4); 
+  /* Veli per input (Scurissimi per far risaltare il testo Lime) */
+  --velo-20: rgba(0, 0, 0, 0.2); 
+  --velo-30: rgba(0, 0, 0, 0.3); 
+  --velo-40: rgba(0, 0, 0, 0.5); 
+  --velo-50: rgba(0, 0, 0, 0.6); 
   --velo-60: rgba(125, 59, 226, 0.2); 
  
-  /* Colori d'azione e Accenti (Lime e Violet) */
-  --accento-1: #C9FF33; /* Lime - Usato per highlight e dati */
-  --accento-2: #7D3BE2; /* Violet - Usato per sfondi, gradienti e bottoni */
-  --accento-glow: rgba(201, 255, 51, 0.3); /* Bagliore Lime */
+  /* Colori d'azione (Lime e Violet) */
+  --accento-1: #C9FF33; 
+  --accento-2: #7D3BE2; 
+  --accento-glow: rgba(201, 255, 51, 0.2); 
 }
 
 [data-theme="neon"] {
@@ -102,18 +103,21 @@
 }
 
 /* =========================================================================
-   GESTIONE BACKGROUND E ATMOSFERA (BODY)
+   IL SEGRETO DEL VETRO: LUCI AMBIENTALI SUL BACKGROUND (BODY)
    ========================================================================= */
 body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
 [data-theme="chiaro"] body { background: var(--superficie); }
 [data-theme="neon"] body { background: var(--superficie); }
 
-/* Sfondo assoluto per Tema Scuro: Black puro per massimizzare il contrasto col vetro */
+/* Iniettiamo globi di luce Violet e Lime direttamente nello sfondo della pagina */
 [data-theme="scuro"] body { 
-  background-color: #030303 !important; 
-  background-image: radial-gradient(circle at 50% 0%, rgba(125, 59, 226, 0.08) 0%, transparent 70%) !important;
+  background-color: #050505 !important; 
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(125, 59, 226, 0.15), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(201, 255, 51, 0.08), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(125, 59, 226, 0.05), transparent 60%) !important;
+  background-attachment: fixed !important; /* Le luci restano fisse mentre scrolli */
 }
-
 
 /* =========================================================================
    MAPPATURA TESTI GLOBALI
@@ -125,91 +129,85 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
 [data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
 
-/* TESTI TEMA SCURO: Forzati su White per la massima leggibilità */
-[data-theme="scuro"] .text-slate-700, 
-[data-theme="scuro"] .text-slate-800 { color: #FFFFFF !important; }
-[data-theme="scuro"] .text-slate-600 { color: #e2e8f0 !important; }
-[data-theme="scuro"] .text-slate-500 { color: #a78bfa !important; } /* Sottotitoli in violetto */
-[data-theme="scuro"] .text-slate-400, 
-[data-theme="scuro"] .text-slate-300 { color: #64748b !important; }
-[data-theme="scuro"] .border-slate-200, 
-[data-theme="scuro"] .border-slate-300,
-[data-theme="scuro"] .border-slate-400\/20 { border-color: rgba(255, 255, 255, 0.05) !important; }
+/* Testi Scuro: Bianchissimi */
+[data-theme="scuro"] .text-slate-700, [data-theme="scuro"] .text-slate-800 { color: #FFFFFF !important; }
+[data-theme="scuro"] .text-slate-600 { color: #f8fafc !important; }
+[data-theme="scuro"] .text-slate-500 { color: #a78bfa !important; } 
+[data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300 { color: #94a3b8 !important; }
+[data-theme="scuro"] .border-slate-200, [data-theme="scuro"] .border-slate-300, [data-theme="scuro"] .border-slate-400\/20 { 
+  border-color: rgba(255, 255, 255, 0.08) !important; 
+}
 
 /* =========================================================================
-   KILLER OVERRIDES: EFFETTO VETRO PREMIUM E SINTESI CROMATICA
+   KILLER OVERRIDES: LENTI DI CRISTALLO E RIM LIGHTING
    ========================================================================= */
 
-/* 1. CREAZIONE DEL VERO GLASSMORPHISM SULLE CARD PRINCIPALI */
+/* 1. COSTRUZIONE DELLE CARD PRINCIPALI COME LENTI (Livello 1) */
 [data-theme="scuro"] .bg-\[var\(--superficie\)\] {
-  background-color: rgba(18, 18, 22, 0.7) !important; /* Base scura semitrasparente */
-  backdrop-filter: blur(24px) saturate(120%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(120%) !important;
-  /* Il segreto del vetro: un bordo sottilissimo illuminato dall'alto */
-  border: 1px solid rgba(255, 255, 255, 0.04) !important;
-  border-top: 1px solid rgba(125, 59, 226, 0.3) !important; 
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(125, 59, 226, 0.1) !important;
+  background-color: var(--superficie) !important; 
+  /* Saturate amplifica i colori delle luci ambientali sullo sfondo quando ci passi sopra */
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  
+  /* Bordo illuminato dall'alto per simulare lo spessore del vetro */
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-top: 1px solid rgba(125, 59, 226, 0.35) !important; 
+  border-left: 1px solid rgba(125, 59, 226, 0.15) !important;
+  
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05) !important;
 }
 
-/* 2. CASELLE INTERNE IN SECONDO PIANO (Es. Box Turni, Modali, Sub-card) */
-[data-theme="scuro"] .bg-lime-400\/15, 
-[data-theme="scuro"] .bg-cyan-400\/15, 
-[data-theme="scuro"] .bg-orange-400\/15, 
-[data-theme="scuro"] .bg-red-400\/15,
+/* 2. CASELLE INTERNE IN SECONDO PIANO (Livello 2: Box Turni, Sub-card) */
+[data-theme="scuro"] .bg-lime-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-red-400\/15,
 [data-theme="scuro"] .bg-\[var\(--superficie-alt\)\],
 [data-theme="scuro"] .shadow-\[inset_4px_4px_8px_var\(--ombra-scura\)\,inset_-4px_-4px_8px_var\(--ombra-chiara\)\] {
-  background: linear-gradient(135deg, rgba(125, 59, 226, 0.15), rgba(0, 0, 0, 0.5)) !important;
+  background-color: var(--superficie-alt) !important; /* Violet trasparente */
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(125, 59, 226, 0.15) !important;
-  box-shadow: inset 2px 2px 10px rgba(0,0,0,0.6) !important; /* Scavo interno */
-}
-
-/* 3. INPUT BOX, SELECT E BOTTONI MINORI (Veli 30/40/50) */
-[data-theme="scuro"] input, [data-theme="scuro"] select,
-[data-theme="scuro"] .bg-\[var\(--velo-30\)\], 
-[data-theme="scuro"] .bg-\[var\(--velo-40\)\], 
-[data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
-  background-color: rgba(0, 0, 0, 0.5) !important; 
-  backdrop-filter: blur(8px) !important;
   border: 1px solid rgba(125, 59, 226, 0.2) !important;
-  box-shadow: inset 2px 2px 8px rgba(0,0,0,0.8) !important;
-  color: #C9FF33 !important; /* I testi digitati sono LIME per contrasto estremo */
+  /* Scavo interno per farle sembrare incastrate nel vetro */
+  box-shadow: inset 2px 2px 10px rgba(0, 0, 0, 0.5) !important; 
 }
-[data-theme="scuro"] input::placeholder { color: rgba(167, 139, 250, 0.5) !important; }
 
-/* 4. GRADIENTI E BOTTONI AZIONE -> SFUMATURA VIOLET PREMIUM */
+/* 3. INPUT BOX E SELECT (Livello 3: Scurissimi per contrasto col Lime) */
+[data-theme="scuro"] input, [data-theme="scuro"] select,
+[data-theme="scuro"] .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
+  background-color: rgba(0, 0, 0, 0.6) !important; 
+  border: 1px solid rgba(125, 59, 226, 0.3) !important;
+  box-shadow: inset 2px 2px 8px rgba(0,0,0,0.8) !important;
+  color: #C9FF33 !important; /* Testo input in Lime radioso */
+}
+[data-theme="scuro"] input::placeholder { color: rgba(167, 139, 250, 0.4) !important; }
+
+/* 4. GRADIENTI E BOTTONI AZIONE -> VIOLET FLUIDO CON LUCE ALTA */
 [data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br, [data-theme="scuro"] .accento-grad {
   background-image: linear-gradient(135deg, #7D3BE2, #4c1d95) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(199, 210, 254, 0.2) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 8px 25px rgba(125, 59, 226, 0.4) !important;
+  border: 1px solid rgba(125, 59, 226, 0.5) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.25) !important; /* Riflesso specchio sul bottone */
+  box-shadow: 0 10px 25px rgba(125, 59, 226, 0.4) !important;
 }
-[data-theme="scuro"] .bg-gradient-to-r *, [data-theme="scuro"] .bg-gradient-to-br *, [data-theme="scuro"] .accento-grad * {
-  color: #ffffff !important;
-}
+[data-theme="scuro"] .bg-gradient-to-r *, [data-theme="scuro"] .bg-gradient-to-br *, [data-theme="scuro"] .accento-grad * { color: #ffffff !important; }
 
-/* 5. HIGHLIGHTS, VALORI CHIAVE E ICONE -> LIME (#C9FF33) */
-/* Trasformiamo tutti i testi verdi, azzurri, rossi in LIME per dare il look Cyber */
+/* 5. HIGHLIGHTS, DATI CHIAVE E ICONE -> LIME (#C9FF33) */
 [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500 {
   color: #C9FF33 !important; 
-  text-shadow: 0 0 10px rgba(201, 255, 51, 0.3) !important; /* Leggero bagliore sul lime */
+  text-shadow: 0 0 12px rgba(201, 255, 51, 0.25) !important; 
 }
-[data-theme="scuro"] .text-indigo-400 { color: #7D3BE2 !important; } /* Violet usato come secondario */
+[data-theme="scuro"] .text-indigo-400 { color: #a78bfa !important; } /* Sottotitoli violetto chiaro */
 
-/* Badge Solidi e Bottoncini -> Diventano Violet */
-[data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, 
-[data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-rose-500,
-[data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500 {
-  background-color: #7D3BE2 !important;
+/* Badge Solidi e Bottoncini -> Violet Glass */
+[data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-rose-500, [data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500 {
+  background-color: rgba(125, 59, 226, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 10px rgba(125, 59, 226, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(125, 59, 226, 0.3) !important;
 }
 [data-theme="scuro"] .bg-indigo-100 { 
-  background-color: rgba(125, 59, 226, 0.2) !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
   color: #C9FF33 !important;
-  border: 1px solid rgba(125, 59, 226, 0.5) !important;
+  border: 1px solid rgba(201, 255, 51, 0.3) !important;
 }
 
 [data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 { color: var(--accento-1) !important; }
@@ -217,23 +215,18 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 { background-color: var(--accento-1) !important; }
 [data-theme="neon"] .bg-indigo-100 { color: #000 !important; }
 
-/* 6. FIX SPECIFICI: Rimozione residui celesti/neon vecchi */
-[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\], 
-[data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\], 
-[data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { 
-  box-shadow: none !important; 
-}
+/* 6. FIX BAGLIORI CIANO (Sostituiti dal Lime) */
+[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\], [data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\], [data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { box-shadow: none !important; }
 [data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: #C9FF33 !important; }
 [data-theme="scuro"] .text-\[\#00c6ff\] { color: #C9FF33 !important; text-shadow: 0 0 10px rgba(201,255,51,0.4) !important; }
 
-/* Gradienti interni SVG Omino (Violet e Lime) */
+/* 7. ADATTAMENTO OMINO SVG E BORDI INTERATTIVI */
 [data-theme="scuro"] #gradPrimary stop:first-child { stop-color: #7D3BE2 !important; }
 [data-theme="scuro"] #gradPrimary stop:last-child { stop-color: #C9FF33 !important; }
 [data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
 [data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
 
-/* 7. Bordi, Ring e Interazioni (Focus Lime) */
-[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: #C9FF33 !important; }
+[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: rgba(201, 255, 51, 0.4) !important; }
 [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 { border-color: var(--accento-1) !important; }
 
 [data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400 { --tw-ring-color: rgba(201, 255, 51, 0.5) !important; }
