@@ -20,7 +20,7 @@
 }
  
 /* =========================================================================
-   SISTEMA TEMI: chiaro (default) / scuro (Cyber Glass) / neon
+   SISTEMA TEMI: chiaro (default) / scuro (Obsidian Glass) / neon
    ========================================================================= */
 
 :root,
@@ -46,41 +46,40 @@
 }
 
 /* -------------------------------------------------------------------------
-   TEMA SCURO: "NEBULA GLASS" (Violet & Lime)
-   Risolve il problema del nero piatto iniettando luci nello sfondo e 
-   rendendo le card lenti trasparenti ad alta saturazione.
+   TEMA SCURO PRO: "OBSIDIAN & RUST" 
+   Effetto vetro satinato su sfondi profondi illuminati da luci ambrate.
    ------------------------------------------------------------------------- */
 [data-theme="scuro"] {
-  /* Le superfici non sono più colori solidi, ma vettori di trasparenza */
-  --superficie: rgba(20, 15, 35, 0.45); /* Base leggermente violacea e molto trasparente */
-  --superficie-alt: rgba(125, 59, 226, 0.15); /* Pannelli interni più tinti di viola */
+  /* Basi Traslucide per il vetro (usando l'Ardesia #39444D come base) */
+  --superficie: rgba(57, 68, 77, 0.35); 
+  --superficie-alt: rgba(7, 17, 29, 0.6); /* Scavo scuro basato su #07111D */
   
-  /* Ombre nette verso il basso per staccare i livelli */
-  --ombra-scura: rgba(0, 0, 0, 0.8); 
+  --ombra-scura: rgba(0, 0, 0, 0.7); 
   --ombra-scura-alt: rgba(0, 0, 0, 0.9);
-  --ombra-chiara: rgba(255, 255, 255, 0.02);
+  --ombra-chiara: rgba(229, 229, 223, 0.05); /* Luce riflessa color Panna */
  
-  /* Colori Testo (Massimo contrasto) */
-  --testo-forte: #FFFFFF; 
-  --testo-medio: #e2e8f0; 
-  --testo-debole: #a78bfa; 
-  --testo-tenue: #64748b; 
+  /* Colori Testo dalla Palette */
+  --testo-forte: #E5E5DF; /* Color Panna/Osso */
+  --testo-medio: #b5bcc4; /* Panna attenuato */
+  --testo-debole: #DB9941; /* Ocra per sottotitoli e label importanti */
+  --testo-tenue: #5D5D5D; /* Grigio Medio per placeholder */
  
-  --bordo-tenue: rgba(255, 255, 255, 0.08); /* Bordi di divisione fini come cristallo */
+  --bordo-tenue: rgba(229, 229, 223, 0.08); /* Linee sottili color panna */
  
-  /* Veli per input (Scurissimi per far risaltare il testo Lime) */
-  --velo-20: rgba(0, 0, 0, 0.2); 
-  --velo-30: rgba(0, 0, 0, 0.3); 
-  --velo-40: rgba(0, 0, 0, 0.5); 
-  --velo-50: rgba(0, 0, 0, 0.6); 
-  --velo-60: rgba(125, 59, 226, 0.2); 
+  /* Trasparenze scalate per i livelli di profondità (Input, Select) */
+  --velo-20: rgba(57, 68, 77, 0.1); 
+  --velo-30: rgba(57, 68, 77, 0.2); 
+  --velo-40: rgba(7, 17, 29, 0.7); /* Molto scuro per bucare le card ardesia */
+  --velo-50: rgba(7, 17, 29, 0.85); 
+  --velo-60: rgba(219, 153, 65, 0.15); /* Luce Ocra */
  
-  /* Colori d'azione (Lime e Violet) */
-  --accento-1: #C9FF33; 
-  --accento-2: #7D3BE2; 
-  --accento-glow: rgba(201, 255, 51, 0.2); 
+  /* Colori d'Azione e Gradienti */
+  --accento-1: #DB9941; /* Ocra/Gold */
+  --accento-2: #AE2C11; /* Ruggine/Red */
+  --accento-glow: rgba(219, 153, 65, 0.25); 
 }
 
+/* TEMA NEON (Invariato) */
 [data-theme="neon"] {
   --superficie: #141824;
   --superficie-alt: #10131c;
@@ -103,20 +102,19 @@
 }
 
 /* =========================================================================
-   IL SEGRETO DEL VETRO: LUCI AMBIENTALI SUL BACKGROUND (BODY)
+   GESTIONE BACKGROUND E LUCI AMBIENTALI (BODY)
    ========================================================================= */
 body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
 [data-theme="chiaro"] body { background: var(--superficie); }
 [data-theme="neon"] body { background: var(--superficie); }
 
-/* Iniettiamo globi di luce Violet e Lime direttamente nello sfondo della pagina */
+/* Il segreto del Glassmorphism: Fondo scuro (#07111D) + Luci diffuse (Ocra/Ruggine) */
 [data-theme="scuro"] body { 
-  background-color: #050505 !important; 
+  background-color: #07111D !important; 
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(125, 59, 226, 0.15), transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(201, 255, 51, 0.08), transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(125, 59, 226, 0.05), transparent 60%) !important;
-  background-attachment: fixed !important; /* Le luci restano fisse mentre scrolli */
+    radial-gradient(circle at 15% 20%, rgba(219, 153, 65, 0.06), transparent 50%),
+    radial-gradient(circle at 85% 70%, rgba(174, 44, 17, 0.08), transparent 50%) !important;
+  background-attachment: fixed !important;
 }
 
 /* =========================================================================
@@ -129,85 +127,84 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
 [data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
 
-/* Testi Scuro: Bianchissimi */
-[data-theme="scuro"] .text-slate-700, [data-theme="scuro"] .text-slate-800 { color: #FFFFFF !important; }
-[data-theme="scuro"] .text-slate-600 { color: #f8fafc !important; }
-[data-theme="scuro"] .text-slate-500 { color: #a78bfa !important; } 
-[data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300 { color: #94a3b8 !important; }
+/* Testi Scuro: Panna, Ocra e Grigio per massima gerarchia */
+[data-theme="scuro"] .text-slate-700, [data-theme="scuro"] .text-slate-800 { color: #E5E5DF !important; }
+[data-theme="scuro"] .text-slate-600 { color: #c4cbd1 !important; }
+[data-theme="scuro"] .text-slate-500 { color: #DB9941 !important; } /* Sottotitoli spiccano in Ocra */
+[data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300 { color: #5D5D5D !important; }
 [data-theme="scuro"] .border-slate-200, [data-theme="scuro"] .border-slate-300, [data-theme="scuro"] .border-slate-400\/20 { 
-  border-color: rgba(255, 255, 255, 0.08) !important; 
+  border-color: rgba(229, 229, 223, 0.08) !important; 
 }
 
 /* =========================================================================
-   KILLER OVERRIDES: LENTI DI CRISTALLO E RIM LIGHTING
+   KILLER OVERRIDES: LENTI DI VETRO, INCASTRI E GRADIENTI
    ========================================================================= */
 
-/* 1. COSTRUZIONE DELLE CARD PRINCIPALI COME LENTI (Livello 1) */
+/* 1. CARD PRINCIPALI: VETRO SATINATO (Livello 1) */
 [data-theme="scuro"] .bg-\[var\(--superficie\)\] {
-  background-color: var(--superficie) !important; 
-  /* Saturate amplifica i colori delle luci ambientali sullo sfondo quando ci passi sopra */
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  background-color: var(--superficie) !important; /* Ardesia trasparente */
+  backdrop-filter: blur(18px) saturate(110%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(110%) !important;
   
-  /* Bordo illuminato dall'alto per simulare lo spessore del vetro */
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-top: 1px solid rgba(125, 59, 226, 0.35) !important; 
-  border-left: 1px solid rgba(125, 59, 226, 0.15) !important;
+  /* Bordo illuminato per l'effetto spessore del cristallo */
+  border: 1px solid rgba(0, 0, 0, 0.3) !important;
+  border-top: 1px solid rgba(229, 229, 223, 0.12) !important; 
+  border-left: 1px solid rgba(229, 229, 223, 0.05) !important;
   
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(229,229,223,0.02) !important;
 }
 
-/* 2. CASELLE INTERNE IN SECONDO PIANO (Livello 2: Box Turni, Sub-card) */
+/* 2. CASELLE INTERNE IN SECONDO PIANO: SCAVI SCURI (Livello 2) */
+/* Es: Box Turni, Schede Workout, sfondi delle animazioni */
 [data-theme="scuro"] .bg-lime-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-red-400\/15,
 [data-theme="scuro"] .bg-\[var\(--superficie-alt\)\],
 [data-theme="scuro"] .shadow-\[inset_4px_4px_8px_var\(--ombra-scura\)\,inset_-4px_-4px_8px_var\(--ombra-chiara\)\] {
-  background-color: var(--superficie-alt) !important; /* Violet trasparente */
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(125, 59, 226, 0.2) !important;
-  /* Scavo interno per farle sembrare incastrate nel vetro */
-  box-shadow: inset 2px 2px 10px rgba(0, 0, 0, 0.5) !important; 
+  background-color: var(--superficie-alt) !important; /* Navy molto scuro */
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(93, 93, 93, 0.3) !important; /* Bordo grigio (#5D5D5D) per staccare */
+  box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.7) !important; /* Scavo profondo */
 }
 
-/* 3. INPUT BOX E SELECT (Livello 3: Scurissimi per contrasto col Lime) */
+/* 3. INPUT BOX E SELECT: DETTAGLI PROFONDI (Livello 3) */
 [data-theme="scuro"] input, [data-theme="scuro"] select,
 [data-theme="scuro"] .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
-  background-color: rgba(0, 0, 0, 0.6) !important; 
-  border: 1px solid rgba(125, 59, 226, 0.3) !important;
-  box-shadow: inset 2px 2px 8px rgba(0,0,0,0.8) !important;
-  color: #C9FF33 !important; /* Testo input in Lime radioso */
+  background-color: rgba(7, 17, 29, 0.8) !important; 
+  border: 1px solid rgba(93, 93, 93, 0.2) !important;
+  border-bottom: 1px solid rgba(219, 153, 65, 0.4) !important; /* Linea di base Ocra per eleganza */
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.9) !important;
+  color: #E5E5DF !important; /* Testo input in Panna */
 }
-[data-theme="scuro"] input::placeholder { color: rgba(167, 139, 250, 0.4) !important; }
+[data-theme="scuro"] input::placeholder { color: #5D5D5D !important; }
 
-/* 4. GRADIENTI E BOTTONI AZIONE -> VIOLET FLUIDO CON LUCE ALTA */
+/* 4. GRADIENTI E BOTTONI AZIONE -> DA OCRA A RUGGINE */
 [data-theme="scuro"] .bg-gradient-to-r, [data-theme="scuro"] .bg-gradient-to-br, [data-theme="scuro"] .accento-grad {
-  background-image: linear-gradient(135deg, #7D3BE2, #4c1d95) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(125, 59, 226, 0.5) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.25) !important; /* Riflesso specchio sul bottone */
-  box-shadow: 0 10px 25px rgba(125, 59, 226, 0.4) !important;
+  background-image: linear-gradient(135deg, #DB9941, #AE2C11) !important;
+  color: #E5E5DF !important;
+  border: 1px solid rgba(229, 229, 223, 0.15) !important;
+  border-top: 1px solid rgba(229, 229, 223, 0.3) !important; /* Riflesso specchio */
+  box-shadow: 0 8px 20px rgba(174, 44, 17, 0.4) !important;
 }
-[data-theme="scuro"] .bg-gradient-to-r *, [data-theme="scuro"] .bg-gradient-to-br *, [data-theme="scuro"] .accento-grad * { color: #ffffff !important; }
+[data-theme="scuro"] .bg-gradient-to-r *, [data-theme="scuro"] .bg-gradient-to-br *, [data-theme="scuro"] .accento-grad * { color: #E5E5DF !important; }
 
-/* 5. HIGHLIGHTS, DATI CHIAVE E ICONE -> LIME (#C9FF33) */
+/* 5. HIGHLIGHTS, VALORI CHIAVE E ICONE -> OCRA (#DB9941) */
 [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-indigo-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500 {
-  color: #C9FF33 !important; 
-  text-shadow: 0 0 12px rgba(201, 255, 51, 0.25) !important; 
+  color: #DB9941 !important; 
+  text-shadow: 0 0 15px rgba(219, 153, 65, 0.2) !important; 
 }
-[data-theme="scuro"] .text-indigo-400 { color: #a78bfa !important; } /* Sottotitoli violetto chiaro */
+[data-theme="scuro"] .text-indigo-400 { color: #AE2C11 !important; } /* Ruggine per accenti secondari */
 
-/* Badge Solidi e Bottoncini -> Violet Glass */
+/* Badge Solidi e Bottoncini -> Effetto Ocra Satinato */
 [data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-rose-500, [data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500 {
-  background-color: rgba(125, 59, 226, 0.8) !important;
+  background-color: rgba(219, 153, 65, 0.85) !important;
   backdrop-filter: blur(8px) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 4px 12px rgba(125, 59, 226, 0.3) !important;
+  color: #07111D !important; /* Testo scuro su badge chiaro */
+  border: 1px solid rgba(229, 229, 223, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(219, 153, 65, 0.2) !important;
 }
 [data-theme="scuro"] .bg-indigo-100 { 
-  background-color: rgba(0, 0, 0, 0.5) !important;
-  color: #C9FF33 !important;
-  border: 1px solid rgba(201, 255, 51, 0.3) !important;
+  background-color: rgba(174, 44, 17, 0.2) !important;
+  color: #DB9941 !important;
+  border: 1px solid rgba(174, 44, 17, 0.4) !important;
 }
 
 [data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 { color: var(--accento-1) !important; }
@@ -215,25 +212,25 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 { background-color: var(--accento-1) !important; }
 [data-theme="neon"] .bg-indigo-100 { color: #000 !important; }
 
-/* 6. FIX BAGLIORI CIANO (Sostituiti dal Lime) */
+/* 6. PULIZIA BAGLIORI E DETTAGLI VECCHI TEMA NEON */
 [data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\], [data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\], [data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { box-shadow: none !important; }
-[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: #C9FF33 !important; }
-[data-theme="scuro"] .text-\[\#00c6ff\] { color: #C9FF33 !important; text-shadow: 0 0 10px rgba(201,255,51,0.4) !important; }
+[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: #DB9941 !important; }
+[data-theme="scuro"] .text-\[\#00c6ff\] { color: #DB9941 !important; text-shadow: 0 0 10px rgba(219,153,65,0.4) !important; }
 
 /* 7. ADATTAMENTO OMINO SVG E BORDI INTERATTIVI */
-[data-theme="scuro"] #gradPrimary stop:first-child { stop-color: #7D3BE2 !important; }
-[data-theme="scuro"] #gradPrimary stop:last-child { stop-color: #C9FF33 !important; }
+[data-theme="scuro"] #gradPrimary stop:first-child { stop-color: #DB9941 !important; }
+[data-theme="scuro"] #gradPrimary stop:last-child { stop-color: #AE2C11 !important; }
 [data-theme="neon"] #gradPrimary stop:first-child { stop-color: var(--accento-1) !important; }
 [data-theme="neon"] #gradPrimary stop:last-child { stop-color: var(--accento-2) !important; }
 
-[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: rgba(201, 255, 51, 0.4) !important; }
+[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: rgba(219, 153, 65, 0.4) !important; }
 [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 { border-color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400 { --tw-ring-color: rgba(201, 255, 51, 0.5) !important; }
+[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400 { --tw-ring-color: rgba(219, 153, 65, 0.5) !important; }
 [data-theme="neon"] .ring-lime-400, [data-theme="neon"] .ring-lime-500, [data-theme="neon"] .ring-cyan-400 { --tw-ring-color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover { color: #C9FF33 !important; }
+[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover { color: #DB9941 !important; }
 [data-theme="neon"] .hover\:text-emerald-500:hover, [data-theme="neon"] .hover\:text-cyan-500:hover { color: var(--accento-1) !important; }
 
-[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: rgba(201, 255, 51, 0.3) !important; }
+[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: rgba(219, 153, 65, 0.3) !important; }
 [data-theme="neon"] .focus\:ring-emerald-400\/40:focus, [data-theme="neon"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: var(--accento-glow) !important; }
