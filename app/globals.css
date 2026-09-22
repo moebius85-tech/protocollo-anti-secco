@@ -66,7 +66,7 @@
   --testo-tenue: #71717a; 
   --bordo-tenue: #27272a; 
  
-  /* I veli diventano neri/grigi scuri solidi */
+  /* I veli diventano toni scuri */
   --velo-20: #000000; 
   --velo-30: #09090b; 
   --velo-40: #121214; 
@@ -119,103 +119,33 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 }
 
 /* =========================================================================
-   TESTI DI BASE: Forza il contrasto sul nero
+   REGOLA AUREA 1: SFONDO SCURO = TESTO BIANCO ASSOLUTO
+   Risolve il problema del box "Digiuno 16:8" e dei testi invisibili
    ========================================================================= */
-[data-theme="scuro"] .text-slate-700, [data-theme="scuro"] .text-slate-800, [data-theme="scuro"] .text-white { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
-[data-theme="scuro"] .text-slate-600 { color: #e4e4e7 !important; -webkit-text-fill-color: #e4e4e7 !important; }
-[data-theme="scuro"] .text-slate-500 { color: #a1a1aa !important; -webkit-text-fill-color: #a1a1aa !important; } 
-[data-theme="scuro"] .text-slate-400, [data-theme="scuro"] .text-slate-300 { color: #71717a !important; -webkit-text-fill-color: #71717a !important; } 
+[data-theme="scuro"] .text-slate-700, 
+[data-theme="scuro"] .text-slate-800, 
+[data-theme="scuro"] .text-slate-600,
+[data-theme="scuro"] .text-slate-500,
+[data-theme="scuro"] .text-slate-400,
+[data-theme="scuro"] .text-slate-300,
+[data-theme="scuro"] .text-white { 
+  color: #ffffff !important; 
+  -webkit-text-fill-color: #ffffff !important; 
+}
 [data-theme="scuro"] .border-slate-200, [data-theme="scuro"] .border-slate-300, [data-theme="scuro"] .border-slate-400\/20 { border-color: #27272a !important; }
 
-/* Forza al bianco tutti i testi dentro i box scuri generici */
-[data-theme="scuro"] .bg-\[var\(--velo-20\)\] *, [data-theme="scuro"] .bg-\[var\(--velo-30\)\] *,
-[data-theme="scuro"] .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-\[var\(--velo-50\)\] * {
+/* Forza al bianco tutti i testi dentro le caselle nere generiche */
+[data-theme="scuro"] .bg-\[var\(--superficie\)\] *,
+[data-theme="scuro"] .bg-\[var\(--superficie-alt\)\] *,
+[data-theme="scuro"] .bg-\[var\(--velo-20\)\] *,
+[data-theme="scuro"] .bg-\[var\(--velo-30\)\] *,
+[data-theme="scuro"] .bg-\[var\(--velo-40\)\] *,
+[data-theme="scuro"] .bg-\[var\(--velo-50\)\] * {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* =========================================================================
-   1. FIX BADGE "EQUILIBRATA", "CUSTOM" E BOTTONI GIALLI 
-   (Sfondo Chiaro = Testo Nero Assoluto)
-   ========================================================================= */
-/* A. Sfondi */
-[data-theme="scuro"] .from-lime-400, [data-theme="scuro"] .from-orange-400, [data-theme="scuro"] .from-orange-500 { --tw-gradient-from: var(--accento-1) !important; }
-[data-theme="scuro"] .from-cyan-400, [data-theme="scuro"] .from-blue-500 { --tw-gradient-from: var(--accento-2) !important; } /* Tab dispensa Integratori usa Sky Blue */
-[data-theme="scuro"] .to-emerald-500, [data-theme="scuro"] .to-rose-400, [data-theme="scuro"] .to-amber-300 { --tw-gradient-to: var(--accento-1) !important; }
-[data-theme="scuro"] .to-blue-500 { --tw-gradient-to: var(--accento-2) !important; }
-
-[data-theme="scuro"] select.bg-gradient-to-r, [data-theme="scuro"] select.bg-gradient-to-br,
-[data-theme="scuro"] button.bg-gradient-to-r, [data-theme="scuro"] button.bg-gradient-to-br,
-[data-theme="scuro"] div.bg-gradient-to-r, [data-theme="scuro"] .accento-grad {
-  background: var(--accento-1) !important;
-  border: 1px solid var(--accento-1) !important;
-}
-
-/* B. Testi NERI forzati (distrugge il text-white di EQUILIBRATA) */
-[data-theme="scuro"] select.bg-gradient-to-r,
-[data-theme="scuro"] select.bg-gradient-to-r *,
-[data-theme="scuro"] button.bg-gradient-to-r *, 
-[data-theme="scuro"] button.bg-gradient-to-br *,
-[data-theme="scuro"] div.bg-gradient-to-r *,
-[data-theme="scuro"] .accento-grad *,
-[data-theme="scuro"] .bg-lime-400 *, [data-theme="scuro"] .bg-orange-400 *, [data-theme="scuro"] .bg-cyan-500 * {
-  color: #000000 !important; 
-  -webkit-text-fill-color: #000000 !important;
-  font-weight: 900 !important;
-}
-/* Le opzioni del select tornano scure con testo bianco per leggibilità del menu a tendina */
-[data-theme="scuro"] select.bg-gradient-to-r option { background-color: #000000 !important; color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
-
-/* =========================================================================
-   2. FIX FASI ALLENAMENTO (Colori Distinti) & TESTI "SET 2"
-   ========================================================================= */
-/* Box Fasi 1, 2, 3 -> Arancione, Azzurro, Rosso Piatti */
-[data-theme="scuro"] .bg-orange-400\/15 { background-color: #FF5E00 !important; border: 2px solid #FF5E00 !important; }
-[data-theme="scuro"] .bg-cyan-400\/15 { background-color: #5E9CFF !important; border: 2px solid #5E9CFF !important; }
-[data-theme="scuro"] .bg-red-400\/15 { background-color: #FF003C !important; border: 2px solid #FF003C !important; }
-
-/* Testi diretti sulle fasi colorate = NERI (Risolve i label SET 1, SET 2 e i titoli) */
-[data-theme="scuro"] .bg-orange-400\/15 *, [data-theme="scuro"] .bg-cyan-400\/15 *, [data-theme="scuro"] .bg-red-400\/15 * {
-  color: #000000 !important; 
-  -webkit-text-fill-color: #000000 !important;
-  font-weight: 900 !important;
-}
-
-/* =========================================================================
-   3. IL "BUCO NERO" (Box "3-4 serie", "Avvia Timer", input Set)
-   ========================================================================= */
-/* Crea uno sfondo nero netto all'interno delle schede colorate */
-[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\],
-[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\],
-[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\],
-[data-theme="scuro"] .bg-orange-400\/15 input, [data-theme="scuro"] .bg-cyan-400\/15 input, [data-theme="scuro"] .bg-red-400\/15 input {
-  background-color: #000000 !important;
-  border: 1px solid #3f3f46 !important;
-}
-/* E ribalta il testo da nero a BIANCO OTTICO (Risolve il box 3-4 serie) */
-[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] *,
-[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] *,
-[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] * {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-/* Gli input e il testo dei bottoni Timer diventano Giallo Acido */
-[data-theme="scuro"] .bg-orange-400\/15 input, [data-theme="scuro"] .bg-cyan-400\/15 input, [data-theme="scuro"] .bg-red-400\/15 input,
-[data-theme="scuro"] .bg-orange-400\/15 button.bg-\[var\(--velo-50\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 button.bg-\[var\(--velo-50\)\] *, [data-theme="scuro"] .bg-red-400\/15 button.bg-\[var\(--velo-50\)\] * {
-  color: var(--accento-1) !important;
-  -webkit-text-fill-color: var(--accento-1) !important;
-}
-
-/* Fix Colori Omino SVG nelle fasi colorate -> Linee Nere! */
-[data-theme="scuro"] .bg-orange-400\/15 svg *, [data-theme="scuro"] .bg-cyan-400\/15 svg *, [data-theme="scuro"] .bg-red-400\/15 svg * { stroke: #000000 !important; }
-/* Tranne l'icona del timer che torna Gialla */
-[data-theme="scuro"] .bg-orange-400\/15 button.bg-\[var\(--velo-50\)\] svg *, [data-theme="scuro"] .bg-cyan-400\/15 button.bg-\[var\(--velo-50\)\] svg *, [data-theme="scuro"] .bg-red-400\/15 button.bg-\[var\(--velo-50\)\] svg * { stroke: var(--accento-1) !important; }
-
-
-/* =========================================================================
-   4. FIX BOX "DIGIUNO 16:8" E PIANO NUTRIZIONALE
-   ========================================================================= */
-/* Distruggiamo la sfumatura illeggibile del digiuno */
+/* Fix "Digiuno 16:8" (Box Sfumato Rosso) -> Diventa Nero solido */
 [data-theme="scuro"] .from-orange-50\/50, [data-theme="scuro"] .to-white {
   background-image: none !important;
   background-color: #09090b !important;
@@ -230,14 +160,103 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   color: var(--accento-1) !important; -webkit-text-fill-color: var(--accento-1) !important;
 }
 
-/* Sostituzione globale colori testi Nutrizione */
+/* =========================================================================
+   REGOLA AUREA 2: SFONDO CHIARO = TESTO NERO ASSOLUTO
+   Risolve i pulsanti "SALVA SESSIONE", "Lunedì", "EQUILIBRATA", "COACH"
+   ========================================================================= */
+
+/* Imposta i colori di partenza/arrivo dei gradienti Tailwind a Giallo Acido */
+[data-theme="scuro"] .from-lime-400, [data-theme="scuro"] .from-cyan-400, [data-theme="scuro"] .from-orange-400, [data-theme="scuro"] .from-orange-500, [data-theme="scuro"] .from-indigo-400 { --tw-gradient-from: var(--accento-1) !important; }
+[data-theme="scuro"] .to-emerald-500, [data-theme="scuro"] .to-blue-500, [data-theme="scuro"] .to-rose-400, [data-theme="scuro"] .to-amber-300, [data-theme="scuro"] .to-indigo-600 { --tw-gradient-to: var(--accento-1) !important; }
+
+/* 
+   TRUCCO DI PRECISIONE PER "COACH" vs "Lunedì/SALVA":
+   Solo gli elementi SENZA testo trasparente diventano BLOCCHI Gialli con testo NERO.
+   Se un testo (come "COACH") usa text-transparent, il CSS si accorge e non lo riempie di giallo.
+*/
+[data-theme="scuro"] .bg-gradient-to-r:not(.text-transparent), 
+[data-theme="scuro"] .bg-gradient-to-br:not(.text-transparent), 
+[data-theme="scuro"] .bg-gradient-to-tr:not(.text-transparent), 
+[data-theme="scuro"] .accento-grad:not(.text-transparent) {
+  background: var(--accento-1) !important;
+  border: 1px solid var(--accento-1) !important;
+  color: #000000 !important; 
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Distruzione sistematica del text-white nei bottoni colorati solidi ("Lunedì", "SALVA SESSIONE") */
+[data-theme="scuro"] .bg-gradient-to-r:not(.text-transparent) *, 
+[data-theme="scuro"] .bg-gradient-to-br:not(.text-transparent) *,
+[data-theme="scuro"] .bg-gradient-to-tr:not(.text-transparent) *,
+[data-theme="scuro"] .accento-grad:not(.text-transparent) *,
+[data-theme="scuro"] .bg-lime-400 *, [data-theme="scuro"] .bg-orange-400 *, [data-theme="scuro"] .bg-cyan-500 *, [data-theme="scuro"] .bg-indigo-100 * {
+  color: #000000 !important; 
+  -webkit-text-fill-color: #000000 !important;
+  font-weight: 900 !important;
+}
+
+/* Le opzioni del select (Es. menu a tendina) tornano scure con testo bianco per leggibilità */
+[data-theme="scuro"] select option { background-color: #000000 !important; color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+
+/* =========================================================================
+   REGOLA AUREA 3: LA "MATRIOSKA" (Fasi Allenamento, Testi Neri vs Buchi Neri)
+   ========================================================================= */
+
+/* Box Grandi Fasi (Rosso, Azzurro, Arancione Piatti) */
+[data-theme="scuro"] .bg-orange-400\/15 { background-color: #FF5E00 !important; border: 2px solid #FF5E00 !important; }
+[data-theme="scuro"] .bg-cyan-400\/15 { background-color: #5E9CFF !important; border: 2px solid #5E9CFF !important; }
+[data-theme="scuro"] .bg-red-400\/15 { background-color: #FF003C !important; border: 2px solid #FF003C !important; }
+
+/* Testi diretti sulle fasi colorate = NERI ASSOLUTI (Risolve i label SET 1, SET 2 e i titoli) */
+[data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-red-400\/15 { color: #000000 !important; }
+[data-theme="scuro"] .bg-orange-400\/15 h3, [data-theme="scuro"] .bg-orange-400\/15 p, [data-theme="scuro"] .bg-orange-400\/15 span, [data-theme="scuro"] .bg-orange-400\/15 label,
+[data-theme="scuro"] .bg-cyan-400\/15 h3, [data-theme="scuro"] .bg-cyan-400\/15 p, [data-theme="scuro"] .bg-cyan-400\/15 span, [data-theme="scuro"] .bg-cyan-400\/15 label,
+[data-theme="scuro"] .bg-red-400\/15 h3, [data-theme="scuro"] .bg-red-400\/15 p, [data-theme="scuro"] .bg-red-400\/15 span, [data-theme="scuro"] .bg-red-400\/15 label {
+  color: #000000 !important; 
+  -webkit-text-fill-color: #000000 !important;
+  font-weight: 900 !important;
+}
+
+/* "I Buchi Neri": Crea uno sfondo nero netto per Input e Timer all'interno delle fasi */
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\],
+[data-theme="scuro"] .bg-orange-400\/15 input, [data-theme="scuro"] .bg-cyan-400\/15 input, [data-theme="scuro"] .bg-red-400\/15 input {
+  background-color: #000000 !important;
+  border: 1px solid #333333 !important;
+}
+
+/* E il testo dentro questi "Buchi Neri" torna magicamente BIANCO OTTICO (Risolve il box 3-4 serie) */
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] *,
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] *,
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] *,
+[data-theme="scuro"] .bg-orange-400\/15 input, [data-theme="scuro"] .bg-cyan-400\/15 input, [data-theme="scuro"] .bg-red-400\/15 input {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* I bottoni Timer ("Avvia Focus Timer") diventano Giallo Acido con bordo Giallo */
+[data-theme="scuro"] .bg-orange-400\/15 button.bg-\[var\(--velo-50\)\], [data-theme="scuro"] .bg-cyan-400\/15 button.bg-\[var\(--velo-50\)\], [data-theme="scuro"] .bg-red-400\/15 button.bg-\[var\(--velo-50\)\] {
+  color: var(--accento-1) !important; -webkit-text-fill-color: var(--accento-1) !important; border: 1px solid var(--accento-1) !important;
+}
+[data-theme="scuro"] .bg-orange-400\/15 button.bg-\[var\(--velo-50\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 button.bg-\[var\(--velo-50\)\] *, [data-theme="scuro"] .bg-red-400\/15 button.bg-\[var\(--velo-50\)\] * {
+  color: var(--accento-1) !important; -webkit-text-fill-color: var(--accento-1) !important;
+}
+[data-theme="scuro"] .bg-orange-400\/15 svg *, [data-theme="scuro"] .bg-cyan-400\/15 svg *, [data-theme="scuro"] .bg-red-400\/15 svg * { stroke: #000000 !important; }
+[data-theme="scuro"] .bg-orange-400\/15 button.bg-\[var\(--velo-50\)\] svg *, [data-theme="scuro"] .bg-cyan-400\/15 button.bg-\[var\(--velo-50\)\] svg *, [data-theme="scuro"] .bg-red-400\/15 button.bg-\[var\(--velo-50\)\] svg * { stroke: var(--accento-1) !important; }
+
+
+/* =========================================================================
+   4. FIX PIANO NUTRIZIONALE E DISPENSA
+   ========================================================================= */
+/* Sostituzione globale colori testi (Addio rosa, arancio e lime originale) */
 [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500, [data-theme="scuro"] .text-amber-500,
 [data-theme="scuro"] .hover\:text-orange-500:hover, [data-theme="scuro"] .group-hover\:text-orange-500:hover {
   color: var(--accento-1) !important; -webkit-text-fill-color: var(--accento-1) !important;
 }
 [data-theme="scuro"] .text-indigo-400 { color: var(--accento-2) !important; -webkit-text-fill-color: var(--accento-2) !important; }
 
-/* Sfondi colorati badge e pulsantini -> Giallo Acido solido */
+/* Badge e Pulsantini Dispensa -> Giallo Acido solido */
 [data-theme="scuro"] .bg-orange-400, [data-theme="scuro"] .bg-rose-400, [data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500 {
   background-color: var(--accento-1) !important; border-radius: 4px !important; color: #000000 !important;
 }
@@ -254,36 +273,39 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="scuro"] svg path[fill="#334155"], [data-theme="scuro"] svg rect[fill="#334155"], [data-theme="scuro"] svg circle[fill="#1e293b"] { fill: #27272a !important; }
 [data-theme="scuro"] #gradPrimary stop { stop-color: var(--accento-1) !important; }
 [data-theme="scuro"] svg circle[stroke="url(#gradPrimary)"] { stroke: var(--accento-1) !important; }
+
 [data-theme="scuro"] svg circle[stroke="#c084fc"], [data-theme="scuro"] svg circle[stroke="#60a5fa"], [data-theme="scuro"] svg circle[stroke="#818cf8"] { stroke: var(--accento-2) !important; }
 [data-theme="scuro"] svg circle[stroke="#38bdf8"], [data-theme="scuro"] svg circle[stroke="#a855f7"], [data-theme="scuro"] svg circle[stroke="#94a3b8"] { stroke: var(--accento-1) !important; }
 [data-theme="scuro"] #gradIndigo stop:first-child { stop-color: var(--accento-2) !important; }
 [data-theme="scuro"] #gradIndigo stop:last-child { stop-color: #000000 !important; }
 [data-theme="scuro"] .bg-slate-800 { background-color: #000000 !important; border: 1px solid #27272a !important; }
 
+
 /* =========================================================================
-   6. FIX ANIMAZIONE SVG INTRO (OMNIFIT)
+   6. FIX ANIMAZIONE SVG INTRO (OMNIFIT) E NEON RESIDUI
    ========================================================================= */
 [data-theme="scuro"] svg path[fill="#84cc16"], [data-theme="scuro"] svg tspan[fill="#84cc16"] { fill: var(--accento-1) !important; }
 [data-theme="scuro"] svg circle[stroke="#84cc16"], [data-theme="scuro"] svg path[stroke="#84cc16"] { stroke: var(--accento-1) !important; }
 [data-theme="scuro"] svg path[fill="#334155"], [data-theme="scuro"] svg polygon[fill="#334155"], [data-theme="scuro"] svg text[fill="#475569"] { fill: #ffffff !important; }
 
-/* =========================================================================
-   7. NEON (Invariato per non romperlo)
-   ========================================================================= */
-[data-theme="neon"] .text-slate-700, [data-theme="neon"] .text-slate-800 { color: var(--testo-forte) !important; }
-[data-theme="neon"] .text-slate-600 { color: var(--testo-medio) !important; }
-[data-theme="neon"] .text-slate-500 { color: var(--testo-debole) !important; }
-[data-theme="neon"] .text-slate-400, [data-theme="neon"] .text-slate-300 { color: var(--testo-tenue) !important; }
-[data-theme="neon"] .border-slate-200, [data-theme="neon"] .border-slate-300 { border-color: var(--bordo-tenue) !important; }
-[data-theme="neon"] .anim-pop { filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.12)); }
+[data-theme="neon"] svg path[fill="#84cc16"], [data-theme="neon"] svg tspan[fill="#84cc16"] { fill: var(--accento-1) !important; }
+[data-theme="neon"] svg circle[stroke="#84cc16"], [data-theme="neon"] svg path[stroke="#84cc16"] { stroke: var(--accento-1) !important; }
+[data-theme="neon"] svg path[fill="#334155"], [data-theme="neon"] svg polygon[fill="#334155"], [data-theme="neon"] svg text[fill="#475569"] { fill: var(--testo-forte) !important; }
+
 [data-theme="neon"] .text-cyan-500, [data-theme="neon"] .text-indigo-500, [data-theme="neon"] .text-lime-500, [data-theme="neon"] .text-lime-600, [data-theme="neon"] .text-blue-500, [data-theme="neon"] .text-orange-500, [data-theme="neon"] .text-rose-500, [data-theme="neon"] .text-purple-600, [data-theme="neon"] .text-red-500 { color: var(--accento-1) !important; }
 [data-theme="neon"] .text-indigo-400 { color: var(--accento-2) !important; }
 [data-theme="neon"] .bg-lime-400, [data-theme="neon"] .bg-lime-500, [data-theme="neon"] .bg-emerald-500, [data-theme="neon"] .bg-cyan-500, [data-theme="neon"] .bg-indigo-100, [data-theme="neon"] .bg-rose-500 { background-color: var(--accento-1) !important; }
 [data-theme="neon"] .bg-indigo-100 { color: #000 !important; }
+
+[data-theme="scuro"] .shadow-\[0_0_10px_\#00c6ff\], [data-theme="scuro"] .shadow-\[0_4px_10px_rgba\(16\,185\,129\,0\.3\)\], [data-theme="scuro"] .shadow-\[0_8px_15px_rgba\(16\,185\,129\,0\.3\)\] { box-shadow: none !important; }
+[data-theme="scuro"] .bg-\[\#00c6ff\] { background-color: var(--accento-1) !important; }
+[data-theme="scuro"] .text-\[\#00c6ff\] { color: var(--accento-1) !important; }
+
+[data-theme="scuro"] .border-lime-400, [data-theme="scuro"] .border-cyan-400 { border-color: var(--accento-1) !important; }
 [data-theme="neon"] .border-lime-400, [data-theme="neon"] .border-cyan-400 { border-color: var(--accento-1) !important; }
+[data-theme="scuro"] .ring-lime-400, [data-theme="scuro"] .ring-lime-500, [data-theme="scuro"] .ring-cyan-400 { --tw-ring-color: var(--accento-1) !important; }
 [data-theme="neon"] .ring-lime-400, [data-theme="neon"] .ring-lime-500, [data-theme="neon"] .ring-cyan-400 { --tw-ring-color: var(--accento-1) !important; }
+[data-theme="scuro"] .hover\:text-emerald-500:hover, [data-theme="scuro"] .hover\:text-cyan-500:hover, [data-theme="scuro"] .hover\:text-orange-500:hover { color: var(--accento-1) !important; }
 [data-theme="neon"] .hover\:text-emerald-500:hover, [data-theme="neon"] .hover\:text-cyan-500:hover { color: var(--accento-1) !important; }
+[data-theme="scuro"] .focus\:ring-emerald-400\/40:focus, [data-theme="scuro"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: transparent !important; }
 [data-theme="neon"] .focus\:ring-emerald-400\/40:focus, [data-theme="neon"] .focus\:ring-cyan-400\/40:focus { --tw-ring-color: var(--accento-glow) !important; }
-[data-theme="neon"] svg path[fill="#84cc16"], [data-theme="neon"] svg tspan[fill="#84cc16"] { fill: var(--accento-1) !important; }
-[data-theme="neon"] svg circle[stroke="#84cc16"], [data-theme="neon"] svg path[stroke="#84cc16"] { stroke: var(--accento-1) !important; }
-[data-theme="neon"] svg path[fill="#334155"], [data-theme="neon"] svg polygon[fill="#334155"], [data-theme="neon"] svg text[fill="#475569"] { fill: var(--testo-forte) !important; }
