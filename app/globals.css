@@ -120,7 +120,6 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 
 /* =========================================================================
    REGOLA AUREA 1: SFONDO SCURO = TESTO BIANCO ASSOLUTO
-   Risolve il problema del box "Digiuno 16:8" e dei testi invisibili
    ========================================================================= */
 [data-theme="scuro"] .text-slate-700, 
 [data-theme="scuro"] .text-slate-800, 
@@ -162,18 +161,10 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 
 /* =========================================================================
    REGOLA AUREA 2: SFONDO CHIARO = TESTO NERO ASSOLUTO
-   Risolve i pulsanti "SALVA SESSIONE", "Lunedì", "EQUILIBRATA", "COACH"
    ========================================================================= */
-
-/* Imposta i colori di partenza/arrivo dei gradienti Tailwind a Giallo Acido */
 [data-theme="scuro"] .from-lime-400, [data-theme="scuro"] .from-cyan-400, [data-theme="scuro"] .from-orange-400, [data-theme="scuro"] .from-orange-500, [data-theme="scuro"] .from-indigo-400 { --tw-gradient-from: var(--accento-1) !important; }
 [data-theme="scuro"] .to-emerald-500, [data-theme="scuro"] .to-blue-500, [data-theme="scuro"] .to-rose-400, [data-theme="scuro"] .to-amber-300, [data-theme="scuro"] .to-indigo-600 { --tw-gradient-to: var(--accento-1) !important; }
 
-/* 
-   TRUCCO DI PRECISIONE PER "COACH" vs "Lunedì/SALVA":
-   Solo gli elementi SENZA testo trasparente diventano BLOCCHI Gialli con testo NERO.
-   Se un testo (come "COACH") usa text-transparent, il CSS si accorge e non lo riempie di giallo.
-*/
 [data-theme="scuro"] .bg-gradient-to-r:not(.text-transparent), 
 [data-theme="scuro"] .bg-gradient-to-br:not(.text-transparent), 
 [data-theme="scuro"] .bg-gradient-to-tr:not(.text-transparent), 
@@ -184,7 +175,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   -webkit-text-fill-color: #000000 !important;
 }
 
-/* Distruzione sistematica del text-white nei bottoni colorati solidi ("Lunedì", "SALVA SESSIONE") */
+/* Distruzione del testo bianco nei bottoni e nei badge chiari */
 [data-theme="scuro"] .bg-gradient-to-r:not(.text-transparent) *, 
 [data-theme="scuro"] .bg-gradient-to-br:not(.text-transparent) *,
 [data-theme="scuro"] .bg-gradient-to-tr:not(.text-transparent) *,
@@ -195,7 +186,6 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   font-weight: 900 !important;
 }
 
-/* Le opzioni del select (Es. menu a tendina) tornano scure con testo bianco per leggibilità */
 [data-theme="scuro"] select option { background-color: #000000 !important; color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
 
 /* =========================================================================
@@ -207,7 +197,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="scuro"] .bg-cyan-400\/15 { background-color: #5E9CFF !important; border: 2px solid #5E9CFF !important; }
 [data-theme="scuro"] .bg-red-400\/15 { background-color: #FF003C !important; border: 2px solid #FF003C !important; }
 
-/* Testi diretti sulle fasi colorate = NERI ASSOLUTI (Risolve i label SET 1, SET 2 e i titoli) */
+/* Testi diretti sulle fasi colorate = NERI ASSOLUTI */
 [data-theme="scuro"] .bg-orange-400\/15, [data-theme="scuro"] .bg-cyan-400\/15, [data-theme="scuro"] .bg-red-400\/15 { color: #000000 !important; }
 [data-theme="scuro"] .bg-orange-400\/15 h3, [data-theme="scuro"] .bg-orange-400\/15 p, [data-theme="scuro"] .bg-orange-400\/15 span, [data-theme="scuro"] .bg-orange-400\/15 label,
 [data-theme="scuro"] .bg-cyan-400\/15 h3, [data-theme="scuro"] .bg-cyan-400\/15 p, [data-theme="scuro"] .bg-cyan-400\/15 span, [data-theme="scuro"] .bg-cyan-400\/15 label,
@@ -217,22 +207,79 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   font-weight: 900 !important;
 }
 
-/* "I Buchi Neri": Crea uno sfondo nero netto per Input e Timer all'interno delle fasi */
+/* "I Buchi Neri": Crea uno sfondo nero netto per Input e Animazioni all'interno delle fasi */
 [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\],
 [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\],
 [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-30\)\], [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-40\)\], [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\],
 [data-theme="scuro"] .bg-orange-400\/15 input, [data-theme="scuro"] .bg-cyan-400\/15 input, [data-theme="scuro"] .bg-red-400\/15 input {
   background-color: #000000 !important;
-  border: 1px solid #333333 !important;
+  border: 1px solid #3f3f46 !important;
 }
 
-/* E il testo dentro questi "Buchi Neri" torna magicamente BIANCO OTTICO (Risolve il box 3-4 serie) */
+/* Testi dentro i "Buchi Neri" tornano BIANCHI OTTICI */
 [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] *,
 [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] *,
 [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-30\)\] *, [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-40\)\] *, [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] *,
 [data-theme="scuro"] .bg-orange-400\/15 input, [data-theme="scuro"] .bg-cyan-400\/15 input, [data-theme="scuro"] .bg-red-400\/15 input {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
+}
+
+/* =========================================================================
+   *** FIX DEFINITIVO OMINI SVG (ANIMAZIONI WORKOUT) ***
+   ========================================================================= */
+/* Siccome gli omini stanno DENTRO i buchi neri, le linee scure della palestra diventano Bianche, e l'omino diventa Giallo Acido! */
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#333"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#444"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#555"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#222"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#333"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#444"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#555"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#222"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#333"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#444"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#555"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#222"] {
+  stroke: #ffffff !important;
+}
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#333"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#444"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#555"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#222"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#333"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#444"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#555"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#222"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#333"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#444"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#555"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#222"] {
+  fill: #ffffff !important;
+}
+
+/* L'Omino colorato si accende di Giallo Acido */
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#f97316"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#3b82f6"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#c2410c"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#1d4ed8"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#f97316"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#3b82f6"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#c2410c"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#1d4ed8"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#f97316"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#3b82f6"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#c2410c"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [stroke="#1d4ed8"] {
+  stroke: var(--accento-1) !important;
+}
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#f97316"],
+[data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#3b82f6"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#f97316"],
+[data-theme="scuro"] .bg-cyan-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#3b82f6"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#f97316"],
+[data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] div > svg [fill="#3b82f6"] {
+  fill: var(--accento-1) !important;
 }
 
 /* I bottoni Timer ("Avvia Focus Timer") diventano Giallo Acido con bordo Giallo */
@@ -242,14 +289,13 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="scuro"] .bg-orange-400\/15 button.bg-\[var\(--velo-50\)\] *, [data-theme="scuro"] .bg-cyan-400\/15 button.bg-\[var\(--velo-50\)\] *, [data-theme="scuro"] .bg-red-400\/15 button.bg-\[var\(--velo-50\)\] * {
   color: var(--accento-1) !important; -webkit-text-fill-color: var(--accento-1) !important;
 }
-[data-theme="scuro"] .bg-orange-400\/15 svg *, [data-theme="scuro"] .bg-cyan-400\/15 svg *, [data-theme="scuro"] .bg-red-400\/15 svg * { stroke: #000000 !important; }
 [data-theme="scuro"] .bg-orange-400\/15 button.bg-\[var\(--velo-50\)\] svg *, [data-theme="scuro"] .bg-cyan-400\/15 button.bg-\[var\(--velo-50\)\] svg *, [data-theme="scuro"] .bg-red-400\/15 button.bg-\[var\(--velo-50\)\] svg * { stroke: var(--accento-1) !important; }
 
 
 /* =========================================================================
    4. FIX PIANO NUTRIZIONALE E DISPENSA
    ========================================================================= */
-/* Sostituzione globale colori testi (Addio rosa, arancio e lime originale) */
+/* Sostituzione globale colori testi */
 [data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500, [data-theme="scuro"] .text-amber-500,
 [data-theme="scuro"] .hover\:text-orange-500:hover, [data-theme="scuro"] .group-hover\:text-orange-500:hover {
   color: var(--accento-1) !important; -webkit-text-fill-color: var(--accento-1) !important;
@@ -282,12 +328,15 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 
 
 /* =========================================================================
-   6. FIX ANIMAZIONE SVG INTRO (OMNIFIT) E NEON RESIDUI
+   6. FIX ANIMAZIONE SVG INTRO (OMNIFIT)
    ========================================================================= */
 [data-theme="scuro"] svg path[fill="#84cc16"], [data-theme="scuro"] svg tspan[fill="#84cc16"] { fill: var(--accento-1) !important; }
 [data-theme="scuro"] svg circle[stroke="#84cc16"], [data-theme="scuro"] svg path[stroke="#84cc16"] { stroke: var(--accento-1) !important; }
 [data-theme="scuro"] svg path[fill="#334155"], [data-theme="scuro"] svg polygon[fill="#334155"], [data-theme="scuro"] svg text[fill="#475569"] { fill: #ffffff !important; }
 
+/* =========================================================================
+   7. NEON & PULIZIA FINALE 
+   ========================================================================= */
 [data-theme="neon"] svg path[fill="#84cc16"], [data-theme="neon"] svg tspan[fill="#84cc16"] { fill: var(--accento-1) !important; }
 [data-theme="neon"] svg circle[stroke="#84cc16"], [data-theme="neon"] svg path[stroke="#84cc16"] { stroke: var(--accento-1) !important; }
 [data-theme="neon"] svg path[fill="#334155"], [data-theme="neon"] svg polygon[fill="#334155"], [data-theme="neon"] svg text[fill="#475569"] { fill: var(--testo-forte) !important; }
