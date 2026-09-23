@@ -1,6 +1,49 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
+// Se il primo modello è sovraccarico (503), si tenta con questi in ordine.
+const MODEL_FALLBACK_CHAIN = ["gemini-3.6-flash", "gemini-2.5-flash", "gemini-2.0-flash"];
+const MAX_RETRIES_PER_MODEL = 2;
+const RETRY_BASE_DELAY_MS = 700;
+
+function isOverloadedError(error: any) {
+  const msg = String(error?.message || "");
+  return error?.status === 503 || msg.includes("503") || msg.toLowerCase().includes("overloaded") || msg.toLowerCase().includes("high demand");
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function generateWithRetryAndFallback(genAI: GoogleGenerativeAI, promptParts: any[]) {
+  let lastError: any = null;
+
+  for (const modelName of MODEL_FALLBACK_CHAIN) {
+    const model = genAI.getGenerativeModel({ model: modelName });
+
+    for (let attempt = 0; attempt < MAX_RETRIES_PER_MODEL; attempt++) {
+      try {
+        const result = await model.generateContent(promptParts);
+        return await result.response;
+      } catch (error: any) {
+        lastError = error;
+
+        // Errore non transitorio (es. chiave errata, contenuto bloccato): non ha senso ritentare/fallback.
+        if (!isOverloadedError(error)) {
+          throw error;
+        }
+
+        // Ultimo tentativo su questo modello: passiamo al successivo della catena.
+        if (attempt < MAX_RETRIES_PER_MODEL - 1) {
+          await sleep(RETRY_BASE_DELAY_MS * (attempt + 1));
+        }
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 export async function POST(req: Request) {
   try {
     const { message, context, file } = await req.json();
@@ -11,7 +54,6 @@ export async function POST(req: Request) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 
     // Prepariamo la richiesta base
     const promptParts: any[] = [
@@ -28,13 +70,17 @@ export async function POST(req: Request) {
       });
     }
 
-    const result = await model.generateContent(promptParts);
-    const response = await result.response;
+    const response = await generateWithRetryAndFallback(genAI, promptParts);
     const text = response.text();
 
     return NextResponse.json({ reply: text });
   } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ reply: `Errore di Google: ${error.message}` }, { status: 500 });
+
+    const reply = isOverloadedError(error)
+      ? "⚠️ Il Coach AI è momentaneamente sovraccarico (troppe richieste su Google in questo momento). Riprova tra qualche secondo."
+      : `Errore di Google: ${error.message}`;
+
+    return NextResponse.json({ reply }, { status: 503 });
   }
 }
