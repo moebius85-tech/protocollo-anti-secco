@@ -149,30 +149,38 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   --tw-gradient-to: var(--accento-1) !important; /* Diventa un Giallo solido */
 }
 
-/* Assicuriamoci che i testi dentro i bottoni colorati diventino NERI */
-[data-theme="scuro"] button.bg-gradient-to-r, 
-[data-theme="scuro"] button.bg-gradient-to-br,
-[data-theme="scuro"] div.bg-gradient-to-r,
-[data-theme="scuro"] div.bg-gradient-to-br,
-[data-theme="scuro"] select.bg-gradient-to-r,
-[data-theme="scuro"] select.bg-gradient-to-br,
-[data-theme="scuro"] button.accento-grad {
+/* 
+   TRUCCO DI PRECISIONE: Distrugge i testi bianchi solo nei bottoni e nei badge chiari.
+   Forza al Nero Assoluto per sfondare il giallo acido (Fix per "EQUILIBRATA", "CUSTOM", ecc.)
+*/
+[data-theme="scuro"] button.bg-gradient-to-r:not(.text-transparent), 
+[data-theme="scuro"] button.bg-gradient-to-br:not(.text-transparent),
+[data-theme="scuro"] div.bg-gradient-to-r:not(.text-transparent),
+[data-theme="scuro"] div.bg-gradient-to-br:not(.text-transparent),
+[data-theme="scuro"] select.bg-gradient-to-r:not(.text-transparent),
+[data-theme="scuro"] select.bg-gradient-to-br:not(.text-transparent),
+[data-theme="scuro"] button.accento-grad:not(.text-transparent) {
   color: #000000 !important; 
-  -webkit-text-fill-color: #000000 !important; /* Forza il nero se c'era un text-clip */
+  -webkit-text-fill-color: #000000 !important;
 }
-[data-theme="scuro"] button.bg-gradient-to-r *, 
-[data-theme="scuro"] button.bg-gradient-to-br *,
-[data-theme="scuro"] div.bg-gradient-to-r *,
-[data-theme="scuro"] div.bg-gradient-to-br *,
-[data-theme="scuro"] select.bg-gradient-to-r *,
-[data-theme="scuro"] select.bg-gradient-to-br *,
+
+[data-theme="scuro"] button.bg-gradient-to-r:not(.text-transparent) *, 
+[data-theme="scuro"] button.bg-gradient-to-br:not(.text-transparent) *,
+[data-theme="scuro"] div.bg-gradient-to-r:not(.text-transparent) *,
+[data-theme="scuro"] div.bg-gradient-to-br:not(.text-transparent) *,
+[data-theme="scuro"] select.bg-gradient-to-r:not(.text-transparent) *,
+[data-theme="scuro"] select.bg-gradient-to-br:not(.text-transparent) *,
 [data-theme="scuro"] .from-orange-500 * {
   color: #000000 !important; 
+  -webkit-text-fill-color: #000000 !important;
   font-weight: 900 !important;
 }
 
+/* Eccezione: Il testo di "EQUILIBRATA" nel dropdown menù (le opzioni di scelta) restano scure per la lettura */
+[data-theme="scuro"] select option { background-color: #000000 !important; color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+
 /* =========================================================================
-   2. RISOLUZIONE BUG CASELLE FASI ALLENAMENTO (Colori Distinti)
+   2. RISOLUZIONE BUG CASELLE FASI ALLENAMENTO E TESTI "BUCO NERO"
    ========================================================================= */
 /* Fase 1: Arancione Piatto Brutale */
 [data-theme="scuro"] .bg-orange-400\/15 {
@@ -187,17 +195,22 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   background-color: #FF003C !important; border: 2px solid #FF003C !important;
 }
 
-/* I testi direttamente sulla card colorata diventano neri */
-[data-theme="scuro"] .bg-orange-400\/15 h3, [data-theme="scuro"] .bg-orange-400\/15 p, [data-theme="scuro"] .bg-orange-400\/15 span, [data-theme="scuro"] .bg-orange-400\/15 label,
-[data-theme="scuro"] .bg-cyan-400\/15 h3, [data-theme="scuro"] .bg-cyan-400\/15 p, [data-theme="scuro"] .bg-cyan-400\/15 span, [data-theme="scuro"] .bg-cyan-400\/15 label,
-[data-theme="scuro"] .bg-red-400\/15 h3, [data-theme="scuro"] .bg-red-400\/15 p, [data-theme="scuro"] .bg-red-400\/15 span, [data-theme="scuro"] .bg-red-400\/15 label {
+/* FIX: I testi DIRETTAMENTE sulla card colorata ("SET 2", "Fase 1") diventano Neri e in Grassetto */
+[data-theme="scuro"] .bg-orange-400\/15 > div > *, [data-theme="scuro"] .bg-cyan-400\/15 > div > *, [data-theme="scuro"] .bg-red-400\/15 > div > *,
+[data-theme="scuro"] .bg-orange-400\/15 label, [data-theme="scuro"] .bg-cyan-400\/15 label, [data-theme="scuro"] .bg-red-400\/15 label,
+[data-theme="scuro"] .bg-orange-400\/15 span, [data-theme="scuro"] .bg-cyan-400\/15 span, [data-theme="scuro"] .bg-red-400\/15 span,
+[data-theme="scuro"] .bg-orange-400\/15 p, [data-theme="scuro"] .bg-cyan-400\/15 p, [data-theme="scuro"] .bg-red-400\/15 p,
+[data-theme="scuro"] .bg-orange-400\/15 h3, [data-theme="scuro"] .bg-cyan-400\/15 h3, [data-theme="scuro"] .bg-red-400\/15 h3 {
   color: #000000 !important; 
+  -webkit-text-fill-color: #000000 !important;
   font-weight: 900 !important;
 }
 
-/* Le "scatole scure" (rep box, badge "Ultima: Xkg") annidate dentro le card colorate
-   devono restare chiare-su-nero: la regola sopra (0,1,1) altrimenti vince su quella
-   della sezione 3 (0,1,0) e forza testo nero su sfondo quasi nero → invisibile */
+/* 
+   FIX "BUCO NERO" (Box interni Rep e Set):
+   Le "scatole scure" annidate dentro le card colorate devono restare nere
+   ma il testo dentro deve essere Bianco (o Giallo) in modo da risultare leggibilissimo.
+*/
 [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-30\)\],
 [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-40\)\],
 [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\],
@@ -208,10 +221,10 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-40\)\],
 [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] {
   background-color: #111111 !important;
-  color: #ffffff !important;
-  font-weight: 900 !important;
   border: 1px solid #333333 !important;
 }
+
+/* Distruggiamo i testi grigi (slate-500/600) e li forziamo a Bianco Ottico */
 [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-30\)\] *,
 [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-40\)\] *,
 [data-theme="scuro"] .bg-orange-400\/15 .bg-\[var\(--velo-50\)\] *,
@@ -222,23 +235,27 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-40\)\] *,
 [data-theme="scuro"] .bg-red-400\/15 .bg-\[var\(--velo-50\)\] * {
   color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
-/* MA gli input box dentro le card colorate tornano neri con testo Giallo Acido! */
+/* Gli input box dentro le card colorate tornano neri con testo Giallo Acido! */
 [data-theme="scuro"] .bg-orange-400\/15 input, [data-theme="scuro"] .bg-orange-400\/15 button,
 [data-theme="scuro"] .bg-cyan-400\/15 input, [data-theme="scuro"] .bg-cyan-400\/15 button,
 [data-theme="scuro"] .bg-red-400\/15 input, [data-theme="scuro"] .bg-red-400\/15 button {
   background-color: #000000 !important;
   color: var(--accento-1) !important;
-  border: 1px solid #000000 !important;
+  -webkit-text-fill-color: var(--accento-1) !important;
+  border: 1px solid #333333 !important;
 }
 [data-theme="scuro"] .bg-orange-400\/15 button *, [data-theme="scuro"] .bg-cyan-400\/15 button *, [data-theme="scuro"] .bg-red-400\/15 button * {
   color: var(--accento-1) !important;
+  -webkit-text-fill-color: var(--accento-1) !important;
 }
 
 /* =========================================================================
-   3. RISOLUZIONE BUG TESTI INVISIBILI NEGLI INPUT E BOX SCURI
+   3. RISOLUZIONE BUG TESTI INVISIBILI NEGLI INPUT E BOX SCURI (App Generale)
    ========================================================================= */
+/* Come per le fasi, tutto ciò che si trova dentro a var(--velo) deve avere scritte bianche e leggibili */
 [data-theme="scuro"] .bg-\[var\(--velo-30\)\],
 [data-theme="scuro"] .bg-\[var\(--velo-40\)\],
 [data-theme="scuro"] .bg-\[var\(--velo-50\)\] {
@@ -250,36 +267,50 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 [data-theme="scuro"] .bg-\[var\(--velo-40\)\] *,
 [data-theme="scuro"] .bg-\[var\(--velo-50\)\] * {
   color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 /* =========================================================================
    4. RISOLUZIONE BUG PIANO NUTRIZIONALE E CLASSI HARDCODATE
    ========================================================================= */
-/* Testi colorati diventano Giallo Acido o Azzurro */
-[data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500 {
+/* Testi colorati (come le P, C, F o i tasti swap arancioni) diventano Giallo Acido o Azzurro */
+[data-theme="scuro"] .text-orange-500, [data-theme="scuro"] .text-rose-500, [data-theme="scuro"] .text-cyan-500, [data-theme="scuro"] .text-lime-500, [data-theme="scuro"] .text-lime-600, [data-theme="scuro"] .text-blue-500, [data-theme="scuro"] .text-purple-600, [data-theme="scuro"] .text-red-500, [data-theme="scuro"] .text-amber-500,
+[data-theme="scuro"] .hover\:text-orange-500:hover, [data-theme="scuro"] .group-hover\:text-orange-500:hover {
   color: var(--accento-1) !important; 
+  -webkit-text-fill-color: var(--accento-1) !important;
 }
-[data-theme="scuro"] .text-indigo-400 { color: var(--accento-2) !important; }
+[data-theme="scuro"] .text-indigo-400 { color: var(--accento-2) !important; -webkit-text-fill-color: var(--accento-2) !important;}
 
-/* Sfondi colorati (Linee laterali, box intake target) */
+/* Sfondi colorati (Linee laterali, box intake target) -> Diventano Giallo Acido Solido */
 [data-theme="scuro"] .bg-orange-400, [data-theme="scuro"] .bg-rose-400, [data-theme="scuro"] .bg-lime-400, [data-theme="scuro"] .bg-lime-500, [data-theme="scuro"] .bg-emerald-500, [data-theme="scuro"] .bg-cyan-500, [data-theme="scuro"] .bg-blue-500 {
   background-color: var(--accento-1) !important;
   color: #000000 !important;
 }
 [data-theme="scuro"] .bg-indigo-100 { background-color: var(--accento-2) !important; color: #000000 !important; }
 
-/* Bordi Arancioni/Rossi (Rings del piano nutrizionale) */
+/* Bordi Arancioni/Rossi (Rings del piano nutrizionale, es. bordi delle card PostWorkout) */
 [data-theme="scuro"] .ring-orange-300\/50, 
-[data-theme="scuro"] .ring-rose-300\/50 {
+[data-theme="scuro"] .ring-rose-300\/50,
+[data-theme="scuro"] .border-orange-400,
+[data-theme="scuro"] .border-rose-400 {
   --tw-ring-color: transparent !important;
   box-shadow: none !important;
   border: 1px solid var(--accento-1) !important;
 }
 
-/* Rimuove lo sfondo rossiccio trasparente dal box digiuno */
+/* FIX DIGIUNO 16:8: Rimuove lo sfondo rossiccio trasparente dal box digiuno trasformandolo in un blocco nero e forzando il testo bianco */
 [data-theme="scuro"] .from-orange-50\/50 {
   background-image: none !important;
   background-color: #111111 !important;
+  border: 1px solid #333333 !important;
+}
+[data-theme="scuro"] .from-orange-50\/50 *, [data-theme="scuro"] .to-white * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+/* Salva il badge arancione "16:8" facendolo diventare Giallo Acido */
+[data-theme="scuro"] .from-orange-50\/50 span.text-orange-500 {
+  color: var(--accento-1) !important; -webkit-text-fill-color: var(--accento-1) !important;
 }
 
 /* =========================================================================
