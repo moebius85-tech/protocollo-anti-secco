@@ -1635,21 +1635,32 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
 
             {/* INTERRUTTORE USO INTEGRATORI */}
-          <div className="flex justify-between items-center bg-[var(--superficie)] p-5 rounded-[1.5rem] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] mt-6 mb-2">
-             <div className="flex flex-col pr-4">
-                <div className="flex items-center gap-2 mb-1.5">
-                   <span className="text-[11px] text-slate-600 uppercase font-black tracking-widest">Protocollo Integratori</span>
-                </div>
-                <p className="text-[10px] text-slate-500 font-bold leading-snug">
-                   {usaIntegratori 
-                     ? "Attivo. Consigli specifici e macro liquidi inseriti." 
-                     : "Disattivo. Macro spostati 100% su cibo solido."}
-                </p>
-             </div>
-             <button onClick={() => setUsaIntegratori(!usaIntegratori)} className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer shrink-0 ${usaIntegratori ? 'bg-gradient-to-r from-orange-400 to-rose-400' : 'bg-slate-300'}`}>
-               <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] ${usaIntegratori ? 'translate-x-8' : 'translate-x-1'}`}></div>
-             </button>
-          </div>
+<div className={`flex flex-col p-5 rounded-[1.5rem] mt-6 mb-2 transition-all duration-300 ${
+  usaIntegratori 
+    ? 'brutalist-lime anim-pop' 
+    : 'bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)]'
+}`}>
+  <div className="flex justify-between items-center pr-4 mb-1.5">
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] text-slate-600 uppercase font-black tracking-widest">Protocollo Integratori</span>
+    </div>
+    <button 
+      onClick={() => setUsaIntegratori(!usaIntegratori)}
+      className={`w-14 h-7 rounded-full relative transition-all shadow-[inset_3px_3px_6px_rgba(0,0,0,0.2)] border-none cursor-pointer shrink-0 toggle-bg ${
+        usaIntegratori ? 'bg-emerald-500' : ''
+      }`}
+    >
+      <div className={`w-5 h-5 bg-white rounded-full absolute top-[4px] transition-transform shadow-[0_2px_5px_rgba(0,0,0,0.2)] toggle-dot ${
+        usaIntegratori ? 'translate-x-8' : 'translate-x-1'
+      }`}></div>
+    </button>
+  </div>
+  <p className="text-[10px] text-slate-500 font-bold leading-snug">
+    {usaIntegratori 
+      ? "Attivo. Consigli specifici e macro liquidi inseriti." 
+      : "Disattivo. Macro spostati 100% su cibo solido."}
+  </p>
+</div>
             
             
             {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
@@ -1678,16 +1689,23 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 if (blocco.isIntra) {
                   if (blocco.titolo === "⏱️ DIGIUNO 16:8") {
                     return (
-                      <div key={`intra-${idx}`} className={`bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
-                        <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
-                        <div className="flex justify-between items-start mb-4">
-                          <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
-                        </div>
-                        <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">
-                         {blocco.descrizione}
-                       </p>
-                      </div>
-                    );
+  <div key={`intra-${idx}`} className="p-4 rounded-2xl border mb-4 brutalist-viola transition-all duration-300">
+    <div className="flex items-center gap-3 mb-2">
+      {/* Badge Icona Cerchiato */}
+      <div className="w-8 h-8 flex items-center justify-center icon-badge">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      {/* Titolo dinamico ("⏱️ DIGIUNO 16:8") */}
+      <h4 className="font-bold text-slate-700">{blocco.titolo}</h4>
+    </div>
+    {/* Descrizione dinamica che va a capo automaticamente */}
+    <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed ml-11">
+      {blocco.descrizione}
+    </p>
+  </div>
+);
                   } else {
                     const cat = 'Integrazione';
                     const isCustom = pastiCustom[cat]?.attivo;
