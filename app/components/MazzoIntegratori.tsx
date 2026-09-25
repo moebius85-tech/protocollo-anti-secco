@@ -7,7 +7,7 @@ export type OffProduct = {
   id: string;
   tipologia: string;
   marchio: string;
-  nome: string; // Usato per la UI della carta
+  nome: string; 
   cho: string;
   pro: string;
   fat: string;
@@ -18,7 +18,6 @@ export type OffProduct = {
 
 type Ruolo = 'front' | 'past' | 'future' | 'exiting';
 
-// --- LOGICA COLORI DELLA LINGUETTA LATERALE ---
 function interpolaColore(hexA: string, hexB: string, progress: number) {
   const p = Math.min(Math.max(progress, 0), 1);
   const a = parseInt(hexA.slice(1), 16);
@@ -175,16 +174,18 @@ function Carta({
       onDragEnd={isFront ? handleDragEnd : undefined}
       onPanEnd={!isFront ? handlePanEnd : undefined}
     >
-      {/* RIQUADRO IMMAGINE/ICONA NEUMORFICO ORIGINALE */}
-      <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6 text-4xl pointer-events-none overflow-hidden relative">
+      {/* RIQUADRO NEUMORFICO ORIGINALE */}
+      <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6 text-4xl pointer-events-none overflow-hidden relative shrink-0">
         {card.immagine ? (
-           <img src={card.immagine} alt={card.nome} className="w-full h-full object-contain p-2 mix-blend-multiply" />
+           <div className="w-full h-full bg-white flex items-center justify-center p-2">
+             <img src={card.immagine} alt={card.nome} className="max-h-full max-w-full object-contain mix-blend-multiply" />
+           </div>
         ) : (
            <span>{card.icon || '💊'}</span>
         )}
       </div>
 
-      <h3 className="text-slate-800 font-black tracking-widest text-[16px] text-center uppercase pointer-events-none leading-tight line-clamp-2">
+      <h3 className="text-slate-800 font-black tracking-widest text-[15px] text-center uppercase pointer-events-none leading-tight line-clamp-2 w-full px-2">
         {card.nome}
       </h3>
       <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
@@ -209,17 +210,21 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
   const [exitingId, setExitingId] = useState<string | null>(null);
   const [direzioneUscita, setDirezioneUscita] = useState<1 | -1>(1);
 
-  // FETCH LIVE DA OPEN FOOD FACTS
+  // FETCH LIVE CON RETE DI SICUREZZA (ANTI-CRASH)
   useEffect(() => {
     async function fetchDaOpenFoodFacts() {
       setLoading(true);
+      let risultatiFormattati: OffProduct[] = [];
+
       try {
         const termineRicerca = categoria.toLowerCase().replace("l-", "").replace("d3", "d").trim(); 
         const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${termineRicerca}&search_simple=1&action=process&json=1&page_size=10`);
         const data = await res.json();
         
-        // Mappa i prodotti trovati
-        const risultati: OffProduct[] = data.products
+        // Verifica se l'API ha restituito davvero dei prodotti
+        const prodottiTrovati = Array.isArray(data.products) ? data.products : [];
+
+        risultatiFormattati = prodottiTrovati
           .filter((p: any) => p.image_front_url && p.product_name) 
           .slice(0, 8) 
           .map((p: any) => ({
@@ -231,22 +236,33 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
             cho: Math.round(p.nutriments?.carbohydrates_100g || 0).toString(),
             pro: Math.round(p.nutriments?.proteins_100g || 0).toString(),
             fat: Math.round(p.nutriments?.fat_100g || 0).toString(),
-            tag: 'ONLINE DATABASE'
+            tag: 'DATABASE ONLINE'
           }));
-
-        // LA TUA CARTA SCANNER A.I. ORIGINALE ALLA FINE
-        const customCard: OffProduct = { 
-          id: 'custom', tipologia: categoria, marchio: 'Custom', 
-          nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '📸', 
-          cho: '0', pro: '0', fat: '0' 
-        };
-
-        setCards([...risultati, customCard]);
       } catch (err) {
-        console.error("Errore fetch OFF:", err);
-        // Fallback
-        setCards([{ id: 'custom', tipologia: categoria, marchio: 'Custom', nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '📸', cho: '0', pro: '0', fat: '0' }]);
+        console.error("Errore fetch OFF (il sistema userà il fallback):", err);
       }
+
+      // SE IL DATABASE NON TROVA NULLA O VA IN ERRORE, CREA UNA CARTA GENERICA 
+      if (risultatiFormattati.length === 0) {
+        risultatiFormattati.push({
+          id: `generic-${Date.now()}`,
+          tipologia: categoria,
+          marchio: 'Generico',
+          nome: categoria.toUpperCase(),
+          tag: 'SCHEDA GENERICA',
+          icon: '💊',
+          cho: '0', pro: '0', fat: '0'
+        });
+      }
+
+      // LA TUA CARTA SCANNER A.I. ORIGINALE SEMPRE ALLA FINE
+      const customCard: OffProduct = { 
+        id: 'custom', tipologia: categoria, marchio: 'Custom', 
+        nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '📸', 
+        cho: '0', pro: '0', fat: '0' 
+      };
+
+      setCards([...risultatiFormattati, customCard]);
       setLoading(false);
     }
 
@@ -284,7 +300,6 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
     setExitingId(null);
     setDragProgress(0);
 
-    // LOGICA DI SALVATAGGIO O SCARTO
     if (direzioneUscita === 1 && swipedCard) {
       if (swipedCard.id === 'custom') {
         onCustom(); 
@@ -302,7 +317,7 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
   if (loading) {
     return (
       <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
-         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse">
+         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse border border-[var(--bordo-tenue)]">
             <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6">
                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
@@ -315,7 +330,7 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
   return (
     <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
       
-      {/* LINGUETTA LATERALE DISPENSA */}
+      {/* LINGUETTA LATERALE DISPENSA ARANCIONE */}
       <div
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem]"
         style={{
@@ -336,7 +351,7 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         </span>
       </div>
 
-      <button onClick={onClose} className="absolute top-0 right-4 text-slate-400 hover:text-white text-3xl font-bold z-[100] transition-colors bg-transparent border-none">
+      <button onClick={onClose} className="absolute top-0 right-4 text-slate-400 hover:text-white text-3xl font-bold z-[100] transition-colors bg-transparent border-none cursor-pointer">
         &times;
       </button>
 
