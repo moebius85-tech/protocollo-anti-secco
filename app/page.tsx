@@ -2550,33 +2550,39 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
       {/* === MODALE MAZZO 3D INTEGRATORI CON OPEN FOOD FACTS === */}
       {mazzoAttivo && (
-        <div className="fixed inset-0 bg-[var(--superficie)]/95 backdrop-blur-xl flex items-center justify-center z-[9990] p-4">
-          <MazzoIntegratori 
-            categoria={mazzoAttivo} 
-            onClose={() => setMazzoAttivo(null)}
-            onSave={(item) => {
-              // Salva direttamente nella dispensa globale
-              setDispensa(prev => [{
-                id: item.id,
-                nome: item.marchio, // Salviamo il marchio reale come nome
-                tipologia: item.tipologia,
-                cho: item.cho, 
-                pro: item.pro, 
-                fat: item.fat,
-                tipo: 'integratore',
-                immagine: item.immagine
-              }, ...prev]);
-              
-              // Chiudiamo il mazzo e diamo feedback visivo
-              setMazzoAttivo(null);
-              alert(`${item.marchio} aggiunto alla tua Dispensa!`);
-            }}
-            onCustom={() => {
-               // Chiude il mazzo e apre la ricerca AI testuale/fotografica
-               setMazzoAttivo(null);
-               setModalScegliDispensa('Integrazione'); 
-            }}
-          />
+        <div 
+          onClick={() => setMazzoAttivo(null)}
+          className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center z-[9990] p-4 cursor-pointer"
+        >
+          {/* Prevent click bubbling inside the modal */}
+          <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
+            <MazzoIntegratori 
+              categoria={mazzoAttivo} 
+              onClose={() => setMazzoAttivo(null)}
+              onSave={(item) => {
+                // Salva direttamente nella dispensa globale
+                setDispensa(prev => [{
+                  id: item.id,
+                  nome: item.marchio === 'Generico' || item.marchio === 'Sconosciuto' ? item.nome : item.marchio,
+                  tipologia: item.tipologia,
+                  cho: item.cho, 
+                  pro: item.pro, 
+                  fat: item.fat,
+                  tipo: 'integratore',
+                  immagine: item.immagine
+                }, ...prev]);
+                
+                // Chiudiamo il mazzo e diamo feedback visivo
+                setMazzoAttivo(null);
+                alert(`${item.nome} aggiunto alla tua Dispensa!`);
+              }}
+              onCustom={() => {
+                 // Chiude il mazzo e apre la ricerca AI testuale/fotografica
+                 setMazzoAttivo(null);
+                 setModalScegliDispensa('Integrazione'); 
+              }}
+            />
+          </div>
         </div>
       )}
     </main>
