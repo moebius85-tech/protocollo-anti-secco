@@ -54,6 +54,8 @@ function Carta({
   onUscitaCompletata?: () => void;
 }) {
   const x = useMotionValue(0);
+  const [isZoomed, setIsZoomed] = useState(false); // NUOVO STATO ZOOM
+  
   const isFront = ruolo === 'front';
   const isFuture = ruolo === 'future';
   const isPast = ruolo === 'past';
@@ -62,6 +64,7 @@ function Carta({
   useEffect(() => {
     if (!isFront && !isExiting) {
       x.set(0);
+      setIsZoomed(false); // Resetta lo zoom se la carta non è più frontale
     }
   }, [isFront, isExiting, x]);
 
@@ -83,7 +86,12 @@ function Carta({
   let opacityCard = 1;
   let zIndexCard = 50;
 
-  if (isFront) {
+  // LOGICA ANIMAZIONE ZOOM
+  if (isZoomed) {
+    yPos = -50;       // Sale in alto
+    scaleCard = 1.35; // Diventa più grande del 35%
+    zIndexCard = 200; // Si mette sopra tutto
+  } else if (isFront) {
     yPos = 0;
     zIndexCard = 50;
   } else if (isFuture) {
@@ -132,7 +140,7 @@ function Carta({
 
   return (
     <motion.div
-      className={`absolute w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${
+      className={`absolute w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] flex flex-col items-center justify-between p-5 touch-none ${
         isFront ? 'cursor-grab active:cursor-grabbing' : ''
       }`}
       style={{
@@ -145,7 +153,9 @@ function Carta({
         pointerEvents: isExiting || opacityCard === 0 ? 'none' : 'auto',
         boxShadow: isPast
           ? '6px 6px 14px var(--ombra-scura), -6px -6px 14px var(--ombra-chiara)'
-          : '5px 5px 12px var(--ombra-scura), -5px -5px 12px var(--ombra-chiara)',
+          : isZoomed 
+            ? '0px 20px 40px rgba(0,0,0,0.5)' // Ombra profonda durante lo zoom
+            : '5px 5px 12px var(--ombra-scura), -5px -5px 12px var(--ombra-chiara)',
       }}
       initial={false}
       animate={{
@@ -163,6 +173,10 @@ function Carta({
       drag={isFront ? true : false} 
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={0.8}
+      onDragStart={() => {
+         // Se inizia a trascinare, toglie lo zoom per rendere fluido lo swipe
+         if (isZoomed) setIsZoomed(false);
+      }}
       onDrag={
         isFront
           ? (_e, info) => {
@@ -174,23 +188,41 @@ function Carta({
       onDragEnd={isFront ? handleDragEnd : undefined}
       onPanEnd={!isFront ? handlePanEnd : undefined}
     >
-      {/* RIQUADRO NEUMORFICO ORIGINALE */}
-      <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6 text-4xl pointer-events-none overflow-hidden relative shrink-0">
+      {/* IMMAGINE ENORME E CLICCABILE */}
+      <div 
+        className={`w-full h-40 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-3 text-6xl overflow-hidden relative shrink-0 transition-all duration-300 ${isFront ? 'cursor-pointer' : ''} ${isZoomed ? 'ring-2 ring-orange-500' : ''}`}
+        onClick={(e) => {
+           if (isFront) {
+              e.stopPropagation(); // Evita di chiudere la modale intera
+              setIsZoomed(!isZoomed); // Attiva/Disattiva Zoom
+           }
+        }}
+      >
+        {/* Icona Lente Ingrandimento (Visibile solo sulla prima carta) */}
+        {isFront && !isZoomed && (
+           <div className="absolute top-2 right-2 bg-black/10 backdrop-blur-sm p-1.5 rounded-lg z-10 text-slate-500">
+             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
+           </div>
+        )}
+
         {card.immagine ? (
-           <div className="w-full h-full bg-white flex items-center justify-center p-2">
-             <img src={card.immagine} alt={card.nome} className="max-h-full max-w-full object-contain mix-blend-multiply" />
+           <div className="w-full h-full bg-white flex items-center justify-center p-3">
+             <img src={card.immagine} alt={card.nome} className="max-h-full max-w-full object-contain mix-blend-multiply drop-shadow-sm" />
            </div>
         ) : (
            <span>{card.icon || '💊'}</span>
         )}
       </div>
 
-      <h3 className="text-slate-800 font-black tracking-widest text-[15px] text-center uppercase pointer-events-none leading-tight line-clamp-2 w-full px-2">
-        {card.nome}
-      </h3>
-      <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
-        {card.tag}
-      </span>
+      {/* TITOLO E TAG COMPATTI SOTTO */}
+      <div className="w-full flex-1 flex flex-col justify-end items-center pointer-events-none">
+         <h3 className="text-slate-800 font-black tracking-widest text-[14px] text-center uppercase leading-tight line-clamp-2 w-full px-1">
+           {card.nome}
+         </h3>
+         <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-2 mb-1">
+           {card.tag}
+         </span>
+      </div>
     </motion.div>
   );
 }
@@ -221,7 +253,6 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${termineRicerca}&search_simple=1&action=process&json=1&page_size=10`);
         const data = await res.json();
         
-        // Verifica se l'API ha restituito davvero dei prodotti
         const prodottiTrovati = Array.isArray(data.products) ? data.products : [];
 
         risultatiFormattati = prodottiTrovati
@@ -231,7 +262,7 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
             id: p.code,
             tipologia: categoria,
             marchio: p.brands ? p.brands.split(',')[0] : 'Sconosciuto',
-            nome: p.brands ? `${p.brands.split(',')[0]}` : p.product_name,
+            nome: p.brands ? `${p.brands.split(',')[0]} - ${p.product_name}` : p.product_name,
             immagine: p.image_front_url,
             cho: Math.round(p.nutriments?.carbohydrates_100g || 0).toString(),
             pro: Math.round(p.nutriments?.proteins_100g || 0).toString(),
@@ -242,7 +273,6 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         console.error("Errore fetch OFF (il sistema userà il fallback):", err);
       }
 
-      // SE IL DATABASE NON TROVA NULLA O VA IN ERRORE, CREA UNA CARTA GENERICA 
       if (risultatiFormattati.length === 0) {
         risultatiFormattati.push({
           id: `generic-${Date.now()}`,
@@ -255,7 +285,6 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         });
       }
 
-      // LA TUA CARTA SCANNER A.I. ORIGINALE SEMPRE ALLA FINE
       const customCard: OffProduct = { 
         id: 'custom', tipologia: categoria, marchio: 'Custom', 
         nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '📸', 
@@ -317,7 +346,7 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
   if (loading) {
     return (
       <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
-         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse border border-[var(--bordo-tenue)]">
+         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse">
             <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6">
                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
@@ -351,7 +380,7 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         </span>
       </div>
 
-      <button onClick={onClose} className="absolute top-0 right-4 text-slate-400 hover:text-white text-3xl font-bold z-[100] transition-colors bg-transparent border-none cursor-pointer">
+      <button onClick={onClose} className="absolute -top-12 right-0 sm:-top-6 sm:right-6 text-slate-400 hover:text-white text-3xl font-bold z-[100] transition-colors bg-transparent border-none cursor-pointer p-4">
         &times;
       </button>
 
