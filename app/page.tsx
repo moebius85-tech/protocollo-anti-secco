@@ -251,6 +251,17 @@ function LogoOmnifit({
   );
 }
 
+export type DispensaItem = {
+  id: string;
+  tipologia: string;      
+  marchio: string;        
+  cho: string; 
+  pro: string; 
+  fat: string;  
+  tipo: 'alimento' | 'integratore';  
+  immagine?: string;      
+};
+
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
