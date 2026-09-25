@@ -35,9 +35,6 @@ const SOGLIA_ARCHIVIAZIONE = 120;
 const DURATA_USCITA = 0.28;
 const DISTANZA_USCITA = 650;
 
-// ============================================================================
-// COMPONENTE CARTA (Tuo Design Originale preservato + Immagini OFF)
-// ============================================================================
 function Carta({
   card,
   ruolo,
@@ -136,7 +133,7 @@ function Carta({
 
   return (
     <motion.div
-      className={`absolute w-[240px] h-[340px] bg-[var(--superficie)] rounded-[2rem] flex flex-col items-center justify-center p-5 touch-none ${
+      className={`absolute w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] flex flex-col items-center justify-center p-6 touch-none ${
         isFront ? 'cursor-grab active:cursor-grabbing' : ''
       }`}
       style={{
@@ -164,11 +161,9 @@ function Carta({
         opacity: { type: 'tween', duration: isExiting ? DURATA_USCITA : 0.35, ease: 'easeOut' },
         zIndex: { delay: isPast ? 0.35 : 0, duration: 0 },
       }}
-      
       drag={isFront ? true : false} 
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={0.8}
-      
       onDrag={
         isFront
           ? (_e, info) => {
@@ -180,49 +175,25 @@ function Carta({
       onDragEnd={isFront ? handleDragEnd : undefined}
       onPanEnd={!isFront ? handlePanEnd : undefined}
     >
-      {/* IMMAGINE PRODOTTO O ICONA FALLBACK */}
-      {card.immagine ? (
-        <div className="w-full h-32 bg-white rounded-[1.5rem] shadow-[inset_3px_3px_6px_rgba(0,0,0,0.1)] flex items-center justify-center mb-4 p-2 overflow-hidden pointer-events-none">
-          <img src={card.immagine} alt={card.nome} className="max-h-full object-contain mix-blend-multiply" />
-        </div>
-      ) : (
-        <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-4 text-4xl pointer-events-none">
-          {card.icon || '💊'}
-        </div>
-      )}
+      {/* RIQUADRO IMMAGINE/ICONA NEUMORFICO ORIGINALE */}
+      <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6 text-4xl pointer-events-none overflow-hidden relative">
+        {card.immagine ? (
+           <img src={card.immagine} alt={card.nome} className="w-full h-full object-contain p-2 mix-blend-multiply" />
+        ) : (
+           <span>{card.icon || '💊'}</span>
+        )}
+      </div>
 
-      {/* TITOLO E TAG */}
-      <h3 className="text-slate-700 font-black tracking-widest text-[14px] text-center uppercase leading-tight line-clamp-2 pointer-events-none h-10 flex items-center">
+      <h3 className="text-slate-800 font-black tracking-widest text-[16px] text-center uppercase pointer-events-none leading-tight line-clamp-2">
         {card.nome}
       </h3>
-      <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-2 mb-3 pointer-events-none">
+      <span className="text-orange-500 font-black text-[9px] uppercase tracking-[0.2em] mt-3 pointer-events-none">
         {card.tag}
       </span>
-
-      {/* MACRO (Mostrati solo per carte vere, non per il "Custom") */}
-      {card.id !== 'custom' && (
-        <div className="flex gap-2 w-full mt-auto pointer-events-none">
-          <div className="flex-1 bg-[var(--superficie-alt)] p-2 rounded-xl text-center shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)]">
-            <span className="block text-[8px] text-slate-400 font-bold mb-0.5">C</span>
-            <span className="text-[11px] font-black text-orange-500">{card.cho}g</span>
-          </div>
-          <div className="flex-1 bg-[var(--superficie-alt)] p-2 rounded-xl text-center shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)]">
-            <span className="block text-[8px] text-slate-400 font-bold mb-0.5">P</span>
-            <span className="text-[11px] font-black text-slate-500">{card.pro}g</span>
-          </div>
-          <div className="flex-1 bg-[var(--superficie-alt)] p-2 rounded-xl text-center shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)]">
-            <span className="block text-[8px] text-slate-400 font-bold mb-0.5">F</span>
-            <span className="text-[11px] font-black text-slate-500">{card.fat}g</span>
-          </div>
-        </div>
-      )}
     </motion.div>
   );
 }
 
-// ============================================================================
-// COMPONENTE PRINCIPALE (Motore API + Orchestratore Carte)
-// ============================================================================
 type Props = {
   categoria: string;
   onClose: () => void;
@@ -249,32 +220,32 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         
         // Mappa i prodotti trovati
         const risultati: OffProduct[] = data.products
-          .filter((p: any) => p.image_front_url && p.product_name) // Solo quelli con foto
-          .slice(0, 8) // Massimo 8 per non appesantire il mazzo
+          .filter((p: any) => p.image_front_url && p.product_name) 
+          .slice(0, 8) 
           .map((p: any) => ({
             id: p.code,
             tipologia: categoria,
             marchio: p.brands ? p.brands.split(',')[0] : 'Sconosciuto',
-            nome: p.brands ? `${p.brands.split(',')[0]} - ${p.product_name}` : p.product_name,
+            nome: p.brands ? `${p.brands.split(',')[0]}` : p.product_name,
             immagine: p.image_front_url,
             cho: Math.round(p.nutriments?.carbohydrates_100g || 0).toString(),
             pro: Math.round(p.nutriments?.proteins_100g || 0).toString(),
             fat: Math.round(p.nutriments?.fat_100g || 0).toString(),
-            tag: 'DATABASE ONLINE'
+            tag: 'ONLINE DATABASE'
           }));
 
-        // Aggiunge SEMPRE la carta Custom alla fine
+        // LA TUA CARTA SCANNER A.I. ORIGINALE ALLA FINE
         const customCard: OffProduct = { 
           id: 'custom', tipologia: categoria, marchio: 'Custom', 
-          nome: 'Scansiona Etichetta', tag: 'A.I. SCANNER', icon: '📸', 
+          nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '📸', 
           cho: '0', pro: '0', fat: '0' 
         };
 
         setCards([...risultati, customCard]);
       } catch (err) {
         console.error("Errore fetch OFF:", err);
-        // Fallback in caso di errore di rete
-        setCards([{ id: 'custom', tipologia: categoria, marchio: 'Custom', nome: 'Scansiona Etichetta', tag: 'A.I. SCANNER', icon: '📸', cho: '0', pro: '0', fat: '0' }]);
+        // Fallback
+        setCards([{ id: 'custom', tipologia: categoria, marchio: 'Custom', nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '📸', cho: '0', pro: '0', fat: '0' }]);
       }
       setLoading(false);
     }
@@ -309,20 +280,18 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
   const handleUscitaCompletata = () => {
     const swipedCard = cards.find(c => c.id === exitingId);
     
-    // Rimuove la carta dall'array visivo
     setCards((prev) => prev.filter((c) => c.id !== exitingId));
     setExitingId(null);
     setDragProgress(0);
 
-    // Esegue l'azione reale se è stata lanciata a Destra (direzione === 1)
+    // LOGICA DI SALVATAGGIO O SCARTO
     if (direzioneUscita === 1 && swipedCard) {
       if (swipedCard.id === 'custom') {
-        onCustom(); // Apre l'AI Scanner in page.tsx
+        onCustom(); 
       } else {
-        onSave(swipedCard); // Salva in dispensa in page.tsx
+        onSave(swipedCard); 
       }
     } else if (direzioneUscita === -1 && swipedCard?.id === 'custom') {
-      // Se l'utente scarta a sinistra l'ultima carta, chiudiamo la modale
       onClose();
     }
   };
@@ -332,9 +301,13 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
 
   if (loading) {
     return (
-      <div className="w-full h-[480px] flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
-        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <span className="text-white text-xs font-black uppercase tracking-widest animate-pulse">Ricerca {categoria}...</span>
+      <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
+         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse">
+            <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6">
+               <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <h3 className="text-slate-400 font-black tracking-widest text-[14px] text-center uppercase">RICERCA...</h3>
+         </div>
       </div>
     );
   }
@@ -363,11 +336,11 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         </span>
       </div>
 
-      <button onClick={onClose} className="absolute -top-6 right-6 text-slate-400 hover:text-white text-3xl font-bold z-[100] transition-colors bg-transparent border-none">
+      <button onClick={onClose} className="absolute top-0 right-4 text-slate-400 hover:text-white text-3xl font-bold z-[100] transition-colors bg-transparent border-none">
         &times;
       </button>
 
-      {/* RENDER CARTE */}
+      {/* RENDER CARTE CON LOGICA SCORRIMENTO */}
       {cards.map((card) => {
         if (card.id === exitingId) {
           return (
