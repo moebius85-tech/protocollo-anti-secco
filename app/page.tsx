@@ -401,9 +401,11 @@ export default function Home() {
   const [quandoTiAlleni, setQuandoTiAlleni] = useState('sera'); 
   const [digiuno, setDigiuno] = useState(false); 
   const [usaIntegratori, setUsaIntegratori] = useState(true);
-  const [mostraMazzoIntegratori, setMostraMazzoIntegratori] = useState(false);
+  
+  // STATO PER IL MAZZO (Sostituisce il vecchio mostraMazzoIntegratori)
+  const [mazzoAttivo, setMazzoAttivo] = useState<string | null>(null);
 
-  // FUNZIONE MAGICA: Aggiunge i pallini HUD accanto agli integratori
+// FUNZIONE MAGICA: Aggiunge i pallini HUD accanto agli integratori
 const renderDescrizioneConHUD = (testo: string) => {
   if (!testo) return null;
   
@@ -420,7 +422,8 @@ const renderDescrizioneConHUD = (testo: string) => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setMostraMazzoIntegratori(true);
+              // QUI SALVIAMO IL NOME ESATTO DELL'INTEGRATORE CLICCATO
+              setMazzoAttivo(integratoreTrovato); 
             }}
             className="ml-2.5 w-4 h-4 rounded-full bg-gradient-to-tr from-orange-500 to-amber-300 shadow-[0_0_8px_rgba(249,115,22,0.6)] flex items-center justify-center hover:scale-125 transition-transform cursor-pointer border-none flex-shrink-0"
             title={`Mostra ologramma ${integratoreTrovato}`}
@@ -2545,16 +2548,35 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           )}
 
           <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* === MODALE MAZZO 3D INTEGRATORI (Chiusura al tocco dello sfondo) === */}
-      {mostraMazzoIntegratori && (
-        <div 
-          onClick={() => setMostraMazzoIntegratori(false)}
-          className="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center z-[9990] p-4 cursor-pointer"
-        >
-          {/* UnstopPropagation evita che cliccando sul mazzo la modale si chiuda per sbaglio */}
-          <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
-            <MazzoIntegratori />
-          </div>
+      {/* === MODALE MAZZO 3D INTEGRATORI CON OPEN FOOD FACTS === */}
+      {mazzoAttivo && (
+        <div className="fixed inset-0 bg-[var(--superficie)]/95 backdrop-blur-xl flex items-center justify-center z-[9990] p-4">
+          <MazzoIntegratori 
+            categoria={mazzoAttivo} 
+            onClose={() => setMazzoAttivo(null)}
+            onSave={(item) => {
+              // Salva direttamente nella dispensa globale
+              setDispensa(prev => [{
+                id: item.id,
+                nome: item.marchio, // Salviamo il marchio reale come nome
+                tipologia: item.tipologia,
+                cho: item.cho, 
+                pro: item.pro, 
+                fat: item.fat,
+                tipo: 'integratore',
+                immagine: item.immagine
+              }, ...prev]);
+              
+              // Chiudiamo il mazzo e diamo feedback visivo
+              setMazzoAttivo(null);
+              alert(`${item.marchio} aggiunto alla tua Dispensa!`);
+            }}
+            onCustom={() => {
+               // Chiude il mazzo e apre la ricerca AI testuale/fotografica
+               setMazzoAttivo(null);
+               setModalScegliDispensa('Integrazione'); 
+            }}
+          />
         </div>
       )}
     </main>
