@@ -1302,7 +1302,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 );
 
   return (
-    <main className="min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
+    <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
       <header className="mb-6 pb-4 flex justify-between items-center relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
         <div>
@@ -1355,7 +1355,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         {/* COLONNA SINISTRA: Telemetria & Coach IA */}
         <div className={`flex-col gap-8 lg:col-span-3 ${mobileTab === 'TELEMETRIA' || mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`}>
           
-          <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 rounded-3xl flex-col relative overflow-hidden anim-pop ${mobileTab === 'TELEMETRIA' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.2s'}}>
+          <section className={`pulse-border bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 rounded-3xl flex-col relative overflow-hidden anim-pop ${mobileTab === 'TELEMETRIA' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.2s'}}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 relative z-10">
               <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Telemetria</h2>
@@ -1489,7 +1489,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             )}
           </section>
 
-          <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 rounded-3xl flex-col h-[480px] anim-pop ${mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.3s'}}>
+          <section className={`pulse-border bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 rounded-3xl flex-col h-[480px] anim-pop ${mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`} style={{animationDelay: '0.3s'}}>
             <h2 className="text-base font-bold tracking-widest uppercase text-slate-700 mb-6 flex items-center gap-3 border-b border-slate-200/50 pb-4">
               <span className="w-3 h-3 rounded-full bg-[#00c6ff] animate-pulse shadow-[0_0_10px_#00c6ff]"></span> A.I. Coach
             </h2>
@@ -1521,7 +1521,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         {/* COLONNA CENTRALE: Turni & Nutrizione */}
         <div className={`flex-col gap-8 lg:col-span-4 ${mobileTab === 'TURNI' || mobileTab === 'NUTRIZIONE' ? 'flex' : 'hidden'} lg:flex`}>
-          <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'TURNI' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.4s'}}>
+          <section className={`pulse-border bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'TURNI' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.4s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad opacity-80"></div>
             
             <div className="flex justify-between items-center mb-6 pb-2 border-b border-slate-200/50 pt-2">
@@ -1588,7 +1588,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
           </section>
 
-          <section className={`bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'NUTRIZIONE' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.5s'}}>
+          <section className={`pulse-border bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl relative overflow-hidden anim-pop ${mobileTab === 'NUTRIZIONE' ? 'flex-col' : 'hidden'} lg:flex lg:flex-col`} style={{animationDelay: '0.5s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-rose-400 opacity-80"></div>
             
             <div className="flex flex-col mb-8 pt-2">
@@ -1938,7 +1938,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
         <div className={`flex-col gap-8 lg:col-span-5 ${mobileTab === 'ALLENAMENTO' ? 'flex' : 'hidden'} lg:flex`}>
-          <section className="bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1 anim-pop" style={{animationDelay: '0.6s'}}>
+          <section className="pulse-border bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1 anim-pop" style={{animationDelay: '0.6s'}}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
 
             <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 pt-2 shrink-0">
