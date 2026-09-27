@@ -1293,8 +1293,8 @@ if (!usaIntegratori) {
   // --- HELPER BOTTOM NAV CON ICONE SVG MINIMAL, GLASS E FLUO ---
 const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110 drop-shadow-[0_0_10px_rgba(132,204,22,0.5)]' : 'text-slate-400 hover:text-slate-500'}`}>
-    <div className={`relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
+  <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110' : 'text-slate-400 hover:text-slate-500'}`} style={mobileTab === tab ? {filter: 'drop-shadow(0 0 10px var(--accento-glow))'} : undefined}>
+    <div className={`comet-border ${mobileTab === tab ? 'glow-alone' : ''} relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
        {iconSvg}
     </div>
     <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
@@ -1692,7 +1692,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 if (blocco.isIntra) {
                   if (blocco.titolo === "⏱️ DIGIUNO 16:8") {
                     return (
-                      <div key={`intra-${idx}`} className={`bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                      <div key={`intra-${idx}`} className={`comet-border bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
                         <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
                         <div className="flex justify-between items-start mb-4">
                           <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
