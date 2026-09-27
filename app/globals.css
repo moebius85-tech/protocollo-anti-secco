@@ -43,6 +43,11 @@
   --accento-1: #a3e635;
   --accento-2: #10b981;
   --accento-glow: rgba(16, 185, 129, 0.35);
+  /* Intensita' effetti dinamici (comet/pulse/ambient) — smorzate qui perche'
+     la palette neumorfica chiara "sporca" facilmente con bagliori troppo accesi */
+  --fx-comet-opacity: 0.5;
+  --fx-pulse-max: 0.3;
+  --fx-ambient-opacity: 0.14;
 }
 
 /* -------------------------------------------------------------------------
@@ -77,6 +82,10 @@
   --accento-1: #DFFF00; /* Giallo Acido (Acid Yellow) */
   --accento-2: #5E9CFF; /* Azzurro (Sky Blue) */
   --accento-glow: rgba(223, 255, 0, 0.4); /* prima era transparent: il bagliore non era mai visibile in questo tema */
+  /* Estetica "brutalist"/cyber: qui gli effetti dinamici possono essere piu' decisi */
+  --fx-comet-opacity: 0.95;
+  --fx-pulse-max: 0.55;
+  --fx-ambient-opacity: 0.32;
 }
 
 [data-theme="neon"] {
@@ -98,6 +107,10 @@
   --accento-1: #22d3ee;
   --accento-2: #e879f9;
   --accento-glow: rgba(34, 211, 238, 0.45);
+  /* Estetica neon: gli effetti dinamici possono essere piu' intensi di ogni altro tema */
+  --fx-comet-opacity: 1;
+  --fx-pulse-max: 0.7;
+  --fx-ambient-opacity: 0.4;
 }
 
 /* =========================================================================
@@ -403,7 +416,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   animation: comet-spin 2.6s linear infinite;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.9;
+  opacity: var(--fx-comet-opacity, 0.9);
 }
 @keyframes comet-spin {
   to { transform: rotate(360deg); }
@@ -434,4 +447,82 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 }
 @media (prefers-reduced-motion: reduce) {
   .glow-alone::after { animation: none; opacity: 0.8; }
+}
+
+/* -------------------------------------------------------------------------
+   LIVELLO 2 — pulse-border: bordo che "respira" piano, per i pannelli
+   principali di ogni sezione (Dati/AI/Turni/Dieta/Workout). Molto piu'
+   discreto del comet-border: nessuna rotazione, solo un'oscillazione lenta
+   di intensita', per dare vita a TUTte le schede in modo omogeneo senza
+   competere con gli elementi "hero".
+   ------------------------------------------------------------------------- */
+.pulse-border {
+  position: relative;
+}
+.pulse-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, var(--accento-1), transparent 45%, transparent 55%, var(--accento-2));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+  animation: pulse-border-breathe 4.5s ease-in-out infinite;
+}
+@keyframes pulse-border-breathe {
+  0%, 100% { opacity: calc(var(--fx-pulse-max, 0.5) * 0.45); }
+  50%       { opacity: var(--fx-pulse-max, 0.5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pulse-border::before { animation: none; opacity: calc(var(--fx-pulse-max, 0.5) * 0.6); }
+}
+
+/* -------------------------------------------------------------------------
+   LIVELLO 3 — ambient-bg: aloni sfocati e lenti dietro l'intera pagina
+   (l'elemento "bokeh" del video di riferimento). Va applicata una sola
+   volta al contenitore principale (<main>), mai per singola card.
+   ------------------------------------------------------------------------- */
+.ambient-bg {
+  position: relative;
+  isolation: isolate;
+}
+.ambient-bg::before,
+.ambient-bg::after {
+  content: "";
+  position: fixed;
+  width: 46vw;
+  height: 46vw;
+  max-width: 560px;
+  max-height: 560px;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: var(--fx-ambient-opacity, 0.2);
+}
+.ambient-bg::before {
+  top: -14%;
+  left: -12%;
+  background: var(--accento-1);
+  animation: ambient-drift-a 18s ease-in-out infinite;
+}
+.ambient-bg::after {
+  bottom: -16%;
+  right: -10%;
+  background: var(--accento-2);
+  animation: ambient-drift-b 22s ease-in-out infinite;
+}
+@keyframes ambient-drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(4%, 6%) scale(1.08); }
+}
+@keyframes ambient-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(-5%, -4%) scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient-bg::before, .ambient-bg::after { animation: none; }
 }
