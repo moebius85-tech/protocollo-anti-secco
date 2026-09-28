@@ -1462,7 +1462,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         {misure.map((mis: any, idx: number) => {
                            const circ = typeof mis.circonferenze === 'string' ? JSON.parse(mis.circonferenze) : (mis.circonferenze || {});
                            return (
-                              <div key={mis.id} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] flex flex-col gap-4 p-5 rounded-[1.5rem] anim-pop" style={{animationDelay: `${idx * 0.05}s`}}>
+                              <div key={mis.id} className="pulse-border bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] flex flex-col gap-4 p-5 rounded-[1.5rem] anim-pop" style={{animationDelay: `${idx * 0.05}s`}}>
                                 <div className="flex justify-between items-center mb-2 border-b border-slate-200/50 pb-3">
                                   <p className="text-[11px] font-bold text-indigo-500 tracking-widest bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">{new Date(mis.data).toLocaleDateString('it-IT')}</p>
                                   <button onClick={() => eliminaMisurazione(mis.id)} className="text-red-400 hover:text-red-500 text-[18px] uppercase font-bold tracking-wider transition-colors shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] w-8 h-8 flex items-center justify-center rounded-full active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">&times;</button>
@@ -1532,7 +1532,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
             
             <div className="space-y-6">
-              <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] backdrop-blur-md p-5 rounded-[1.5rem]">
+              <div className="pulse-border bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] backdrop-blur-md p-5 rounded-[1.5rem]">
                 <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Mattina (Lavoro)</span>
                 <div className="flex space-x-5">
                   <div className="flex-1 relative">
@@ -1546,7 +1546,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 </div>
               </div>
               {tipoTurno === 'spezzato' && (
-                <div className="bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] backdrop-blur-md p-5 rounded-[1.5rem]">
+                <div className="pulse-border bg-lime-400/15 border border-lime-400/30 shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] backdrop-blur-md p-5 rounded-[1.5rem]">
                   <span className="text-[10px] text-lime-600 uppercase font-black tracking-widest mb-4 block">Pomeriggio (Lavoro)</span>
                   <div className="flex space-x-5">
                     <div className="flex-1 relative">
@@ -1562,7 +1562,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               )}
               <div className="pt-2 mt-4 border-t border-slate-200/50">
                 {/* BLOCCO DIGIUNO INTERMITTENTE MIGLIORATO */}
-            <div className="flex justify-between items-center mb-8 bg-[var(--superficie)] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)]">
+            <div className="pulse-border flex justify-between items-center mb-8 bg-[var(--superficie)] p-5 rounded-[1.5rem] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)]">
               <div className="flex flex-col pr-4">
                  <div className="flex items-center gap-2 mb-1.5">
                     <span className="text-[11px] text-slate-600 uppercase font-black tracking-widest">Digiuno</span>
@@ -1633,15 +1633,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 </div>
               </div>
               <div className="flex gap-4 mt-2">
-                <div className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex-1 text-center p-4 rounded-[1.5rem]">
+                <div className="pulse-border bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex-1 text-center p-4 rounded-[1.5rem]">
                    <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
                    <span className="text-[14px] text-slate-600 font-bold"><AnimatedCounter value={bmr} /></span>
                 </div>
-                <div className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex-1 text-center p-4 rounded-[1.5rem]">
+                <div className="pulse-border bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex-1 text-center p-4 rounded-[1.5rem]">
                    <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">TDEE</span>
                    <span className="text-[14px] text-slate-600 font-bold"><AnimatedCounter value={baseTdee} /></span>
                 </div>
-                <div className={`flex-[1.5] bg-gradient-to-br from-orange-400 to-rose-400 rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(249,115,22,0.3)] flex flex-col justify-center`}>
+                <div className={`pulse-border flex-[1.5] bg-gradient-to-br from-orange-400 to-rose-400 rounded-3xl p-4 text-center shadow-[0_10px_20px_rgba(249,115,22,0.3)] flex flex-col justify-center`}>
                    <span className="text-[9px] text-rose-100 uppercase font-black tracking-widest block mb-1">INTAKE TARGET</span>
                    <span className="text-[18px] text-white font-black"><AnimatedCounter value={actualIntakeKcal} /> kcal</span>
                 </div>
@@ -1649,7 +1649,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
 
             {/* INTERRUTTORE USO INTEGRATORI */}
-          <div className="flex justify-between items-center bg-[var(--superficie)] p-5 rounded-[1.5rem] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] mt-6 mb-2">
+          <div className="pulse-border flex justify-between items-center bg-[var(--superficie)] p-5 rounded-[1.5rem] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] mt-6 mb-2">
              <div className="flex flex-col pr-4">
                 <div className="flex items-center gap-2 mb-1.5">
                    <span className="text-[11px] text-slate-600 uppercase font-black tracking-widest">Protocollo Integratori</span>
@@ -1667,7 +1667,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             
             
             {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
-               <div className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-[1.5rem] mb-8 bg-[var(--velo-30)] anim-pop" style={{animationDelay: '0.6s'}}>
+               <div className="pulse-border bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-[1.5rem] mb-8 bg-[var(--velo-30)] anim-pop" style={{animationDelay: '0.6s'}}>
                   <div className="flex justify-between items-center mb-4">
                      <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
                      <span className="text-sm font-bold text-slate-600"><AnimatedCounter value={Math.round(actualIntakeKcal * 0.2)} /> Kcal</span>
@@ -1708,7 +1708,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     const intraKcal = Math.round((appliedIntraCho*4)+(appliedIntraPro*4)+(appliedIntraFat*9));
 
                     return (
-                      <div key={`intra-${idx}`} className={`bg-[var(--superficie)] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden p-6 rounded-3xl anim-pop ring-2 ring-orange-300/50`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                      <div key={`intra-${idx}`} className={`pulse-border bg-[var(--superficie)] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden p-6 rounded-3xl anim-pop ring-2 ring-orange-300/50`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
                         <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
                         
                         <div className="flex justify-between items-center mb-5">
@@ -1781,7 +1781,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 const isCustom = pastiCustom[cat].attivo;
 
                 return (
-                  <div key={`${cat}-${idx}`} className={`bg-[var(--superficie)] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] p-6 rounded-3xl ${isPW ? 'ring-2 ring-rose-300/50' : ''} anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                  <div key={`${cat}-${idx}`} className={`pulse-border bg-[var(--superficie)] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] p-6 rounded-3xl ${isPW ? 'ring-2 ring-rose-300/50' : ''} anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
                     <div className="flex justify-between items-center mb-5">
                       <span className={`text-[12px] uppercase font-black tracking-widest ${isPW ? 'text-rose-500' : 'text-slate-400'}`}>{blocco.titoloUI}</span>
                       <div className="flex gap-3">
@@ -1909,7 +1909,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   }
 
                   return raccomandazioni.map((r, idx) => (
-                    <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_10px_var(--ombra-scura),-4px_-4px_10px_var(--ombra-chiara)] p-5 rounded-3xl flex flex-col gap-3 anim-pop transition-transform hover:scale-[1.02]" style={{animationDelay: `${idx * 0.15}s`}}>
+                    <div key={idx} className="pulse-border bg-[var(--superficie)] shadow-[4px_4px_10px_var(--ombra-scura),-4px_-4px_10px_var(--ombra-chiara)] p-5 rounded-3xl flex flex-col gap-3 anim-pop transition-transform hover:scale-[1.02]" style={{animationDelay: `${idx * 0.15}s`}}>
                       <div className="flex items-center gap-3">
                         <span className="text-2xl bg-[var(--velo-40)] w-12 h-12 flex items-center justify-center rounded-2xl shadow-[inset_2px_2px_4px_var(--ombra-scura)] shrink-0">{r.icona}</span>
                         <h4 className="font-black text-slate-700 text-[11px] tracking-wide uppercase leading-tight">{r.nome}</h4>
@@ -1955,7 +1955,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
             {!vistaStorico ? (
               <>
-                <div className="bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] mb-6 flex justify-between items-center p-5 rounded-[1.5rem] shrink-0">
+                <div className="pulse-border bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] mb-6 flex justify-between items-center p-5 rounded-[1.5rem] shrink-0">
                   <div className="px-2">
                     <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest block mb-1.5">Durata Stimata</span>
                     <p className="text-[16px] font-bold text-slate-600 flex items-center gap-2">⏱️ ~<AnimatedCounter value={calcolaTempoScheda()} /> min <span className="text-[10px] text-slate-400 font-bold ml-1">(Recuperi incl.)</span></p>
@@ -2011,7 +2011,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     const numeroSetTarget = getNumeroSet(repMostrate);
 
                     return (
-                      <div key={`${es.id}-${nomeAttuale}`} className={`${phaseTint} backdrop-blur-md shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
+                      <div key={`${es.id}-${nomeAttuale}`} className={`pulse-border ${phaseTint} backdrop-blur-md shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
                         <div className="pl-1">
                           <div className="flex justify-between items-start mb-3">
                             <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
@@ -2053,7 +2053,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </>
           ) : vistaGraficiCarichi ? (
             <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
-               <div className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
+               <div className="pulse-border bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
                  <label className="text-[10px] text-slate-400 font-bold uppercase block mb-3 px-1 tracking-widest">Seleziona Esercizio:</label>
                  <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className="w-full bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] text-slate-700 text-[13px] font-bold p-4 rounded-2xl border-none outline-none mb-6 appearance-none">
                    {Object.values(baseDbAllenamento).flatMap(g => g.esercizi).map(es => (<option key={es.id} value={es.id}>{eserciziModificati[es.id] || es.nome}</option>))}
@@ -2065,7 +2065,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
               {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] rounded-[2rem]">Nessuna sessione salvata.</p> : (
                 [...storicoSessioni].reverse().map((sess) => (
-                  <div key={sess.oraId} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
+                  <div key={sess.oraId} className="pulse-border bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
                     <span className="font-bold text-cyan-500 drop-shadow-sm block text-[14px] tracking-wide uppercase">{sess.giorno} - Scheda {sess.scheda}</span>
                     <span className="text-[10px] text-slate-400 font-bold mb-5 block tracking-widest mt-1">{sess.data}</span>
                     <div className="space-y-4">
@@ -2124,7 +2124,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         return (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 anim-pop">
-            <div className="bg-[var(--superficie)] w-full max-h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-[var(--velo-20)]">
+            <div className="pulse-border bg-[var(--superficie)] w-full max-h-[95vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md mx-auto sm:rounded-[2rem] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden relative border border-[var(--velo-20)]">
               <button onClick={() => setFocusWorkout(null)} className="absolute top-5 right-6 text-slate-400 hover:text-slate-600 text-3xl font-bold z-20 border-none bg-transparent cursor-pointer">&times;</button>
               
               {/* PARTE ALTA: TIMER NEUMORFICO (Neutra) */}
@@ -2191,7 +2191,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* --- MODALI SWAP --- */}
       {modalEsercizio && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[150] p-4">
-          <div className="bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
+          <div className="pulse-border bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
             <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
               <h3 className="font-bold text-xl uppercase tracking-widest text-slate-600">Sostituisci Esercizio</h3>
               <button onClick={() => setModalEsercizio(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
@@ -2212,7 +2212,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
       {modalAlimento && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[150] p-4">
-          <div className="bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
+          <div className="pulse-border bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-8 w-full max-w-md relative anim-pop">
             <div className="flex justify-between items-center mb-6 border-b border-slate-300/50 pb-4">
               <h3 className="font-bold text-xl uppercase tracking-widest text-slate-600">Sostituisci Pasto</h3>
               <button onClick={() => setModalAlimento(false)} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
@@ -2240,7 +2240,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* === MODALE SCELTA DALLA DISPENSA === */}
 {modalScegliDispensa && (
   <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[150] p-4">
-    <div className="bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-6 w-full max-w-md relative anim-pop max-h-[90vh] flex flex-col">
+    <div className="pulse-border bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-6 w-full max-w-md relative anim-pop max-h-[90vh] flex flex-col">
       <div className="flex justify-between items-center mb-4 border-b border-slate-300/50 pb-4 shrink-0">
         <h3 className="font-black text-lg uppercase tracking-widest text-slate-600 flex items-center gap-2">
           📦 La Tua Dispensa
@@ -2432,7 +2432,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* === ADMIN CONTROL ROOM (MODALE) === */}
           {showAdmin && (
             <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[9999] p-4 sm:p-8 overflow-y-auto custom-scrollbar flex flex-col items-center">
-              <div className="w-full max-w-5xl bg-[var(--superficie)] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-10 mb-10">
+              <div className="pulse-border w-full max-w-5xl bg-[var(--superficie)] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-10 mb-10">
                 <button onClick={() => setShowAdmin(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 text-3xl font-black transition-colors border-none bg-transparent cursor-pointer">&times;</button>
                 <h2 className="text-2xl font-black uppercase tracking-widest text-slate-700 mb-8">Admin <span className="text-red-500">Control Room</span></h2>
                 
@@ -2588,3 +2588,4 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     </main>
   );
 }
+
