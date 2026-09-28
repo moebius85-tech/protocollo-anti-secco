@@ -1294,7 +1294,7 @@ if (!usaIntegratori) {
 const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110' : 'text-slate-400 hover:text-slate-500'}`} style={mobileTab === tab ? {filter: 'drop-shadow(0 0 10px var(--accento-glow))'} : undefined}>
-    <div className={`comet-border ${mobileTab === tab ? 'glow-alone' : ''} relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
+    <div className={`${mobileTab === tab ? 'comet-border glow-alone' : ''} relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
        {iconSvg}
     </div>
     <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
