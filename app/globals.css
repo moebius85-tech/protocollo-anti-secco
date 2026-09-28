@@ -392,6 +392,15 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
 /* Scia di luce che percorre in loop il contorno dell'elemento.
    Richiede: position relative (o già presente) + overflow-hidden sul
    contenitore, e un border-radius reale (non solo la classe Tailwind). */
+@property --angolo {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes ruota-angolo {
+  to { --angolo: 360deg; }
+}
+
 .comet-border {
   position: relative;
   z-index: 0;
@@ -403,7 +412,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   border-radius: inherit;
   padding: 2px;
   background: conic-gradient(
-    from 0deg,
+    from var(--angolo),
     transparent 0%,
     transparent 78%,
     var(--accento-1) 92%,
@@ -413,7 +422,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
           mask-composite: exclude;
-  animation: comet-spin 2.6s linear infinite;
+  animation: ruota-angolo 2.6s linear infinite;
   pointer-events: none;
   z-index: 1;
   opacity: var(--fx-comet-opacity, 0.9);
@@ -466,7 +475,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
   border-radius: inherit;
   padding: 2.5px;
   background: conic-gradient(
-    from 0deg,
+    from var(--angolo),
     var(--accento-1),
     var(--accento-2),
     var(--accento-1)
@@ -476,7 +485,7 @@ body { background: var(--background); color: var(--foreground); font-family: Ari
           mask-composite: exclude;
   pointer-events: none;
   z-index: 1;
-  animation: pulse-border-spin 7s linear infinite, pulse-border-breathe 3.2s ease-in-out infinite;
+  animation: ruota-angolo 7s linear infinite, pulse-border-breathe 3.2s ease-in-out infinite;
 }
 @keyframes pulse-border-spin {
   to { transform: rotate(360deg); }
@@ -594,8 +603,8 @@ div.livello-2.livello-2, section.livello-2.livello-2 { box-shadow: var(--n2-sh) 
 .livello-2::before {
   inset: -2px;
   padding: 3px;
-  background: conic-gradient(from 0deg, var(--accento-1), var(--accento-2), var(--accento-1));
-  animation: pulse-border-spin 5s linear infinite, pulse-border-breathe 3s ease-in-out infinite;
+  background: conic-gradient(from var(--angolo), var(--accento-1), var(--accento-2), var(--accento-1));
+  animation: ruota-angolo 5s linear infinite, pulse-border-breathe 3s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .livello-1::before, .livello-2::before { animation: none; opacity: 0.8; }
