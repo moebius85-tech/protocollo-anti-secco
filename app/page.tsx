@@ -341,6 +341,145 @@ const AsciiSphere3D = () => {
     </div>
   );
 };
+const WideAsciiLandscape = () => {
+  const preRef = useRef<HTMLPreElement>(null);
+
+  useEffect(() => {
+    let t = 0;
+    let frameId: number;
+
+    // Matrice enorme per riempire tutta la larghezza dell'header
+    const W = 140; 
+    const H = 22;  
+    const waterLevel = 15; // Linea di galleggiamento dove inizia il riflesso
+    
+    // Le scritte che formeranno il corpo dell'atleta
+    const words = "OMNIFIT-TELEMETRIA-IPERTROFIA-NUTRIZIONE-METABOLISMO-AICOACH-".split("");
+    
+    const renderFrame = () => {
+      let output = "";
+      let wordIdx = 0;
+
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          let char = " ";
+          let isAthlete = false;
+          let intensity = 0;
+
+          // --- 1. CALCOLO GEOMETRIA DELL'ATLETA IN CORSA ---
+          const cx = Math.floor(W / 2);
+          const cy = 7;
+
+          // Testa
+          if (Math.hypot(x - (cx + 3), y - (cy - 4)) < 2) isAthlete = true;
+          // Torso inclinati in avanti
+          if (x >= cx && x <= cx + 4 && y >= cy - 2 && y <= cy + 3) isAthlete = true;
+          // Gamba avanti
+          if (y >= cy + 3 && y <= cy + 6 && x >= cx + 2 && x <= cx + 6) isAthlete = true;
+          if (y >= cy + 6 && y <= cy + 9 && x >= cx + 4 && x <= cx + 7) isAthlete = true;
+          // Gamba dietro
+          if (y >= cy + 3 && y <= cy + 5 && x >= cx - 4 && x <= cx + 1) isAthlete = true;
+          if (y >= cy + 5 && y <= cy + 8 && x >= cx - 7 && x <= cx - 3) isAthlete = true;
+          // Braccia
+          if (y >= cy - 1 && y <= cy + 2 && x >= cx + 3 && x <= cx + 8) isAthlete = true;
+          if (y >= cy - 1 && y <= cy + 2 && x >= cx - 4 && x <= cx) isAthlete = true;
+
+          // --- 2. AURORA BACKGROUND IN MOVIMENTO ---
+          const wave1 = Math.sin(x * 0.05 + t * 1.5) * 3;
+          const wave2 = Math.cos(x * 0.03 - t) * 4;
+          const auroraY = 5 + wave1 + wave2;
+
+          if (y < waterLevel) {
+             // PARTE SUPERIORE (Cielo/Aria)
+             if (isAthlete) {
+                intensity = 10; // Massima luminosità per l'atleta
+             } else {
+                const dist = Math.abs(y - auroraY);
+                if (dist < 4) intensity = (4 - dist) * 1.2; 
+                // Stelle scintillanti
+                if (Math.sin(x * y * 1337 + t) > 0.98) intensity = Math.max(intensity, 3);
+             }
+          } else {
+             // --- 3. RIFLESSO DELL'ACQUA (Effetto specchio distorto) ---
+             const reflectY = waterLevel - (y - waterLevel) - 1;
+             
+             // Distorsione orizzontale a onde (Ripple)
+             const distortion = Math.sin(x * 0.15 + t * 3) * 1.5;
+             const srcX = Math.floor(x + distortion);
+
+             // Ricalcolo dell'atleta riflesso
+             let r_isAthlete = false;
+             if (Math.hypot(srcX - (cx + 3), reflectY - (cy - 4)) < 2) r_isAthlete = true;
+             if (srcX >= cx && srcX <= cx + 4 && reflectY >= cy - 2 && reflectY <= cy + 3) r_isAthlete = true;
+             if (reflectY >= cy + 3 && reflectY <= cy + 6 && srcX >= cx + 2 && srcX <= cx + 6) r_isAthlete = true;
+             if (reflectY >= cy + 6 && reflectY <= cy + 9 && srcX >= cx + 4 && srcX <= cx + 7) r_isAthlete = true;
+             if (reflectY >= cy + 3 && reflectY <= cy + 5 && srcX >= cx - 4 && srcX <= cx + 1) r_isAthlete = true;
+             if (reflectY >= cy + 5 && reflectY <= cy + 8 && srcX >= cx - 7 && srcX <= cx - 3) r_isAthlete = true;
+             if (reflectY >= cy - 1 && reflectY <= cy + 2 && srcX >= cx + 3 && srcX <= cx + 8) r_isAthlete = true;
+             if (reflectY >= cy - 1 && reflectY <= cy + 2 && srcX >= cx - 4 && srcX <= cx) r_isAthlete = true;
+
+             if (r_isAthlete) {
+                intensity = 4; // L'atleta riflesso è più scuro
+             } else {
+                const r_wave1 = Math.sin(srcX * 0.05 + t * 1.5) * 3;
+                const r_wave2 = Math.cos(srcX * 0.03 - t) * 4;
+                const r_auroraY = 5 + r_wave1 + r_wave2;
+                const r_dist = Math.abs(reflectY - r_auroraY);
+                if (r_dist < 4) intensity = (4 - r_dist) * 0.4;
+                // Linee d'acqua superficiali
+                if (y % 2 === 0 && Math.sin(x * 0.5 + t) > 0.5) intensity += 1;
+             }
+          }
+
+          // --- 4. ASSEGNAZIONE CARATTERI ---
+          if (intensity >= 10 || (intensity === 4 && y >= waterLevel && r_isAthlete)) {
+             // L'Atleta è fatto di testo!
+             char = words[wordIdx % words.length];
+             wordIdx++;
+             // Il riflesso usa lettere minuscole per rendere l'effetto specchio d'acqua più realistico
+             if (y >= waterLevel) char = char.toLowerCase();
+          } else {
+             // Palette sfumature per l'Aurora
+             const gradient = " .'\":;=*%@";
+             let gIdx = Math.floor(intensity);
+             if (gIdx < 0) gIdx = 0;
+             if (gIdx > gradient.length - 1) gIdx = gradient.length - 1;
+             char = gradient[gIdx];
+          }
+
+          output += char;
+        }
+        output += "\n";
+      }
+
+      if (preRef.current) preRef.current.textContent = output;
+      t += 0.06;
+      frameId = requestAnimationFrame(renderFrame);
+    };
+
+    renderFrame();
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
+  return (
+    // Questo box occupa tutto lo spazio orizzontale a disposizione
+    <div className="hidden lg:flex w-full h-full flex-col items-center justify-center relative overflow-hidden">
+      {/* Bagliore di fondo */}
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-[40px] pointer-events-none"></div>
+      <pre
+        ref={preRef}
+        className="font-mono font-black select-none pointer-events-none text-center m-0 w-full"
+        style={{
+          color: 'var(--accento-1)',
+          textShadow: '0 0 10px var(--accento-glow)',
+          fontSize: '11px',      
+          lineHeight: '11px',
+          letterSpacing: '4px' // Spaziatura larga per stirare l'immagine e riempire la fascia
+        }}
+      />
+    </div>
+  );
+};
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -1389,58 +1528,59 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
   return (
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
-      <header className="mb-6 pb-4 flex justify-between items-center relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
-  
-  {/* BLOCCO SINISTRA */}
-  <div className="shrink-0">
-    <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">⬅️ Torna alla Home</button>
-    <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
-      OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
-    </h1>
-    {/* SELETTORE TEMA */}
-    <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
-      {([
-        { id: 'chiaro', label: '☀️ Chiaro' },
-        { id: 'scuro', label: '🌙 Scuro' },
-        { id: 'neon', label: '⚡ Neon' },
-      ] as const).map((opzione) => (
-        <button
-          key={opzione.id}
-          onClick={() => setTema(opzione.id)}
-          className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
-            tema === opzione.id
-              ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
-              : 'text-slate-400 hover:text-slate-500'
-          }`}
-        >
-          {opzione.label}
-        </button>
-      ))}
-    </div>
-  </div>
+      <header className="mb-6 pb-2 flex justify-between items-stretch relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
+        
+        {/* BLOCCO SINISTRA (Compatto) */}
+        <div className="shrink-0 flex flex-col justify-start">
+          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer w-fit">⬅️ Torna alla Home</button>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
+            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+          </h1>
+          {/* SELETTORE TEMA */}
+          <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
+            {([
+              { id: 'chiaro', label: '☀️ Chiaro' },
+              { id: 'scuro', label: '🌙 Scuro' },
+              { id: 'neon', label: '⚡ Neon' },
+            ] as const).map((opzione) => (
+              <button
+                key={opzione.id}
+                onClick={() => setTema(opzione.id)}
+                className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
+                  tema === opzione.id
+                    ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
+                    : 'text-slate-400 hover:text-slate-500'
+                }`}
+              >
+                {opzione.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-  {/* BLOCCO CENTRALE: Sfera ASCII 3D estesa in larghezza */}
-  <div className="hidden lg:flex flex-1 justify-center items-center px-4 overflow-hidden">
-     <AsciiSphere3D />
-  </div>
+        {/* BLOCCO CENTRALE (Spanning totale: Paesaggio Cyber ASCII) */}
+        <div className="hidden lg:flex flex-1 justify-center items-center pointer-events-none overflow-hidden mx-6">
+           <WideAsciiLandscape />
+        </div>
 
-  {/* BLOCCO DESTRA */}
-  <div className="shrink-0 text-right">
-    {isAdmin && (
-       <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto">
-         👑 Control Room
-       </button>
-    )}
-    <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
-    <div className="flex flex-col items-end gap-2.5">
-       <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
-       <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
-          <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
-          {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
-       </div>
-    </div>
-  </div>
-</header>
+        {/* BLOCCO DESTRA (Compatto) */}
+        <div className="shrink-0 text-right flex flex-col justify-start">
+          {/* BOTTONE SEGRETO ADMIN */}
+          {isAdmin && (
+             <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto w-fit">
+               👑 Control Room
+             </button>
+          )}
+          <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest mt-auto">Atleta Operativo</span>
+          <div className="flex flex-col items-end gap-2.5">
+             <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+             <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
+                <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
+                {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
+             </div>
+          </div>
+        </div>
+      </header>
 
       {/* CONTENITORE PRINCIPALE: GRIGLIA DESKTOP / TABS MOBILE */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10">
