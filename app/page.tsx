@@ -261,37 +261,86 @@ export type DispensaItem = {
   tipo: 'alimento' | 'integratore';  
   immagine?: string;      
 };
-const OmniCoreAnimato = () => (
-  <div className="hidden lg:flex items-center justify-center relative w-24 h-24 opacity-80 hover:opacity-100 transition-all duration-500 cursor-default group">
-    
-    {/* Glow ambientale che pulsa */}
-    <div className="absolute inset-0 bg-[var(--accento-1)] blur-2xl opacity-20 group-hover:opacity-40 animate-pulse transition-opacity rounded-full"></div>
-    
-    {/* Anelli HUD rotanti (Stile Telemetria) */}
-    <svg className="absolute inset-0 w-full h-full animate-[spin_12s_linear_infinite]" viewBox="0 0 100 100">
-      <circle cx="50" cy="50" r="46" fill="none" stroke="var(--accento-1)" strokeWidth="0.5" strokeDasharray="4 8" opacity="0.6" />
-      <circle 
-        cx="50" cy="50" r="40" fill="none" stroke="var(--accento-1)" strokeWidth="1" 
-        strokeDasharray="20 10 5 10" opacity="0.3" 
-        style={{ transformOrigin: '50px 50px' }} 
-        className="animate-[spin_8s_linear_infinite_reverse]" 
+const AsciiSphere3D = () => {
+  const preRef = useRef<HTMLPreElement>(null);
+
+  useEffect(() => {
+    let A = 0, B = 0, C = 0;
+    let frameId: number;
+
+    const renderFrame = () => {
+      // Matrice ingrandita per occupare generosamente lo spazio centrale dell'header
+      const width = 75;
+      const height = 14;
+      const b = new Array(width * height).fill(' ');
+      const z = new Array(width * height).fill(0);
+
+      // Set di caratteri ispirato al video (simboli, numeri e lettere che simulano la densità 3D)
+      const chars = ".,-~:;=!*#$@0123456789X%&";
+
+      const radA = A, radB = B, radC = C;
+      
+      for (let theta = 0; theta < 6.28; theta += 0.07) {
+        for (let phi = 0; phi < 6.28; phi += 0.04) {
+          const ct = Math.sin(theta), st = Math.cos(theta);
+          const cp = Math.sin(phi), sp = Math.cos(phi);
+          
+          const h = ct + 2;
+          const D = 1 / (st * h * Math.sin(radA) + ct * Math.cos(radA) + 5);
+          const t = st * h * Math.cos(radA) - ct * Math.sin(radA);
+
+          const x = Math.floor(width / 2 + (width / 3.2) * D * (cp * h * Math.cos(radB) - t * Math.sin(radB)));
+          const y = Math.floor(height / 2 + (height / 2.2) * D * (cp * h * Math.sin(radB) + t * Math.cos(radB)));
+          const o = x + width * y;
+
+          // Calcolo dell'indice di luminosità per la mappatura dei caratteri ASCII
+          const N = Math.floor(8 * ((st * Math.sin(radA) - ct * cp * Math.cos(radA)) * Math.cos(radB) - ct * cp * Math.sin(radA) - st * Math.sin(radA) - cp * Math.cos(radC)));
+
+          if (y >= 0 && y < height && x >= 0 && x < width && D > z[o]) {
+            z[o] = D;
+            b[o] = chars[Math.max(0, Math.min(chars.length - 1, N))];
+          }
+        }
+      }
+
+      let output = "";
+      for (let k = 0; k < width * height; k++) {
+        output += k % width === width - 1 ? "\n" : b[k];
+      }
+
+      if (preRef.current) {
+        preRef.current.textContent = output;
+      }
+
+      A += 0.03;
+      B += 0.02;
+      C += 0.01;
+      frameId = requestAnimationFrame(renderFrame);
+    };
+
+    renderFrame();
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
+  return (
+    <div className="hidden lg:flex flex-col items-center justify-center relative w-full overflow-hidden py-1">
+      {/* Sfondo luminoso ambientale dietro la sfera ASCII */}
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-3xl rounded-full pointer-events-none"></div>
+      
+      <pre
+        ref={preRef}
+        className="font-mono font-black select-none pointer-events-none text-center m-0"
+        style={{
+          color: 'var(--accento-1)',
+          textShadow: '0 0 10px var(--accento-glow)',
+          fontSize: '8.5px',
+          lineHeight: '8.5px',
+          letterSpacing: '1px'
+        }}
       />
-    </svg>
-    
-    {/* Il Tuo Logo Fitness & Nutrizione (si disegnerà all'avvio) */}
-    <div className="relative z-10 flex items-center justify-center drop-shadow-[0_0_8px_var(--accento-glow)]">
-       {/* Riutilizziamo il tuo componente LogoOmnifit passandogli il colore dinamico */}
-       <LogoOmnifit 
-         attivo={true} 
-         dimensione={50} 
-         colore="var(--accento-1)" 
-         spessore={0.8} 
-         velocita={0.8}
-       />
     </div>
-    
-  </div>
-);
+  );
+};
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -1341,58 +1390,57 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
       <header className="mb-6 pb-4 flex justify-between items-center relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
-        
-        {/* 1. ZONA SINISTRA (Aggiunto flex-1) */}
-        <div className="flex-1">
-          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">⬅️ Torna alla Home</button>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
-            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
-          </h1>
-          {/* SELETTORE TEMA: chiaro / scuro / neon */}
-          <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
-            {([
-              { id: 'chiaro', label: '☀️ Chiaro' },
-              { id: 'scuro', label: '🌙 Scuro' },
-              { id: 'neon', label: '⚡ Neon' },
-            ] as const).map((opzione) => (
-              <button
-                key={opzione.id}
-                onClick={() => setTema(opzione.id)}
-                className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
-                  tema === opzione.id
-                    ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
-                    : 'text-slate-400 hover:text-slate-500'
-                }`}
-              >
-                {opzione.label}
-              </button>
-            ))}
-          </div>
-        </div>
+  
+  {/* BLOCCO SINISTRA */}
+  <div className="shrink-0">
+    <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">⬅️ Torna alla Home</button>
+    <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
+      OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+    </h1>
+    {/* SELETTORE TEMA */}
+    <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
+      {([
+        { id: 'chiaro', label: '☀️ Chiaro' },
+        { id: 'scuro', label: '🌙 Scuro' },
+        { id: 'neon', label: '⚡ Neon' },
+      ] as const).map((opzione) => (
+        <button
+          key={opzione.id}
+          onClick={() => setTema(opzione.id)}
+          className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
+            tema === opzione.id
+              ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
+              : 'text-slate-400 hover:text-slate-500'
+          }`}
+        >
+          {opzione.label}
+        </button>
+      ))}
+    </div>
+  </div>
 
-        {/* 2. ZONA CENTRALE: NUCLEO ANIMATO INSERITO QUI (Visibile solo su Desktop) */}
-        <div className="hidden lg:flex flex-1 justify-center items-center pointer-events-none">
-           <OmniCoreAnimato />
-        </div>
+  {/* BLOCCO CENTRALE: Sfera ASCII 3D estesa in larghezza */}
+  <div className="hidden lg:flex flex-1 justify-center items-center px-4 overflow-hidden">
+     <AsciiSphere3D />
+  </div>
 
-        {/* 3. ZONA DESTRA (Aggiunto flex-1) */}
-        <div className="flex-1 text-right">
-          {/* BOTTONE SEGRETO ADMIN */}
-          {isAdmin && (
-             <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto">
-               👑 Control Room
-             </button>
-          )}
-          <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
-          <div className="flex flex-col items-end gap-2.5">
-             <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
-             <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
-                <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
-                {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
-             </div>
-          </div>
-        </div>
-      </header>
+  {/* BLOCCO DESTRA */}
+  <div className="shrink-0 text-right">
+    {isAdmin && (
+       <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto">
+         👑 Control Room
+       </button>
+    )}
+    <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest">Atleta Operativo</span>
+    <div className="flex flex-col items-end gap-2.5">
+       <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+       <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
+          <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
+          {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
+       </div>
+    </div>
+  </div>
+</header>
 
       {/* CONTENITORE PRINCIPALE: GRIGLIA DESKTOP / TABS MOBILE */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10">
