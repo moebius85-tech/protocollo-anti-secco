@@ -347,169 +347,101 @@ const OmniMatrixCore = () => {
   useEffect(() => {
     let time = 0;
     let frameId: number;
-    let currentScene = 0;
+
+    // Dimensioni ottimali della griglia per non deformare l'immagine
+    const W = 130; 
+    const H = 22;  
     
-    // Configurazione altissima densità
-    const W = 160; 
-    const H = 40;  
-    const NUM_PARTICLES = 3000;
-    
-    // Palette ASCII dall'ombra alla luce massima
-    const chars = " .',-~:;!+=%@$#*";
+    // Palette ASCII dalla zona scura alla luce intensa
+    const chars = " .,:;=!*#$@";
     const charsLen = chars.length - 1;
 
-    // Inizializzazione Sciame (tutte le particelle partono dal centro)
-    const particles = Array.from({ length: NUM_PARTICLES }, () => ({
-      x: (Math.random() - 0.5) * 10,
-      y: (Math.random() - 0.5) * 10,
-      z: (Math.random() - 0.5) * 10,
-      tx: 0, ty: 0, tz: 0 // Target coordinates
-    }));
-
-    // Funzione che calcola le coordinate bersaglio per la scena attuale
-    const getTargetsForScene = (sceneIdx: number) => {
-      const targets = [];
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        let px = 0, py = 0, pz = 0;
-        const ratio = i / NUM_PARTICLES;
-
-        if (sceneIdx === 0) {
-          // SCENA 1: "GYM WORK EAT SLEEP" (Rappresentato come 4 blocchi solidi sospesi)
-          const block = i % 4;
-          const u = Math.random() * Math.PI * 2;
-          const v = Math.acos(Math.random() * 2 - 1);
-          const r = 6;
-          px = (block - 1.5) * 25 + Math.sin(v) * Math.cos(u) * r;
-          py = Math.sin(v) * Math.sin(u) * r;
-          pz = Math.cos(v) * r;
-
-        } else if (sceneIdx === 1) {
-          // SCENA 2: MANUBRIO 3D (Cilindri e dischi)
-          const angle = Math.random() * Math.PI * 2;
-          const lengthX = (Math.random() - 0.5) * 50;
-          const isWeight = lengthX < -15 || lengthX > 15;
-          const radius = isWeight ? (Math.random() > 0.5 ? 12 : 10) : 2; // Dischi o barra
-          px = lengthX;
-          py = Math.cos(angle) * radius;
-          pz = Math.sin(angle) * radius;
-
-        } else if (sceneIdx === 2) {
-          // SCENA 3: RUNNER / ESPLOSIONE CINETICA
-          if (ratio < 0.3) {
-            // Corpo piegato in avanti
-            px = (Math.random() - 0.5) * 10 + 10;
-            py = (Math.random() - 0.5) * 25;
-            pz = (Math.random() - 0.5) * 5;
-          } else if (ratio < 0.6) {
-            // Arti in movimento
-            const limbAngle = Math.random() * Math.PI * 2;
-            const limbDist = Math.random() * 20;
-            px = Math.cos(limbAngle) * limbDist + 5;
-            py = Math.sin(limbAngle) * limbDist;
-            pz = (Math.random() - 0.5) * 10;
-          } else {
-            // Scia di velocità (Particelle disgregate dietro)
-            px = -20 - Math.random() * 50;
-            py = (Math.random() - 0.5) * 30;
-            pz = (Math.random() - 0.5) * 15;
-          }
-
-        } else if (sceneIdx === 3) {
-          // SCENA 4: IL TUNNEL (Flow)
-          const depth = Math.random() * 120;
-          const angle = Math.random() * Math.PI * 2;
-          const radius = 5 + depth * 0.4;
-          px = Math.cos(angle) * radius;
-          py = Math.sin(angle) * radius;
-          pz = depth - 60; // Si estende verso la telecamera
-
-        } else if (sceneIdx === 4) {
-          // SCENA 5: SCHIENA / FOCUS (Densità centrale)
-          px = (Math.random() - 0.5) * 80;
-          py = (Math.random() - 0.5) * 40;
-          pz = Math.sin(px * 0.1) * 10 + Math.cos(py * 0.1) * 10;
-          // Spacco centrale (il solco della schiena)
-          if (Math.abs(px) < 5) pz -= 15;
-
-        } else if (sceneIdx === 5) {
-          // SCENA 6: CONNESSIONE (Oceano di dati e figure)
-          px = (Math.random() - 0.5) * 100;
-          pz = (Math.random() - 0.5) * 100;
-          py = Math.sin(px * 0.1) * 5 + Math.cos(pz * 0.1) * 5 + 15;
-          // Le due entità che si uniscono al centro
-          if (px > -12 && px < -2 && Math.abs(pz) < 5) py -= Math.random() * 25;
-          if (px < 12 && px > 2 && Math.abs(pz) < 5) py -= Math.random() * 25;
-          if (Math.abs(px) <= 2 && Math.abs(pz) < 2) py -= 15; // Stretta di mano
-        }
-
-        targets.push({ x: px, y: py, z: pz });
-      }
-      return targets;
-    };
-
-    let currentTargets = getTargetsForScene(currentScene);
-
     const renderFrame = () => {
-      time += 1;
-      
-      // Cambio scena ogni 350 frame (~6 secondi)
-      if (time % 350 === 0) {
-        currentScene = (currentScene + 1) % 6;
-        currentTargets = getTargetsForScene(currentScene);
-      }
-
       const b = new Array(W * H).fill(' ');
       const zb = new Float32Array(W * H).fill(-Infinity);
 
-      // Rotazione globale dinamica per dare volume
-      const rotScene = time * 0.005;
-      const cosR = Math.cos(rotScene), sinR = Math.sin(rotScene);
+      // Angoli di rotazione
+      const rotX = time * 0.03;
+      const rotY = time * 0.05;
+      const cx = Math.cos(rotX), sx = Math.sin(rotX);
+      const cy = Math.cos(rotY), sy = Math.sin(rotY);
 
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        const p = particles[i];
-        const t = currentTargets[i];
+      // Funzione di rendering per inserire i punti nella griglia
+      const drawPoint = (x: number, y: number, z: number, lumIndex: number) => {
+        // Rotazione 3D sull'asse X e Y
+        let ry = y * cx - z * sx;
+        let rz = y * sx + z * cx;
+        let rx = x * cy + rz * sy;
+        rz = -x * sy + rz * cy;
 
-        // Morhing: le particelle volano verso il bersaglio con un effetto "elastico"
-        p.x += (t.x - p.x) * 0.06;
-        p.y += (t.y - p.y) * 0.06;
-        p.z += (t.z - p.z) * 0.06;
-
-        // Rotazione sull'asse Y per osservare la scena 3D
-        const rx = p.x * cosR - p.z * sinR;
-        const rz = p.x * sinR + p.z * cosR;
-        const ry = p.y;
-
-        // Proiezione 3D -> 2D
-        const camZ = 70;
+        // Prospettiva
+        const camZ = 30;
         const ooz = 1 / (rz + camZ);
-        if (ooz < 0) continue; // Scarta le particelle dietro la telecamera
-
-        const xp = Math.floor(W / 2 + rx * ooz * W);
-        const yp = Math.floor(H / 2 + ry * ooz * H * 0.6); // Compensazione aspect ratio font
+        
+        // CORREZIONE ASPECT RATIO (Il segreto per non deformare):
+        // Moltiplichiamo l'asse X per 2.0 perché i caratteri monospazio sono rettangolari, non quadrati
+        const xp = Math.floor(W / 2 + rx * ooz * 35 * 2.0); 
+        const yp = Math.floor(H / 2 + ry * ooz * 35);
 
         if (xp >= 0 && xp < W && yp >= 0 && yp < H) {
           const idx = xp + yp * W;
-          
-          // Z-Buffer: disegna solo i punti in primo piano
           if (ooz > zb[idx]) {
             zb[idx] = ooz;
-            
-            // Illuminazione finta basata sulla profondità (Z-depth shading)
-            let lum = Math.floor((ooz * 100) * (charsLen / 2));
-            lum = Math.max(0, Math.min(charsLen, lum));
-            
-            b[idx] = chars[lum];
+            b[idx] = chars[Math.max(0, Math.min(charsLen, lumIndex))];
+          }
+        }
+      };
+
+      // 1. CREAZIONE GEOMETRIA: IL MANUBRIO 3D (Forme nette)
+      // Barra centrale
+      for (let x = -10; x <= 10; x += 0.5) {
+        for (let a = 0; a < Math.PI * 2; a += 0.5) {
+          const r = 1.5;
+          const py = Math.cos(a) * r;
+          const pz = Math.sin(a) * r;
+          // Calcolo luce base sulla normale
+          let lum = Math.floor((py / r + 1) * 3); 
+          drawPoint(x, py, pz, lum + 2);
+        }
+      }
+      
+      // Pesi laterali (Dischi esagonali/cilindrici per stile Cyber)
+      for (let sign of [-1, 1]) {
+        for (let dx = 10; dx <= 14; dx += 0.5) {
+          for (let a = 0; a < Math.PI * 2; a += 0.2) {
+            const r = 6;
+            const py = Math.cos(a) * r;
+            const pz = Math.sin(a) * r;
+            // Luce direzionale
+            let lum = Math.floor((py / r + 1) * 5);
+            // Evidenzia i bordi esterni del peso
+            if (dx === 10 || dx === 14) lum += 3;
+            drawPoint(dx * sign, py, pz, lum);
           }
         }
       }
 
-      // Ricostruzione stringa
+      // 2. CREAZIONE GEOMETRIA: FLUSSO DATI SOTTOSTANTE (Onde)
+      for (let x = -30; x <= 30; x += 1.5) {
+        for (let z = -15; z <= 15; z += 1.5) {
+          const y = 12 + Math.sin(x * 0.2 + time * 0.1) * 2 + Math.cos(z * 0.2 - time * 0.1) * 2;
+          const dist = Math.sqrt(x*x + z*z);
+          // Sfuma le onde man mano che si allontanano dal centro
+          let lum = 8 - Math.floor(dist * 0.2); 
+          if (lum > 0) {
+             drawPoint(x, y, z, lum);
+          }
+        }
+      }
+
+      // Ricostruzione della stringa per il DOM
       let output = "";
       for (let i = 0; i < H; i++) {
         output += b.slice(i * W, (i + 1) * W).join('') + "\n";
       }
 
       if (preRef.current) preRef.current.textContent = output;
+      time += 1;
       frameId = requestAnimationFrame(renderFrame);
     };
 
@@ -518,22 +450,21 @@ const OmniMatrixCore = () => {
   }, []);
 
   return (
-    <div className="hidden lg:flex flex-1 items-center justify-center relative overflow-hidden h-[140px] px-6">
+    <div className="hidden lg:flex w-full h-full flex-col items-center justify-center relative overflow-hidden">
       {/* Sfondo mistico/ambientale */}
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-[50px] pointer-events-none"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[var(--accento-1)] to-transparent opacity-5 blur-[20px] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-[40px] pointer-events-none"></div>
       
-      {/* Schermo ASCII */}
+      {/* Schermo ASCII (Dimensioni Font Corrette, niente letter-spacing forzato) */}
       <pre
         ref={preRef}
         className="font-mono font-black select-none pointer-events-none text-center m-0 w-full"
         style={{
           color: 'var(--accento-1)',
-          textShadow: '0 0 6px var(--accento-glow)',
-          fontSize: '7px',       // Font minuscolo per garantire l'alta definizione
-          lineHeight: '7px',
-          letterSpacing: '3.5px', // Spaziatura per allargare orizzontalmente il pannello
-          opacity: 0.85
+          textShadow: '0 0 8px var(--accento-glow)',
+          fontSize: '9px',       
+          lineHeight: '9px',
+          letterSpacing: 'normal', // FONDAMENTALE: impedisce la deformazione "schiacciata"
+          opacity: 0.9
         }}
       />
     </div>
@@ -1588,21 +1519,58 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
       <header className="mb-6 pb-2 flex justify-between items-stretch relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
-  
-  {/* BLOCCO SINISTRA */}
-  <div className="shrink-0 flex flex-col justify-start">
-    {/* Bottone Home, Titolo "OMNICOACH MASSA" e Selettore Tema ... */}
-  </div>
+        
+        {/* BLOCCO SINISTRA: Titolo e Temi (RIPRISTINATO COMPLETAMENTE) */}
+        <div className="shrink-0 flex flex-col justify-start">
+          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer w-fit">⬅️ Torna alla Home</button>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
+            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+          </h1>
+          {/* SELETTORE TEMA */}
+          <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
+            {([
+              { id: 'chiaro', label: '☀️ Chiaro' },
+              { id: 'scuro', label: '🌙 Scuro' },
+              { id: 'neon', label: '⚡ Neon' },
+            ] as const).map((opzione) => (
+              <button
+                key={opzione.id}
+                onClick={() => setTema(opzione.id)}
+                className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
+                  tema === opzione.id
+                    ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
+                    : 'text-slate-400 hover:text-slate-500'
+                }`}
+              >
+                {opzione.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-  {/* BLOCCO CENTRALE 3D */}
-  <OmniMatrixCore />
+        {/* BLOCCO CENTRALE: Animazione 3D (Allargata con flex-1, ma con proporzioni corrette) */}
+        <div className="hidden lg:flex flex-1 justify-center items-center pointer-events-none overflow-hidden mx-6">
+           <OmniMatrixCore />
+        </div>
 
-  {/* BLOCCO DESTRA */}
-  <div className="shrink-0 text-right flex flex-col justify-start">
-    {/* Bottone Admin e Dati Atleta Operativo ... */}
-  </div>
-  
-</header>
+        {/* BLOCCO DESTRA: Admin e Dati Atleta (RIPRISTINATO COMPLETAMENTE) */}
+        <div className="shrink-0 text-right flex flex-col justify-start">
+          {/* BOTTONE SEGRETO ADMIN */}
+          {isAdmin && (
+             <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto w-fit">
+               👑 Control Room
+             </button>
+          )}
+          <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest mt-auto">Atleta Operativo</span>
+          <div className="flex flex-col items-end gap-2.5">
+             <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+             <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
+                <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
+                {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
+             </div>
+          </div>
+        </div>
+      </header>
 
       {/* CONTENITORE PRINCIPALE: GRIGLIA DESKTOP / TABS MOBILE */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10">
