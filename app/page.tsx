@@ -126,7 +126,7 @@ const SvgBodyCompositionWheel = ({ data, altezza, eta }: { data: Record<string, 
              const pos = getLabelPos(sec.angle);
              return (
                <g key={`t-${i}`} className="pointer-events-none">
-                 <text x={pos.x} y={pos.y - 12} fill="var(--testo-medio)" fontSize="16" textAnchor="middle" fontWeight="bold" className="tracking-widest" style={{textShadow: "0 0 6px var(--superficie), 0 0 12px var(--superficie)"}}>{sec.label}</text>
+                 <text x={pos.x} y={pos.y - 12} fill="var(--testo-medio)" fontSize="16" textAnchor="middle" fontWeight="bold" className="tracking-st" style={{textShadow: "0 0 6px var(--superficie), 0 0 12px var(--superficie)"}}>{sec.label}</text>
                  <text x={pos.x} y={pos.y + 16} fill="var(--testo-forte)" fontSize="32" textAnchor="middle" fontWeight="900" style={{textShadow: "0 0 6px var(--superficie), 0 0 12px var(--superficie)"}}>{sec.val}</text>
                </g>
              )
@@ -348,12 +348,10 @@ const WideAsciiLandscape = () => {
     let t = 0;
     let frameId: number;
 
-    // Matrice enorme per riempire tutta la larghezza dell'header
     const W = 140; 
     const H = 22;  
-    const waterLevel = 15; // Linea di galleggiamento dove inizia il riflesso
+    const waterLevel = 15; 
     
-    // Le scritte che formeranno il corpo dell'atleta
     const words = "OMNIFIT-TELEMETRIA-IPERTROFIA-NUTRIZIONE-METABOLISMO-AICOACH-".split("");
     
     const renderFrame = () => {
@@ -364,23 +362,19 @@ const WideAsciiLandscape = () => {
         for (let x = 0; x < W; x++) {
           let char = " ";
           let isAthlete = false;
+          let r_isAthlete = false; // Spostata qui in cima: ora lo scope è corretto!
           let intensity = 0;
 
           // --- 1. CALCOLO GEOMETRIA DELL'ATLETA IN CORSA ---
           const cx = Math.floor(W / 2);
           const cy = 7;
 
-          // Testa
           if (Math.hypot(x - (cx + 3), y - (cy - 4)) < 2) isAthlete = true;
-          // Torso inclinati in avanti
           if (x >= cx && x <= cx + 4 && y >= cy - 2 && y <= cy + 3) isAthlete = true;
-          // Gamba avanti
           if (y >= cy + 3 && y <= cy + 6 && x >= cx + 2 && x <= cx + 6) isAthlete = true;
           if (y >= cy + 6 && y <= cy + 9 && x >= cx + 4 && x <= cx + 7) isAthlete = true;
-          // Gamba dietro
           if (y >= cy + 3 && y <= cy + 5 && x >= cx - 4 && x <= cx + 1) isAthlete = true;
           if (y >= cy + 5 && y <= cy + 8 && x >= cx - 7 && x <= cx - 3) isAthlete = true;
-          // Braccia
           if (y >= cy - 1 && y <= cy + 2 && x >= cx + 3 && x <= cx + 8) isAthlete = true;
           if (y >= cy - 1 && y <= cy + 2 && x >= cx - 4 && x <= cx) isAthlete = true;
 
@@ -390,25 +384,20 @@ const WideAsciiLandscape = () => {
           const auroraY = 5 + wave1 + wave2;
 
           if (y < waterLevel) {
-             // PARTE SUPERIORE (Cielo/Aria)
              if (isAthlete) {
-                intensity = 10; // Massima luminosità per l'atleta
+                intensity = 10; 
              } else {
                 const dist = Math.abs(y - auroraY);
                 if (dist < 4) intensity = (4 - dist) * 1.2; 
-                // Stelle scintillanti
                 if (Math.sin(x * y * 1337 + t) > 0.98) intensity = Math.max(intensity, 3);
              }
           } else {
-             // --- 3. RIFLESSO DELL'ACQUA (Effetto specchio distorto) ---
+             // --- 3. RIFLESSO DELL'ACQUA ---
              const reflectY = waterLevel - (y - waterLevel) - 1;
              
-             // Distorsione orizzontale a onde (Ripple)
              const distortion = Math.sin(x * 0.15 + t * 3) * 1.5;
              const srcX = Math.floor(x + distortion);
 
-             // Ricalcolo dell'atleta riflesso
-             let r_isAthlete = false;
              if (Math.hypot(srcX - (cx + 3), reflectY - (cy - 4)) < 2) r_isAthlete = true;
              if (srcX >= cx && srcX <= cx + 4 && reflectY >= cy - 2 && reflectY <= cy + 3) r_isAthlete = true;
              if (reflectY >= cy + 3 && reflectY <= cy + 6 && srcX >= cx + 2 && srcX <= cx + 6) r_isAthlete = true;
@@ -419,27 +408,23 @@ const WideAsciiLandscape = () => {
              if (reflectY >= cy - 1 && reflectY <= cy + 2 && srcX >= cx - 4 && srcX <= cx) r_isAthlete = true;
 
              if (r_isAthlete) {
-                intensity = 4; // L'atleta riflesso è più scuro
+                intensity = 4; 
              } else {
                 const r_wave1 = Math.sin(srcX * 0.05 + t * 1.5) * 3;
                 const r_wave2 = Math.cos(srcX * 0.03 - t) * 4;
                 const r_auroraY = 5 + r_wave1 + r_wave2;
                 const r_dist = Math.abs(reflectY - r_auroraY);
                 if (r_dist < 4) intensity = (4 - r_dist) * 0.4;
-                // Linee d'acqua superficiali
                 if (y % 2 === 0 && Math.sin(x * 0.5 + t) > 0.5) intensity += 1;
              }
           }
 
           // --- 4. ASSEGNAZIONE CARATTERI ---
           if (intensity >= 10 || (intensity === 4 && y >= waterLevel && r_isAthlete)) {
-             // L'Atleta è fatto di testo!
              char = words[wordIdx % words.length];
              wordIdx++;
-             // Il riflesso usa lettere minuscole per rendere l'effetto specchio d'acqua più realistico
              if (y >= waterLevel) char = char.toLowerCase();
           } else {
-             // Palette sfumature per l'Aurora
              const gradient = " .'\":;=*%@";
              let gIdx = Math.floor(intensity);
              if (gIdx < 0) gIdx = 0;
@@ -462,9 +447,7 @@ const WideAsciiLandscape = () => {
   }, []);
 
   return (
-    // Questo box occupa tutto lo spazio orizzontale a disposizione
     <div className="hidden lg:flex w-full h-full flex-col items-center justify-center relative overflow-hidden">
-      {/* Bagliore di fondo */}
       <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-[40px] pointer-events-none"></div>
       <pre
         ref={preRef}
@@ -474,7 +457,7 @@ const WideAsciiLandscape = () => {
           textShadow: '0 0 10px var(--accento-glow)',
           fontSize: '11px',      
           lineHeight: '11px',
-          letterSpacing: '4px' // Spaziatura larga per stirare l'immagine e riempire la fascia
+          letterSpacing: '4px' 
         }}
       />
     </div>
