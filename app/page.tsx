@@ -341,200 +341,108 @@ const AsciiSphere3D = () => {
     </div>
   );
 };
-const OmniMatrixCore = () => {
-  const preRef = useRef<HTMLPreElement>(null);
+import { useState, useEffect, useRef } from 'react';
 
+const OmniLineartSequence = () => {
+  const [activeScene, setActiveScene] = useState(0);
+  const pathRefs = useRef<(SVGPathElement | null)[]>([]);
+
+  // Le 4 scene disegnate matematicamente con un'unica linea continua (Continuous Lineart)
+  const scenes = [
+    {
+      id: "stacco",
+      label: "DEADLIFT",
+      // Geometria in linea continua: Stacco da terra (Bilanciere + Corpo)
+      d: "M 80,160 C 60,160 60,100 80,100 C 100,100 100,160 80,160 L 160,160 C 150,120 160,80 180,50 C 200,20 220,30 200,60 C 180,90 180,120 190,160 L 250,160 C 240,120 250,80 270,80 C 290,80 300,110 280,110 C 260,110 260,160 280,160 C 300,160 300,100 280,100 C 260,100 260,160 280,160 L 320,160"
+    },
+    {
+      id: "panca",
+      label: "BENCH PRESS",
+      // Geometria in linea continua: Panca piana (Panca, Corpo in spinta, Manubri)
+      d: "M 40,150 L 360,150 L 280,150 C 280,120 260,100 240,110 C 220,120 200,140 180,140 C 160,140 160,110 170,80 C 180,50 160,30 150,60 C 140,90 150,120 130,140 C 110,160 90,140 90,140 C 110,140 140,140 170,140 L 170,80 L 260,80 L 260,150"
+    },
+    {
+      id: "affondo",
+      label: "LUNGES",
+      // Geometria in linea continua: Affondo con Kettlebell
+      d: "M 70,160 L 110,160 C 130,160 140,130 150,100 C 160,60 150,30 170,20 C 190,10 200,40 180,60 C 160,80 170,110 190,110 C 210,110 230,140 250,160 L 290,160 L 250,160 C 230,160 210,130 200,100 C 190,70 180,70 170,100 C 160,130 150,160 130,160 L 90,160"
+    },
+    {
+      id: "bicipite",
+      label: "ISOLATION",
+      // Geometria in linea continua: Posa Braccio Bicipite
+      d: "M 130,180 C 120,120 130,70 150,50 C 170,30 200,40 180,70 C 160,100 160,120 190,120 C 220,120 250,100 270,110 C 290,120 270,150 240,140 C 210,130 170,140 150,180"
+    }
+  ];
+
+  // Inizializza la lunghezza delle linee per permettere l'animazione di disegno
   useEffect(() => {
-    let time = 0;
-    let frameId: number;
-    let currentScene = 0;
-    
-    // Dimensioni ottimali della griglia per mantenere le proporzioni senza deformare
-    const W = 130; 
-    const H = 24;  
-    const NUM_PARTICLES = 3000;
-    
-    // Palette ASCII dall'ombra alla luce massima
-    const chars = " .,-~:;=!*#$@";
-    const charsLen = chars.length - 1;
-
-    // Inizializzazione Sciame (tutte le particelle partono dal centro)
-    const particles = Array.from({ length: NUM_PARTICLES }, () => ({
-      x: (Math.random() - 0.5) * 10,
-      y: (Math.random() - 0.5) * 10,
-      z: (Math.random() - 0.5) * 10,
-    }));
-
-    // Funzione che calcola le coordinate bersaglio per la scena attuale
-    const getTargetsForScene = (sceneIdx: number) => {
-      const targets = [];
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        let px = 0, py = 0, pz = 0;
-        const ratio = i / NUM_PARTICLES;
-
-        if (sceneIdx === 0) {
-          // SCENA 1: "GYM WORK EAT SLEEP" (Rappresentato come 4 blocchi sospesi)
-          const block = i % 4;
-          const u = Math.random() * Math.PI * 2;
-          const v = Math.acos(Math.random() * 2 - 1);
-          const r = 4;
-          px = (block - 1.5) * 18 + Math.sin(v) * Math.cos(u) * r;
-          py = Math.sin(v) * Math.sin(u) * r;
-          pz = Math.cos(v) * r;
-
-        } else if (sceneIdx === 1) {
-          // SCENA 2: MANUBRIO 3D (Cilindri e dischi)
-          const angle = Math.random() * Math.PI * 2;
-          const lengthX = (Math.random() - 0.5) * 40;
-          const isWeight = lengthX < -12 || lengthX > 12;
-          const radius = isWeight ? (Math.random() > 0.5 ? 9 : 7) : 1.5; // Dischi o barra
-          px = lengthX;
-          py = Math.cos(angle) * radius;
-          pz = Math.sin(angle) * radius;
-
-        } else if (sceneIdx === 2) {
-          // SCENA 3: RUNNER / ESPLOSIONE CINETICA
-          if (ratio < 0.3) {
-            // Corpo piegato in avanti
-            px = (Math.random() - 0.5) * 8 + 8;
-            py = (Math.random() - 0.5) * 20;
-            pz = (Math.random() - 0.5) * 4;
-          } else if (ratio < 0.6) {
-            // Arti in movimento
-            const limbAngle = Math.random() * Math.PI * 2;
-            const limbDist = Math.random() * 15;
-            px = Math.cos(limbAngle) * limbDist + 4;
-            py = Math.sin(limbAngle) * limbDist;
-            pz = (Math.random() - 0.5) * 8;
-          } else {
-            // Scia di velocità (Particelle disgregate dietro)
-            px = -15 - Math.random() * 40;
-            py = (Math.random() - 0.5) * 25;
-            pz = (Math.random() - 0.5) * 12;
-          }
-
-        } else if (sceneIdx === 3) {
-          // SCENA 4: IL TUNNEL (Flow)
-          const depth = Math.random() * 100;
-          const angle = Math.random() * Math.PI * 2;
-          const radius = 4 + depth * 0.3;
-          px = Math.cos(angle) * radius;
-          py = Math.sin(angle) * radius;
-          pz = depth - 50; // Si estende verso la telecamera
-
-        } else if (sceneIdx === 4) {
-          // SCENA 5: SCHIENA / FOCUS (Densità centrale)
-          px = (Math.random() - 0.5) * 60;
-          py = (Math.random() - 0.5) * 30;
-          pz = Math.sin(px * 0.1) * 8 + Math.cos(py * 0.1) * 8;
-          // Spacco centrale (il solco della schiena)
-          if (Math.abs(px) < 4) pz -= 12;
-
-        } else if (sceneIdx === 5) {
-          // SCENA 6: CONNESSIONE AI COACH (Oceano di dati e figure)
-          px = (Math.random() - 0.5) * 80;
-          pz = (Math.random() - 0.5) * 80;
-          py = Math.sin(px * 0.1) * 4 + Math.cos(pz * 0.1) * 4 + 10;
-          // Le due entità che si uniscono al centro
-          if (px > -10 && px < -2 && Math.abs(pz) < 4) py -= Math.random() * 20;
-          if (px < 10 && px > 2 && Math.abs(pz) < 4) py -= Math.random() * 20;
-          if (Math.abs(px) <= 2 && Math.abs(pz) < 2) py -= 12; // Stretta di mano
-        }
-
-        targets.push({ x: px, y: py, z: pz });
+    pathRefs.current.forEach(path => {
+      if (path) {
+        const length = path.getTotalLength();
+        path.style.setProperty('--path-length', `${length}`);
       }
-      return targets;
-    };
-
-    let currentTargets = getTargetsForScene(currentScene);
-
-    const renderFrame = () => {
-      time += 1;
-      
-      // Cambio scena ogni 250 frame (~4-5 secondi)
-      if (time % 250 === 0) {
-        currentScene = (currentScene + 1) % 6;
-        currentTargets = getTargetsForScene(currentScene);
-      }
-
-      const b = new Array(W * H).fill(' ');
-      const zb = new Float32Array(W * H).fill(-Infinity);
-
-      // Rotazione globale dinamica per osservare le figure da varie angolazioni
-      const rotScene = time * 0.01;
-      const cosR = Math.cos(rotScene), sinR = Math.sin(rotScene);
-
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        const p = particles[i];
-        const t = currentTargets[i];
-
-        // ELASTIC MORPHING: le particelle volano verso il bersaglio gradualmente
-        p.x += (t.x - p.x) * 0.05;
-        p.y += (t.y - p.y) * 0.05;
-        p.z += (t.z - p.z) * 0.05;
-
-        // Rotazione sull'asse Y
-        const rx = p.x * cosR - p.z * sinR;
-        const rz = p.x * sinR + p.z * cosR;
-        const ry = p.y;
-
-        // Proiezione 3D -> 2D
-        const camZ = 60;
-        const ooz = 1 / (rz + camZ);
-        if (ooz < 0) continue; // Salta le particelle dietro la camera
-
-        // LA CORREZIONE MAGICA DELL'ASPECT RATIO (Moltiplichiamo l'asse X * 2.0)
-        // In questo modo le figure non appaiono schiacciate!
-        const xp = Math.floor(W / 2 + rx * ooz * 35 * 2.0);
-        const yp = Math.floor(H / 2 + ry * ooz * 35); 
-
-        if (xp >= 0 && xp < W && yp >= 0 && yp < H) {
-          const idx = xp + yp * W;
-          
-          if (ooz > zb[idx]) {
-            zb[idx] = ooz;
-            
-            // Illuminazione basata sulla profondità
-            let lum = Math.floor((ooz * 80) * (charsLen / 2));
-            lum = Math.max(0, Math.min(charsLen, lum));
-            
-            b[idx] = chars[lum];
-          }
-        }
-      }
-
-      // Ricostruzione stringa
-      let output = "";
-      for (let i = 0; i < H; i++) {
-        output += b.slice(i * W, (i + 1) * W).join('') + "\n";
-      }
-
-      if (preRef.current) preRef.current.textContent = output;
-      frameId = requestAnimationFrame(renderFrame);
-    };
-
-    renderFrame();
-    return () => cancelAnimationFrame(frameId);
+    });
   }, []);
 
+  // Timer: cambia figura ogni 6.5 secondi in loop
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveScene((prev) => (prev + 1) % scenes.length);
+    }, 6500);
+    return () => clearInterval(timer);
+  }, [scenes.length]);
+
   return (
-    <div className="hidden lg:flex w-full h-full flex-col items-center justify-center relative overflow-hidden">
-      {/* Sfondo ambientale */}
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-[40px] pointer-events-none"></div>
+    <div className="hidden lg:flex flex-1 items-center justify-center relative h-[140px] px-8 overflow-hidden w-full group">
       
-      {/* Schermo ASCII */}
-      <pre
-        ref={preRef}
-        className="font-mono font-black select-none pointer-events-none text-center m-0 w-full"
-        style={{
-          color: 'var(--accento-1)',
-          textShadow: '0 0 8px var(--accento-glow)',
-          fontSize: '9px',       
-          lineHeight: '9px',
-          letterSpacing: 'normal', // Niente deformazioni orizzontali!
-          opacity: 0.95
-        }}
-      />
+      {/* CSS interno per l'animazione SVG Lineart fluida */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes drawContinuousLine {
+          0% { stroke-dashoffset: var(--path-length); opacity: 0; filter: drop-shadow(0 0 2px var(--accento-glow)); }
+          15% { opacity: 1; filter: drop-shadow(0 0 10px var(--accento-glow)); }
+          75% { stroke-dashoffset: 0; opacity: 1; filter: drop-shadow(0 0 16px var(--accento-glow)); }
+          90% { stroke-dashoffset: 0; opacity: 0.8; filter: drop-shadow(0 0 8px var(--accento-glow)); }
+          100% { stroke-dashoffset: 0; opacity: 0; filter: drop-shadow(0 0 0px transparent); }
+        }
+        .anim-lineart {
+          stroke-dasharray: var(--path-length);
+          stroke-dashoffset: var(--path-length);
+          animation: drawContinuousLine 6.5s cubic-bezier(0.35, 0.05, 0.25, 1) infinite;
+        }
+      `}} />
+
+      {/* Bagliore ambientale leggero di fondo */}
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-5 blur-[30px] pointer-events-none transition-opacity duration-1000 group-hover:opacity-20"></div>
+
+      <div className="relative w-full max-w-2xl flex items-center justify-center h-full">
+        {/* Etichetta di background in dissolvenza morbida */}
+        <span className="absolute text-[55px] font-black uppercase tracking-widest text-[var(--testo-debole)] opacity-[0.07] transition-all duration-[1500ms] z-0 pointer-events-none select-none">
+          {scenes[activeScene].label}
+        </span>
+
+        {/* Contenitore SVG tagliente e vettoriale */}
+        <svg 
+          viewBox="0 0 400 200" 
+          className="w-full h-[130px] relative z-10 overflow-visible"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          {scenes.map((scene, index) => (
+            <path
+              key={scene.id}
+              ref={el => { pathRefs.current[index] = el; }}
+              d={scene.d}
+              fill="none"
+              stroke="var(--accento-1)"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`transition-opacity duration-1000 ${activeScene === index ? 'anim-lineart' : 'opacity-0'}`}
+              style={{ display: activeScene === index ? 'block' : 'none' }}
+            />
+          ))}
+        </svg>
+      </div>
     </div>
   );
 };
@@ -1588,7 +1496,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       
       <header className="mb-6 pb-2 flex justify-between items-stretch relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
         
-        {/* BLOCCO SINISTRA: Titolo e Temi (RIPRISTINATO COMPLETAMENTE) */}
+        {/* BLOCCO SINISTRA */}
         <div className="shrink-0 flex flex-col justify-start">
           <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer w-fit">⬅️ Torna alla Home</button>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
@@ -1616,12 +1524,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           </div>
         </div>
 
-        {/* BLOCCO CENTRALE: Animazione 3D (Allargata con flex-1, ma con proporzioni corrette) */}
-        <div className="hidden lg:flex flex-1 justify-center items-center pointer-events-none overflow-hidden mx-6">
-           <OmniMatrixCore />
-        </div>
+        {/* BLOCCO CENTRALE: MOTORE LINEART VETTORIALE */}
+        <OmniLineartSequence />
 
-        {/* BLOCCO DESTRA: Admin e Dati Atleta (RIPRISTINATO COMPLETAMENTE) */}
+        {/* BLOCCO DESTRA */}
         <div className="shrink-0 text-right flex flex-col justify-start">
           {/* BOTTONE SEGRETO ADMIN */}
           {isAdmin && (
