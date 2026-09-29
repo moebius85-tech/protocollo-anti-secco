@@ -1576,9 +1576,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           </div>
         </div>
 
-        {/* BLOCCO CENTRALE (Spanning totale: Paesaggio Cyber ASCII) */}
+        {/* BLOCCO CENTRALE (Spanning totale: OmniMatrixCore 3D) */}
         <div className="hidden lg:flex flex-1 justify-center items-center pointer-events-none overflow-hidden mx-6">
-           <WideAsciiLandscape />
+           {/* QUI C'ERA L'ERRORE: ORA CHIAMA IL COMPONENTE GIUSTO */}
+           <OmniMatrixCore />
         </div>
 
         {/* BLOCCO DESTRA (Compatto) */}
