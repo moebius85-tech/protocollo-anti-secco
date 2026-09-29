@@ -64,7 +64,7 @@ function Carta({
   useEffect(() => {
     if (!isFront && !isExiting) {
       x.set(0);
-      setIsZoomed(false); // Resetta lo zoom se la carta non è più frontale
+      setIsZoomed(false); // Resetta lo zoom se la carta non 癡 pi羅 frontale
     }
   }, [isFront, isExiting, x]);
 
@@ -89,7 +89,7 @@ function Carta({
   // LOGICA ANIMAZIONE ZOOM
   if (isZoomed) {
     yPos = -50;       // Sale in alto
-    scaleCard = 1.35; // Diventa più grande del 35%
+    scaleCard = 1.35; // Diventa pi羅 grande del 35%
     zIndexCard = 200; // Si mette sopra tutto
   } else if (isFront) {
     yPos = 0;
@@ -210,7 +210,7 @@ function Carta({
              <img src={card.immagine} alt={card.nome} className="max-h-full max-w-full object-contain mix-blend-multiply drop-shadow-sm" />
            </div>
         ) : (
-           <span>{card.icon || '💊'}</span>
+           <span>{card.icon || '���'}</span>
         )}
       </div>
 
@@ -242,36 +242,43 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
   const [exitingId, setExitingId] = useState<string | null>(null);
   const [direzioneUscita, setDirezioneUscita] = useState<1 | -1>(1);
 
-  // FETCH LIVE CON RETE DI SICUREZZA (ANTI-CRASH)
+  // FETCH LIVE (via proxy server-side /api/off-search) CON RETE DI SICUREZZA (ANTI-CRASH)
   useEffect(() => {
+    let annullato = false;
+
     async function fetchDaOpenFoodFacts() {
       setLoading(true);
       let risultatiFormattati: OffProduct[] = [];
 
       try {
-        const termineRicerca = categoria.toLowerCase().replace("l-", "").replace("d3", "d").trim(); 
-        const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${termineRicerca}&search_simple=1&action=process&json=1&page_size=10`);
+        const termineRicerca = categoria.toLowerCase().replace("l-", "").replace("d3", "d").trim();
+        const res = await fetch(`/api/off-search?q=${encodeURIComponent(termineRicerca)}`);
         const data = await res.json();
-        
+
         const prodottiTrovati = Array.isArray(data.products) ? data.products : [];
 
         risultatiFormattati = prodottiTrovati
-          .filter((p: any) => p.image_front_url && p.product_name) 
-          .slice(0, 8) 
+          // Accetta qualunque campo immagine disponibile, non solo "front":
+          // scartare tutto quando manca solo quella specifica era la causa
+          // principale della scheda generica che compariva a intermittenza.
+          .filter((p: any) => (p.image_front_url || p.image_url || p.image_small_url) && p.product_name)
+          .slice(0, 8)
           .map((p: any) => ({
-            id: p.code,
+            id: p.code || `${p.product_name}-${Math.random()}`,
             tipologia: categoria,
             marchio: p.brands ? p.brands.split(',')[0] : 'Sconosciuto',
             nome: p.brands ? `${p.brands.split(',')[0]} - ${p.product_name}` : p.product_name,
-            immagine: p.image_front_url,
+            immagine: p.image_front_url || p.image_url || p.image_small_url,
             cho: Math.round(p.nutriments?.carbohydrates_100g || 0).toString(),
             pro: Math.round(p.nutriments?.proteins_100g || 0).toString(),
             fat: Math.round(p.nutriments?.fat_100g || 0).toString(),
             tag: 'DATABASE ONLINE'
           }));
       } catch (err) {
-        console.error("Errore fetch OFF (il sistema userà il fallback):", err);
+        console.error("Errore fetch OFF (il sistema user� il fallback):", err);
       }
+
+      if (annullato) return; // la categoria 癡 cambiata o il componente si 癡 chiuso nel frattempo
 
       if (risultatiFormattati.length === 0) {
         risultatiFormattati.push({
@@ -280,14 +287,14 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
           marchio: 'Generico',
           nome: categoria.toUpperCase(),
           tag: 'SCHEDA GENERICA',
-          icon: '💊',
+          icon: '���',
           cho: '0', pro: '0', fat: '0'
         });
       }
 
       const customCard: OffProduct = { 
         id: 'custom', tipologia: categoria, marchio: 'Custom', 
-        nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '📸', 
+        nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '���', 
         cho: '0', pro: '0', fat: '0' 
       };
 
@@ -298,6 +305,8 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
     if (categoria) {
       fetchDaOpenFoodFacts();
     }
+
+    return () => { annullato = true; };
   }, [categoria]);
 
   const visibleCards = exitingId ? cards.filter((c) => c.id !== exitingId) : cards;
@@ -420,3 +429,4 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
     </div>
   );
 };
+
