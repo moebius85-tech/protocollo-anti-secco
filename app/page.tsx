@@ -341,104 +341,134 @@ const AsciiSphere3D = () => {
     </div>
   );
 };
-const WideAsciiLandscape = () => {
+const OmniMatrixCore = () => {
   const preRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
-    let t = 0;
+    let time = 0;
     let frameId: number;
 
-    const W = 140; 
-    const H = 22;  
-    const waterLevel = 15; 
+    // Altissima risoluzione per emulare l'effetto "particellare" delle immagini di riferimento
+    const W = 240; 
+    const H = 60;  
     
-    const words = "OMNIFIT-TELEMETRIA-IPERTROFIA-NUTRIZIONE-METABOLISMO-AICOACH-".split("");
-    
-    const renderFrame = () => {
-      let output = "";
-      let wordIdx = 0;
+    // I caratteri di densità per l'ombreggiatura (dal più scuro al più luminoso)
+    const chars = " .',-~:;!+=%@$#*";
+    const charsLen = chars.length - 1;
 
-      for (let y = 0; y < H; y++) {
-        for (let x = 0; x < W; x++) {
-          let char = " ";
-          let isAthlete = false;
-          let r_isAthlete = false; // Spostata qui in cima: ora lo scope è corretto!
-          let intensity = 0;
+    // 1. PRE-CALCOLO GEOMETRIA DEL MANUBRIO IN 3D (Point Cloud)
+    const dbPoints: {x:number, y:number, z:number, nx:number, ny:number, nz:number}[] = [];
+    const R = 1.8; // Raggio dei pesi
+    const W_LEN = 1.6; // Spessore dei pesi
+    const H_LEN = 3.5; // Lunghezza del bilanciere
+    const H_R = 0.3; // Raggio dell'impugnatura
 
-          // --- 1. CALCOLO GEOMETRIA DELL'ATLETA IN CORSA ---
-          const cx = Math.floor(W / 2);
-          const cy = 7;
-
-          if (Math.hypot(x - (cx + 3), y - (cy - 4)) < 2) isAthlete = true;
-          if (x >= cx && x <= cx + 4 && y >= cy - 2 && y <= cy + 3) isAthlete = true;
-          if (y >= cy + 3 && y <= cy + 6 && x >= cx + 2 && x <= cx + 6) isAthlete = true;
-          if (y >= cy + 6 && y <= cy + 9 && x >= cx + 4 && x <= cx + 7) isAthlete = true;
-          if (y >= cy + 3 && y <= cy + 5 && x >= cx - 4 && x <= cx + 1) isAthlete = true;
-          if (y >= cy + 5 && y <= cy + 8 && x >= cx - 7 && x <= cx - 3) isAthlete = true;
-          if (y >= cy - 1 && y <= cy + 2 && x >= cx + 3 && x <= cx + 8) isAthlete = true;
-          if (y >= cy - 1 && y <= cy + 2 && x >= cx - 4 && x <= cx) isAthlete = true;
-
-          // --- 2. AURORA BACKGROUND IN MOVIMENTO ---
-          const wave1 = Math.sin(x * 0.05 + t * 1.5) * 3;
-          const wave2 = Math.cos(x * 0.03 - t) * 4;
-          const auroraY = 5 + wave1 + wave2;
-
-          if (y < waterLevel) {
-             if (isAthlete) {
-                intensity = 10; 
-             } else {
-                const dist = Math.abs(y - auroraY);
-                if (dist < 4) intensity = (4 - dist) * 1.2; 
-                if (Math.sin(x * y * 1337 + t) > 0.98) intensity = Math.max(intensity, 3);
-             }
-          } else {
-             // --- 3. RIFLESSO DELL'ACQUA ---
-             const reflectY = waterLevel - (y - waterLevel) - 1;
-             
-             const distortion = Math.sin(x * 0.15 + t * 3) * 1.5;
-             const srcX = Math.floor(x + distortion);
-
-             if (Math.hypot(srcX - (cx + 3), reflectY - (cy - 4)) < 2) r_isAthlete = true;
-             if (srcX >= cx && srcX <= cx + 4 && reflectY >= cy - 2 && reflectY <= cy + 3) r_isAthlete = true;
-             if (reflectY >= cy + 3 && reflectY <= cy + 6 && srcX >= cx + 2 && srcX <= cx + 6) r_isAthlete = true;
-             if (reflectY >= cy + 6 && reflectY <= cy + 9 && srcX >= cx + 4 && srcX <= cx + 7) r_isAthlete = true;
-             if (reflectY >= cy + 3 && reflectY <= cy + 5 && srcX >= cx - 4 && srcX <= cx + 1) r_isAthlete = true;
-             if (reflectY >= cy + 5 && reflectY <= cy + 8 && srcX >= cx - 7 && srcX <= cx - 3) r_isAthlete = true;
-             if (reflectY >= cy - 1 && reflectY <= cy + 2 && srcX >= cx + 3 && srcX <= cx + 8) r_isAthlete = true;
-             if (reflectY >= cy - 1 && reflectY <= cy + 2 && srcX >= cx - 4 && srcX <= cx) r_isAthlete = true;
-
-             if (r_isAthlete) {
-                intensity = 4; 
-             } else {
-                const r_wave1 = Math.sin(srcX * 0.05 + t * 1.5) * 3;
-                const r_wave2 = Math.cos(srcX * 0.03 - t) * 4;
-                const r_auroraY = 5 + r_wave1 + r_wave2;
-                const r_dist = Math.abs(reflectY - r_auroraY);
-                if (r_dist < 4) intensity = (4 - r_dist) * 0.4;
-                if (y % 2 === 0 && Math.sin(x * 0.5 + t) > 0.5) intensity += 1;
-             }
-          }
-
-          // --- 4. ASSEGNAZIONE CARATTERI ---
-          if (intensity >= 10 || (intensity === 4 && y >= waterLevel && r_isAthlete)) {
-             char = words[wordIdx % words.length];
-             wordIdx++;
-             if (y >= waterLevel) char = char.toLowerCase();
-          } else {
-             const gradient = " .'\":;=*%@";
-             let gIdx = Math.floor(intensity);
-             if (gIdx < 0) gIdx = 0;
-             if (gIdx > gradient.length - 1) gIdx = gradient.length - 1;
-             char = gradient[gIdx];
-          }
-
-          output += char;
+    // Impugnatura centrale
+    for(let x = -H_LEN; x <= H_LEN; x += 0.2) {
+        for(let a = 0; a < 6.28; a += 0.25) {
+            dbPoints.push({ x: x, y: H_R*Math.cos(a), z: H_R*Math.sin(a), nx: 0, ny: Math.cos(a), nz: Math.sin(a) });
         }
-        output += "\n";
+    }
+    // Dischi laterali (Pesi)
+    for(let sign of [-1, 1]) {
+        let cx = sign * (H_LEN + W_LEN/2);
+        // Superficie cilindrica dei pesi
+        for(let dx = -W_LEN/2; dx <= W_LEN/2; dx += 0.2) {
+            for(let a = 0; a < 6.28; a += 0.15) {
+                dbPoints.push({ x: cx + dx, y: R*Math.cos(a), z: R*Math.sin(a), nx: 0, ny: Math.cos(a), nz: Math.sin(a) });
+            }
+        }
+        // Tappi esterni e interni dei dischi
+        for(let r = 0; r <= R; r += 0.25) {
+            for(let a = 0; a < 6.28; a += 0.15) {
+                dbPoints.push({ x: cx + W_LEN/2, y: r*Math.cos(a), z: r*Math.sin(a), nx: 1, ny: 0, nz: 0 });
+                dbPoints.push({ x: cx - W_LEN/2, y: r*Math.cos(a), z: r*Math.sin(a), nx: -1, ny: 0, nz: 0 });
+            }
+        }
+    }
+
+    const renderFrame = () => {
+      const b = new Array(W * H).fill(' ');
+      const zbuffer = new Float32Array(W * H).fill(-Infinity);
+
+      // Rotazione dinamica del manubrio
+      const rotA = time * 0.8; // Asse X
+      const rotB = time * 0.5; // Asse Y
+      const cosA = Math.cos(rotA), sinA = Math.sin(rotA);
+      const cosB = Math.cos(rotB), sinB = Math.sin(rotB);
+
+      // Funzione di proiezione 3D -> 2D con calcolo della luce
+      const processPoint = (px: number, py: number, pz: number, nx: number, ny: number, nz: number, isLandscape: boolean) => {
+          // Prospettiva e fotocamera
+          const camZ = 20; 
+          const ooz = 1 / (pz + camZ);
+          
+          // Compensazione dell'aspect ratio dei caratteri tipografici
+          const xp = Math.floor(W/2 + px * ooz * W * 1.0);
+          const yp = Math.floor(H/2 - py * ooz * H * 1.8);
+
+          if (xp >= 0 && xp < W && yp >= 0 && yp < H) {
+              const idx = xp + yp * W;
+              if (ooz > zbuffer[idx]) {
+                  zbuffer[idx] = ooz;
+                  
+                  // Calcolo illuminazione (Luce direzionale in alto a destra)
+                  const lx = 0.577, ly = 0.577, lz = -0.577;
+                  const L = nx * lx + ny * ly + nz * lz;
+                  
+                  // Mappatura intensità luminosa -> array di caratteri
+                  let lum = Math.floor((L + 1) * (charsLen / 2));
+                  if(isLandscape) lum = Math.floor((L + 0.5) * (charsLen / 1.5)); // Il paesaggio è più sfumato
+                  lum = Math.max(0, Math.min(charsLen, lum));
+                  
+                  b[idx] = chars[lum];
+              }
+          }
+      };
+
+      // 2. RENDER MANUBRIO 3D
+      for(let i=0; i<dbPoints.length; i++) {
+          const p = dbPoints[i];
+          // Applica rotazione 3D al vertice
+          let rx = p.x * cosB - p.z * sinB;
+          let rz = p.x * sinB + p.z * cosB;
+          let ry = p.y * cosA - rz * sinA;
+          rz = p.y * sinA + rz * cosA;
+          
+          // Applica rotazione 3D alla normale per una luce corretta
+          let nrx = p.nx * cosB - p.nz * sinB;
+          let nrz = p.nx * sinB + p.nz * cosB;
+          let nry = p.ny * cosA - nrz * sinA;
+          nrz = p.ny * sinA + nrz * cosA;
+
+          // Lo solleviamo leggermente al centro
+          processPoint(rx, ry + 2, rz, nrx, nry, nrz, false);
+      }
+
+      // 3. RENDER PAESAGGIO FLUTTUANTE (Onde di Telemetria)
+      // Simula le increspature del terreno come nell'immagine 1
+      for(let tx = -20; tx <= 20; tx += 0.5) {
+          for(let tz = -15; tz <= 25; tz += 0.5) {
+              const ty = -6 + Math.sin(tx * 0.4 + time) * 1.5 + Math.cos(tz * 0.4 - time * 0.8) * 1.2;
+              
+              // Calcolo grezzo della normale per le onde per far riflettere la luce
+              let nrx = -0.4 * 1.5 * Math.cos(tx * 0.4 + time);
+              let nrz = 0.4 * 1.2 * Math.sin(tz * 0.4 - time * 0.8);
+              let nry = 1.0;
+              let len = Math.sqrt(nrx*nrx + nry*nry + nrz*nrz);
+              
+              processPoint(tx, ty, tz, nrx/len, nry/len, nrz/len, true);
+          }
+      }
+
+      // Costruzione finale della stringa frame
+      let output = "";
+      for(let i=0; i<H; i++) {
+          output += b.slice(i*W, (i+1)*W).join('') + "\n";
       }
 
       if (preRef.current) preRef.current.textContent = output;
-      t += 0.06;
+      time += 0.05;
       frameId = requestAnimationFrame(renderFrame);
     };
 
@@ -448,16 +478,21 @@ const WideAsciiLandscape = () => {
 
   return (
     <div className="hidden lg:flex w-full h-full flex-col items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-[40px] pointer-events-none"></div>
+      {/* Sfondo mistico/ambientale */}
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-[50px] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[var(--accento-1)] to-transparent opacity-5 blur-[20px] pointer-events-none"></div>
+      
+      {/* Motore di Rendering ASCII */}
       <pre
         ref={preRef}
         className="font-mono font-black select-none pointer-events-none text-center m-0 w-full"
         style={{
           color: 'var(--accento-1)',
-          textShadow: '0 0 10px var(--accento-glow)',
-          fontSize: '11px',      
-          lineHeight: '11px',
-          letterSpacing: '4px' 
+          textShadow: '0 0 6px var(--accento-glow)',
+          fontSize: '5.5px',      /* Font minuscolo per altissima densità visiva */
+          lineHeight: '5.5px',
+          letterSpacing: '2px',   /* Spaziatura perfetta per formare volumi reali */
+          opacity: 0.85
         }}
       />
     </div>
