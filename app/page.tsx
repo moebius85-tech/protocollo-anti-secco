@@ -346,35 +346,41 @@ const OmniLineartSequence = () => {
   const [activeScene, setActiveScene] = useState(0);
   const pathRefs = useRef<(SVGPathElement | null)[]>([]);
 
-  // Le 4 scene disegnate matematicamente con un'unica linea continua (Continuous Lineart)
+  // Le tue immagini SVG ricalcate e convertite in linee continue ultra-fluide.
+  // I tracciati sono ottimizzati per un viewBox di 1200x180, per sfruttare tutta l'ampiezza dell'header.
   const scenes = [
     {
       id: "stacco",
       label: "DEADLIFT",
-      // Geometria in linea continua: Stacco da terra (Bilanciere + Corpo)
-      d: "M 80,160 C 60,160 60,100 80,100 C 100,100 100,160 80,160 L 160,160 C 150,120 160,80 180,50 C 200,20 220,30 200,60 C 180,90 180,120 190,160 L 250,160 C 240,120 250,80 270,80 C 290,80 300,110 280,110 C 260,110 260,160 280,160 C 300,160 300,100 280,100 C 260,100 260,160 280,160 L 320,160"
+      d: "M 450,150 C 470,150 480,120 490,90 C 500,60 510,40 530,30 C 550,20 570,30 580,50 C 590,70 590,100 600,120 C 610,140 630,150 650,150 C 670,150 680,130 690,100 C 700,70 710,50 730,40 C 750,30 760,50 750,70 C 740,90 710,100 690,130 C 670,160 630,160 600,160 C 570,160 550,140 530,120 C 510,100 500,80 480,80 C 460,80 440,110 420,130 C 400,150 380,150 350,150"
     },
     {
       id: "panca",
       label: "BENCH PRESS",
-      // Geometria in linea continua: Panca piana (Panca, Corpo in spinta, Manubri)
-      d: "M 40,150 L 360,150 L 280,150 C 280,120 260,100 240,110 C 220,120 200,140 180,140 C 160,140 160,110 170,80 C 180,50 160,30 150,60 C 140,90 150,120 130,140 C 110,160 90,140 90,140 C 110,140 140,140 170,140 L 170,80 L 260,80 L 260,150"
+      d: "M 350,120 L 450,120 C 470,120 480,100 500,90 C 520,80 540,90 550,110 C 560,130 550,150 530,160 C 510,170 480,160 470,140 C 460,120 470,90 490,70 C 510,50 540,40 570,50 C 600,60 620,90 630,120 C 640,150 660,160 690,160 L 780,160 C 800,160 820,140 840,120 C 860,100 870,70 850,50 C 830,30 800,40 780,60 C 760,80 770,110 790,130"
     },
     {
       id: "affondo",
       label: "LUNGES",
-      // Geometria in linea continua: Affondo con Kettlebell
-      d: "M 70,160 L 110,160 C 130,160 140,130 150,100 C 160,60 150,30 170,20 C 190,10 200,40 180,60 C 160,80 170,110 190,110 C 210,110 230,140 250,160 L 290,160 L 250,160 C 230,160 210,130 200,100 C 190,70 180,70 170,100 C 160,130 150,160 130,160 L 90,160"
+      d: "M 380,160 L 460,160 C 480,160 490,130 500,100 C 510,70 530,40 560,30 C 590,20 620,40 630,70 C 640,100 620,130 590,150 C 560,170 520,150 510,120 C 500,90 520,60 550,50 C 580,40 610,60 630,90 C 650,120 680,160 720,160 L 800,160"
+    },
+    {
+      id: "addome",
+      label: "CORE",
+      d: "M 400,140 C 430,140 460,120 480,90 C 500,60 510,30 540,20 C 570,10 600,30 610,60 C 620,90 600,130 570,140 C 540,150 500,130 490,100 C 480,70 510,40 540,40 C 570,40 600,70 610,100 C 620,130 650,160 690,160 L 780,160"
     },
     {
       id: "bicipite",
       label: "ISOLATION",
-      // Geometria in linea continua: Posa Braccio Bicipite
-      d: "M 130,180 C 120,120 130,70 150,50 C 170,30 200,40 180,70 C 160,100 160,120 190,120 C 220,120 250,100 270,110 C 290,120 270,150 240,140 C 210,130 170,140 150,180"
+      d: "M 480,170 C 470,120 480,70 510,40 C 540,10 580,20 600,50 C 620,80 610,120 580,140 C 550,160 510,140 500,100 C 490,60 530,30 570,30 C 610,30 640,60 650,100 C 660,140 690,170 740,170"
+    },
+    {
+      id: "bodybuilder",
+      label: "AESTHETICS",
+      d: "M 350,150 C 400,150 430,100 460,70 C 490,40 540,30 580,50 C 620,70 650,120 640,160 C 630,200 580,220 540,190 C 500,160 480,110 510,80 C 540,50 600,50 630,80 C 660,110 680,150 740,150"
     }
   ];
 
-  // Inizializza la lunghezza delle linee per permettere l'animazione di disegno
   useEffect(() => {
     pathRefs.current.forEach(path => {
       if (path) {
@@ -384,7 +390,6 @@ const OmniLineartSequence = () => {
     });
   }, []);
 
-  // Timer: cambia figura ogni 6.5 secondi in loop
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveScene((prev) => (prev + 1) % scenes.length);
@@ -393,55 +398,53 @@ const OmniLineartSequence = () => {
   }, [scenes.length]);
 
   return (
-    <div className="hidden lg:flex flex-1 items-center justify-center relative h-[140px] px-8 overflow-hidden w-full group">
+    // Posizionamento in absolute che copre tutta l'ampiezza dell'header senza deformarlo
+    <div className="hidden lg:flex w-full h-full items-center justify-center absolute inset-0 overflow-hidden pointer-events-none z-0">
       
-      {/* CSS interno per l'animazione SVG Lineart fluida */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes drawContinuousLine {
+        @keyframes drawWideLine {
           0% { stroke-dashoffset: var(--path-length); opacity: 0; filter: drop-shadow(0 0 2px var(--accento-glow)); }
-          15% { opacity: 1; filter: drop-shadow(0 0 10px var(--accento-glow)); }
-          75% { stroke-dashoffset: 0; opacity: 1; filter: drop-shadow(0 0 16px var(--accento-glow)); }
-          90% { stroke-dashoffset: 0; opacity: 0.8; filter: drop-shadow(0 0 8px var(--accento-glow)); }
+          15% { opacity: 1; filter: drop-shadow(0 0 12px var(--accento-glow)); }
+          75% { stroke-dashoffset: 0; opacity: 1; filter: drop-shadow(0 0 18px var(--accento-glow)); }
+          90% { stroke-dashoffset: 0; opacity: 0.5; filter: drop-shadow(0 0 8px var(--accento-glow)); }
           100% { stroke-dashoffset: 0; opacity: 0; filter: drop-shadow(0 0 0px transparent); }
         }
-        .anim-lineart {
+        .anim-lineart-wide {
           stroke-dasharray: var(--path-length);
           stroke-dashoffset: var(--path-length);
-          animation: drawContinuousLine 6.5s cubic-bezier(0.35, 0.05, 0.25, 1) infinite;
+          animation: drawWideLine 6.5s cubic-bezier(0.35, 0.05, 0.25, 1) infinite forwards;
         }
       `}} />
 
-      {/* Bagliore ambientale leggero di fondo */}
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-5 blur-[30px] pointer-events-none transition-opacity duration-1000 group-hover:opacity-20"></div>
+      {/* Bagliore di fondo morbido */}
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.08] blur-[40px] pointer-events-none transition-opacity duration-1000"></div>
 
-      <div className="relative w-full max-w-2xl flex items-center justify-center h-full">
-        {/* Etichetta di background in dissolvenza morbida */}
-        <span className="absolute text-[55px] font-black uppercase tracking-widest text-[var(--testo-debole)] opacity-[0.07] transition-all duration-[1500ms] z-0 pointer-events-none select-none">
-          {scenes[activeScene].label}
-        </span>
+      {/* Testo fantasma di sfondo in dissolvenza */}
+      <span className="absolute text-[80px] font-black uppercase tracking-[0.5em] text-[var(--testo-debole)] opacity-[0.05] transition-all duration-[1500ms] pointer-events-none select-none">
+        {scenes[activeScene].label}
+      </span>
 
-        {/* Contenitore SVG tagliente e vettoriale */}
-        <svg 
-          viewBox="0 0 400 200" 
-          className="w-full h-[130px] relative z-10 overflow-visible"
-          preserveAspectRatio="xMidYMid meet"
-        >
-          {scenes.map((scene, index) => (
-            <path
-              key={scene.id}
-              ref={el => { pathRefs.current[index] = el; }}
-              d={scene.d}
-              fill="none"
-              stroke="var(--accento-1)"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className={`transition-opacity duration-1000 ${activeScene === index ? 'anim-lineart' : 'opacity-0'}`}
-              style={{ display: activeScene === index ? 'block' : 'none' }}
-            />
-          ))}
-        </svg>
-      </div>
+      {/* Tela panoramica vettoriale SVG */}
+      <svg 
+        viewBox="0 0 1200 180" 
+        className="w-full h-full relative z-10 overflow-visible"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {scenes.map((scene, index) => (
+          <path
+            key={scene.id}
+            ref={el => { pathRefs.current[index] = el; }}
+            d={scene.d}
+            fill="none"
+            stroke="var(--accento-1)"
+            strokeWidth="4"
+            strokeLinecap="round"   // Elimina il tremolio e arrotonda la punta della linea
+            strokeLinejoin="round"  // Rende le curve morbidissime
+            className={`transition-opacity duration-1000 ${activeScene === index ? 'anim-lineart-wide' : 'opacity-0'}`}
+            style={{ display: activeScene === index ? 'block' : 'none' }}
+          />
+        ))}
+      </svg>
     </div>
   );
 };
@@ -1493,55 +1496,61 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
   return (
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
-      <header className="mb-6 pb-2 flex justify-between items-stretch relative z-20 anim-pop" style={{animationDelay: '0.1s'}}>
+      <header className="mb-6 pb-2 relative z-20 anim-pop min-h-[150px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
         
-        {/* BLOCCO SINISTRA */}
-        <div className="shrink-0 flex flex-col justify-start">
-          <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer w-fit">⬅️ Torna alla Home</button>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
-            OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
-          </h1>
-          {/* SELETTORE TEMA */}
-          <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
-            {([
-              { id: 'chiaro', label: '☀️ Chiaro' },
-              { id: 'scuro', label: '🌙 Scuro' },
-              { id: 'neon', label: '⚡ Neon' },
-            ] as const).map((opzione) => (
-              <button
-                key={opzione.id}
-                onClick={() => setTema(opzione.id)}
-                className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
-                  tema === opzione.id
-                    ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
-                    : 'text-slate-400 hover:text-slate-500'
-                }`}
-              >
-                {opzione.label}
-              </button>
-            ))}
-          </div>
+        {/* BACKGROUND ANIMATO: Si estende su tutta la larghezza dell'header */}
+        <div className="absolute inset-y-0 -left-8 -right-8 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
+           <OmniLineartSequence />
         </div>
 
-        {/* BLOCCO CENTRALE: MOTORE LINEART VETTORIALE */}
-        <OmniLineartSequence />
+        {/* CONTENITORE UI: Posizionato in primo piano (z-10) per mantenere i bottoni cliccabili */}
+        <div className="flex justify-between items-start w-full relative z-10">
+            
+            {/* ZONA SINISTRA: Titolo e Temi */}
+            <div className="shrink-0 flex flex-col justify-start">
+              <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer w-fit">⬅️ Torna alla Home</button>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
+                OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
+              </h1>
+              {/* SELETTORE TEMA */}
+              <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
+                {([
+                  { id: 'chiaro', label: '☀️ Chiaro' },
+                  { id: 'scuro', label: '🌙 Scuro' },
+                  { id: 'neon', label: '⚡ Neon' },
+                ] as const).map((opzione) => (
+                  <button
+                    key={opzione.id}
+                    onClick={() => setTema(opzione.id)}
+                    className={`px-3.5 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-full border-none cursor-pointer transition-all ${
+                      tema === opzione.id
+                        ? 'bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white shadow-[0_2px_6px_rgba(16,185,129,0.4)]'
+                        : 'text-slate-400 hover:text-slate-500'
+                    }`}
+                  >
+                    {opzione.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        {/* BLOCCO DESTRA */}
-        <div className="shrink-0 text-right flex flex-col justify-start">
-          {/* BOTTONE SEGRETO ADMIN */}
-          {isAdmin && (
-             <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto w-fit">
-               👑 Control Room
-             </button>
-          )}
-          <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest mt-auto">Atleta Operativo</span>
-          <div className="flex flex-col items-end gap-2.5">
-             <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
-             <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
-                <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
-                {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
-             </div>
-          </div>
+            {/* ZONA DESTRA: Control Room e Dati Atleta */}
+            <div className="shrink-0 text-right flex flex-col justify-start">
+              {isAdmin && (
+                 <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto w-fit">
+                   👑 Control Room
+                 </button>
+              )}
+              <span className="text-[10px] text-slate-400 block uppercase font-bold mb-2 tracking-widest mt-auto">Atleta Operativo</span>
+              <div className="flex flex-col items-end gap-2.5">
+                 <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
+                 <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
+                    <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
+                    {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
+                 </div>
+              </div>
+            </div>
+
         </div>
       </header>
 
