@@ -2137,16 +2137,57 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                           <span className="text-5xl font-light text-slate-700 font-mono tracking-widest drop-shadow-md">{formatTime(timeLeft)}</span>
                       </div>
                    </div>
-                   <svg className="absolute w-full h-full -rotate-90 pointer-events-none drop-shadow-md" viewBox="0 0 100 100">
-                     <circle cx="50" cy="50" r="47" fill="none" stroke="#e2e8f0" strokeWidth="2" />
-                     <circle cx="50" cy="50" r="47" fill="none" stroke={phaseColor} strokeWidth="3.5" strokeDasharray="295.3" strokeDashoffset={295.3 - (295.3 * (timeLeft / (totalTimeRef.current || 1)))} strokeLinecap="round" className="transition-all duration-1000 ease-linear" />
-                   </svg>
+                   {(() => {
+                     const totale = totalTimeRef.current || 1;
+                     const frazione = Math.max(0, Math.min(1, timeLeft / totale));
+                     const raggio = 47;
+                     const circonferenza = 2 * Math.PI * raggio;
+                     const angolo = frazione * 2 * Math.PI;
+                     const puntoX = 50 + raggio * Math.cos(angolo);
+                     const puntoY = 50 + raggio * Math.sin(angolo);
+                     return (
+                       <svg className="absolute w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 100 100">
+                         <defs>
+                           <filter id="miccia-bagliore" x="-60%" y="-60%" width="220%" height="220%">
+                             <feGaussianBlur stdDeviation="2.4" result="sfocato" />
+                             <feMerge>
+                               <feMergeNode in="sfocato" />
+                               <feMergeNode in="SourceGraphic" />
+                             </feMerge>
+                           </filter>
+                         </defs>
+                         <circle cx="50" cy="50" r={raggio} fill="none" stroke="var(--bordo-tenue)" strokeWidth="2" />
+                         <circle
+                           cx="50" cy="50" r={raggio} fill="none"
+                           stroke={phaseColor} strokeWidth="3.5"
+                           strokeDasharray={circonferenza}
+                           strokeDashoffset={circonferenza - circonferenza * frazione}
+                           strokeLinecap="round"
+                           filter="url(#miccia-bagliore)"
+                           className="transition-all duration-1000 ease-linear"
+                         />
+                         {timerActive && frazione > 0.01 && (
+                           <circle cx={puntoX} cy={puntoY} r="4" fill="#ffffff" filter="url(#miccia-bagliore)">
+                             <animate attributeName="r" values="3.2;5;3.2" dur="0.9s" repeatCount="indefinite" />
+                           </circle>
+                         )}
+                       </svg>
+                     );
+                   })()}
                  </div>
                  
                  <div className="flex gap-8 items-center">
-                    <button onClick={() => { setTimeLeft(totalTimeRef.current); setTimerActive(false); }} className="w-14 h-14 rounded-full bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] flex items-center justify-center text-slate-400 font-black border-none cursor-pointer">⏹</button>
-                    <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[var(--superficie)] shadow-[6px_6px_12px_var(--ombra-scura),-6px_-6px_12px_var(--ombra-chiara)] active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex items-center justify-center font-black border-none cursor-pointer text-2xl pl-1" style={{color: phaseColor}}>{timerActive ? '⏸' : '▶'}</button>
-                    <button onClick={() => setTimeLeft(t => t + 15)} className="w-14 h-14 rounded-full bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] flex items-center justify-center text-slate-500 font-black text-xs border-none cursor-pointer">+15</button>
+                    <button onClick={() => { setTimeLeft(totalTimeRef.current); setTimerActive(false); }} className="w-14 h-14 rounded-full bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] flex items-center justify-center border-none cursor-pointer" style={{color: 'var(--testo-tenue)'}}>
+                      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="12" height="12" rx="2.5" /></svg>
+                    </button>
+                    <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 rounded-full bg-[var(--superficie)] shadow-[6px_6px_12px_var(--ombra-scura),-6px_-6px_12px_var(--ombra-chiara)] active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex items-center justify-center border-none cursor-pointer" style={{color: phaseColor}}>
+                      {timerActive ? (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="5" height="18" rx="1.5" /><rect x="14" y="3" width="5" height="18" rx="1.5" /></svg>
+                      ) : (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l15 9-15 9V3z" /></svg>
+                      )}
+                    </button>
+                    <button onClick={() => setTimeLeft(t => t + 15)} className="w-14 h-14 rounded-full bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] flex items-center justify-center font-black text-xs border-none cursor-pointer" style={{color: 'var(--testo-debole)'}}>+15</button>
                  </div>
               </div>
 
@@ -2264,7 +2305,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       </div>
 
       {/* --- LISTA CIBI SALVATI (Filtrata per Tab e per Ricerca) --- */}
-      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3 mb-4">
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-1.5 mb-4">
         {dispensa
           .filter(d => d.tipo === filtroDispensa)
           .filter(d => d.nome.toLowerCase().includes(ricercaDispensa.toLowerCase()))
@@ -2297,14 +2338,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 setModalScegliDispensa(null);
                 setRicercaDispensa(""); 
               }}
-              className="w-full text-left p-4 bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] rounded-[1.5rem] hover:shadow-[inset_4px_4px_8px_var(--ombra-scura-alt),inset_-4px_-4px_8px_var(--ombra-chiara)] group transition-all duration-300 border-none cursor-pointer flex flex-col gap-3"
+              className="w-full text-left px-4 py-3 bg-[var(--superficie-alt)] shadow-[3px_3px_6px_var(--ombra-scura-alt),-3px_-3px_6px_var(--ombra-chiara)] rounded-xl hover:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] active:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] group transition-all duration-200 border-none cursor-pointer flex items-center justify-between gap-3"
             >
-              <p className="font-bold text-[14px] text-slate-700 group-hover:text-orange-500 transition-colors">{item.nome}</p>
-              <div className="flex gap-2">
-                <span className="bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">C <span className="text-orange-500">{item.cho}g</span></span>
-                <span className="bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">P <span className="text-slate-600">{item.pro}g</span></span>
-                <span className="bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt),inset_-2px_-2px_4px_var(--ombra-chiara)] text-[9px] font-black text-slate-500 px-3 py-1.5 rounded-lg tracking-widest flex-1 text-center">F <span className="text-slate-600">{item.fat}g</span></span>
-              </div>
+              <span className="font-bold text-[13px] text-slate-700 group-hover:text-orange-500 transition-colors truncate">{item.nome}</span>
+              <span className="shrink-0 text-[9px] font-black text-slate-500 tracking-wide whitespace-nowrap">
+                <span className="text-orange-500">{item.cho}</span>C · {item.pro}P · {item.fat}F
+              </span>
             </button>
           ))
         )}
