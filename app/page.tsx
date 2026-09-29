@@ -347,101 +347,169 @@ const OmniMatrixCore = () => {
   useEffect(() => {
     let time = 0;
     let frameId: number;
-
-    // Dimensioni ottimali della griglia per non deformare l'immagine
-    const W = 130; 
-    const H = 22;  
+    let currentScene = 0;
     
-    // Palette ASCII dalla zona scura alla luce intensa
-    const chars = " .,:;=!*#$@";
+    // Dimensioni ottimali della griglia per mantenere le proporzioni senza deformare
+    const W = 130; 
+    const H = 24;  
+    const NUM_PARTICLES = 3000;
+    
+    // Palette ASCII dall'ombra alla luce massima
+    const chars = " .,-~:;=!*#$@";
     const charsLen = chars.length - 1;
 
+    // Inizializzazione Sciame (tutte le particelle partono dal centro)
+    const particles = Array.from({ length: NUM_PARTICLES }, () => ({
+      x: (Math.random() - 0.5) * 10,
+      y: (Math.random() - 0.5) * 10,
+      z: (Math.random() - 0.5) * 10,
+    }));
+
+    // Funzione che calcola le coordinate bersaglio per la scena attuale
+    const getTargetsForScene = (sceneIdx: number) => {
+      const targets = [];
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        let px = 0, py = 0, pz = 0;
+        const ratio = i / NUM_PARTICLES;
+
+        if (sceneIdx === 0) {
+          // SCENA 1: "GYM WORK EAT SLEEP" (Rappresentato come 4 blocchi sospesi)
+          const block = i % 4;
+          const u = Math.random() * Math.PI * 2;
+          const v = Math.acos(Math.random() * 2 - 1);
+          const r = 4;
+          px = (block - 1.5) * 18 + Math.sin(v) * Math.cos(u) * r;
+          py = Math.sin(v) * Math.sin(u) * r;
+          pz = Math.cos(v) * r;
+
+        } else if (sceneIdx === 1) {
+          // SCENA 2: MANUBRIO 3D (Cilindri e dischi)
+          const angle = Math.random() * Math.PI * 2;
+          const lengthX = (Math.random() - 0.5) * 40;
+          const isWeight = lengthX < -12 || lengthX > 12;
+          const radius = isWeight ? (Math.random() > 0.5 ? 9 : 7) : 1.5; // Dischi o barra
+          px = lengthX;
+          py = Math.cos(angle) * radius;
+          pz = Math.sin(angle) * radius;
+
+        } else if (sceneIdx === 2) {
+          // SCENA 3: RUNNER / ESPLOSIONE CINETICA
+          if (ratio < 0.3) {
+            // Corpo piegato in avanti
+            px = (Math.random() - 0.5) * 8 + 8;
+            py = (Math.random() - 0.5) * 20;
+            pz = (Math.random() - 0.5) * 4;
+          } else if (ratio < 0.6) {
+            // Arti in movimento
+            const limbAngle = Math.random() * Math.PI * 2;
+            const limbDist = Math.random() * 15;
+            px = Math.cos(limbAngle) * limbDist + 4;
+            py = Math.sin(limbAngle) * limbDist;
+            pz = (Math.random() - 0.5) * 8;
+          } else {
+            // Scia di velocità (Particelle disgregate dietro)
+            px = -15 - Math.random() * 40;
+            py = (Math.random() - 0.5) * 25;
+            pz = (Math.random() - 0.5) * 12;
+          }
+
+        } else if (sceneIdx === 3) {
+          // SCENA 4: IL TUNNEL (Flow)
+          const depth = Math.random() * 100;
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 4 + depth * 0.3;
+          px = Math.cos(angle) * radius;
+          py = Math.sin(angle) * radius;
+          pz = depth - 50; // Si estende verso la telecamera
+
+        } else if (sceneIdx === 4) {
+          // SCENA 5: SCHIENA / FOCUS (Densità centrale)
+          px = (Math.random() - 0.5) * 60;
+          py = (Math.random() - 0.5) * 30;
+          pz = Math.sin(px * 0.1) * 8 + Math.cos(py * 0.1) * 8;
+          // Spacco centrale (il solco della schiena)
+          if (Math.abs(px) < 4) pz -= 12;
+
+        } else if (sceneIdx === 5) {
+          // SCENA 6: CONNESSIONE AI COACH (Oceano di dati e figure)
+          px = (Math.random() - 0.5) * 80;
+          pz = (Math.random() - 0.5) * 80;
+          py = Math.sin(px * 0.1) * 4 + Math.cos(pz * 0.1) * 4 + 10;
+          // Le due entità che si uniscono al centro
+          if (px > -10 && px < -2 && Math.abs(pz) < 4) py -= Math.random() * 20;
+          if (px < 10 && px > 2 && Math.abs(pz) < 4) py -= Math.random() * 20;
+          if (Math.abs(px) <= 2 && Math.abs(pz) < 2) py -= 12; // Stretta di mano
+        }
+
+        targets.push({ x: px, y: py, z: pz });
+      }
+      return targets;
+    };
+
+    let currentTargets = getTargetsForScene(currentScene);
+
     const renderFrame = () => {
+      time += 1;
+      
+      // Cambio scena ogni 250 frame (~4-5 secondi)
+      if (time % 250 === 0) {
+        currentScene = (currentScene + 1) % 6;
+        currentTargets = getTargetsForScene(currentScene);
+      }
+
       const b = new Array(W * H).fill(' ');
       const zb = new Float32Array(W * H).fill(-Infinity);
 
-      // Angoli di rotazione
-      const rotX = time * 0.03;
-      const rotY = time * 0.05;
-      const cx = Math.cos(rotX), sx = Math.sin(rotX);
-      const cy = Math.cos(rotY), sy = Math.sin(rotY);
+      // Rotazione globale dinamica per osservare le figure da varie angolazioni
+      const rotScene = time * 0.01;
+      const cosR = Math.cos(rotScene), sinR = Math.sin(rotScene);
 
-      // Funzione di rendering per inserire i punti nella griglia
-      const drawPoint = (x: number, y: number, z: number, lumIndex: number) => {
-        // Rotazione 3D sull'asse X e Y
-        let ry = y * cx - z * sx;
-        let rz = y * sx + z * cx;
-        let rx = x * cy + rz * sy;
-        rz = -x * sy + rz * cy;
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        const p = particles[i];
+        const t = currentTargets[i];
 
-        // Prospettiva
-        const camZ = 30;
+        // ELASTIC MORPHING: le particelle volano verso il bersaglio gradualmente
+        p.x += (t.x - p.x) * 0.05;
+        p.y += (t.y - p.y) * 0.05;
+        p.z += (t.z - p.z) * 0.05;
+
+        // Rotazione sull'asse Y
+        const rx = p.x * cosR - p.z * sinR;
+        const rz = p.x * sinR + p.z * cosR;
+        const ry = p.y;
+
+        // Proiezione 3D -> 2D
+        const camZ = 60;
         const ooz = 1 / (rz + camZ);
-        
-        // CORREZIONE ASPECT RATIO (Il segreto per non deformare):
-        // Moltiplichiamo l'asse X per 2.0 perché i caratteri monospazio sono rettangolari, non quadrati
-        const xp = Math.floor(W / 2 + rx * ooz * 35 * 2.0); 
-        const yp = Math.floor(H / 2 + ry * ooz * 35);
+        if (ooz < 0) continue; // Salta le particelle dietro la camera
+
+        // LA CORREZIONE MAGICA DELL'ASPECT RATIO (Moltiplichiamo l'asse X * 2.0)
+        // In questo modo le figure non appaiono schiacciate!
+        const xp = Math.floor(W / 2 + rx * ooz * 35 * 2.0);
+        const yp = Math.floor(H / 2 + ry * ooz * 35); 
 
         if (xp >= 0 && xp < W && yp >= 0 && yp < H) {
           const idx = xp + yp * W;
+          
           if (ooz > zb[idx]) {
             zb[idx] = ooz;
-            b[idx] = chars[Math.max(0, Math.min(charsLen, lumIndex))];
-          }
-        }
-      };
-
-      // 1. CREAZIONE GEOMETRIA: IL MANUBRIO 3D (Forme nette)
-      // Barra centrale
-      for (let x = -10; x <= 10; x += 0.5) {
-        for (let a = 0; a < Math.PI * 2; a += 0.5) {
-          const r = 1.5;
-          const py = Math.cos(a) * r;
-          const pz = Math.sin(a) * r;
-          // Calcolo luce base sulla normale
-          let lum = Math.floor((py / r + 1) * 3); 
-          drawPoint(x, py, pz, lum + 2);
-        }
-      }
-      
-      // Pesi laterali (Dischi esagonali/cilindrici per stile Cyber)
-      for (let sign of [-1, 1]) {
-        for (let dx = 10; dx <= 14; dx += 0.5) {
-          for (let a = 0; a < Math.PI * 2; a += 0.2) {
-            const r = 6;
-            const py = Math.cos(a) * r;
-            const pz = Math.sin(a) * r;
-            // Luce direzionale
-            let lum = Math.floor((py / r + 1) * 5);
-            // Evidenzia i bordi esterni del peso
-            if (dx === 10 || dx === 14) lum += 3;
-            drawPoint(dx * sign, py, pz, lum);
+            
+            // Illuminazione basata sulla profondità
+            let lum = Math.floor((ooz * 80) * (charsLen / 2));
+            lum = Math.max(0, Math.min(charsLen, lum));
+            
+            b[idx] = chars[lum];
           }
         }
       }
 
-      // 2. CREAZIONE GEOMETRIA: FLUSSO DATI SOTTOSTANTE (Onde)
-      for (let x = -30; x <= 30; x += 1.5) {
-        for (let z = -15; z <= 15; z += 1.5) {
-          const y = 12 + Math.sin(x * 0.2 + time * 0.1) * 2 + Math.cos(z * 0.2 - time * 0.1) * 2;
-          const dist = Math.sqrt(x*x + z*z);
-          // Sfuma le onde man mano che si allontanano dal centro
-          let lum = 8 - Math.floor(dist * 0.2); 
-          if (lum > 0) {
-             drawPoint(x, y, z, lum);
-          }
-        }
-      }
-
-      // Ricostruzione della stringa per il DOM
+      // Ricostruzione stringa
       let output = "";
       for (let i = 0; i < H; i++) {
         output += b.slice(i * W, (i + 1) * W).join('') + "\n";
       }
 
       if (preRef.current) preRef.current.textContent = output;
-      time += 1;
       frameId = requestAnimationFrame(renderFrame);
     };
 
@@ -451,10 +519,10 @@ const OmniMatrixCore = () => {
 
   return (
     <div className="hidden lg:flex w-full h-full flex-col items-center justify-center relative overflow-hidden">
-      {/* Sfondo mistico/ambientale */}
+      {/* Sfondo ambientale */}
       <div className="absolute inset-0 bg-[var(--accento-1)] opacity-10 blur-[40px] pointer-events-none"></div>
       
-      {/* Schermo ASCII (Dimensioni Font Corrette, niente letter-spacing forzato) */}
+      {/* Schermo ASCII */}
       <pre
         ref={preRef}
         className="font-mono font-black select-none pointer-events-none text-center m-0 w-full"
@@ -463,8 +531,8 @@ const OmniMatrixCore = () => {
           textShadow: '0 0 8px var(--accento-glow)',
           fontSize: '9px',       
           lineHeight: '9px',
-          letterSpacing: 'normal', // FONDAMENTALE: impedisce la deformazione "schiacciata"
-          opacity: 0.9
+          letterSpacing: 'normal', // Niente deformazioni orizzontali!
+          opacity: 0.95
         }}
       />
     </div>
