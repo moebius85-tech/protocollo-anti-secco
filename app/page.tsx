@@ -342,109 +342,209 @@ const AsciiSphere3D = () => {
   );
 };
 
-const OmniLineartSequence = () => {
-  const [activeScene, setActiveScene] = useState(0);
-  const pathRefs = useRef<(SVGPathElement | null)[]>([]);
-
-  // Le tue immagini SVG ricalcate e convertite in linee continue ultra-fluide.
-  // I tracciati sono ottimizzati per un viewBox di 1200x180, per sfruttare tutta l'ampiezza dell'header.
-  const scenes = [
-    {
-      id: "stacco",
-      label: "DEADLIFT",
-      d: "M 450,150 C 470,150 480,120 490,90 C 500,60 510,40 530,30 C 550,20 570,30 580,50 C 590,70 590,100 600,120 C 610,140 630,150 650,150 C 670,150 680,130 690,100 C 700,70 710,50 730,40 C 750,30 760,50 750,70 C 740,90 710,100 690,130 C 670,160 630,160 600,160 C 570,160 550,140 530,120 C 510,100 500,80 480,80 C 460,80 440,110 420,130 C 400,150 380,150 350,150"
-    },
-    {
-      id: "panca",
-      label: "BENCH PRESS",
-      d: "M 350,120 L 450,120 C 470,120 480,100 500,90 C 520,80 540,90 550,110 C 560,130 550,150 530,160 C 510,170 480,160 470,140 C 460,120 470,90 490,70 C 510,50 540,40 570,50 C 600,60 620,90 630,120 C 640,150 660,160 690,160 L 780,160 C 800,160 820,140 840,120 C 860,100 870,70 850,50 C 830,30 800,40 780,60 C 760,80 770,110 790,130"
-    },
-    {
-      id: "affondo",
-      label: "LUNGES",
-      d: "M 380,160 L 460,160 C 480,160 490,130 500,100 C 510,70 530,40 560,30 C 590,20 620,40 630,70 C 640,100 620,130 590,150 C 560,170 520,150 510,120 C 500,90 520,60 550,50 C 580,40 610,60 630,90 C 650,120 680,160 720,160 L 800,160"
-    },
-    {
-      id: "addome",
-      label: "CORE",
-      d: "M 400,140 C 430,140 460,120 480,90 C 500,60 510,30 540,20 C 570,10 600,30 610,60 C 620,90 600,130 570,140 C 540,150 500,130 490,100 C 480,70 510,40 540,40 C 570,40 600,70 610,100 C 620,130 650,160 690,160 L 780,160"
-    },
-    {
-      id: "bicipite",
-      label: "ISOLATION",
-      d: "M 480,170 C 470,120 480,70 510,40 C 540,10 580,20 600,50 C 620,80 610,120 580,140 C 550,160 510,140 500,100 C 490,60 530,30 570,30 C 610,30 640,60 650,100 C 660,140 690,170 740,170"
-    },
-    {
-      id: "bodybuilder",
-      label: "AESTHETICS",
-      d: "M 350,150 C 400,150 430,100 460,70 C 490,40 540,30 580,50 C 620,70 650,120 640,160 C 630,200 580,220 540,190 C 500,160 480,110 510,80 C 540,50 600,50 630,80 C 660,110 680,150 740,150"
-    }
-  ];
+const OmniMatrixCore = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    pathRefs.current.forEach(path => {
-      if (path) {
-        const length = path.getTotalLength();
-        path.style.setProperty('--path-length', `${length}`);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let time = 0;
+    let animationFrameId: number;
+    let currentScene = 0;
+
+    // Configurazione del canvas: Panoramico e bloccato in altezza
+    const W = 1200;
+    const H = 140;
+    canvas.width = W;
+    canvas.height = H;
+
+    const NUM_PARTICLES = 2500;
+    const chars = " .',-~:;!+=%@$#*";
+    const charsLen = chars.length - 1;
+
+    // Inizializza 2500 particelle al centro dello schermo in un piccolo nucleo
+    const particles = Array.from({ length: NUM_PARTICLES }, () => ({
+      x: (Math.random() - 0.5) * 10,
+      y: (Math.random() - 0.5) * 10,
+      z: (Math.random() - 0.5) * 10,
+    }));
+
+    // Costruttore delle coordinate bersaglio per le scene
+    const getTargetsForScene = (sceneIdx: number) => {
+      const targets = [];
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        let px = 0, py = 0, pz = 0;
+        const ratio = i / NUM_PARTICLES;
+
+        if (sceneIdx === 0) {
+          // SCENA 1: "GALASSIA" (Le fondamenta dei dati)
+          // Una spirale galattica che ruota lentamente
+          const r = Math.random() * 60;
+          const a = Math.random() * Math.PI * 2;
+          const spiral = a + r * 0.1;
+          px = Math.cos(spiral) * r;
+          py = (Math.random() - 0.5) * 8;
+          pz = Math.sin(spiral) * r;
+        } 
+        else if (sceneIdx === 1) {
+          // SCENA 2: "IL MANUBRIO" (Dumbbell 3D volumetrico)
+          // Cilindro centrale e dischi laterali
+          const a = Math.random() * Math.PI * 2;
+          const len = (Math.random() - 0.5) * 40;
+          const isWeight = len < -12 || len > 12;
+          const radius = isWeight ? (Math.random() > 0.5 ? 12 : 9) : 2;
+          px = len;
+          py = Math.cos(a) * radius;
+          pz = Math.sin(a) * radius;
+        } 
+        else if (sceneIdx === 2) {
+          // SCENA 3: "TUNNEL DEL FLOW" (Concentrazione profonda)
+          // Un tubo prospettico che avvolge la visuale
+          const depth = Math.random() * 100;
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 6 + depth * 0.2;
+          px = Math.cos(angle) * radius;
+          py = Math.sin(angle) * radius;
+          pz = depth - 50; 
+        } 
+        else if (sceneIdx === 3) {
+          // SCENA 4: "ONDA DI TELEMETRIA" (Connessione uomo-macchina)
+          // Un paesaggio sinuoso stile terreno wireframe
+          px = (Math.random() - 0.5) * 100;
+          pz = (Math.random() - 0.5) * 100;
+          // Usa funzioni matematiche per creare montagne e valli
+          py = Math.sin(px * 0.1) * 6 + Math.cos(pz * 0.1) * 6 + 15;
+          
+          // Alza due "picchi" centrali a simboleggiare due persone
+          if (px > -15 && px < -5 && Math.abs(pz) < 5) py -= Math.random() * 20;
+          if (px < 15 && px > 5 && Math.abs(pz) < 5) py -= Math.random() * 20;
+        }
+
+        targets.push({ x: px, y: py, z: pz });
       }
-    });
+      return targets;
+    };
+
+    // Vettore delle coordinate bersaglio attuali
+    let currentTargets = getTargetsForScene(currentScene);
+    const words = "OMNIFIT".split('');
+
+    // La funzione che disegna il singolo frame
+    const renderFrame = () => {
+      time += 1;
+      
+      // CAMBIO SCENA: Ogni 300 frame (circa 5 secondi a 60fps)
+      if (time % 300 === 0) {
+        currentScene = (currentScene + 1) % 4;
+        currentTargets = getTargetsForScene(currentScene);
+      }
+
+      // Pulisci il canvas (sfondo trasparente)
+      ctx.clearRect(0, 0, W, H);
+
+      // Stile del testo: prendi il colore CSS dal tema attivo
+      const computedStyle = getComputedStyle(document.documentElement);
+      const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
+      
+      ctx.fillStyle = accento;
+      // Il font è monospazio per un effetto "codice Matrix"
+      ctx.font = '8px monospace'; 
+      ctx.textAlign = 'center';
+
+      // Rotazione costante della camera intorno all'asse Y
+      const rotY = time * 0.005;
+      const cosY = Math.cos(rotY);
+      const sinY = Math.sin(rotY);
+
+      // Array temporaneo per ordinare le particelle dalla più lontana alla più vicina (Painter's algorithm)
+      const renderList = [];
+
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        const p = particles[i];
+        const t = currentTargets[i];
+
+        // ELASTIC MORPHING: La particella insegue il suo bersaglio
+        p.x += (t.x - p.x) * 0.05;
+        p.y += (t.y - p.y) * 0.05;
+        p.z += (t.z - p.z) * 0.05;
+
+        // Ruota il punto nello spazio tridimensionale
+        const rx = p.x * cosY - p.z * sinY;
+        const ry = p.y;
+        const rz = p.x * sinY + p.z * cosY;
+
+        // Proiezione Prospettica
+        const focalLength = 60;
+        const zDepth = rz + focalLength;
+        
+        // Non renderizzare punti dietro la telecamera
+        if (zDepth <= 0) continue; 
+
+        const scale = focalLength / zDepth;
+        
+        // Coordinate a schermo: Centriamo l'animazione in W/2 e H/2
+        // IMPORTANTE: il moltiplicatore * 2 su scaleX corregge l'aspect ratio, così il manubrio non sembra "schiacciato"
+        const screenX = W / 2 + rx * scale * 10 * 2.0;
+        const screenY = H / 2 + ry * scale * 10;
+
+        // Calcola l'illuminazione in base alla profondità:
+        // Punti vicini = caratteri complessi (@, #, $) ed elevata opacità.
+        // Punti lontani = caratteri semplici (., -, ') e bassa opacità.
+        let lum = Math.floor((1 / zDepth) * 1200);
+        lum = Math.max(0, Math.min(charsLen, lum));
+        const alpha = Math.min(1, Math.max(0.1, (1 / zDepth) * 60));
+
+        renderList.push({
+          x: screenX,
+          y: screenY,
+          z: zDepth,
+          char: (lum > 10) ? words[i % words.length] : chars[lum], // Parole vicine, rumore lontano
+          alpha: alpha
+        });
+      }
+
+      // Ordina i punti per z (dal più lontano al più vicino) per simulare l'occlusione visiva
+      renderList.sort((a, b) => b.z - a.z);
+
+      // Disegna i punti sul canvas
+      for (const pt of renderList) {
+        // Disegna solo se si trova dentro lo schermo
+        if (pt.x > 0 && pt.x < W && pt.y > 0 && pt.y < H) {
+          ctx.globalAlpha = pt.alpha;
+          ctx.fillText(pt.char, pt.x, pt.y);
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(renderFrame);
+    };
+
+    renderFrame();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveScene((prev) => (prev + 1) % scenes.length);
-    }, 6500);
-    return () => clearInterval(timer);
-  }, [scenes.length]);
-
   return (
-    // Posizionamento in absolute che copre tutta l'ampiezza dell'header senza deformarlo
     <div className="hidden lg:flex w-full h-full items-center justify-center absolute inset-0 overflow-hidden pointer-events-none z-0">
       
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes drawWideLine {
-          0% { stroke-dashoffset: var(--path-length); opacity: 0; filter: drop-shadow(0 0 2px var(--accento-glow)); }
-          15% { opacity: 1; filter: drop-shadow(0 0 12px var(--accento-glow)); }
-          75% { stroke-dashoffset: 0; opacity: 1; filter: drop-shadow(0 0 18px var(--accento-glow)); }
-          90% { stroke-dashoffset: 0; opacity: 0.5; filter: drop-shadow(0 0 8px var(--accento-glow)); }
-          100% { stroke-dashoffset: 0; opacity: 0; filter: drop-shadow(0 0 0px transparent); }
-        }
-        .anim-lineart-wide {
-          stroke-dasharray: var(--path-length);
-          stroke-dashoffset: var(--path-length);
-          animation: drawWideLine 6.5s cubic-bezier(0.35, 0.05, 0.25, 1) infinite forwards;
-        }
-      `}} />
+      {/* Sfondo mistico con effetto Glow */}
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.06] blur-[30px] pointer-events-none transition-opacity duration-1000"></div>
 
-      {/* Bagliore di fondo morbido */}
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.08] blur-[40px] pointer-events-none transition-opacity duration-1000"></div>
-
-      {/* Testo fantasma di sfondo in dissolvenza */}
-      <span className="absolute text-[80px] font-black uppercase tracking-[0.5em] text-[var(--testo-debole)] opacity-[0.05] transition-all duration-[1500ms] pointer-events-none select-none">
-        {scenes[activeScene].label}
+      {/* Testo di background (Opzionale: puoi rimuoverlo se vuoi un look più pulito) */}
+      <span className="absolute text-[80px] font-black uppercase tracking-[0.5em] text-[var(--testo-debole)] opacity-[0.03] transition-all duration-[1500ms] pointer-events-none select-none">
+        OMNICOACH
       </span>
 
-      {/* Tela panoramica vettoriale SVG */}
-      <svg 
-        viewBox="0 0 1200 180" 
-        className="w-full h-full relative z-10 overflow-visible"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        {scenes.map((scene, index) => (
-          <path
-            key={scene.id}
-            ref={el => { pathRefs.current[index] = el; }}
-            d={scene.d}
-            fill="none"
-            stroke="var(--accento-1)"
-            strokeWidth="4"
-            strokeLinecap="round"   // Elimina il tremolio e arrotonda la punta della linea
-            strokeLinejoin="round"  // Rende le curve morbidissime
-            className={`transition-opacity duration-1000 ${activeScene === index ? 'anim-lineart-wide' : 'opacity-0'}`}
-            style={{ display: activeScene === index ? 'block' : 'none' }}
-          />
-        ))}
-      </svg>
+      {/* Il Canvas HTML5 nativo che renderizza le particelle */}
+      <canvas 
+        ref={canvasRef}
+        className="w-full h-[140px] relative z-10"
+        style={{ filter: 'drop-shadow(0 0 6px var(--accento-glow))' }}
+      />
     </div>
   );
 };
@@ -1496,15 +1596,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
   return (
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
-      <header className="mb-6 pb-2 relative z-20 anim-pop min-h-[150px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
+      <header className="mb-6 pb-2 relative z-20 anim-pop h-[140px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
         
         {/* BACKGROUND ANIMATO: Si estende su tutta la larghezza dell'header */}
         <div className="absolute inset-y-0 -left-8 -right-8 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
-           <OmniLineartSequence />
+           <OmniMatrixCore />
         </div>
 
         {/* CONTENITORE UI: Posizionato in primo piano (z-10) per mantenere i bottoni cliccabili */}
-        <div className="flex justify-between items-start w-full relative z-10">
+        <div className="flex justify-between items-start w-full h-full relative z-10">
             
             {/* ZONA SINISTRA: Titolo e Temi */}
             <div className="shrink-0 flex flex-col justify-start">
