@@ -341,7 +341,6 @@ const AsciiSphere3D = () => {
     </div>
   );
 };
-import { useState, useEffect, useRef } from 'react';
 
 const OmniLineartSequence = () => {
   const [activeScene, setActiveScene] = useState(0);
