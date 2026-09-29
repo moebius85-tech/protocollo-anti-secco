@@ -770,8 +770,14 @@ const renderDescrizioneConHUD = (testo: string) => {
     setCarichiAttuali({}); alert(`Sessione salvata.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta);
   };
   
-  const toggleCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true } }));
+  // Passando "seed" si porta dentro la modalità Custom il consiglio dell'IA già presente
+  // (nome + macro), invece di ripartire da un campo vuoto che lo fa sparire dalla vista.
+  const toggleCustomMeal = (cat: string, seed?: {nome: string, cho: string, pro: string, fat: string}) =>
+    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true, ...(seed || {}) } }));
   const resetCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { attivo: false, cho: '', pro: '', fat: '', nome: '' } }));
+  // Svuota solo nome/macro per scegliere da capo, restando in modalità Custom
+  // (diverso da resetCustomMeal, che invece torna al pasto gestito dall'IA)
+  const svuotaCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], nome: '', cho: '', pro: '', fat: '' } }));
   const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat'|'nome', value: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], [field]: value } }));
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const apriSwapEsercizio = (es: any) => { 
@@ -1787,7 +1793,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       <div className="flex gap-3">
                         {!isCustom ? (
                           <>
-                            <button onClick={() => toggleCustomMeal(cat)} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Custom</button>
+                            <button onClick={() => toggleCustomMeal(cat, { nome: itemScelto.nome, cho: String(finalCho), pro: String(finalPro), fat: String(finalFat) })} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Custom</button>
                             <button onClick={() => apriSwapAlimento(cat)} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-orange-500 hover:text-rose-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Swap</button>
                           </>
                         ) : (
@@ -1804,7 +1810,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       <div className="ml-2">
         <div className="flex justify-between items-center mb-4">
           <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
-          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-[var(--velo-60)] hover:bg-[var(--superficie)] transition-all cursor-pointer shrink-0">Cambia</button>
+          <div className="flex gap-1.5 shrink-0">
+            <button onClick={() => setModalScegliDispensa(cat)} title="Somma un altro alimento a questo, senza cancellarlo" className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-[var(--velo-60)] hover:bg-[var(--superficie)] transition-all cursor-pointer">+ Aggiungi</button>
+            <button onClick={() => svuotaCustomMeal(cat)} title="Cancella e scegli da capo" className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-slate-500 font-bold uppercase tracking-widest border border-[var(--velo-60)] hover:bg-[var(--superficie)] transition-all cursor-pointer">✕</button>
+          </div>
         </div>
         <div className="flex gap-4 mb-2">
           <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-orange-500"} /></div>
@@ -2602,7 +2611,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 // Salva direttamente nella dispensa globale
                 setDispensa(prev => [{
                   id: item.id,
-                  nome: item.marchio === 'Generico' || item.marchio === 'Sconosciuto' ? item.nome : item.marchio,
+                  // Sempre il nome completo (marchio + prodotto): usare solo il marchio
+                  // "perdeva" la parola cercata più spesso (es. "Whey" nel nome del
+                  // prodotto), rendendo introvabile l'elemento nella ricerca.
+                  nome: item.nome,
                   tipologia: item.tipologia,
                   cho: item.cho, 
                   pro: item.pro, 
