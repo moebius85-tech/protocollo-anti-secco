@@ -2586,8 +2586,6 @@ if (!usaIntegratori) {
         
       </nav>
 
-      {/* COMPONENTE OLOGRAFICO MOBILE */}
-      <MobileHoloTransition status={tabTransition.status} prevTab={tabTransition.prev} nextTab={tabTransition.next} />
 
       {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
       {focusWorkout && (() => {
