@@ -661,6 +661,27 @@ const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetT
     </div>
   );
 };
+const MobileFluidTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
+  return (
+    <div className={`fixed inset-0 z-[9999] pointer-events-none overflow-hidden transition-opacity duration-700 ease-in-out sm:hidden ${active ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Sfondo scuro che copre la vecchia interfaccia */}
+      <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-xl"></div>
+
+      {/* Orbo Smeraldo Superiore (Fluttua ed espande) */}
+      <div className={`absolute top-[-10%] left-[-20%] w-[80vw] h-[80vw] bg-emerald-500/50 rounded-full blur-[60px] mix-blend-screen transition-transform duration-[1200ms] ease-out ${active ? 'translate-x-[40vw] translate-y-[20vh] scale-150' : 'translate-x-0 translate-y-0 scale-50'}`}></div>
+
+      {/* Orbo Lime Inferiore (Fluttua ed espande in direzione opposta) */}
+      <div className={`absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] bg-lime-400/40 rounded-full blur-[70px] mix-blend-screen transition-transform duration-[1000ms] delay-100 ease-out ${active ? '-translate-x-[30vw] -translate-y-[20vh] scale-125' : 'translate-x-0 translate-y-0 scale-50'}`}></div>
+
+      {/* Testo Centrale Elegante */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className={`text-white font-black text-2xl tracking-[0.4em] uppercase drop-shadow-[0_0_15px_rgba(163,230,53,0.6)] transition-all duration-700 delay-150 ${active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-4'}`}>
+          {targetTab}
+        </span>
+      </div>
+    </div>
+  );
+};
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -776,23 +797,24 @@ export default function Home() {
   
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
+  // LOGICA TRANSIZIONE FLUIDA (STILE VIDEO AURORA)
   const [tabTransition, setTabTransition] = useState({ active: false, target: '' });
 
   const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
     if (newTab === mobileTab || tabTransition.active) return;
     
+    // 1. Accende l'overlay fluido
     setTabTransition({ active: true, target: newTab });
     
-    // Cambia i dati veri dietro al canvas a 500ms
+    // 2. A 500ms (schermo completamente avvolto dalla luce), cambia la pagina nascosta
     setTimeout(() => {
       setMobileTab(newTab);
     }, 500); 
 
-    // ATTESA PIU' LUNGA: La scritta rimane visibile intatta. 
-    // A 1300ms il modale si spegne e le particelle scattano in formazione a spirale.
+    // 3. A 1200ms fa dissolvere lentamente i blob di luce
     setTimeout(() => {
       setTabTransition({ active: false, target: '' });
-    }, 1300); 
+    }, 1200); 
   };
   
   // STATI TIMER FOCUS
@@ -2575,9 +2597,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         {renderNavicon('ALLENAMENTO', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M6 4v16"></path><path d="M18 4v16"></path><path d="M2 8h4"></path><path d="M2 16h4"></path><path d="M18 8h4"></path><path d="M18 16h4"></path><path d="M6 12h12"></path></svg>, 'Workout')}
         
       </nav>
-      
-      {/* OVERLAY TRANSIZIONE MOBILE */}
-      <MobileAsciiTransition active={tabTransition.active} targetTab={tabTransition.target} />
+
+      {/* OVERLAY TRANSIZIONE FLUIDA */}
+      <MobileFluidTransition active={tabTransition.active} targetTab={tabTransition.target} />
 
       {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
       {focusWorkout && (() => {
