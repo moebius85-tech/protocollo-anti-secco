@@ -503,6 +503,58 @@ const OmniMatrixCore = () => {
     </div>
   );
 };
+const MobileDeluxeTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
+  return (
+    <div className={`fixed inset-0 z-[9999] overflow-hidden transition-all duration-700 ease-out sm:hidden
+      ${active ? 'opacity-100 pointer-events-auto bg-[var(--superficie)]/90 backdrop-blur-xl' : 'opacity-0 pointer-events-none'}`}>
+      
+      {/* STILI INTERNI PER LE ANIMAZIONI SVG */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes drawPath { from { stroke-dashoffset: 1500; } to { stroke-dashoffset: 0; } }
+        @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spinReverse { from { transform: rotate(45deg); } to { transform: rotate(-315deg); } }
+        .anim-draw { animation: drawPath 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .anim-spin { animation: spinSlow 8s linear infinite; }
+        .anim-spin-rev { animation: spinReverse 10s linear infinite; }
+      `}} />
+
+      {/* BACKGROUND GLOWS (Subtili, adattati al tema) */}
+      <div className={`absolute top-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[var(--accento-1)] opacity-10 blur-[50px] transition-transform duration-1000 ${active ? 'scale-150' : 'scale-50'}`} />
+      <div className={`absolute bottom-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-[var(--accento-glow)] opacity-15 blur-[60px] transition-transform duration-1000 delay-100 ${active ? 'scale-125' : 'scale-50'}`} />
+
+      {/* LINE ART: Anelli fluidi e path che si disegnano */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
+        <circle cx="10%" cy="20%" r="200" fill="none" stroke="var(--accento-1)" strokeWidth="1" strokeDasharray="1500" strokeDashoffset="1500" className={active ? "anim-draw" : ""} style={{ opacity: 0.3 }} />
+        <circle cx="90%" cy="80%" r="250" fill="none" stroke="var(--accento-1)" strokeWidth="1.5" strokeDasharray="1500" strokeDashoffset="1500" className={active ? "anim-draw" : ""} style={{ opacity: 0.2, animationDelay: '0.2s' }} />
+        <path d="M -50 600 Q 200 400 500 700" fill="none" stroke="var(--accento-1)" strokeWidth="2" strokeDasharray="1500" strokeDashoffset="1500" className={active ? "anim-draw" : ""} style={{ opacity: 0.4, animationDelay: '0.1s' }} />
+      </svg>
+
+      {/* FORME FLUTTUANTI CHE RUOTANO (Scintilla e Rombo) */}
+      <div className={`absolute top-[25%] left-[20%] transition-all duration-[1200ms] cubic-bezier(0.34, 1.56, 0.64, 1) ${active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-0 translate-y-10'}`}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accento-1)" className="anim-spin drop-shadow-[0_0_8px_var(--accento-glow)]">
+          {/* Un fiore/scintilla a 8 punte */}
+          <path d="M12 0l1.5 8.5L22 10l-8.5 1.5L12 20l-1.5-8.5L2 10l8.5-1.5z" />
+        </svg>
+      </div>
+
+      <div className={`absolute bottom-[30%] right-[25%] transition-all duration-[1200ms] delay-150 cubic-bezier(0.34, 1.56, 0.64, 1) ${active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-0 translate-y-10'}`}>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accento-1)" strokeWidth="1.5" className="anim-spin-rev opacity-60">
+          <rect x="4" y="4" width="16" height="16" rx="3" />
+        </svg>
+      </div>
+
+      {/* TYPOGRAPHY CENTRALE */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className={`text-[9px] text-slate-400 uppercase tracking-[0.4em] font-black mb-3 transition-all duration-700 delay-100 ${active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          System Routing
+        </span>
+        <h2 className={`text-4xl sm:text-5xl font-black text-[var(--testo-forte)] tracking-widest transition-all duration-[900ms] delay-200 cubic-bezier(0.2, 0.8, 0.2, 1) ${active ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-md'}`}>
+          {targetTab}
+        </h2>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
