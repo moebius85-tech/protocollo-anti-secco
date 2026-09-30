@@ -2963,12 +2963,8 @@ if (!usaIntegratori) {
               categoria={mazzoAttivo} 
               onClose={() => setMazzoAttivo(null)}
               onSave={(item) => {
-                // Salva direttamente nella dispensa globale
                 setDispensa(prev => [{
                   id: item.id,
-                  // Sempre il nome completo (marchio + prodotto): usare solo il marchio
-                  // "perdeva" la parola cercata più spesso (es. "Whey" nel nome del
-                  // prodotto), rendendo introvabile l'elemento nella ricerca.
                   nome: item.nome,
                   tipologia: item.tipologia,
                   cho: item.cho, 
@@ -2978,12 +2974,10 @@ if (!usaIntegratori) {
                   immagine: item.immagine
                 }, ...prev]);
                 
-                // Chiudiamo il mazzo e diamo feedback visivo
                 setMazzoAttivo(null);
                 alert(`${item.nome} aggiunto alla tua Dispensa!`);
               }}
               onCustom={() => {
-                 // Chiude il mazzo e apre la ricerca AI testuale/fotografica
                  setMazzoAttivo(null);
                  setModalScegliDispensa('Integrazione'); 
               }}
@@ -2991,17 +2985,6 @@ if (!usaIntegratori) {
           </div>
         </div>
       )}
-
-      {/* --- MOTORE DELLA SCOMPOSIZIONE (CSS + BLEND MODE) --- */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        .ui-decompose {
-          animation: uiDecomp 0.35s cubic-bezier(0.4, 0, 1, 1) forwards;
-        }
-        .ui-compose {
-          animation: uiComp 0.35s cubic-bezier(0, 0, 0.2, 1) forwards;
-        }
-      
     </main>
   );
 }
-
