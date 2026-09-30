@@ -555,70 +555,6 @@ const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetT
     if (!active) return;
     let frameId: number;
     const chars = "01アイウエオカキクケコサシスセソ01.,-~:;=!*#$@";
-    
-    // Dimensioni griglia ASCII per mobile
-    const W = 40;
-    const H = 20;
-
-    const render = () => {
-      let output = "";
-      for (let y = 0; y < H; y++) {
-        let line = "";
-        for (let x = 0; x < W; x++) {
-          // Crea l'effetto "rumore"
-          line += chars[Math.floor(Math.random() * chars.length)];
-        }
-        output += line + "\n";
-      }
-
-      // Inietta il nome della sezione al centro dell'effetto Matrix
-      if (targetTab) {
-        const centerRow = Math.floor(H / 2);
-        const label = ` [ SYSTEM REBOOT: ${targetTab} ] `;
-        const startIdx = Math.floor((W - label.length) / 2);
-        
-        const lines = output.split('\n');
-        const row = lines[centerRow];
-        lines[centerRow] = row.substring(0, startIdx) + label + row.substring(startIdx + label.length);
-        output = lines.join('\n');
-      }
-
-      if (preRef.current) preRef.current.textContent = output;
-      frameId = requestAnimationFrame(render);
-    };
-
-    render();
-    return () => cancelAnimationFrame(frameId);
-  }, [active, targetTab]);
-
-  return (
-    <div 
-      className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/95 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-300 sm:hidden
-        ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none scale-105'}`}
-    >
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.05] blur-[20px]"></div>
-      <pre
-        ref={preRef}
-        className="font-mono font-black select-none text-center m-0 relative z-10 w-full px-4 overflow-hidden"
-        style={{
-          color: 'var(--accento-1)',
-          textShadow: '0 0 8px var(--accento-glow)',
-          fontSize: '11px',
-          lineHeight: '12px',
-          letterSpacing: '2px'
-        }}
-      />
-    </div>
-  );
-};
-
-const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
-  const preRef = useRef<HTMLPreElement>(null);
-
-  useEffect(() => {
-    if (!active) return;
-    let frameId: number;
-    const chars = "01アイウエオカキクケコサシスセソ01.,-~:;=!*#$@";
     const W = 40;
     const H = 20;
 
@@ -780,46 +716,23 @@ export default function Home() {
   
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
-  
-  // LOGICA DI TRANSIZIONE ANIMATA MOBILE
   const [tabTransition, setTabTransition] = useState({ active: false, target: '' });
 
   const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
-    // Se stai già cliccando sulla pagina attiva o c'è un'animazione in corso, ignora
     if (newTab === mobileTab || tabTransition.active) return;
     
-    // 1. Accendi lo schermo Matrix
     setTabTransition({ active: true, target: newTab });
     
-    // 2. Dopo 300 millisecondi (mentre lo schermo è coperto), cambia la pagina in background
     setTimeout(() => {
       setMobileTab(newTab);
     }, 300); 
 
-    // 3. Dopo 700 millisecondi, dissolvi lo schermo Matrix svelando la nuova pagina
     setTimeout(() => {
       setTabTransition({ active: false, target: '' });
     }, 700); 
   };
-
-  const [tabTransition, setTabTransition] = useState({ active: false, target: '' });
-
-  const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
-    if (newTab === mobileTab || tabTransition.active) return;
-    
-    // 1. Attiva lo schermo ASCII a comparsa istantanea
-    setTabTransition({ active: true, target: newTab });
-    
-    // 2. A metà transizione, quando lo schermo è coperto, cambiamo il DOM sottostante
-    setTimeout(() => {
-      setMobileTab(newTab);
-    }, 250); 
-
-    // 3. Fine transizione, dissolve l'effetto ASCII svelando la nuova pagina
-    setTimeout(() => {
-      setTabTransition({ active: false, target: '' });
-    }, 650); 
-  };
+  
+  // LOGICA DI TRANSIZIONE ANIMATA MOBILE
   
   // STATI TIMER FOCUS
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
