@@ -341,347 +341,61 @@ const AsciiSphere3D = () => {
     </div>
   );
 };
-
-const OmniMatrixCore = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let time = 0;
-    let animationFrameId: number;
-    let currentScene = 0;
-
-    // Configurazione del canvas: Panoramico e bloccato in altezza
-    const W = 1200;
-    const H = 140;
-    canvas.width = W;
-    canvas.height = H;
-
-    const NUM_PARTICLES = 2500;
-    const chars = " .',-~:;!+=%@$#*";
-    const charsLen = chars.length - 1;
-
-    // Inizializza 2500 particelle al centro dello schermo in un piccolo nucleo
-    const particles = Array.from({ length: NUM_PARTICLES }, () => ({
-      x: (Math.random() - 0.5) * 10,
-      y: (Math.random() - 0.5) * 10,
-      z: (Math.random() - 0.5) * 10,
-    }));
-
-    // Costruttore delle coordinate bersaglio per le scene
-    const getTargetsForScene = (sceneIdx: number) => {
-      const targets = [];
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        let px = 0, py = 0, pz = 0;
-        const ratio = i / NUM_PARTICLES;
-
-        if (sceneIdx === 0) {
-          // SCENA 1: "GALASSIA" (Le fondamenta dei dati)
-          // Una spirale galattica che ruota lentamente
-          const r = Math.random() * 60;
-          const a = Math.random() * Math.PI * 2;
-          const spiral = a + r * 0.1;
-          px = Math.cos(spiral) * r;
-          py = (Math.random() - 0.5) * 8;
-          pz = Math.sin(spiral) * r;
-        } 
-        else if (sceneIdx === 1) {
-          // SCENA 2: "IL MANUBRIO" (Dumbbell 3D volumetrico)
-          // Cilindro centrale e dischi laterali
-          const a = Math.random() * Math.PI * 2;
-          const len = (Math.random() - 0.5) * 40;
-          const isWeight = len < -12 || len > 12;
-          const radius = isWeight ? (Math.random() > 0.5 ? 12 : 9) : 2;
-          px = len;
-          py = Math.cos(a) * radius;
-          pz = Math.sin(a) * radius;
-        } 
-        else if (sceneIdx === 2) {
-          // SCENA 3: "TUNNEL DEL FLOW" (Concentrazione profonda)
-          // Un tubo prospettico che avvolge la visuale
-          const depth = Math.random() * 100;
-          const angle = Math.random() * Math.PI * 2;
-          const radius = 6 + depth * 0.2;
-          px = Math.cos(angle) * radius;
-          py = Math.sin(angle) * radius;
-          pz = depth - 50; 
-        } 
-        else if (sceneIdx === 3) {
-          // SCENA 4: "ONDA DI TELEMETRIA" (Connessione uomo-macchina)
-          // Un paesaggio sinuoso stile terreno wireframe
-          px = (Math.random() - 0.5) * 100;
-          pz = (Math.random() - 0.5) * 100;
-          // Usa funzioni matematiche per creare montagne e valli
-          py = Math.sin(px * 0.1) * 6 + Math.cos(pz * 0.1) * 6 + 15;
-          
-          // Alza due "picchi" centrali a simboleggiare due persone
-          if (px > -15 && px < -5 && Math.abs(pz) < 5) py -= Math.random() * 20;
-          if (px < 15 && px > 5 && Math.abs(pz) < 5) py -= Math.random() * 20;
-        }
-
-        targets.push({ x: px, y: py, z: pz });
-      }
-      return targets;
-    };
-
-    // Vettore delle coordinate bersaglio attuali
-    let currentTargets = getTargetsForScene(currentScene);
-    const words = "OMNIFIT".split('');
-
-    // La funzione che disegna il singolo frame
-    const renderFrame = () => {
-      time += 1;
-      
-      // CAMBIO SCENA: Ogni 300 frame (circa 5 secondi a 60fps)
-      if (time % 300 === 0) {
-        currentScene = (currentScene + 1) % 4;
-        currentTargets = getTargetsForScene(currentScene);
-      }
-
-      // Pulisci il canvas (sfondo trasparente)
-      ctx.clearRect(0, 0, W, H);
-
-      // Stile del testo: prendi il colore CSS dal tema attivo
-      const computedStyle = getComputedStyle(document.documentElement);
-      const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
-      
-      ctx.fillStyle = accento;
-      // Il font è monospazio per un effetto "codice Matrix"
-      ctx.font = '8px monospace'; 
-      ctx.textAlign = 'center';
-
-      // Rotazione costante della camera intorno all'asse Y
-      const rotY = time * 0.005;
-      const cosY = Math.cos(rotY);
-      const sinY = Math.sin(rotY);
-
-      // Array temporaneo per ordinare le particelle dalla più lontana alla più vicina (Painter's algorithm)
-      const renderList = [];
-
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        const p = particles[i];
-        const t = currentTargets[i];
-
-        // ELASTIC MORPHING: La particella insegue il suo bersaglio
-        p.x += (t.x - p.x) * 0.05;
-        p.y += (t.y - p.y) * 0.05;
-        p.z += (t.z - p.z) * 0.05;
-
-        // Ruota il punto nello spazio tridimensionale
-        const rx = p.x * cosY - p.z * sinY;
-        const ry = p.y;
-        const rz = p.x * sinY + p.z * cosY;
-
-        // Proiezione Prospettica
-        const focalLength = 60;
-        const zDepth = rz + focalLength;
-        
-        // Non renderizzare punti dietro la telecamera
-        if (zDepth <= 0) continue; 
-
-        const scale = focalLength / zDepth;
-        
-        // Coordinate a schermo: Centriamo l'animazione in W/2 e H/2
-        // IMPORTANTE: il moltiplicatore * 2 su scaleX corregge l'aspect ratio, così il manubrio non sembra "schiacciato"
-        const screenX = W / 2 + rx * scale * 10 * 2.0;
-        const screenY = H / 2 + ry * scale * 10;
-
-        // Calcola l'illuminazione in base alla profondità:
-        // Punti vicini = caratteri complessi (@, #, $) ed elevata opacità.
-        // Punti lontani = caratteri semplici (., -, ') e bassa opacità.
-        let lum = Math.floor((1 / zDepth) * 1200);
-        lum = Math.max(0, Math.min(charsLen, lum));
-        const alpha = Math.min(1, Math.max(0.1, (1 / zDepth) * 60));
-
-        renderList.push({
-          x: screenX,
-          y: screenY,
-          z: zDepth,
-          char: (lum > 10) ? words[i % words.length] : chars[lum], // Parole vicine, rumore lontano
-          alpha: alpha
-        });
-      }
-
-      // Ordina i punti per z (dal più lontano al più vicino) per simulare l'occlusione visiva
-      renderList.sort((a, b) => b.z - a.z);
-
-      // Disegna i punti sul canvas
-      for (const pt of renderList) {
-        // Disegna solo se si trova dentro lo schermo
-        if (pt.x > 0 && pt.x < W && pt.y > 0 && pt.y < H) {
-          ctx.globalAlpha = pt.alpha;
-          ctx.fillText(pt.char, pt.x, pt.y);
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(renderFrame);
-    };
-
-    renderFrame();
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
+const MobileDeluxeTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
   return (
-    <div className="hidden lg:flex w-full h-full items-center justify-center absolute inset-0 overflow-hidden pointer-events-none z-0">
+    <div className={`fixed inset-0 z-[9999] overflow-hidden transition-all duration-700 ease-out sm:hidden
+      ${active ? 'opacity-100 pointer-events-auto bg-[var(--superficie)]/90 backdrop-blur-xl' : 'opacity-0 pointer-events-none'}`}>
       
-      {/* Sfondo mistico con effetto Glow */}
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.06] blur-[30px] pointer-events-none transition-opacity duration-1000"></div>
+      {/* STILI INTERNI PER LE ANIMAZIONI SVG */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes drawPath { from { stroke-dashoffset: 1500; } to { stroke-dashoffset: 0; } }
+        @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spinReverse { from { transform: rotate(45deg); } to { transform: rotate(-315deg); } }
+        .anim-draw { animation: drawPath 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .anim-spin { animation: spinSlow 8s linear infinite; }
+        .anim-spin-rev { animation: spinReverse 10s linear infinite; }
+      `}} />
 
-      {/* Testo di background (Opzionale: puoi rimuoverlo se vuoi un look più pulito) */}
-      <span className="absolute text-[80px] font-black uppercase tracking-[0.5em] text-[var(--testo-debole)] opacity-[0.03] transition-all duration-[1500ms] pointer-events-none select-none">
-        OMNICOACH
-      </span>
+      {/* BACKGROUND GLOWS (Subtili, adattati al tema) */}
+      <div className={`absolute top-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[var(--accento-1)] opacity-10 blur-[50px] transition-transform duration-1000 ${active ? 'scale-150' : 'scale-50'}`} />
+      <div className={`absolute bottom-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-[var(--accento-glow)] opacity-15 blur-[60px] transition-transform duration-1000 delay-100 ${active ? 'scale-125' : 'scale-50'}`} />
 
-      {/* Il Canvas HTML5 nativo che renderizza le particelle */}
-      <canvas 
-        ref={canvasRef}
-        className="w-full h-[140px] relative z-10"
-        style={{ filter: 'drop-shadow(0 0 6px var(--accento-glow))' }}
-      />
-    </div>
-  );
-};
-const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const particlesRef = useRef<any[]>([]);
+      {/* LINE ART: Anelli fluidi e path che si disegnano */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
+        <circle cx="10%" cy="20%" r="200" fill="none" stroke="var(--accento-1)" strokeWidth="1" strokeDasharray="1500" strokeDashoffset="1500" className={active ? "anim-draw" : ""} style={{ opacity: 0.3 }} />
+        <circle cx="90%" cy="80%" r="250" fill="none" stroke="var(--accento-1)" strokeWidth="1.5" strokeDasharray="1500" strokeDashoffset="1500" className={active ? "anim-draw" : ""} style={{ opacity: 0.2, animationDelay: '0.2s' }} />
+        <path d="M -50 600 Q 200 400 500 700" fill="none" stroke="var(--accento-1)" strokeWidth="2" strokeDasharray="1500" strokeDashoffset="1500" className={active ? "anim-draw" : ""} style={{ opacity: 0.4, animationDelay: '0.1s' }} />
+      </svg>
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
+      {/* FORME FLUTTUANTI CHE RUOTANO (Scintilla e Rombo) */}
+      <div className={`absolute top-[25%] left-[20%] transition-all duration-[1200ms] cubic-bezier(0.34, 1.56, 0.64, 1) ${active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-0 translate-y-10'}`}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accento-1)" className="anim-spin drop-shadow-[0_0_8px_var(--accento-glow)]">
+          {/* Un fiore/scintilla a 8 punte */}
+          <path d="M12 0l1.5 8.5L22 10l-8.5 1.5L12 20l-1.5-8.5L2 10l8.5-1.5z" />
+        </svg>
+      </div>
 
-    let frameId: number;
-    const W = canvas.width = window.innerWidth;
-    const H = canvas.height = window.innerHeight;
+      <div className={`absolute bottom-[30%] right-[25%] transition-all duration-[1200ms] delay-150 cubic-bezier(0.34, 1.56, 0.64, 1) ${active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-0 translate-y-10'}`}>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accento-1)" strokeWidth="1.5" className="anim-spin-rev opacity-60">
+          <rect x="4" y="4" width="16" height="16" rx="3" />
+        </svg>
+      </div>
 
-    const NUM_PARTICLES = 1500; 
-    const chars = " .',-~:;!+=%@$#*";
-
-    // Ottimizzazione: Leggiamo il tema UNA SOLA VOLTA quando l'animazione parte, non 60 volte al secondo.
-    const theme = document.documentElement.getAttribute('data-theme');
-    let colorAccento = getComputedStyle(document.documentElement).getPropertyValue('--accento-1').trim() || '#a3e635';
-    // Fix contrasto Tema Chiaro
-    if (theme === 'chiaro') colorAccento = '#059669'; // Verde smeraldo scuro, altamente leggibile
-
-    if (particlesRef.current.length === 0) {
-      particlesRef.current = Array.from({ length: NUM_PARTICLES }, () => ({
-        x: Math.random() * W, y: Math.random() * H, tx: Math.random() * W, ty: Math.random() * H,
-        char: chars[Math.floor(Math.random() * chars.length)]
-      }));
-    }
-
-    const particles = particlesRef.current;
-
-    const getTargetsFromText = (text: string) => {
-      const offCanvas = document.createElement('canvas');
-      offCanvas.width = W; offCanvas.height = H;
-      const offCtx = offCanvas.getContext('2d');
-      if (!offCtx) return [];
-
-      const fontSize = Math.min(W / (text.length * 0.55), 50);
-      offCtx.fillStyle = 'white';
-      offCtx.font = `900 ${fontSize}px "Inter", sans-serif`;
-      offCtx.textAlign = 'center'; offCtx.textBaseline = 'middle';
-      offCtx.fillText(text, W / 2, H / 2);
-
-      const imgData = offCtx.getImageData(0, 0, W, H).data;
-      const targets = [];
-      for (let y = 0; y < H; y += 4) {
-        for (let x = 0; x < W; x += 4) {
-          const idx = (y * W + x) * 4;
-          if (imgData[idx] > 128) targets.push({ x, y });
-        }
-      }
-      return targets;
-    };
-
-    if (active && targetTab) {
-       const newTargets = getTargetsFromText(targetTab);
-       if (newTargets.length > 0) {
-         for (let i = 0; i < NUM_PARTICLES; i++) {
-           const target = newTargets[i % newTargets.length];
-           particles[i].tx = target.x + (Math.random() - 0.5) * 4;
-           particles[i].ty = target.y + (Math.random() - 0.5) * 4;
-           particles[i].x += (Math.random() - 0.5) * 300;
-           particles[i].y += (Math.random() - 0.5) * 300;
-         }
-       }
-    } else if (!active) {
-       // NUOVO EFFETTO: Spirale galattica a 5 bracci in uscita
-       const arms = 5; 
-       for (let i = 0; i < NUM_PARTICLES; i++) {
-           const idxPerArm = Math.floor(i / arms); 
-           const angle = idxPerArm * 0.05; // Controlla la curvatura della spirale
-           const radius = angle * 25 + Math.random() * 50; // Raggio di allargamento
-           const armOffset = (i % arms) * ((Math.PI * 2) / arms); 
-           
-           particles[i].tx = (W / 2) + Math.cos(angle + armOffset) * radius;
-           particles[i].ty = (H / 2) + Math.sin(angle + armOffset) * radius;
-       }
-    }
-
-    let time = 0;
-    const render = () => {
-      ctx.clearRect(0, 0, W, H);
-
-      ctx.fillStyle = colorAccento;
-      ctx.font = 'bold 10px monospace';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        const p = particles[i];
-        p.x += (p.tx - p.x) * 0.12;
-        p.y += (p.ty - p.y) * 0.12;
-        const floatY = Math.sin(time * 0.1 + i) * 1.5;
-        ctx.globalAlpha = 0.4 + Math.random() * 0.6;
-        ctx.fillText(p.char, p.x, p.y + floatY);
-      }
-      time++;
-      frameId = requestAnimationFrame(render);
-    };
-
-    render();
-    return () => cancelAnimationFrame(frameId);
-  }, [active, targetTab]);
-
-  return (
-    // Ho aumentato la duration a 800ms per ammorbidire l'uscita
-    <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/90 backdrop-blur-2xl flex items-center justify-center transition-opacity duration-800 sm:hidden ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.05] blur-[30px] pointer-events-none"></div>
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full drop-shadow-md" />
-    </div>
-  );
-};
-const MobileFluidTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
-  return (
-    <div className={`fixed inset-0 z-[9999] pointer-events-none overflow-hidden transition-opacity duration-700 ease-in-out sm:hidden ${active ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Sfondo scuro che copre la vecchia interfaccia */}
-      <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-xl"></div>
-
-      {/* Orbo Smeraldo Superiore (Fluttua ed espande) */}
-      <div className={`absolute top-[-10%] left-[-20%] w-[80vw] h-[80vw] bg-emerald-500/50 rounded-full blur-[60px] mix-blend-screen transition-transform duration-[1200ms] ease-out ${active ? 'translate-x-[40vw] translate-y-[20vh] scale-150' : 'translate-x-0 translate-y-0 scale-50'}`}></div>
-
-      {/* Orbo Lime Inferiore (Fluttua ed espande in direzione opposta) */}
-      <div className={`absolute bottom-[-10%] right-[-10%] w-[90vw] h-[90vw] bg-lime-400/40 rounded-full blur-[70px] mix-blend-screen transition-transform duration-[1000ms] delay-100 ease-out ${active ? '-translate-x-[30vw] -translate-y-[20vh] scale-125' : 'translate-x-0 translate-y-0 scale-50'}`}></div>
-
-      {/* Testo Centrale Elegante */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className={`text-white font-black text-2xl tracking-[0.4em] uppercase drop-shadow-[0_0_15px_rgba(163,230,53,0.6)] transition-all duration-700 delay-150 ${active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-4'}`}>
-          {targetTab}
+      {/* TYPOGRAPHY CENTRALE: Niente fluo sul testo, legge la variabile del tema */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className={`text-[9px] text-slate-400 uppercase tracking-[0.4em] font-black mb-3 transition-all duration-700 delay-100 ${active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          System Routing
         </span>
+        
+        {/* Il testo principale usa var(--testo-forte) così in tema chiaro è scuro e leggibile */}
+        <h2 className={`text-4xl sm:text-5xl font-black text-[var(--testo-forte)] tracking-widest transition-all duration-[900ms] delay-200 cubic-bezier(0.2, 0.8, 0.2, 1) ${active ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-md'}`}>
+          {targetTab}
+        </h2>
       </div>
     </div>
   );
 };
+
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -803,18 +517,18 @@ export default function Home() {
   const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
     if (newTab === mobileTab || tabTransition.active) return;
     
-    // 1. Accende l'overlay fluido
+    // 1. Accende l'interfaccia Motion Graphic (linee si disegnano, icone ruotano)
     setTabTransition({ active: true, target: newTab });
     
-    // 2. A 500ms (schermo completamente avvolto dalla luce), cambia la pagina nascosta
+    // 2. Dopo 600ms (scritta completamente entrata a fuoco), cambia la pagina reale dietro
     setTimeout(() => {
       setMobileTab(newTab);
-    }, 500); 
+    }, 600); 
 
-    // 3. A 1200ms fa dissolvere lentamente i blob di luce
+    // 3. Dopo quasi un secondo e mezzo, avvia l'uscita fluida
     setTimeout(() => {
       setTabTransition({ active: false, target: '' });
-    }, 1200); 
+    }, 1400); 
   };
   
   // STATI TIMER FOCUS
@@ -2598,8 +2312,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         
       </nav>
 
-      {/* OVERLAY TRANSIZIONE FLUIDA */}
-      <MobileFluidTransition active={tabTransition.active} targetTab={tabTransition.target} />
+      {/* --- OVERLAY MOTION GRAPHIC --- */}
+      <MobileDeluxeTransition active={tabTransition.active} targetTab={tabTransition.target} />
 
       {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
       {focusWorkout && (() => {
