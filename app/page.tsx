@@ -548,6 +548,69 @@ const OmniMatrixCore = () => {
     </div>
   );
 };
+const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
+  const preRef = useRef<HTMLPreElement>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    let frameId: number;
+    const chars = "01アイウエオカキクケコサシスセソ01.,-~:;=!*#$@";
+    
+    // Dimensioni griglia ASCII per mobile
+    const W = 40;
+    const H = 20;
+
+    const render = () => {
+      let output = "";
+      for (let y = 0; y < H; y++) {
+        let line = "";
+        for (let x = 0; x < W; x++) {
+          // Crea l'effetto "rumore"
+          line += chars[Math.floor(Math.random() * chars.length)];
+        }
+        output += line + "\n";
+      }
+
+      // Inietta il nome della sezione al centro dell'effetto Matrix
+      if (targetTab) {
+        const centerRow = Math.floor(H / 2);
+        const label = ` [ SYSTEM REBOOT: ${targetTab} ] `;
+        const startIdx = Math.floor((W - label.length) / 2);
+        
+        const lines = output.split('\n');
+        const row = lines[centerRow];
+        lines[centerRow] = row.substring(0, startIdx) + label + row.substring(startIdx + label.length);
+        output = lines.join('\n');
+      }
+
+      if (preRef.current) preRef.current.textContent = output;
+      frameId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => cancelAnimationFrame(frameId);
+  }, [active, targetTab]);
+
+  return (
+    <div 
+      className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/95 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-300 sm:hidden
+        ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none scale-105'}`}
+    >
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.05] blur-[20px]"></div>
+      <pre
+        ref={preRef}
+        className="font-mono font-black select-none text-center m-0 relative z-10 w-full px-4 overflow-hidden"
+        style={{
+          color: 'var(--accento-1)',
+          textShadow: '0 0 8px var(--accento-glow)',
+          fontSize: '11px',
+          lineHeight: '12px',
+          letterSpacing: '2px'
+        }}
+      />
+    </div>
+  );
+};
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -663,6 +726,25 @@ export default function Home() {
   
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
+
+  const [tabTransition, setTabTransition] = useState({ active: false, target: '' });
+
+  const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
+    if (newTab === mobileTab || tabTransition.active) return;
+    
+    // 1. Attiva lo schermo ASCII a comparsa istantanea
+    setTabTransition({ active: true, target: newTab });
+    
+    // 2. A metà transizione, quando lo schermo è coperto, cambiamo il DOM sottostante
+    setTimeout(() => {
+      setMobileTab(newTab);
+    }, 250); 
+
+    // 3. Fine transizione, dissolve l'effetto ASCII svelando la nuova pagina
+    setTimeout(() => {
+      setTabTransition({ active: false, target: '' });
+    }, 650); 
+  };
   
   // STATI TIMER FOCUS
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1659,15 +1741,15 @@ if (!usaIntegratori) {
   }
 
   // --- HELPER BOTTOM NAV CON ICONE SVG MINIMAL, GLASS E FLUO ---
-const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110' : 'text-slate-400 hover:text-slate-500'}`} style={mobileTab === tab ? {filter: 'drop-shadow(0 0 10px var(--accento-glow))'} : undefined}>
-    <div className={`${mobileTab === tab ? 'comet-border glow-alone' : ''} relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
-       {iconSvg}
-    </div>
-    <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
-  </button>
-);
+  const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
+    // IMPORTANTE: Ora usa cambiaTabMobile invece di setMobileTab
+    <button onClick={() => cambiaTabMobile(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110' : 'text-slate-400 hover:text-slate-500'}`} style={mobileTab === tab ? {filter: 'drop-shadow(0 0 10px var(--accento-glow))'} : undefined}>
+      <div className={`${mobileTab === tab ? 'comet-border glow-alone' : ''} relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
+         {iconSvg}
+      </div>
+      <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
+    </button>
+  );
 
   return (
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
@@ -2444,6 +2526,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         {renderNavicon('ALLENAMENTO', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M6 4v16"></path><path d="M18 4v16"></path><path d="M2 8h4"></path><path d="M2 16h4"></path><path d="M18 8h4"></path><path d="M18 16h4"></path><path d="M6 12h12"></path></svg>, 'Workout')}
         
       </nav>
+
+      {/* COMPONENTE TRANSIZIONE MOBILE ASCII */}
+      <MobileAsciiTransition active={tabTransition.active} targetTab={tabTransition.target} />
 
       {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
       {focusWorkout && (() => {
