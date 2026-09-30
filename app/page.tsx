@@ -1,5 +1,8 @@
 "use client";
-
+import { useState, useEffect, useRef } from 'react';
+import { createClient } from "@supabase/supabase-js";
+import { MediaVisualizer } from './animations';
+import { MazzoIntegratori } from './components/MazzoIntegratori';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtxfkahzyduq.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
@@ -545,7 +548,6 @@ const OmniMatrixCore = () => {
     </div>
   );
 };
-
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -661,27 +663,6 @@ export default function Home() {
   
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
-  // LOGICA MACCHINA A STATI PER DECOMPOSIZIONE UI MOBILE
-  const [tabTransition, setTabTransition] = useState<'idle' | 'decomposing' | 'recomposing'>('idle');
-
-  const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
-    if (newTab === mobileTab || tabTransition !== 'idle') return;
-    
-    // 1. I veri elementi UI iniziano a brillare e sfocarsi
-    setTabTransition('decomposing');
-    
-    // 2. A metà dissolvenza, cambiamo il DOM in background
-    setTimeout(() => {
-      setMobileTab(newTab);
-      // 3. I nuovi elementi UI si materializzano dal blur
-      setTabTransition('recomposing');
-    }, 250); 
-
-    // 4. Fine transizione
-    setTimeout(() => {
-      setTabTransition('idle');
-    }, 550); 
-  };
   
   // STATI TIMER FOCUS
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1678,32 +1659,19 @@ if (!usaIntegratori) {
   }
 
   // --- HELPER BOTTOM NAV CON ICONE SVG MINIMAL, GLASS E FLUO ---
-  const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
-    <button onClick={() => cambiaTabMobile(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110' : 'text-slate-400 hover:text-slate-500'}`} style={mobileTab === tab ? {filter: 'drop-shadow(0 0 10px var(--accento-glow))'} : undefined}>
-      <div className={`${mobileTab === tab ? 'comet-border glow-alone' : ''} relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
-         {iconSvg}
-      </div>
-      <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
-    </button>
-  );
+const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110' : 'text-slate-400 hover:text-slate-500'}`} style={mobileTab === tab ? {filter: 'drop-shadow(0 0 10px var(--accento-glow))'} : undefined}>
+    <div className={`${mobileTab === tab ? 'comet-border glow-alone' : ''} relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
+       {iconSvg}
+    </div>
+    <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
+  </button>
+);
 
   return (
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
-     {/* STILI PER LA DECOMPOSIZIONE UI */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes uiDecompose {
-          0% { opacity: 1; transform: scale(1); filter: blur(0px) brightness(1); }
-          40% { transform: scale(0.98); filter: blur(2px) brightness(1.5) drop-shadow(0 0 15px var(--accento-1)); }
-          100% { opacity: 0; transform: scale(0.95) translateY(10px); filter: blur(12px) brightness(0.5); }
-        }
-        @keyframes uiRecompose {
-          0% { opacity: 0; transform: scale(1.05) translateY(-10px); filter: blur(12px) brightness(2); }
-          60% { opacity: 1; transform: scale(0.99); filter: blur(2px) brightness(1.5) drop-shadow(0 0 15px var(--accento-1)); }
-          100% { opacity: 1; transform: scale(1); filter: blur(0px) brightness(1); }
-        }
-        .anim-decompose { animation: uiDecompose 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .anim-recompose { animation: uiRecompose 0.3s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
-      `}} /> 
+      
       <header className="mb-6 pb-2 relative z-20 anim-pop h-[140px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
         
         {/* BACKGROUND ANIMATO: Si estende su tutta la larghezza dell'header */}
@@ -1762,9 +1730,8 @@ if (!usaIntegratori) {
         </div>
       </header>
 
-    
-      {/* CONTENITORE PRINCIPALE: Le animazioni deformeranno la VERA interfaccia */}
-      <div className={`flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10 ${animPhase === 'out' ? 'ui-decompose' : animPhase === 'in' ? 'ui-compose' : ''}`}>
+      {/* CONTENITORE PRINCIPALE: GRIGLIA DESKTOP / TABS MOBILE */}
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10">
         
         {/* COLONNA SINISTRA: Telemetria & Coach IA */}
         <div className={`flex-col gap-8 lg:col-span-3 ${mobileTab === 'TELEMETRIA' || mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`}>
@@ -2478,7 +2445,6 @@ if (!usaIntegratori) {
         
       </nav>
 
-
       {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
       {focusWorkout && (() => {
         // Recuperiamo i dati dell'esercizio (in caso di swap) e il colore esatto
@@ -2963,8 +2929,12 @@ if (!usaIntegratori) {
               categoria={mazzoAttivo} 
               onClose={() => setMazzoAttivo(null)}
               onSave={(item) => {
+                // Salva direttamente nella dispensa globale
                 setDispensa(prev => [{
                   id: item.id,
+                  // Sempre il nome completo (marchio + prodotto): usare solo il marchio
+                  // "perdeva" la parola cercata più spesso (es. "Whey" nel nome del
+                  // prodotto), rendendo introvabile l'elemento nella ricerca.
                   nome: item.nome,
                   tipologia: item.tipologia,
                   cho: item.cho, 
@@ -2974,10 +2944,12 @@ if (!usaIntegratori) {
                   immagine: item.immagine
                 }, ...prev]);
                 
+                // Chiudiamo il mazzo e diamo feedback visivo
                 setMazzoAttivo(null);
                 alert(`${item.nome} aggiunto alla tua Dispensa!`);
               }}
               onCustom={() => {
+                 // Chiude il mazzo e apre la ricerca AI testuale/fotografica
                  setMazzoAttivo(null);
                  setModalScegliDispensa('Integrazione'); 
               }}
@@ -2988,3 +2960,4 @@ if (!usaIntegratori) {
     </main>
   );
 }
+
