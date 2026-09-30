@@ -784,25 +784,25 @@ export default function Home() {
   
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
-  // LOGICA MACCHINA A STATI PER L'OLOGRAFIA MOBILE
-  const [tabTransition, setTabTransition] = useState<{status: 'idle' | 'decomposing' | 'recomposing', prev: string, next: string}>({ status: 'idle', prev: 'ALLENAMENTO', next: 'ALLENAMENTO' });
+  // LOGICA TRANSIZIONE "MATRIX GLITCH" DELLA VERA UI
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [animPhase, setAnimPhase] = useState<'idle' | 'out' | 'in'>('idle');
 
   const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
-    if (newTab === mobileTab || tabTransition.status !== 'idle') return;
+    if (newTab === mobileTab || isTransitioning) return;
     
-    // 1. Schermo si oscura, i vecchi riquadri si disintegrano
-    setTabTransition({ status: 'decomposing', prev: mobileTab, next: newTab });
+    setIsTransitioning(true);
+    setAnimPhase('out'); // 1. Avvia la SCOMPOSIZIONE della pagina attuale
     
-    // 2. Dopo l'esplosione, cambiamo la pagina reale in background e facciamo ricomporre la griglia olografica
     setTimeout(() => {
-      setMobileTab(newTab);
-      setTabTransition({ status: 'recomposing', prev: mobileTab, next: newTab });
-    }, 450); 
+      setMobileTab(newTab); // 2. A metà animazione, scambia il contenuto
+      setAnimPhase('in');   // 3. Avvia la RICOMPOSIZIONE della nuova pagina
+    }, 350); 
 
-    // 3. La griglia della nuova pagina è formata, dissolviamo l'effetto per svelare la vera interfaccia
     setTimeout(() => {
-      setTabTransition({ status: 'idle', prev: mobileTab, next: newTab });
-    }, 1000); 
+      setIsTransitioning(false);
+      setAnimPhase('idle');
+    }, 700); 
   };
   
   // STATI TIMER FOCUS
@@ -1870,8 +1870,9 @@ if (!usaIntegratori) {
         </div>
       </header>
 
-      {/* CONTENITORE PRINCIPALE: GRIGLIA DESKTOP / TABS MOBILE */}
-      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10">
+    
+      {/* CONTENITORE PRINCIPALE: Le animazioni deformeranno la VERA interfaccia */}
+      <div className={`flex flex-col lg:grid lg:grid-cols-12 gap-8 relative z-10 ${animPhase === 'out' ? 'ui-decompose' : animPhase === 'in' ? 'ui-compose' : ''}`}>
         
         {/* COLONNA SINISTRA: Telemetria & Coach IA */}
         <div className={`flex-col gap-8 lg:col-span-3 ${mobileTab === 'TELEMETRIA' || mobileTab === 'COACH' ? 'flex' : 'hidden'} lg:flex`}>
@@ -3100,6 +3101,37 @@ if (!usaIntegratori) {
           </div>
         </div>
       )}
+
+      {/* --- MOTORE DELLA SCOMPOSIZIONE (CSS + BLEND MODE) --- */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .ui-decompose {
+          animation: uiDecomp 0.35s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+        .ui-compose {
+          animation: uiComp 0.35s cubic-bezier(0, 0, 0.2, 1) forwards;
+        }
+        
+        @keyframes uiDecomp {
+          0% { opacity: 1; filter: blur(0px) brightness(1); transform: scale(1); }
+          50% { filter: blur(4px) brightness(1.5) contrast(1.5) hue-rotate(50deg); transform: scale(0.98) skewX(2deg); opacity: 0.8; }
+          100% { opacity: 0; filter: blur(12px) brightness(2) contrast(2) hue-rotate(90deg); transform: scale(0.92) translateY(30px) skewX(-3deg); }
+        }
+        
+        @keyframes uiComp {
+          0% { opacity: 0; filter: blur(12px) brightness(2) contrast(2) hue-rotate(-90deg); transform: scale(1.08) translateY(-30px); }
+          50% { filter: blur(4px) brightness(1.5) contrast(1.5) hue-rotate(-45deg); transform: scale(1.02); opacity: 0.8; }
+          100% { opacity: 1; filter: blur(0px) brightness(1); transform: scale(1) translateY(0); }
+        }
+      `}} />
+
+      {/* OVERLAY ASCII CHE SI FONDE CON L'INTERFACCIA */}
+      <div className={`fixed inset-0 z-[9000] pointer-events-none flex items-center justify-center overflow-hidden transition-opacity duration-300 mix-blend-color-dodge sm:hidden ${isTransitioning ? 'opacity-100' : 'opacity-0'}`}>
+         {/* Array enorme di codice Matrix. Mix-blend-color-dodge fa sì che il codice sia visibile SOLO dove la UI sotto sta brillando. */}
+         <p className="text-lime-500 font-mono text-[10px] font-black opacity-60 text-justify leading-none break-all w-[150vw] h-[150vh] drop-shadow-[0_0_8px_var(--accento-glow)]">
+            {Array(1500).fill("01 10 # * = : - . @").join(" ")}
+         </p>
+      </div>
+      
     </main>
   );
 }
