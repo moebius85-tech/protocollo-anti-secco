@@ -1,8 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
-import { createClient } from "@supabase/supabase-js";
-import { MediaVisualizer } from './animations';
-import { MazzoIntegratori } from './components/MazzoIntegratori';
+
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtxfkahzyduq.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
@@ -548,126 +545,6 @@ const OmniMatrixCore = () => {
     </div>
   );
 };
-const MobileHoloTransition = ({ status, prevTab, nextTab }: { status: 'idle' | 'decomposing' | 'recomposing', prevTab: string, nextTab: string }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const particlesRef = useRef<any[]>([]);
-
-  useEffect(() => {
-    if (status === 'idle') return;
-    
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let frameId: number;
-    const w = canvas.width = window.innerWidth;
-    const h = canvas.height = window.innerHeight;
-
-    const NUM_PARTICLES = 1500;
-    const chars = "01 .:-*=%#@";
-
-    if (particlesRef.current.length === 0) {
-      particlesRef.current = Array.from({ length: NUM_PARTICLES }, () => ({
-        x: Math.random() * w, y: Math.random() * h, tx: 0, ty: 0,
-        char: chars[Math.floor(Math.random() * chars.length)]
-      }));
-    }
-    const particles = particlesRef.current;
-
-    // Genera lo "scheletro" olografico della pagina in base alla scheda
-    const getTargetsForTab = (tab: string) => {
-      const targets = [];
-      const addBox = (bx: number, by: number, bw: number, bh: number, count: number) => {
-        for (let i = 0; i < count; i++) {
-          targets.push({ x: bx + Math.random() * bw, y: by + Math.random() * bh });
-        }
-      };
-
-      // Header e Bottom Nav (sempre presenti)
-      addBox(20, 20, w - 40, 100, 300);
-      addBox(0, h - 80, w, 80, 200);
-
-      const rem = NUM_PARTICLES - 500;
-
-      // Disposizione dei riquadri per ogni specifica scheda per simulare la UI
-      if (tab === 'TELEMETRIA') {
-        addBox(20, 140, w/2 - 30, 100, rem/4);
-        addBox(w/2 + 10, 140, w/2 - 30, 100, rem/4);
-        addBox(20, 260, w - 40, 250, rem/2);
-      } else if (tab === 'COACH') {
-        addBox(20, 140, w - 40, h - 260, rem);
-      } else if (tab === 'TURNI') {
-        addBox(20, 140, w - 40, 120, rem/2);
-        addBox(20, 280, w - 40, 120, rem/2);
-      } else if (tab === 'NUTRIZIONE') {
-        addBox(20, 140, w - 40, 150, rem/2);
-        addBox(20, 310, w - 40, h - 420, rem/2);
-      } else { // ALLENAMENTO
-        addBox(20, 140, w - 40, 80, rem/4);
-        addBox(20, 240, w - 40, h - 350, (rem/4)*3);
-      }
-
-      while (targets.length < NUM_PARTICLES) targets.push({ x: Math.random() * w, y: Math.random() * h });
-      return targets;
-    };
-
-    if (status === 'decomposing') {
-      // Le particelle partono dalla forma della vecchia scheda ed esplodono nel caos
-      const layout = getTargetsForTab(prevTab);
-      particles.forEach((p, i) => {
-        p.x = layout[i].x; p.y = layout[i].y;
-        p.tx = p.x + (Math.random() - 0.5) * w * 1.5;
-        p.ty = p.y + (Math.random() - 0.5) * h * 1.5;
-      });
-    } else if (status === 'recomposing') {
-      // Le particelle convergono per formare lo scheletro della nuova scheda
-      const layout = getTargetsForTab(nextTab);
-      particles.forEach((p, i) => {
-        p.tx = layout[i].x; p.ty = layout[i].y;
-      });
-    }
-
-    let time = 0;
-    const render = () => {
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.4)'; // Effetto scia
-      ctx.fillRect(0, 0, w, h);
-
-      const computedStyle = getComputedStyle(document.documentElement);
-      const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
-      ctx.fillStyle = accento;
-      ctx.font = 'bold 11px monospace';
-      ctx.textAlign = 'center';
-
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        const p = particles[i];
-        
-        // Cinetica elastica fluida
-        p.x += (p.tx - p.x) * 0.12;
-        p.y += (p.ty - p.y) * 0.12;
-
-        const floatY = Math.sin(time * 0.1 + i) * 1.5;
-        ctx.globalAlpha = 0.2 + Math.random() * 0.8;
-        ctx.fillText(p.char, p.x, p.y + floatY);
-      }
-
-      time++;
-      frameId = requestAnimationFrame(render);
-    };
-
-    render();
-    return () => cancelAnimationFrame(frameId);
-  }, [status, prevTab, nextTab]);
-
-  return (
-    <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/95 backdrop-blur-2xl flex items-center justify-center transition-opacity duration-300 sm:hidden
-        ${status !== 'idle' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.08] blur-[40px] pointer-events-none"></div>
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full drop-shadow-[0_0_8px_var(--accento-glow)]" />
-    </div>
-  );
-};
 
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
@@ -784,25 +661,26 @@ export default function Home() {
   
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
-  // LOGICA TRANSIZIONE "MATRIX GLITCH" DELLA VERA UI
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [animPhase, setAnimPhase] = useState<'idle' | 'out' | 'in'>('idle');
+  // LOGICA MACCHINA A STATI PER DECOMPOSIZIONE UI MOBILE
+  const [tabTransition, setTabTransition] = useState<'idle' | 'decomposing' | 'recomposing'>('idle');
 
   const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
-    if (newTab === mobileTab || isTransitioning) return;
+    if (newTab === mobileTab || tabTransition !== 'idle') return;
     
-    setIsTransitioning(true);
-    setAnimPhase('out'); // 1. Avvia la SCOMPOSIZIONE della pagina attuale
+    // 1. I veri elementi UI iniziano a brillare e sfocarsi
+    setTabTransition('decomposing');
     
+    // 2. A metà dissolvenza, cambiamo il DOM in background
     setTimeout(() => {
-      setMobileTab(newTab); // 2. A metà animazione, scambia il contenuto
-      setAnimPhase('in');   // 3. Avvia la RICOMPOSIZIONE della nuova pagina
-    }, 350); 
+      setMobileTab(newTab);
+      // 3. I nuovi elementi UI si materializzano dal blur
+      setTabTransition('recomposing');
+    }, 250); 
 
+    // 4. Fine transizione
     setTimeout(() => {
-      setIsTransitioning(false);
-      setAnimPhase('idle');
-    }, 700); 
+      setTabTransition('idle');
+    }, 550); 
   };
   
   // STATI TIMER FOCUS
@@ -1811,7 +1689,21 @@ if (!usaIntegratori) {
 
   return (
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
-      
+     {/* STILI PER LA DECOMPOSIZIONE UI */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes uiDecompose {
+          0% { opacity: 1; transform: scale(1); filter: blur(0px) brightness(1); }
+          40% { transform: scale(0.98); filter: blur(2px) brightness(1.5) drop-shadow(0 0 15px var(--accento-1)); }
+          100% { opacity: 0; transform: scale(0.95) translateY(10px); filter: blur(12px) brightness(0.5); }
+        }
+        @keyframes uiRecompose {
+          0% { opacity: 0; transform: scale(1.05) translateY(-10px); filter: blur(12px) brightness(2); }
+          60% { opacity: 1; transform: scale(0.99); filter: blur(2px) brightness(1.5) drop-shadow(0 0 15px var(--accento-1)); }
+          100% { opacity: 1; transform: scale(1); filter: blur(0px) brightness(1); }
+        }
+        .anim-decompose { animation: uiDecompose 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .anim-recompose { animation: uiRecompose 0.3s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
+      `}} /> 
       <header className="mb-6 pb-2 relative z-20 anim-pop h-[140px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
         
         {/* BACKGROUND ANIMATO: Si estende su tutta la larghezza dell'header */}
@@ -3108,27 +3000,6 @@ if (!usaIntegratori) {
         .ui-compose {
           animation: uiComp 0.35s cubic-bezier(0, 0, 0.2, 1) forwards;
         }
-        
-        @keyframes uiDecomp {
-          0% { opacity: 1; filter: blur(0px) brightness(1); transform: scale(1); }
-          50% { filter: blur(4px) brightness(1.5) contrast(1.5) hue-rotate(50deg); transform: scale(0.98) skewX(2deg); opacity: 0.8; }
-          100% { opacity: 0; filter: blur(12px) brightness(2) contrast(2) hue-rotate(90deg); transform: scale(0.92) translateY(30px) skewX(-3deg); }
-        }
-        
-        @keyframes uiComp {
-          0% { opacity: 0; filter: blur(12px) brightness(2) contrast(2) hue-rotate(-90deg); transform: scale(1.08) translateY(-30px); }
-          50% { filter: blur(4px) brightness(1.5) contrast(1.5) hue-rotate(-45deg); transform: scale(1.02); opacity: 0.8; }
-          100% { opacity: 1; filter: blur(0px) brightness(1); transform: scale(1) translateY(0); }
-        }
-      `}} />
-
-      {/* OVERLAY ASCII CHE SI FONDE CON L'INTERFACCIA */}
-      <div className={`fixed inset-0 z-[9000] pointer-events-none flex items-center justify-center overflow-hidden transition-opacity duration-300 mix-blend-color-dodge sm:hidden ${isTransitioning ? 'opacity-100' : 'opacity-0'}`}>
-         {/* Array enorme di codice Matrix. Mix-blend-color-dodge fa sì che il codice sia visibile SOLO dove la UI sotto sta brillando. */}
-         <p className="text-lime-500 font-mono text-[10px] font-black opacity-60 text-justify leading-none break-all w-[150vw] h-[150vh] drop-shadow-[0_0_8px_var(--accento-glow)]">
-            {Array(1500).fill("01 10 # * = : - . @").join(" ")}
-         </p>
-      </div>
       
     </main>
   );
