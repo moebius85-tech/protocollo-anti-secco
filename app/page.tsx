@@ -342,209 +342,132 @@ const AsciiSphere3D = () => {
   );
 };
 
-const OmniMatrixCore = () => {
+export const OmniMatrixCore = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    // willReadFrequently ottimizza il canvas per estrarre le coordinate del testo
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
-    let time = 0;
     let animationFrameId: number;
-    let currentScene = 0;
-
-    // Configurazione del canvas: Panoramico e bloccato in altezza
-    const W = 1200;
-    const H = 140;
-    canvas.width = W;
-    canvas.height = H;
+    const W = canvas.width = 1200;
+    const H = canvas.height = 140;
 
     const NUM_PARTICLES = 2500;
-    const chars = " .',-~:;!+=%@$#*";
-    const charsLen = chars.length - 1;
-
-    // Inizializza 2500 particelle al centro dello schermo in un piccolo nucleo
+    // Caratteri stile Matrix/Cyber per lo sciame
+    const chars = "01アイウエオカキクケコサシスセソ01.,-~:;"; 
+    
     const particles = Array.from({ length: NUM_PARTICLES }, () => ({
-      x: (Math.random() - 0.5) * 10,
-      y: (Math.random() - 0.5) * 10,
-      z: (Math.random() - 0.5) * 10,
+      x: Math.random() * W,
+      y: Math.random() * H,
+      tx: Math.random() * W,
+      ty: Math.random() * H,
+      char: chars[Math.floor(Math.random() * chars.length)]
     }));
 
-    // Costruttore delle coordinate bersaglio per le scene
-    const getTargetsForScene = (sceneIdx: number) => {
+    // La sequenza dell'allenamento che lo sciame comporrà
+    const words = ["DEADLIFT", "BENCH PRESS", "LUNGES", "FOCUS", "OMNICOACH"];
+    let currentWord = 0;
+    let time = 0;
+
+    // Funzione che "scansiona" il testo e ricava le coordinate per le particelle
+    const getTargetsFromText = (text: string) => {
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = W;
+      offCanvas.height = H;
+      const offCtx = offCanvas.getContext('2d');
+      if (!offCtx) return [];
+
+      offCtx.fillStyle = 'white';
+      offCtx.font = '900 85px "Inter", "Segoe UI", sans-serif'; 
+      offCtx.textAlign = 'center';
+      offCtx.textBaseline = 'middle';
+      offCtx.fillText(text, W / 2, H / 2);
+
+      const imgData = offCtx.getImageData(0, 0, W, H).data;
       const targets = [];
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        let px = 0, py = 0, pz = 0;
-        const ratio = i / NUM_PARTICLES;
 
-        if (sceneIdx === 0) {
-          // SCENA 1: "GALASSIA" (Le fondamenta dei dati)
-          // Una spirale galattica che ruota lentamente
-          const r = Math.random() * 60;
-          const a = Math.random() * Math.PI * 2;
-          const spiral = a + r * 0.1;
-          px = Math.cos(spiral) * r;
-          py = (Math.random() - 0.5) * 8;
-          pz = Math.sin(spiral) * r;
-        } 
-        else if (sceneIdx === 1) {
-          // SCENA 2: "IL MANUBRIO" (Dumbbell 3D volumetrico)
-          // Cilindro centrale e dischi laterali
-          const a = Math.random() * Math.PI * 2;
-          const len = (Math.random() - 0.5) * 40;
-          const isWeight = len < -12 || len > 12;
-          const radius = isWeight ? (Math.random() > 0.5 ? 12 : 9) : 2;
-          px = len;
-          py = Math.cos(a) * radius;
-          pz = Math.sin(a) * radius;
-        } 
-        else if (sceneIdx === 2) {
-          // SCENA 3: "TUNNEL DEL FLOW" (Concentrazione profonda)
-          // Un tubo prospettico che avvolge la visuale
-          const depth = Math.random() * 100;
-          const angle = Math.random() * Math.PI * 2;
-          const radius = 6 + depth * 0.2;
-          px = Math.cos(angle) * radius;
-          py = Math.sin(angle) * radius;
-          pz = depth - 50; 
-        } 
-        else if (sceneIdx === 3) {
-          // SCENA 4: "ONDA DI TELEMETRIA" (Connessione uomo-macchina)
-          // Un paesaggio sinuoso stile terreno wireframe
-          px = (Math.random() - 0.5) * 100;
-          pz = (Math.random() - 0.5) * 100;
-          // Usa funzioni matematiche per creare montagne e valli
-          py = Math.sin(px * 0.1) * 6 + Math.cos(pz * 0.1) * 6 + 15;
-          
-          // Alza due "picchi" centrali a simboleggiare due persone
-          if (px > -15 && px < -5 && Math.abs(pz) < 5) py -= Math.random() * 20;
-          if (px < 15 && px > 5 && Math.abs(pz) < 5) py -= Math.random() * 20;
+      // Scansiona a griglia per distribuire equamente i 2500 punti
+      for (let y = 0; y < H; y += 4) {
+        for (let x = 0; x < W; x += 4) {
+          const idx = (y * W + x) * 4;
+          if (imgData[idx] > 128) { 
+            targets.push({ x, y });
+          }
         }
-
-        targets.push({ x: px, y: py, z: pz });
       }
       return targets;
     };
 
-    // Vettore delle coordinate bersaglio attuali
-    let currentTargets = getTargetsForScene(currentScene);
-    const words = "OMNIFIT".split('');
-
-    // La funzione che disegna il singolo frame
-    const renderFrame = () => {
-      time += 1;
+    const updateTargets = () => {
+      const newTargets = getTargetsFromText(words[currentWord]);
+      if (newTargets.length === 0) return;
       
-      // CAMBIO SCENA: Ogni 300 frame (circa 5 secondi a 60fps)
-      if (time % 300 === 0) {
-        currentScene = (currentScene + 1) % 4;
-        currentTargets = getTargetsForScene(currentScene);
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        const target = newTargets[i % newTargets.length];
+        
+        // Offset per dare un po' di spessore tridimensionale alle lettere
+        particles[i].tx = target.x + (Math.random() - 0.5) * 6;
+        particles[i].ty = target.y + (Math.random() - 0.5) * 6;
+        
+        // ESPLOSIONE CINETICA: Spinge via i caratteri prima di formare la nuova parola
+        particles[i].x += (Math.random() - 0.5) * 600;
+        particles[i].y += (Math.random() - 0.5) * 200;
+        
+        particles[i].char = chars[Math.floor(Math.random() * chars.length)];
       }
+      currentWord = (currentWord + 1) % words.length;
+    };
 
-      // Pulisci il canvas (sfondo trasparente)
+    // Inizializza la prima parola
+    updateTargets();
+
+    const render = () => {
       ctx.clearRect(0, 0, W, H);
-
-      // Stile del testo: prendi il colore CSS dal tema attivo
+      
+      // Assorbe il colore del tema di OmniCoach
       const computedStyle = getComputedStyle(document.documentElement);
       const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
-      
+
       ctx.fillStyle = accento;
-      // Il font è monospazio per un effetto "codice Matrix"
-      ctx.font = '8px monospace'; 
+      ctx.font = 'bold 9px monospace';
       ctx.textAlign = 'center';
-
-      // Rotazione costante della camera intorno all'asse Y
-      const rotY = time * 0.005;
-      const cosY = Math.cos(rotY);
-      const sinY = Math.sin(rotY);
-
-      // Array temporaneo per ordinare le particelle dalla più lontana alla più vicina (Painter's algorithm)
-      const renderList = [];
+      ctx.textBaseline = 'middle';
 
       for (let i = 0; i < NUM_PARTICLES; i++) {
         const p = particles[i];
-        const t = currentTargets[i];
-
-        // ELASTIC MORPHING: La particella insegue il suo bersaglio
-        p.x += (t.x - p.x) * 0.05;
-        p.y += (t.y - p.y) * 0.05;
-        p.z += (t.z - p.z) * 0.05;
-
-        // Ruota il punto nello spazio tridimensionale
-        const rx = p.x * cosY - p.z * sinY;
-        const ry = p.y;
-        const rz = p.x * sinY + p.z * cosY;
-
-        // Proiezione Prospettica
-        const focalLength = 60;
-        const zDepth = rz + focalLength;
         
-        // Non renderizzare punti dietro la telecamera
-        if (zDepth <= 0) continue; 
+        // Morphing Elastico verso la coordinata bersaglio
+        p.x += (p.tx - p.x) * 0.06;
+        p.y += (p.ty - p.y) * 0.06;
 
-        const scale = focalLength / zDepth;
-        
-        // Coordinate a schermo: Centriamo l'animazione in W/2 e H/2
-        // IMPORTANTE: il moltiplicatore * 2 su scaleX corregge l'aspect ratio, così il manubrio non sembra "schiacciato"
-        const screenX = W / 2 + rx * scale * 10 * 2.0;
-        const screenY = H / 2 + ry * scale * 10;
+        // Piccolo movimento fluttuante continuo stile onda
+        const floatY = Math.sin(time * 0.02 + i) * 1.5;
 
-        // Calcola l'illuminazione in base alla profondità:
-        // Punti vicini = caratteri complessi (@, #, $) ed elevata opacità.
-        // Punti lontani = caratteri semplici (., -, ') e bassa opacità.
-        let lum = Math.floor((1 / zDepth) * 1200);
-        lum = Math.max(0, Math.min(charsLen, lum));
-        const alpha = Math.min(1, Math.max(0.1, (1 / zDepth) * 60));
-
-        renderList.push({
-          x: screenX,
-          y: screenY,
-          z: zDepth,
-          char: (lum > 10) ? words[i % words.length] : chars[lum], // Parole vicine, rumore lontano
-          alpha: alpha
-        });
+        // Effetto scintillio
+        ctx.globalAlpha = 0.3 + Math.random() * 0.7; 
+        ctx.fillText(p.char, p.x, p.y + floatY);
       }
 
-      // Ordina i punti per z (dal più lontano al più vicino) per simulare l'occlusione visiva
-      renderList.sort((a, b) => b.z - a.z);
+      time++;
+      // Cambia scena circa ogni 4 secondi
+      if (time % 240 === 0) updateTargets(); 
 
-      // Disegna i punti sul canvas
-      for (const pt of renderList) {
-        // Disegna solo se si trova dentro lo schermo
-        if (pt.x > 0 && pt.x < W && pt.y > 0 && pt.y < H) {
-          ctx.globalAlpha = pt.alpha;
-          ctx.fillText(pt.char, pt.x, pt.y);
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(renderFrame);
+      animationFrameId = requestAnimationFrame(render);
     };
 
-    renderFrame();
+    render();
 
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
+    return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
   return (
     <div className="hidden lg:flex w-full h-full items-center justify-center absolute inset-0 overflow-hidden pointer-events-none z-0">
-      
-      {/* Sfondo mistico con effetto Glow */}
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.06] blur-[30px] pointer-events-none transition-opacity duration-1000"></div>
-
-      {/* Testo di background (Opzionale: puoi rimuoverlo se vuoi un look più pulito) */}
-      <span className="absolute text-[80px] font-black uppercase tracking-[0.5em] text-[var(--testo-debole)] opacity-[0.03] transition-all duration-[1500ms] pointer-events-none select-none">
-        OMNICOACH
-      </span>
-
-      {/* Il Canvas HTML5 nativo che renderizza le particelle */}
-      <canvas 
-        ref={canvasRef}
-        className="w-full h-[140px] relative z-10"
-        style={{ filter: 'drop-shadow(0 0 6px var(--accento-glow))' }}
-      />
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.04] blur-[20px] pointer-events-none"></div>
+      <canvas ref={canvasRef} className="w-full h-[140px] relative z-10 drop-shadow-lg" />
     </div>
   );
 };
@@ -1596,23 +1519,22 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
   return (
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
-      <header className="mb-6 pb-2 relative z-20 anim-pop h-[140px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
+      <header className="mb-6 pb-2 relative z-20 anim-pop min-h-[150px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
         
-        {/* BACKGROUND ANIMATO: Si estende su tutta la larghezza dell'header */}
+        {/* BACKGROUND ANIMATO IN ASCII: Si estende su tutta la larghezza */}
         <div className="absolute inset-y-0 -left-8 -right-8 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
            <OmniMatrixCore />
         </div>
 
-        {/* CONTENITORE UI: Posizionato in primo piano (z-10) per mantenere i bottoni cliccabili */}
-        <div className="flex justify-between items-start w-full h-full relative z-10">
+        {/* CONTENITORE UI: Posizionato in primo piano (z-10) per non bloccare i click */}
+        <div className="flex justify-between items-start w-full relative z-10">
             
-            {/* ZONA SINISTRA: Titolo e Temi */}
+            {/* ZONA SINISTRA */}
             <div className="shrink-0 flex flex-col justify-start">
               <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer w-fit">⬅️ Torna alla Home</button>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
                 OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
               </h1>
-              {/* SELETTORE TEMA */}
               <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
                 {([
                   { id: 'chiaro', label: '☀️ Chiaro' },
@@ -1634,7 +1556,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               </div>
             </div>
 
-            {/* ZONA DESTRA: Control Room e Dati Atleta */}
+            {/* ZONA DESTRA */}
             <div className="shrink-0 text-right flex flex-col justify-start">
               {isAdmin && (
                  <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto w-fit">
