@@ -549,36 +549,115 @@ const OmniMatrixCore = () => {
   );
 };
 const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
-  const preRef = useRef<HTMLPreElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const particlesRef = useRef<any[]>([]);
 
   useEffect(() => {
-    if (!active) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
     let frameId: number;
-    const chars = "01アイウエオカキクケコサシスセソ01.,-~:;=!*#$@";
-    const W = 40;
-    const H = 20;
+    // Dimensioni a tutto schermo per mobile
+    const W = canvas.width = window.innerWidth;
+    const H = canvas.height = window.innerHeight;
 
-    const render = () => {
-      let output = "";
-      for (let y = 0; y < H; y++) {
-        let line = "";
-        for (let x = 0; x < W; x++) {
-          line += chars[Math.floor(Math.random() * chars.length)];
+    const NUM_PARTICLES = 1500; // Numero ottimizzato per fluidità su smartphone
+    const chars = " .',-~:;!+=%@$#*";
+
+    // Inizializza lo sciame una sola volta
+    if (particlesRef.current.length === 0) {
+      particlesRef.current = Array.from({ length: NUM_PARTICLES }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        tx: Math.random() * W,
+        ty: Math.random() * H,
+        char: chars[Math.floor(Math.random() * chars.length)]
+      }));
+    }
+
+    const particles = particlesRef.current;
+
+    // Questa funzione "legge" la scritta e calcola le coordinate esatte per le particelle
+    const getTargetsFromText = (text: string) => {
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = W;
+      offCanvas.height = H;
+      const offCtx = offCanvas.getContext('2d');
+      if (!offCtx) return [];
+
+      // Calcola dinamicamente la grandezza del font per farcelo stare tutto nello schermo
+      const fontSize = Math.min(W / (text.length * 0.55), 50);
+      
+      offCtx.fillStyle = 'white';
+      offCtx.font = `900 ${fontSize}px "Inter", sans-serif`;
+      offCtx.textAlign = 'center';
+      offCtx.textBaseline = 'middle';
+      offCtx.fillText(text, W / 2, H / 2);
+
+      const imgData = offCtx.getImageData(0, 0, W, H).data;
+      const targets = [];
+
+      for (let y = 0; y < H; y += 4) {
+        for (let x = 0; x < W; x += 4) {
+          const idx = (y * W + x) * 4;
+          if (imgData[idx] > 128) targets.push({ x, y });
         }
-        output += line + "\n";
+      }
+      return targets;
+    };
+
+    // Logica di esplosione e ricomposizione
+    if (active && targetTab) {
+       const newTargets = getTargetsFromText(targetTab);
+       if (newTargets.length > 0) {
+         for (let i = 0; i < NUM_PARTICLES; i++) {
+           const target = newTargets[i % newTargets.length];
+           // Posizione finale: forma la parola
+           particles[i].tx = target.x + (Math.random() - 0.5) * 4;
+           particles[i].ty = target.y + (Math.random() - 0.5) * 4;
+           
+           // Effetto decomposizione: le particelle partono impazzite da posizioni casuali
+           particles[i].x += (Math.random() - 0.5) * 300;
+           particles[i].y += (Math.random() - 0.5) * 300;
+         }
+       }
+    } else if (!active) {
+       // Quando si disattiva, lo sciame esplode verso l'esterno
+       for (let i = 0; i < NUM_PARTICLES; i++) {
+           particles[i].tx = Math.random() * W;
+           particles[i].ty = Math.random() * H;
+       }
+    }
+
+    let time = 0;
+    const render = () => {
+      ctx.clearRect(0, 0, W, H);
+
+      const computedStyle = getComputedStyle(document.documentElement);
+      const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
+
+      ctx.fillStyle = accento;
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        const p = particles[i];
+
+        // Morphing Elastico Rapido
+        p.x += (p.tx - p.x) * 0.12;
+        p.y += (p.ty - p.y) * 0.12;
+
+        const floatY = Math.sin(time * 0.1 + i) * 1.5;
+
+        ctx.globalAlpha = 0.4 + Math.random() * 0.6;
+        ctx.fillText(p.char, p.x, p.y + floatY);
       }
 
-      if (targetTab) {
-        const centerRow = Math.floor(H / 2);
-        const label = ` [ REBOOT: ${targetTab} ] `;
-        const startIdx = Math.floor((W - label.length) / 2);
-        const lines = output.split('\n');
-        const row = lines[centerRow];
-        lines[centerRow] = row.substring(0, startIdx) + label + row.substring(startIdx + label.length);
-        output = lines.join('\n');
-      }
-
-      if (preRef.current) preRef.current.textContent = output;
+      time++;
       frameId = requestAnimationFrame(render);
     };
 
@@ -587,16 +666,14 @@ const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetT
   }, [active, targetTab]);
 
   return (
-    <div 
-      className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/95 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-300 sm:hidden
-        ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none scale-105'}`}
+    <div
+      className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/90 backdrop-blur-2xl flex items-center justify-center transition-opacity duration-500 sm:hidden
+        ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
     >
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.05] blur-[20px]"></div>
-      <pre
-        ref={preRef}
-        className="font-mono font-black select-none text-center m-0 relative z-10 w-full px-4 overflow-hidden"
-        style={{ color: 'var(--accento-1)', textShadow: '0 0 8px var(--accento-glow)', fontSize: '11px', lineHeight: '12px', letterSpacing: '2px' }}
-      />
+      {/* Bagliore di fondo */}
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.05] blur-[30px] pointer-events-none"></div>
+      
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full drop-shadow-lg" />
     </div>
   );
 };
@@ -721,15 +798,18 @@ export default function Home() {
   const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
     if (newTab === mobileTab || tabTransition.active) return;
     
+    // 1. Accende l'overlay e le particelle schizzano per formare il nome della sezione
     setTabTransition({ active: true, target: newTab });
     
+    // 2. Dopo mezzo secondo (le particelle hanno composto la parola e coperto la visuale), cambia la pagina in background
     setTimeout(() => {
       setMobileTab(newTab);
-    }, 300); 
+    }, 500); 
 
+    // 3. Dopo quasi un secondo, spegne l'overlay: le particelle esplodono via e si svela la nuova pagina
     setTimeout(() => {
       setTabTransition({ active: false, target: '' });
-    }, 700); 
+    }, 900); 
   };
   
   // LOGICA DI TRANSIZIONE ANIMATA MOBILE
