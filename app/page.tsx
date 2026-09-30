@@ -548,6 +548,24 @@ const OmniMatrixCore = () => {
     </div>
   );
 };
+const [tabTransition, setTabTransition] = useState({ active: false, target: '' });
+
+  const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
+    if (newTab === mobileTab || tabTransition.active) return;
+    
+    // 1. Accende l'overlay e le particelle schizzano per formare il nome della sezione
+    setTabTransition({ active: true, target: newTab });
+    
+    // 2. Dopo mezzo secondo (le particelle hanno composto la parola e coperto la visuale), cambia la pagina in background
+    setTimeout(() => {
+      setMobileTab(newTab);
+    }, 500); 
+
+    // 3. Dopo quasi un secondo, spegne l'overlay: le particelle esplodono via e si svela la nuova pagina
+    setTimeout(() => {
+      setTabTransition({ active: false, target: '' });
+    }, 900); 
+  };
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -662,7 +680,24 @@ export default function Home() {
   };
   
   // NAVIGAZIONE BOTTOM BAR
-  const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
+  const [tabTransition, setTabTransition] = useState({ active: false, target: '' });
+
+  const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
+    if (newTab === mobileTab || tabTransition.active) return;
+    
+    // 1. Accende l'overlay e le particelle schizzano per formare il nome della sezione
+    setTabTransition({ active: true, target: newTab });
+    
+    // 2. Dopo mezzo secondo (le particelle hanno composto la parola e coperto la visuale), cambia la pagina in background
+    setTimeout(() => {
+      setMobileTab(newTab);
+    }, 500); 
+
+    // 3. Dopo quasi un secondo, spegne l'overlay: le particelle esplodono via e si svela la nuova pagina
+    setTimeout(() => {
+      setTabTransition({ active: false, target: '' });
+    }, 900); 
+  };
   
   // STATI TIMER FOCUS
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
