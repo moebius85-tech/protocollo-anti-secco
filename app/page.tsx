@@ -548,6 +548,107 @@ const OmniMatrixCore = () => {
     </div>
   );
 };
+const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetTab: string }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const particlesRef = useRef<any[]>([]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
+    let frameId: number;
+    const W = canvas.width = window.innerWidth;
+    const H = canvas.height = window.innerHeight;
+
+    const NUM_PARTICLES = 1500; 
+    const chars = " .',-~:;!+=%@$#*";
+
+    if (particlesRef.current.length === 0) {
+      particlesRef.current = Array.from({ length: NUM_PARTICLES }, () => ({
+        x: Math.random() * W, y: Math.random() * H, tx: Math.random() * W, ty: Math.random() * H,
+        char: chars[Math.floor(Math.random() * chars.length)]
+      }));
+    }
+
+    const particles = particlesRef.current;
+
+    const getTargetsFromText = (text: string) => {
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = W; offCanvas.height = H;
+      const offCtx = offCanvas.getContext('2d');
+      if (!offCtx) return [];
+
+      const fontSize = Math.min(W / (text.length * 0.55), 50);
+      offCtx.fillStyle = 'white';
+      offCtx.font = `900 ${fontSize}px "Inter", sans-serif`;
+      offCtx.textAlign = 'center'; offCtx.textBaseline = 'middle';
+      offCtx.fillText(text, W / 2, H / 2);
+
+      const imgData = offCtx.getImageData(0, 0, W, H).data;
+      const targets = [];
+      for (let y = 0; y < H; y += 4) {
+        for (let x = 0; x < W; x += 4) {
+          const idx = (y * W + x) * 4;
+          if (imgData[idx] > 128) targets.push({ x, y });
+        }
+      }
+      return targets;
+    };
+
+    if (active && targetTab) {
+       const newTargets = getTargetsFromText(targetTab);
+       if (newTargets.length > 0) {
+         for (let i = 0; i < NUM_PARTICLES; i++) {
+           const target = newTargets[i % newTargets.length];
+           particles[i].tx = target.x + (Math.random() - 0.5) * 4;
+           particles[i].ty = target.y + (Math.random() - 0.5) * 4;
+           particles[i].x += (Math.random() - 0.5) * 300;
+           particles[i].y += (Math.random() - 0.5) * 300;
+         }
+       }
+    } else if (!active) {
+       for (let i = 0; i < NUM_PARTICLES; i++) {
+           particles[i].tx = Math.random() * W;
+           particles[i].ty = Math.random() * H;
+       }
+    }
+
+    let time = 0;
+    const render = () => {
+      ctx.clearRect(0, 0, W, H);
+      const computedStyle = getComputedStyle(document.documentElement);
+      const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
+
+      ctx.fillStyle = accento;
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        const p = particles[i];
+        p.x += (p.tx - p.x) * 0.12;
+        p.y += (p.ty - p.y) * 0.12;
+        const floatY = Math.sin(time * 0.1 + i) * 1.5;
+        ctx.globalAlpha = 0.4 + Math.random() * 0.6;
+        ctx.fillText(p.char, p.x, p.y + floatY);
+      }
+      time++;
+      frameId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => cancelAnimationFrame(frameId);
+  }, [active, targetTab]);
+
+  return (
+    <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/90 backdrop-blur-2xl flex items-center justify-center transition-opacity duration-500 sm:hidden ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.05] blur-[30px] pointer-events-none"></div>
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full drop-shadow-lg" />
+    </div>
+  );
+};
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   const [appState, setAppState] = useState<'HOME' | 'PROTOCOL'>('HOME');
@@ -663,6 +764,21 @@ export default function Home() {
   
   // NAVIGAZIONE BOTTOM BAR
   const [mobileTab, setMobileTab] = useState<'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO'>('ALLENAMENTO');
+  const [tabTransition, setTabTransition] = useState({ active: false, target: '' });
+
+  const cambiaTabMobile = (newTab: 'TELEMETRIA' | 'COACH' | 'TURNI' | 'NUTRIZIONE' | 'ALLENAMENTO') => {
+    if (newTab === mobileTab || tabTransition.active) return;
+    
+    setTabTransition({ active: true, target: newTab });
+    
+    setTimeout(() => {
+      setMobileTab(newTab);
+    }, 500); 
+
+    setTimeout(() => {
+      setTabTransition({ active: false, target: '' });
+    }, 900); 
+  };
   
   // STATI TIMER FOCUS
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1661,7 +1777,7 @@ if (!usaIntegratori) {
   // --- HELPER BOTTOM NAV CON ICONE SVG MINIMAL, GLASS E FLUO ---
 const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  <button onClick={() => setMobileTab(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110' : 'text-slate-400 hover:text-slate-500'}`} style={mobileTab === tab ? {filter: 'drop-shadow(0 0 10px var(--accento-glow))'} : undefined}>
+  <button onClick={() => cambiaTabMobile(tab as any)} className={`flex flex-col items-center justify-center flex-1 py-3 transition-all duration-300 cursor-pointer border-none bg-transparent ${mobileTab === tab ? 'text-lime-500 scale-110' : 'text-slate-400 hover:text-slate-500'}`} style={mobileTab === tab ? {filter: 'drop-shadow(0 0 10px var(--accento-glow))'} : undefined}>
     <div className={`${mobileTab === tab ? 'comet-border glow-alone' : ''} relative mb-1 flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-300 ${mobileTab === tab ? 'bg-lime-500/10 backdrop-blur-md shadow-[inset_0_1px_3px_var(--ombra-chiara)]' : 'bg-transparent'}`}>
        {iconSvg}
     </div>
@@ -2444,6 +2560,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         {renderNavicon('ALLENAMENTO', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M6 4v16"></path><path d="M18 4v16"></path><path d="M2 8h4"></path><path d="M2 16h4"></path><path d="M18 8h4"></path><path d="M18 16h4"></path><path d="M6 12h12"></path></svg>, 'Workout')}
         
       </nav>
+      
+      {/* OVERLAY TRANSIZIONE MOBILE */}
+      <MobileAsciiTransition active={tabTransition.active} targetTab={tabTransition.target} />
 
       {/* --- MODALE FOCUS TIMER SPLIT SCREEN --- */}
       {focusWorkout && (() => {
