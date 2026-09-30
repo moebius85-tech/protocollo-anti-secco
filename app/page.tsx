@@ -566,6 +566,12 @@ const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetT
     const NUM_PARTICLES = 1500; 
     const chars = " .',-~:;!+=%@$#*";
 
+    // Ottimizzazione: Leggiamo il tema UNA SOLA VOLTA quando l'animazione parte, non 60 volte al secondo.
+    const theme = document.documentElement.getAttribute('data-theme');
+    let colorAccento = getComputedStyle(document.documentElement).getPropertyValue('--accento-1').trim() || '#a3e635';
+    // Fix contrasto Tema Chiaro
+    if (theme === 'chiaro') colorAccento = '#059669'; // Verde smeraldo scuro, altamente leggibile
+
     if (particlesRef.current.length === 0) {
       particlesRef.current = Array.from({ length: NUM_PARTICLES }, () => ({
         x: Math.random() * W, y: Math.random() * H, tx: Math.random() * W, ty: Math.random() * H,
@@ -610,19 +616,24 @@ const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetT
          }
        }
     } else if (!active) {
+       // NUOVO EFFETTO: Spirale galattica a 5 bracci in uscita
+       const arms = 5; 
        for (let i = 0; i < NUM_PARTICLES; i++) {
-           particles[i].tx = Math.random() * W;
-           particles[i].ty = Math.random() * H;
+           const idxPerArm = Math.floor(i / arms); 
+           const angle = idxPerArm * 0.05; // Controlla la curvatura della spirale
+           const radius = angle * 25 + Math.random() * 50; // Raggio di allargamento
+           const armOffset = (i % arms) * ((Math.PI * 2) / arms); 
+           
+           particles[i].tx = (W / 2) + Math.cos(angle + armOffset) * radius;
+           particles[i].ty = (H / 2) + Math.sin(angle + armOffset) * radius;
        }
     }
 
     let time = 0;
     const render = () => {
       ctx.clearRect(0, 0, W, H);
-      const computedStyle = getComputedStyle(document.documentElement);
-      const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
 
-      ctx.fillStyle = accento;
+      ctx.fillStyle = colorAccento;
       ctx.font = 'bold 10px monospace';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
 
@@ -643,9 +654,10 @@ const MobileAsciiTransition = ({ active, targetTab }: { active: boolean, targetT
   }, [active, targetTab]);
 
   return (
-    <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/90 backdrop-blur-2xl flex items-center justify-center transition-opacity duration-500 sm:hidden ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+    // Ho aumentato la duration a 800ms per ammorbidire l'uscita
+    <div className={`fixed inset-0 z-[9999] bg-[var(--superficie)]/90 backdrop-blur-2xl flex items-center justify-center transition-opacity duration-800 sm:hidden ${active ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
       <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.05] blur-[30px] pointer-events-none"></div>
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full drop-shadow-lg" />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full drop-shadow-md" />
     </div>
   );
 };
@@ -771,13 +783,16 @@ export default function Home() {
     
     setTabTransition({ active: true, target: newTab });
     
+    // Cambia i dati veri dietro al canvas a 500ms
     setTimeout(() => {
       setMobileTab(newTab);
     }, 500); 
 
+    // ATTESA PIU' LUNGA: La scritta rimane visibile intatta. 
+    // A 1300ms il modale si spegne e le particelle scattano in formazione a spirale.
     setTimeout(() => {
       setTabTransition({ active: false, target: '' });
-    }, 900); 
+    }, 1300); 
   };
   
   // STATI TIMER FOCUS
