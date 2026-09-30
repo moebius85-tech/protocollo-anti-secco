@@ -342,132 +342,209 @@ const AsciiSphere3D = () => {
   );
 };
 
-export const OmniMatrixCore = () => {
+const OmniMatrixCore = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    // willReadFrequently ottimizza il canvas per estrarre le coordinate del testo
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    let time = 0;
     let animationFrameId: number;
-    const W = canvas.width = 1200;
-    const H = canvas.height = 140;
+    let currentScene = 0;
+
+    // Configurazione del canvas: Panoramico e bloccato in altezza
+    const W = 1200;
+    const H = 140;
+    canvas.width = W;
+    canvas.height = H;
 
     const NUM_PARTICLES = 2500;
-    // Caratteri stile Matrix/Cyber per lo sciame
-    const chars = "01アイウエオカキクケコサシスセソ01.,-~:;"; 
-    
+    const chars = " .',-~:;!+=%@$#*";
+    const charsLen = chars.length - 1;
+
+    // Inizializza 2500 particelle al centro dello schermo in un piccolo nucleo
     const particles = Array.from({ length: NUM_PARTICLES }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      tx: Math.random() * W,
-      ty: Math.random() * H,
-      char: chars[Math.floor(Math.random() * chars.length)]
+      x: (Math.random() - 0.5) * 10,
+      y: (Math.random() - 0.5) * 10,
+      z: (Math.random() - 0.5) * 10,
     }));
 
-    // La sequenza dell'allenamento che lo sciame comporrà
-    const words = ["DEADLIFT", "BENCH PRESS", "LUNGES", "FOCUS", "OMNICOACH"];
-    let currentWord = 0;
-    let time = 0;
-
-    // Funzione che "scansiona" il testo e ricava le coordinate per le particelle
-    const getTargetsFromText = (text: string) => {
-      const offCanvas = document.createElement('canvas');
-      offCanvas.width = W;
-      offCanvas.height = H;
-      const offCtx = offCanvas.getContext('2d');
-      if (!offCtx) return [];
-
-      offCtx.fillStyle = 'white';
-      offCtx.font = '900 85px "Inter", "Segoe UI", sans-serif'; 
-      offCtx.textAlign = 'center';
-      offCtx.textBaseline = 'middle';
-      offCtx.fillText(text, W / 2, H / 2);
-
-      const imgData = offCtx.getImageData(0, 0, W, H).data;
+    // Costruttore delle coordinate bersaglio per le scene
+    const getTargetsForScene = (sceneIdx: number) => {
       const targets = [];
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        let px = 0, py = 0, pz = 0;
+        const ratio = i / NUM_PARTICLES;
 
-      // Scansiona a griglia per distribuire equamente i 2500 punti
-      for (let y = 0; y < H; y += 4) {
-        for (let x = 0; x < W; x += 4) {
-          const idx = (y * W + x) * 4;
-          if (imgData[idx] > 128) { 
-            targets.push({ x, y });
-          }
+        if (sceneIdx === 0) {
+          // SCENA 1: "GALASSIA" (Le fondamenta dei dati)
+          // Una spirale galattica che ruota lentamente
+          const r = Math.random() * 60;
+          const a = Math.random() * Math.PI * 2;
+          const spiral = a + r * 0.1;
+          px = Math.cos(spiral) * r;
+          py = (Math.random() - 0.5) * 8;
+          pz = Math.sin(spiral) * r;
+        } 
+        else if (sceneIdx === 1) {
+          // SCENA 2: "IL MANUBRIO" (Dumbbell 3D volumetrico)
+          // Cilindro centrale e dischi laterali
+          const a = Math.random() * Math.PI * 2;
+          const len = (Math.random() - 0.5) * 40;
+          const isWeight = len < -12 || len > 12;
+          const radius = isWeight ? (Math.random() > 0.5 ? 12 : 9) : 2;
+          px = len;
+          py = Math.cos(a) * radius;
+          pz = Math.sin(a) * radius;
+        } 
+        else if (sceneIdx === 2) {
+          // SCENA 3: "TUNNEL DEL FLOW" (Concentrazione profonda)
+          // Un tubo prospettico che avvolge la visuale
+          const depth = Math.random() * 100;
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 6 + depth * 0.2;
+          px = Math.cos(angle) * radius;
+          py = Math.sin(angle) * radius;
+          pz = depth - 50; 
+        } 
+        else if (sceneIdx === 3) {
+          // SCENA 4: "ONDA DI TELEMETRIA" (Connessione uomo-macchina)
+          // Un paesaggio sinuoso stile terreno wireframe
+          px = (Math.random() - 0.5) * 100;
+          pz = (Math.random() - 0.5) * 100;
+          // Usa funzioni matematiche per creare montagne e valli
+          py = Math.sin(px * 0.1) * 6 + Math.cos(pz * 0.1) * 6 + 15;
+          
+          // Alza due "picchi" centrali a simboleggiare due persone
+          if (px > -15 && px < -5 && Math.abs(pz) < 5) py -= Math.random() * 20;
+          if (px < 15 && px > 5 && Math.abs(pz) < 5) py -= Math.random() * 20;
         }
+
+        targets.push({ x: px, y: py, z: pz });
       }
       return targets;
     };
 
-    const updateTargets = () => {
-      const newTargets = getTargetsFromText(words[currentWord]);
-      if (newTargets.length === 0) return;
+    // Vettore delle coordinate bersaglio attuali
+    let currentTargets = getTargetsForScene(currentScene);
+    const words = "OMNIFIT".split('');
+
+    // La funzione che disegna il singolo frame
+    const renderFrame = () => {
+      time += 1;
       
-      for (let i = 0; i < NUM_PARTICLES; i++) {
-        const target = newTargets[i % newTargets.length];
-        
-        // Offset per dare un po' di spessore tridimensionale alle lettere
-        particles[i].tx = target.x + (Math.random() - 0.5) * 6;
-        particles[i].ty = target.y + (Math.random() - 0.5) * 6;
-        
-        // ESPLOSIONE CINETICA: Spinge via i caratteri prima di formare la nuova parola
-        particles[i].x += (Math.random() - 0.5) * 600;
-        particles[i].y += (Math.random() - 0.5) * 200;
-        
-        particles[i].char = chars[Math.floor(Math.random() * chars.length)];
+      // CAMBIO SCENA: Ogni 300 frame (circa 5 secondi a 60fps)
+      if (time % 300 === 0) {
+        currentScene = (currentScene + 1) % 4;
+        currentTargets = getTargetsForScene(currentScene);
       }
-      currentWord = (currentWord + 1) % words.length;
-    };
 
-    // Inizializza la prima parola
-    updateTargets();
-
-    const render = () => {
+      // Pulisci il canvas (sfondo trasparente)
       ctx.clearRect(0, 0, W, H);
-      
-      // Assorbe il colore del tema di OmniCoach
+
+      // Stile del testo: prendi il colore CSS dal tema attivo
       const computedStyle = getComputedStyle(document.documentElement);
       const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
-
+      
       ctx.fillStyle = accento;
-      ctx.font = 'bold 9px monospace';
+      // Il font è monospazio per un effetto "codice Matrix"
+      ctx.font = '8px monospace'; 
       ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
+
+      // Rotazione costante della camera intorno all'asse Y
+      const rotY = time * 0.005;
+      const cosY = Math.cos(rotY);
+      const sinY = Math.sin(rotY);
+
+      // Array temporaneo per ordinare le particelle dalla più lontana alla più vicina (Painter's algorithm)
+      const renderList = [];
 
       for (let i = 0; i < NUM_PARTICLES; i++) {
         const p = particles[i];
+        const t = currentTargets[i];
+
+        // ELASTIC MORPHING: La particella insegue il suo bersaglio
+        p.x += (t.x - p.x) * 0.05;
+        p.y += (t.y - p.y) * 0.05;
+        p.z += (t.z - p.z) * 0.05;
+
+        // Ruota il punto nello spazio tridimensionale
+        const rx = p.x * cosY - p.z * sinY;
+        const ry = p.y;
+        const rz = p.x * sinY + p.z * cosY;
+
+        // Proiezione Prospettica
+        const focalLength = 60;
+        const zDepth = rz + focalLength;
         
-        // Morphing Elastico verso la coordinata bersaglio
-        p.x += (p.tx - p.x) * 0.06;
-        p.y += (p.ty - p.y) * 0.06;
+        // Non renderizzare punti dietro la telecamera
+        if (zDepth <= 0) continue; 
 
-        // Piccolo movimento fluttuante continuo stile onda
-        const floatY = Math.sin(time * 0.02 + i) * 1.5;
+        const scale = focalLength / zDepth;
+        
+        // Coordinate a schermo: Centriamo l'animazione in W/2 e H/2
+        // IMPORTANTE: il moltiplicatore * 2 su scaleX corregge l'aspect ratio, così il manubrio non sembra "schiacciato"
+        const screenX = W / 2 + rx * scale * 10 * 2.0;
+        const screenY = H / 2 + ry * scale * 10;
 
-        // Effetto scintillio
-        ctx.globalAlpha = 0.3 + Math.random() * 0.7; 
-        ctx.fillText(p.char, p.x, p.y + floatY);
+        // Calcola l'illuminazione in base alla profondità:
+        // Punti vicini = caratteri complessi (@, #, $) ed elevata opacità.
+        // Punti lontani = caratteri semplici (., -, ') e bassa opacità.
+        let lum = Math.floor((1 / zDepth) * 1200);
+        lum = Math.max(0, Math.min(charsLen, lum));
+        const alpha = Math.min(1, Math.max(0.1, (1 / zDepth) * 60));
+
+        renderList.push({
+          x: screenX,
+          y: screenY,
+          z: zDepth,
+          char: (lum > 10) ? words[i % words.length] : chars[lum], // Parole vicine, rumore lontano
+          alpha: alpha
+        });
       }
 
-      time++;
-      // Cambia scena circa ogni 4 secondi
-      if (time % 240 === 0) updateTargets(); 
+      // Ordina i punti per z (dal più lontano al più vicino) per simulare l'occlusione visiva
+      renderList.sort((a, b) => b.z - a.z);
 
-      animationFrameId = requestAnimationFrame(render);
+      // Disegna i punti sul canvas
+      for (const pt of renderList) {
+        // Disegna solo se si trova dentro lo schermo
+        if (pt.x > 0 && pt.x < W && pt.y > 0 && pt.y < H) {
+          ctx.globalAlpha = pt.alpha;
+          ctx.fillText(pt.char, pt.x, pt.y);
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(renderFrame);
     };
 
-    render();
+    renderFrame();
 
-    return () => cancelAnimationFrame(animationFrameId);
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
   return (
     <div className="hidden lg:flex w-full h-full items-center justify-center absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.04] blur-[20px] pointer-events-none"></div>
-      <canvas ref={canvasRef} className="w-full h-[140px] relative z-10 drop-shadow-lg" />
+      
+      {/* Sfondo mistico con effetto Glow */}
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.06] blur-[30px] pointer-events-none transition-opacity duration-1000"></div>
+
+      {/* Testo di background (Opzionale: puoi rimuoverlo se vuoi un look più pulito) */}
+      <span className="absolute text-[80px] font-black uppercase tracking-[0.5em] text-[var(--testo-debole)] opacity-[0.03] transition-all duration-[1500ms] pointer-events-none select-none">
+        OMNICOACH
+      </span>
+
+      {/* Il Canvas HTML5 nativo che renderizza le particelle */}
+      <canvas 
+        ref={canvasRef}
+        className="w-full h-[140px] relative z-10"
+        style={{ filter: 'drop-shadow(0 0 6px var(--accento-glow))' }}
+      />
     </div>
   );
 };
@@ -669,7 +746,12 @@ const renderDescrizioneConHUD = (testo: string) => {
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
   const [formAInuovo, setFormAInuovo] = useState({ nome: '', cho: '', pro: '', fat: '' });
   const [isCalculatingAI, setIsCalculatingAI] = useState(false);
-  const [pastiCustom, setPastiCustom] = useState<Record<string, {attivo: boolean, cho: string, pro: string, fat: string, nome: string}>>({ Pasto1: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto2: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Pasto3: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, PostWorkout: { attivo: false, cho: '', pro: '', fat: '', nome: '' }, Integrazione: { attivo: false, cho: '', pro: '', fat: '', nome: '' } });
+  type ComponenteCustom = { id: string, nome: string, cho: number, pro: number, fat: number };
+  type PastoCustom = { attivo: boolean, cho: string, pro: string, fat: string, nome: string, componenti: ComponenteCustom[] };
+  const pastoCustomVuoto = (): PastoCustom => ({ attivo: false, cho: '', pro: '', fat: '', nome: '', componenti: [] });
+  const [pastiCustom, setPastiCustom] = useState<Record<string, PastoCustom>>({ Pasto1: pastoCustomVuoto(), Pasto2: pastoCustomVuoto(), Pasto3: pastoCustomVuoto(), PostWorkout: pastoCustomVuoto(), Integrazione: pastoCustomVuoto() });
+  // Indice del componente da sostituire quando si apre la Dispensa; null = si sta aggiungendo un nuovo elemento
+  const [indiceSostituzione, setIndiceSostituzione] = useState<number | null>(null);
   const [modalAlimento, setModalAlimento] = useState(false);
   const [dispensa, setDispensa] = useState<Array<{id: string, nome: string, cho: string, pro: string, fat: string, tipo: 'alimento' | 'integratore'}>>([]);
   const [modalDispensa, setModalDispensa] = useState(false);
@@ -891,7 +973,8 @@ const renderDescrizioneConHUD = (testo: string) => {
       const match = responseText.match(/\[MAGIC_MACRO\s*\|\s*(Pasto1|Pasto2|Pasto3|PostWorkout|Integrazione)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
       if(match) {
           responseText = responseText.replace(match[0], '').trim();
-          setPastiCustom(prev => ({ ...prev, [match[1]]: { attivo: true, cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(), nome: match[5].trim() } }));
+          const componenteAiChat: ComponenteCustom = { id: 'ai-chat', nome: match[5].trim(), cho: Math.round(parseFloat(match[2].replace(',','.'))), pro: Math.round(parseFloat(match[3].replace(',','.'))), fat: Math.round(parseFloat(match[4].replace(',','.'))) };
+          setPastiCustom(prev => ({ ...prev, [match[1]]: { ...prev[match[1]], attivo: true, componenti: [componenteAiChat], ...ricalcolaTotaliCustom([componenteAiChat]) } }));
           responseText += `\n\n✨ Macro calcolati per ${match[1]}!`;
       }
       setChatLog(prev => [...prev, { role: 'ai', text: responseText }]);
@@ -979,15 +1062,85 @@ const renderDescrizioneConHUD = (testo: string) => {
     setCarichiAttuali({}); alert(`Sessione salvata.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta);
   };
   
+  // Nome (concatenato) e macro (sommati) si ricalcolano sempre dalla lista dei componenti:
+  // un'unica fonte di verità, invece di tenerli sincronizzati a mano in ogni punto che li tocca.
+  const ricalcolaTotaliCustom = (componenti: ComponenteCustom[]) => ({
+    nome: componenti.map(c => c.nome).join(' + '),
+    cho: componenti.reduce((s, c) => s + (c.cho || 0), 0).toString(),
+    pro: componenti.reduce((s, c) => s + (c.pro || 0), 0).toString(),
+    fat: componenti.reduce((s, c) => s + (c.fat || 0), 0).toString(),
+  });
   // Passando "seed" si porta dentro la modalità Custom il consiglio dell'IA già presente
   // (nome + macro), invece di ripartire da un campo vuoto che lo fa sparire dalla vista.
-  const toggleCustomMeal = (cat: string, seed?: {nome: string, cho: string, pro: string, fat: string}) =>
-    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true, ...(seed || {}) } }));
-  const resetCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { attivo: false, cho: '', pro: '', fat: '', nome: '' } }));
-  // Svuota solo nome/macro per scegliere da capo, restando in modalità Custom
+  const toggleCustomMeal = (cat: string, seed?: {nome: string, cho: string, pro: string, fat: string}) => {
+    const componenti: ComponenteCustom[] = seed ? [{ id: 'base', nome: seed.nome, cho: Number(seed.cho) || 0, pro: Number(seed.pro) || 0, fat: Number(seed.fat) || 0 }] : [];
+    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true, componenti, ...ricalcolaTotaliCustom(componenti) } }));
+  };
+  const resetCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: pastoCustomVuoto() }));
+  // Svuota solo nome/macro/componenti per scegliere da capo, restando in modalità Custom
   // (diverso da resetCustomMeal, che invece torna al pasto gestito dall'IA)
-  const svuotaCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], nome: '', cho: '', pro: '', fat: '' } }));
+  const svuotaCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], componenti: [], nome: '', cho: '', pro: '', fat: '' } }));
+  // Aggiunge un nuovo componente accanto a quelli già presenti
+  const aggiungiComponenteCustom = (cat: string, nuovo: {nome: string, cho: number, pro: number, fat: number}) => {
+    setPastiCustom(prev => {
+      const componenti = [...(prev[cat]?.componenti || []), { id: Date.now().toString(), ...nuovo }];
+      return { ...prev, [cat]: { ...prev[cat], attivo: true, componenti, ...ricalcolaTotaliCustom(componenti) } };
+    });
+  };
+  // Sostituisce SOLO il componente all'indice indicato, lasciando intatti gli altri
+  const sostituisciComponenteCustom = (cat: string, indice: number, nuovo: {nome: string, cho: number, pro: number, fat: number}) => {
+    setPastiCustom(prev => {
+      const componenti = [...(prev[cat]?.componenti || [])];
+      componenti[indice] = { id: componenti[indice]?.id || Date.now().toString(), ...nuovo };
+      return { ...prev, [cat]: { ...prev[cat], attivo: true, componenti, ...ricalcolaTotaliCustom(componenti) } };
+    });
+  };
+  const rimuoviComponenteCustom = (cat: string, indice: number) => {
+    setPastiCustom(prev => {
+      const componenti = (prev[cat]?.componenti || []).filter((_, i) => i !== indice);
+      return { ...prev, [cat]: { ...prev[cat], componenti, ...ricalcolaTotaliCustom(componenti) } };
+    });
+  };
   const updateCustomMeal = (cat: string, field: 'cho'|'pro'|'fat'|'nome', value: string) => setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], [field]: value } }));
+
+  // Elenco componenti del pasto Custom: una riga per elemento (mai più testo troncato
+  // o pulsanti sovrapposti al nome), con un tasto "sostituisci" dedicato per ciascuno.
+  const renderElencoComponenti = (cat: string) => {
+    const componenti = pastiCustom[cat]?.componenti || [];
+    if (componenti.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center p-2 ml-2">
+          <button onClick={() => { setIndiceSostituzione(null); setModalScegliDispensa(cat); }} className="w-full bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest text-[12px] py-4 rounded-2xl shadow-[0_4px_15px_rgba(249,115,22,0.3)] hover:shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all border-none cursor-pointer hover:-translate-y-0.5 flex items-center justify-center gap-2">
+            📦 Scegli dalla Dispensa
+          </button>
+          <p className="text-[9px] text-slate-500 font-bold mt-4 tracking-widest text-center leading-relaxed">
+            Seleziona un alimento dal tuo database personale<br/>o scansiona una nuova etichetta.
+          </p>
+        </div>
+      );
+    }
+    return (
+      <div className="ml-2 space-y-2">
+        {componenti.map((comp, i) => (
+          <div key={comp.id} className="bg-[var(--velo-50)] rounded-xl p-3 border border-[var(--velo-60)]">
+            <div className="flex items-start justify-between gap-2 mb-1.5">
+              <p className="font-bold text-slate-700 text-[13px] leading-snug flex-1 break-words">{comp.nome}</p>
+              <div className="flex gap-1 shrink-0">
+                <button onClick={() => { setIndiceSostituzione(i); setModalScegliDispensa(cat); }} title="Sostituisci questo elemento" className="w-7 h-7 flex items-center justify-center rounded-lg bg-[var(--superficie)] text-orange-500 border-none cursor-pointer shadow-sm">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 2l4 4-4 4" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><path d="M7 22l-4-4 4-4" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></svg>
+                </button>
+                <button onClick={() => rimuoviComponenteCustom(cat, i)} title="Rimuovi" className="w-7 h-7 flex items-center justify-center rounded-lg bg-[var(--superficie)] text-slate-400 border-none cursor-pointer shadow-sm text-[11px] font-bold">✕</button>
+              </div>
+            </div>
+            <span className="text-[9px] font-black text-slate-500 tracking-wide"><span className="text-orange-500">{comp.cho}</span>C · {comp.pro}P · {comp.fat}F</span>
+          </div>
+        ))}
+        <button onClick={() => { setIndiceSostituzione(null); setModalScegliDispensa(cat); }} className="w-full text-[10px] font-black uppercase tracking-widest text-orange-500 bg-[var(--velo-60)] py-2.5 rounded-xl border border-dashed border-orange-400/40 cursor-pointer">
+          + Aggiungi elemento
+        </button>
+      </div>
+    );
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const apriSwapEsercizio = (es: any) => { 
     const nomeAttuale = eserciziModificati[es.id] || es.nome;
@@ -1519,22 +1672,23 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
   return (
     <main className="ambient-bg min-h-screen bg-[var(--superficie)] text-slate-700 p-4 sm:p-6 lg:p-8 font-sans overflow-x-hidden selection:bg-lime-400/30 pb-24 sm:pb-8">
       
-      <header className="mb-6 pb-2 relative z-20 anim-pop min-h-[150px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
+      <header className="mb-6 pb-2 relative z-20 anim-pop h-[140px] flex flex-col justify-center" style={{animationDelay: '0.1s'}}>
         
-        {/* BACKGROUND ANIMATO IN ASCII: Si estende su tutta la larghezza */}
+        {/* BACKGROUND ANIMATO: Si estende su tutta la larghezza dell'header */}
         <div className="absolute inset-y-0 -left-8 -right-8 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
            <OmniMatrixCore />
         </div>
 
-        {/* CONTENITORE UI: Posizionato in primo piano (z-10) per non bloccare i click */}
-        <div className="flex justify-between items-start w-full relative z-10">
+        {/* CONTENITORE UI: Posizionato in primo piano (z-10) per mantenere i bottoni cliccabili */}
+        <div className="flex justify-between items-start w-full h-full relative z-10">
             
-            {/* ZONA SINISTRA */}
+            {/* ZONA SINISTRA: Titolo e Temi */}
             <div className="shrink-0 flex flex-col justify-start">
               <button onClick={() => setAppState('HOME')} className="text-[10px] uppercase font-bold text-slate-400 hover:text-lime-500 mb-2 block transition-all bg-[var(--superficie)] px-4 py-2 rounded-full shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer w-fit">⬅️ Torna alla Home</button>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase text-slate-500 drop-shadow-sm mt-4">
                 OMNI<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad font-black">COACH</span> <span className="text-slate-500 ml-2 text-xl font-medium tracking-widest">{protocolloAttivo}</span>
               </h1>
+              {/* SELETTORE TEMA */}
               <div className="flex gap-1.5 mt-4 bg-[var(--superficie)] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] p-1.5 rounded-full w-fit">
                 {([
                   { id: 'chiaro', label: '☀️ Chiaro' },
@@ -1556,7 +1710,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               </div>
             </div>
 
-            {/* ZONA DESTRA */}
+            {/* ZONA DESTRA: Control Room e Dati Atleta */}
             <div className="shrink-0 text-right flex flex-col justify-start">
               {isAdmin && (
                  <button onClick={apriAdmin} className="mb-3 text-[10px] bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)] px-4 py-2 rounded-full font-black uppercase tracking-widest transition-all hover:scale-105 border-none cursor-pointer block ml-auto w-fit">
@@ -1953,28 +2107,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
   <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-[var(--velo-60)] shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
     <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
 
-    {pastiCustom[cat]?.nome ? (
-      <div className="ml-2">
-        <div className="flex justify-between items-center mb-4">
-          <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
-          <button onClick={() => setModalScegliDispensa(cat)} className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-[var(--velo-60)] hover:bg-[var(--superficie)] transition-all cursor-pointer shrink-0">+ Aggiungi / Modifica</button>
-        </div>
-        <div className="flex gap-4 mb-2">
-          <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-orange-500"} /></div>
-          <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-slate-600"} /></div>
-          <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-slate-600"} /></div>
-        </div>
-      </div>
-    ) : (
-      <div className="flex flex-col items-center justify-center p-2 ml-2">
-        <button onClick={() => setModalScegliDispensa(cat)} className="w-full bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest text-[12px] py-4 rounded-2xl shadow-[0_4px_15px_rgba(249,115,22,0.3)] hover:shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all border-none cursor-pointer hover:-translate-y-0.5 flex items-center justify-center gap-2">
-          📦 Scegli dalla Dispensa
-        </button>
-        <p className="text-[9px] text-slate-500 font-bold mt-4 tracking-widest text-center leading-relaxed">
-          Seleziona un alimento dal tuo database personale<br/>o scansiona una nuova etichetta.
-        </p>
-      </div>
-    )}
+    {renderElencoComponenti(cat)}
   </div>
 ) : (
                            <div className={`mt-2 p-5 rounded-3xl bg-[var(--superficie-alt)] backdrop-blur-xl border border-[var(--velo-60)] shadow-[inset_4px_4px_8px_var(--ombra-chiara),inset_-4px_-4px_8px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
@@ -2027,31 +2160,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
   <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-[var(--velo-60)] shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
     <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-orange-400 to-rose-400"></div>
 
-    {pastiCustom[cat]?.nome ? (
-      <div className="ml-2">
-        <div className="flex justify-between items-center mb-4">
-          <h4 className="font-black text-slate-700 text-[14px] truncate pr-2">{pastiCustom[cat].nome}</h4>
-          <div className="flex gap-1.5 shrink-0">
-            <button onClick={() => setModalScegliDispensa(cat)} title="Somma un altro alimento a questo, senza cancellarlo" className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-orange-500 font-bold uppercase tracking-widest border border-[var(--velo-60)] hover:bg-[var(--superficie)] transition-all cursor-pointer">+ Aggiungi</button>
-            <button onClick={() => svuotaCustomMeal(cat)} title="Cancella e scegli da capo" className="text-[9px] bg-[var(--velo-60)] px-3 py-2 rounded-xl shadow-sm text-slate-500 font-bold uppercase tracking-widest border border-[var(--velo-60)] hover:bg-[var(--superficie)] transition-all cursor-pointer">✕</button>
-          </div>
-        </div>
-        <div className="flex gap-4 mb-2">
-          <div className="flex-1"><span className={UI.label + " text-center"}>Carbo</span><input type="number" value={pastiCustom[cat].cho} onChange={e => updateCustomMeal(cat, 'cho', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-orange-500"} /></div>
-          <div className="flex-1"><span className={UI.label + " text-center"}>Pro</span><input type="number" value={pastiCustom[cat].pro} onChange={e => updateCustomMeal(cat, 'pro', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-slate-600"} /></div>
-          <div className="flex-1"><span className={UI.label + " text-center"}>Fat</span><input type="number" value={pastiCustom[cat].fat} onChange={e => updateCustomMeal(cat, 'fat', e.target.value)} className={UI.input + " text-center bg-[var(--velo-50)] text-slate-600"} /></div>
-        </div>
-      </div>
-    ) : (
-      <div className="flex flex-col items-center justify-center p-2 ml-2">
-        <button onClick={() => setModalScegliDispensa(cat)} className="w-full bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest text-[12px] py-4 rounded-2xl shadow-[0_4px_15px_rgba(249,115,22,0.3)] hover:shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all border-none cursor-pointer hover:-translate-y-0.5 flex items-center justify-center gap-2">
-          📦 Scegli dalla Dispensa
-        </button>
-        <p className="text-[9px] text-slate-500 font-bold mt-4 tracking-widest text-center leading-relaxed">
-          Seleziona un alimento dal tuo database personale<br/>o scansiona una nuova etichetta.
-        </p>
-      </div>
-    )}
+    {renderElencoComponenti(cat)}
   </div>
 ) : (
                        <div className={`mt-2 p-5 rounded-3xl bg-[var(--velo-40)] backdrop-blur-xl border border-[var(--velo-60)] shadow-[0_0_20px_rgba(249,115,22,0.2)] relative overflow-hidden`}>
@@ -2516,7 +2625,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         <h3 className="font-black text-lg uppercase tracking-widest text-slate-600 flex items-center gap-2">
           📦 La Tua Dispensa
         </h3>
-        <button onClick={() => { setModalScegliDispensa(null); setRicercaDispensa(""); }} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
+        <button onClick={() => { setModalScegliDispensa(null); setRicercaDispensa(""); setIndiceSostituzione(null); }} className="text-slate-400 hover:text-slate-600 text-3xl font-bold transition-colors border-none bg-transparent cursor-pointer">&times;</button>
       </div>
       
       {/* --- TAB E BARRA DI RICERCA --- */}
@@ -2552,19 +2661,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             <button 
               key={item.id}
               onClick={() => {
-                // LOGICA ADDITIVA: Somma i macro e concatena i nomi
-                const currentName = pastiCustom[modalScegliDispensa]?.nome || "";
-                const newName = currentName ? `${currentName} + ${item.nome}` : item.nome;
-                
-                const currentCho = Number(pastiCustom[modalScegliDispensa]?.cho) || 0;
-                const currentPro = Number(pastiCustom[modalScegliDispensa]?.pro) || 0;
-                const currentFat = Number(pastiCustom[modalScegliDispensa]?.fat) || 0;
-
-                updateCustomMeal(modalScegliDispensa, 'nome', newName);
-                updateCustomMeal(modalScegliDispensa, 'cho', (currentCho + Number(item.cho)).toString());
-                updateCustomMeal(modalScegliDispensa, 'pro', (currentPro + Number(item.pro)).toString());
-                updateCustomMeal(modalScegliDispensa, 'fat', (currentFat + Number(item.fat)).toString());
-                
+                const nuovoComponente = { nome: item.nome, cho: Number(item.cho) || 0, pro: Number(item.pro) || 0, fat: Number(item.fat) || 0 };
+                if (indiceSostituzione !== null) {
+                  sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
+                } else {
+                  aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
+                }
+                setIndiceSostituzione(null);
                 setModalScegliDispensa(null);
                 setRicercaDispensa(""); 
               }}
@@ -2671,20 +2774,17 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   tipo: filtroDispensa
                 }, ...prev]);
                 
-                // 2. Aggiunge al pasto principale in modo pulito (Logica Additiva)
-                const currentName = pastiCustom[modalScegliDispensa]?.nome || "";
-                const newName = currentName ? `${currentName} + ${formAInuovo.nome.trim()}` : formAInuovo.nome.trim();
-                const currentCho = Number(pastiCustom[modalScegliDispensa]?.cho) || 0;
-                const currentPro = Number(pastiCustom[modalScegliDispensa]?.pro) || 0;
-                const currentFat = Number(pastiCustom[modalScegliDispensa]?.fat) || 0;
+                // 2. Aggiunge (o sostituisce) il componente nel pasto principale
+                const nuovoComponente = { nome: formAInuovo.nome.trim(), cho: Number(formAInuovo.cho) || 0, pro: Number(formAInuovo.pro) || 0, fat: Number(formAInuovo.fat) || 0 };
+                if (indiceSostituzione !== null) {
+                  sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
+                } else {
+                  aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
+                }
 
-                updateCustomMeal(modalScegliDispensa, 'nome', newName);
-                updateCustomMeal(modalScegliDispensa, 'cho', (currentCho + Number(formAInuovo.cho || 0)).toString());
-                updateCustomMeal(modalScegliDispensa, 'pro', (currentPro + Number(formAInuovo.pro || 0)).toString());
-                updateCustomMeal(modalScegliDispensa, 'fat', (currentFat + Number(formAInuovo.fat || 0)).toString());
-                
                 // 3. Reset form isolato e chiusura
                 setFormAInuovo({ nome: '', cho: '', pro: '', fat: '' });
+                setIndiceSostituzione(null);
                 setModalScegliDispensa(null);
                 setRicercaDispensa("");
               }}
