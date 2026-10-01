@@ -662,6 +662,18 @@ export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [adminUtenti, setAdminUtenti] = useState<any[]>([]);
   const [nuovoUtentePremium, setNuovoUtentePremium] = useState({ email: '', password: '', nome_atleta: '', scadenza: '' });
+  // --- NUOVI STATI CATALOGO IMMAGINI ---
+  const [adminView, setAdminView] = useState<'UTENTI' | 'CATALOGO'>('UTENTI');
+  const [catalogoImmagini, setCatalogoImmagini] = useState<any[]>([]);
+  const [nuovoItemCatalogo, setNuovoItemCatalogo] = useState({ nome: '', tipo: 'alimento', immagineData: '' });
+
+  useEffect(() => {
+    async function fetchCatalogo() {
+      const { data } = await supabase.from("catalogo_immagini").select("*");
+      if (data) setCatalogoImmagini(data);
+    }
+    fetchCatalogo();
+  }, []);
 
   const apriAdmin = async () => {
     const { data } = await supabase.from('utenti_premium').select('*').order('data_scadenza', { ascending: true });
@@ -2708,28 +2720,47 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           dispensa
             .filter(d => d.tipo === filtroDispensa)
             .filter(d => d.nome.toLowerCase().includes(ricercaDispensa.toLowerCase()))
-            .map((item) => (
-            <button 
-              key={item.id}
-              onClick={() => {
-                const nuovoComponente = { nome: item.nome, cho: Number(item.cho) || 0, pro: Number(item.pro) || 0, fat: Number(item.fat) || 0 };
-                if (indiceSostituzione !== null) {
-                  sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
-                } else {
-                  aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
-                }
-                setIndiceSostituzione(null);
-                setModalScegliDispensa(null);
-                setRicercaDispensa(""); 
-              }}
-              className="w-full text-left px-4 py-3 bg-[var(--superficie-alt)] shadow-[3px_3px_6px_var(--ombra-scura-alt),-3px_-3px_6px_var(--ombra-chiara)] rounded-xl hover:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] active:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] group transition-all duration-200 border-none cursor-pointer flex items-center justify-between gap-3"
-            >
-              <span className="font-bold text-[13px] text-slate-700 group-hover:text-orange-500 transition-colors truncate">{item.nome}</span>
-              <span className="shrink-0 text-[9px] font-black text-slate-500 tracking-wide whitespace-nowrap">
-                <span className="text-orange-500">{item.cho}</span>C · {item.pro}P · {item.fat}F
-              </span>
-            </button>
-          ))
+            .map((item) => {
+              // LA MAGIA: Cerca se nel catalogo Admin c'è una foto che contiene il nome dell'item
+              // (Es. Se il catalogo ha "Yamamoto", e l'item si chiama "Yamamoto Whey", pesca la foto)
+              const imgCatalogo = catalogoImmagini.find(c => item.nome.toLowerCase().includes(c.nome.toLowerCase()))?.immagineData;
+              const immagineFinale = item.immagine || imgCatalogo;
+
+              return (
+                <button 
+                  key={item.id}
+                  onClick={() => {
+                    const nuovoComponente = { nome: item.nome, cho: Number(item.cho) || 0, pro: Number(item.pro) || 0, fat: Number(item.fat) || 0 };
+                    if (indiceSostituzione !== null) {
+                      sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
+                    } else {
+                      aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
+                    }
+                    setIndiceSostituzione(null);
+                    setModalScegliDispensa(null);
+                    setRicercaDispensa(""); 
+                  }}
+                  className="w-full text-left px-4 py-3 bg-[var(--superficie-alt)] shadow-[3px_3px_6px_var(--ombra-scura-alt),-3px_-3px_6px_var(--ombra-chiara)] rounded-xl hover:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] active:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] group transition-all duration-200 border-none cursor-pointer flex items-center justify-between gap-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {/* MOSTRIAMO L'IMMAGINE SE TROVATA, ALTRIMENTI ICONA PLACEHOLDER */}
+                    {immagineFinale ? (
+                      <div className="w-10 h-10 rounded-lg bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura)] flex items-center justify-center p-1 shrink-0">
+                         <img src={immagineFinale} alt="" className="w-full h-full object-contain rounded-md drop-shadow-sm" />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-[var(--velo-40)] flex items-center justify-center shrink-0 border border-dashed border-[var(--velo-60)]">
+                         <span className="text-[14px] opacity-40">{filtroDispensa === 'alimento' ? '🍽️' : '💊'}</span>
+                      </div>
+                    )}
+                    <span className="font-bold text-[13px] text-slate-700 group-hover:text-orange-500 transition-colors truncate block">{item.nome}</span>
+                  </div>
+                  <span className="shrink-0 text-[9px] font-black text-slate-500 tracking-wide whitespace-nowrap bg-[var(--velo-40)] px-2 py-1 rounded-md shadow-inner">
+                    <span className="text-orange-500">{item.cho}</span>C · {item.pro}P · {item.fat}F
+                  </span>
+                </button>
+              );
+            })
         )}
       </div>
 
@@ -2850,14 +2881,22 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
   </div>
 )}
       {/* === ADMIN CONTROL ROOM (MODALE) === */}
-          {showAdmin && (
-            <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[9999] p-4 sm:p-8 overflow-y-auto custom-scrollbar flex flex-col items-center">
-              <div className="livello-2 w-full max-w-5xl bg-[var(--superficie)] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-10 mb-10">
-                <button onClick={() => setShowAdmin(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 text-3xl font-black transition-colors border-none bg-transparent cursor-pointer">&times;</button>
-                <h2 className="text-2xl font-black uppercase tracking-widest text-slate-700 mb-8">Admin <span className="text-red-500">Control Room</span></h2>
-                
+      {showAdmin && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[9999] p-4 sm:p-8 overflow-y-auto custom-scrollbar flex flex-col items-center">
+          <div className="livello-2 w-full max-w-5xl bg-[var(--superficie)] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-10 mb-10 min-h-[60vh]">
+            <button onClick={() => setShowAdmin(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 text-3xl font-black transition-colors border-none bg-transparent cursor-pointer">&times;</button>
+            <h2 className="text-2xl font-black uppercase tracking-widest text-slate-700 mb-6 text-center">Admin <span className="text-red-500">Control Room</span></h2>
+
+            {/* TAB SWITCHER */}
+            <div className="flex justify-center gap-4 mb-8 bg-[var(--velo-40)] p-2 rounded-2xl shadow-[inset_4px_4px_8px_var(--ombra-scura)] w-fit mx-auto border border-[var(--velo-50)]">
+               <button onClick={() => setAdminView('UTENTI')} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer ${adminView === 'UTENTI' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-[0_4px_10px_rgba(244,63,94,0.4)]' : 'text-slate-500 hover:text-red-500 bg-transparent'}`}>👥 Utenti</button>
+               <button onClick={() => setAdminView('CATALOGO')} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer ${adminView === 'CATALOGO' ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-[0_4px_10px_rgba(99,102,241,0.4)]' : 'text-slate-500 hover:text-indigo-500 bg-transparent'}`}>🖼️ Catalogo Media</button>
+            </div>
+
+            {adminView === 'UTENTI' && (
+              <>
                 {/* PANNELLO AGGIUNGI NUOVO CLIENTE */}
-                <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura)] p-6 rounded-3xl mb-8 border border-[var(--velo-50)]">
+                <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura)] p-6 rounded-3xl mb-8 border border-[var(--velo-50)] anim-pop">
                   <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Nuovo Accesso Premium</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
                     <div><label className={UI.label}>Email</label><input type="email" value={nuovoUtentePremium.email} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, email: e.target.value})} className={UI.input + " bg-[var(--velo-60)]"} /></div>
@@ -2866,20 +2905,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     <div><label className={UI.label}>Scadenza</label><input type="date" value={nuovoUtentePremium.scadenza} onChange={e=>setNuovoUtentePremium({...nuovoUtentePremium, scadenza: e.target.value})} className={UI.input + " bg-[var(--velo-60)]"} /></div>
                     <button onClick={async () => {
                       if (!nuovoUtentePremium.email || !nuovoUtentePremium.scadenza) return alert("Inserisci almeno Email e Scadenza.");
-                      const { error } = await supabase.from('utenti_premium').insert([{ 
-                        email: nuovoUtentePremium.email, 
-                        password: nuovoUtentePremium.password, 
-                        nome_atleta: nuovoUtentePremium.nome_atleta, 
-                        data_scadenza: nuovoUtentePremium.scadenza 
-                      }]);
-                      if (error) {
-                        alert("Errore Database: " + error.message);
-                      } else {
-                        setNuovoUtentePremium({ email: '', password: '', nome_atleta: '', scadenza: '' });
-                        apriAdmin();
-                        alert("Atleta aggiunto con successo!");
-                      }
-                    }} className={UI.btnPrimary + " h-12"}>+ AGGIUNGI</button>
+                      const { error } = await supabase.from('utenti_premium').insert([{ email: nuovoUtentePremium.email, password: nuovoUtentePremium.password, nome_atleta: nuovoUtentePremium.nome_atleta, data_scadenza: nuovoUtentePremium.scadenza }]);
+                      if (error) alert("Errore Database: " + error.message);
+                      else { setNuovoUtentePremium({ email: '', password: '', nome_atleta: '', scadenza: '' }); apriAdmin(); alert("Atleta aggiunto con successo!"); }
+                    }} className={UI.btnPrimary + " h-[46px] !mb-0"}>+ AGGIUNGI</button>
                   </div>
                 </div>
 
@@ -2958,16 +2987,97 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       )})}
                       
                       {adminUtenti.length === 0 && <p className="text-center text-slate-400 font-bold text-sm py-4">Nessun utente nel database.</p>}
-                      {adminUtenti.length > 0 && adminUtenti.filter(u => u.nome_atleta.toLowerCase().includes(ricercaAdmin.toLowerCase()) || u.email.toLowerCase().includes(ricercaAdmin.toLowerCase())).length === 0 && (
-                         <p className="text-center text-slate-400 font-bold text-sm py-4">Nessun atleta trovato con questa ricerca.</p>
-                      )}
+                    {adminUtenti.length > 0 && adminUtenti.filter(u => u.nome_atleta.toLowerCase().includes(ricercaAdmin.toLowerCase()) || u.email.toLowerCase().includes(ricercaAdmin.toLowerCase())).length === 0 && (
+                       <p className="text-center text-slate-400 font-bold text-sm py-4">Nessun atleta trovato con questa ricerca.</p>
+                    )}
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
+              </>
+            )}
 
-          <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
+            {/* --- SEZIONE CATALOGO IMMAGINI ADMIN --- */}
+            {adminView === 'CATALOGO' && (
+              <div className="w-full anim-pop">
+                <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura)] p-6 rounded-3xl mb-8 border border-[var(--velo-50)]">
+                  <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4 flex items-center gap-2"><span className="text-indigo-500 text-lg">📸</span> Aggiungi Immagine al Sistema</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+                    <div className="sm:col-span-2">
+                      <label className={UI.label}>Nome Prodotto o Marchio (Es. 'Yamamoto' o 'Riso')</label>
+                      <input type="text" value={nuovoItemCatalogo.nome} onChange={e=>setNuovoItemCatalogo({...nuovoItemCatalogo, nome: e.target.value})} className={UI.input + " bg-[var(--velo-60)] focus:ring-indigo-400/40"} placeholder="Parola chiave per il collegamento automatico" />
+                    </div>
+                    <div>
+                      <label className={UI.label}>Tipologia</label>
+                      <select value={nuovoItemCatalogo.tipo} onChange={e=>setNuovoItemCatalogo({...nuovoItemCatalogo, tipo: e.target.value})} className={UI.input + " bg-[var(--velo-60)] focus:ring-indigo-400/40"}>
+                        <option value="alimento">Alimento Semplice</option>
+                        <option value="integratore">Integratore / Barattolo</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="w-full h-[46px] flex items-center justify-center bg-[var(--velo-60)] text-[10px] text-slate-500 font-black uppercase tracking-widest rounded-2xl shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura)] transition-all cursor-pointer border border-[var(--velo-60)]">
+                        + CARICA FOTO
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const reader = new FileReader();
+                          reader.onloadend = () => setNuovoItemCatalogo(prev => ({ ...prev, immagineData: reader.result as string }));
+                          reader.readAsDataURL(file);
+                        }} />
+                      </label>
+                    </div>
+                  </div>
+                  {nuovoItemCatalogo.immagineData && (
+                    <div className="mt-5 flex items-center gap-5 p-4 bg-[var(--superficie)] shadow-[inset_2px_2px_5px_var(--ombra-scura)] rounded-2xl border border-[var(--velo-40)] anim-pop">
+                      <img src={nuovoItemCatalogo.immagineData} alt="Preview" className="w-16 h-16 object-cover rounded-xl shadow-md border-2 border-indigo-500 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                         <span className="block text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Anteprima Salvataggio</span>
+                         <span className="block text-[13px] font-bold text-slate-600 truncate">{nuovoItemCatalogo.nome || 'Nessun nome inserito'}</span>
+                      </div>
+                      <button onClick={async () => {
+                         if (!nuovoItemCatalogo.nome) return alert("Inserisci un nome o marchio!");
+                         const payload = { nome: nuovoItemCatalogo.nome, tipo: nuovoItemCatalogo.tipo, immagineData: nuovoItemCatalogo.immagineData };
+                         const { error } = await supabase.from('catalogo_immagini').insert([payload]);
+                         if (error) alert("Errore DB: " + error.message);
+                         else {
+                           setCatalogoImmagini(prev => [...prev, { ...payload, id: Date.now().toString() }]);
+                           setNuovoItemCatalogo({ nome: '', tipo: 'alimento', immagineData: '' });
+                           alert("Immagine archiviata! Ora la Dispensa la collegherà automaticamente.");
+                         }
+                      }} className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] px-6 h-[40px] rounded-xl shadow-[0_4px_10px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer shrink-0">💾 SALVA NEL DB</button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-4 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2 pt-2 border-t border-slate-300/50">
+                   <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Database Immagini Esistenti</h3>
+                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                     {catalogoImmagini.map((cat, idx) => (
+                       <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex flex-col items-center text-center gap-3 relative group">
+                         <button onClick={async () => {
+                            if(confirm("Eliminare immagine dal catalogo globale?")) {
+                              await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
+                              setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
+                            }
+                         }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">&times;</button>
+                         <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)]">
+                            <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
+                         </div>
+                         <div className="w-full">
+                           <span className="block text-[9px] font-black uppercase tracking-widest text-slate-600 truncate">{cat.nome}</span>
+                           <span className="block text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-1">{cat.tipo}</span>
+                         </div>
+                       </div>
+                     ))}
+                     {catalogoImmagini.length === 0 && <p className="col-span-full text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-8 bg-[var(--velo-30)] rounded-2xl border border-dashed border-[var(--velo-60)]">Il catalogo immagini è attualmente vuoto.</p>}
+                   </div>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
+
+      <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
       {/* === MODALE MAZZO 3D INTEGRATORI CON OPEN FOOD FACTS === */}
       {mazzoAttivo && (
         <div 
