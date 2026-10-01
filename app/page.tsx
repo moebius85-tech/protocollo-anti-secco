@@ -666,6 +666,7 @@ export default function Home() {
   const [adminView, setAdminView] = useState<'UTENTI' | 'CATALOGO'>('UTENTI');
   const [catalogoImmagini, setCatalogoImmagini] = useState<any[]>([]);
   const [nuovoItemCatalogo, setNuovoItemCatalogo] = useState({ nome: '', tipo: 'alimento', immagineData: '' });
+  const [analisiCatalogoInCorso, setAnalisiCatalogoInCorso] = useState(false);
 
   useEffect(() => {
     async function fetchCatalogo() {
@@ -793,6 +794,17 @@ const renderDescrizioneConHUD = (testo: string) => {
   const [indiceSostituzione, setIndiceSostituzione] = useState<number | null>(null);
   const [modalAlimento, setModalAlimento] = useState(false);
   const [dispensa, setDispensa] = useState<Array<{id: string, nome: string, cho: string, pro: string, fat: string, tipo: 'alimento' | 'integratore', immagine?: string}>>([]);
+
+  // La Dispensa non è mai stata collegata a un salvataggio persistente: viveva solo in
+  // memoria React, quindi spariva a ogni refresh. Qui la carichiamo da Supabase all'avvio.
+  useEffect(() => {
+    async function fetchDispensa() {
+      const { data, error } = await supabase.from('dispensa_utente').select('*').order('created_at', { ascending: false });
+      if (error) { console.error("Errore caricamento dispensa:", error.message); return; }
+      if (data) setDispensa(data);
+    }
+    fetchDispensa();
+  }, []);
   const [modalDispensa, setModalDispensa] = useState(false);
   const [modalScegliDispensa, setModalScegliDispensa] = useState<string | null>(null);
   const [filtroDispensa, setFiltroDispensa] = useState<'alimento' | 'integratore'>('alimento');
@@ -2853,16 +2865,21 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Fat</span><input type="number" value={formAInuovo.fat} onChange={e => setFormAInuovo({...formAInuovo, fat: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
             </div>
             <button 
-              onClick={() => {
-                // 1. Salva in dispensa
-                setDispensa(prev => [{
-                  id: Date.now().toString(),
+              onClick={async () => {
+                // 1. Salva in dispensa (Supabase, così sopravvive al refresh)
+                const nuovoItemDispensa = {
                   nome: formAInuovo.nome.trim(), 
                   cho: formAInuovo.cho || "0", 
                   pro: formAInuovo.pro || "0", 
                   fat: formAInuovo.fat || "0",
                   tipo: filtroDispensa
-                }, ...prev]);
+                };
+                const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
+                if (error) {
+                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\nControlla le policy RLS della tabella dispensa_utente su Supabase.");
+                  return;
+                }
+                setDispensa(prev => [(data && data[0]) || { ...nuovoItemDispensa, id: Date.now().toString() }, ...prev]);
                 
                 // 2. Aggiunge (o sostituisce) il componente nel pasto principale
                 const nuovoComponente = { nome: formAInuovo.nome.trim(), cho: Number(formAInuovo.cho) || 0, pro: Number(formAInuovo.pro) || 0, fat: Number(formAInuovo.fat) || 0 };
@@ -3034,23 +3051,54 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     </div>
                   </div>
                   {nuovoItemCatalogo.immagineData && (
-                    <div className="mt-5 flex items-center gap-5 p-4 bg-[var(--superficie)] shadow-[inset_2px_2px_5px_var(--ombra-scura)] rounded-2xl border border-[var(--velo-40)] anim-pop">
-                      <img src={nuovoItemCatalogo.immagineData} alt="Preview" className="w-16 h-16 object-cover rounded-xl shadow-md border-2 border-indigo-500 shrink-0" />
-                      <div className="flex-1 min-w-0">
-                         <span className="block text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Anteprima Salvataggio</span>
-                         <span className="block text-[13px] font-bold text-slate-600 truncate">{nuovoItemCatalogo.nome || 'Nessun nome inserito'}</span>
+                    <div className="mt-5 p-4 bg-[var(--superficie)] shadow-[inset_2px_2px_5px_var(--ombra-scura)] rounded-2xl border border-[var(--velo-40)] anim-pop">
+                      {/* Riga 1: immagine + testo. Riga 2: pulsanti a piena larghezza —
+                          separati così non si sovrappongono più su schermi stretti. */}
+                      <div className="flex items-center gap-4 mb-4">
+                        <img src={nuovoItemCatalogo.immagineData} alt="Preview" className="w-16 h-16 object-cover rounded-xl shadow-md border-2 border-indigo-500 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                           <span className="block text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Anteprima Salvataggio</span>
+                           <span className="block text-[13px] font-bold text-slate-600 truncate">{nuovoItemCatalogo.nome || 'Nessun nome inserito'}</span>
+                        </div>
                       </div>
-                      <button onClick={async () => {
-                         if (!nuovoItemCatalogo.nome) return alert("Inserisci un nome o marchio!");
-                         const payload = { nome: nuovoItemCatalogo.nome, tipo: nuovoItemCatalogo.tipo, immagineData: nuovoItemCatalogo.immagineData };
-                         const { error } = await supabase.from('catalogo_immagini').insert([payload]);
-                         if (error) alert("Errore DB: " + error.message);
-                         else {
-                           setCatalogoImmagini(prev => [...prev, { ...payload, id: Date.now().toString() }]);
-                           setNuovoItemCatalogo({ nome: '', tipo: 'alimento', immagineData: '' });
-                           alert("Immagine archiviata! Ora la Dispensa la collegherà automaticamente.");
-                         }
-                      }} className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] px-6 h-[40px] rounded-xl shadow-[0_4px_10px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer shrink-0">💾 SALVA NEL DB</button>
+                      <div className="flex flex-col sm:flex-row gap-2.5">
+                        <button disabled={analisiCatalogoInCorso} onClick={async () => {
+                           setAnalisiCatalogoInCorso(true);
+                           try {
+                             const base64 = nuovoItemCatalogo.immagineData.split(',')[1];
+                             const mime = nuovoItemCatalogo.immagineData.substring(5, nuovoItemCatalogo.immagineData.indexOf(';'));
+                             const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({
+                               message: `Guarda la foto di questo prodotto. Rispondi SOLO con questo formato esatto, senza altro testo:\n[CATALOGO_AI | Nome Marchio/Prodotto breve | alimento oppure integratore]`,
+                               context: "Catalogazione admin",
+                               file: { data: base64, mimeType: mime }
+                             })});
+                             const data = await res.json();
+                             const match = (data.reply || '').match(/\[CATALOGO_AI\s*\|\s*([^|]+)\|\s*(alimento|integratore)\s*\]/i);
+                             if (match) {
+                               setNuovoItemCatalogo(prev => ({ ...prev, nome: match[1].trim(), tipo: match[2].trim().toLowerCase() }));
+                             } else {
+                               alert("Non sono riuscito a leggere chiaramente il prodotto. Inserisci il nome a mano.");
+                             }
+                           } catch (err) {
+                             alert("Errore durante l'analisi AI.");
+                           } finally {
+                             setAnalisiCatalogoInCorso(false);
+                           }
+                        }} className="flex-1 bg-[var(--velo-60)] text-indigo-500 font-black uppercase tracking-widest text-[10px] px-6 h-[40px] rounded-xl shadow-sm hover:-translate-y-0.5 transition-all border border-indigo-400/30 cursor-pointer disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2">
+                          {analisiCatalogoInCorso ? '⏳ Analisi in corso...' : '✨ Analizza con IA'}
+                        </button>
+                        <button onClick={async () => {
+                           if (!nuovoItemCatalogo.nome) return alert("Inserisci un nome o marchio!");
+                           const payload = { nome: nuovoItemCatalogo.nome, tipo: nuovoItemCatalogo.tipo, immagineData: nuovoItemCatalogo.immagineData };
+                           const { data, error } = await supabase.from('catalogo_immagini').insert([payload]).select();
+                           if (error) alert("Errore DB: " + error.message + "\n\nControlla le policy RLS della tabella catalogo_immagini su Supabase.");
+                           else {
+                             setCatalogoImmagini(prev => [...prev, (data && data[0]) || { ...payload, id: Date.now().toString() }]);
+                             setNuovoItemCatalogo({ nome: '', tipo: 'alimento', immagineData: '' });
+                             alert("Immagine archiviata! Ora la Dispensa la collegherà automaticamente.");
+                           }
+                        }} className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] px-6 h-[40px] rounded-xl shadow-[0_4px_10px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer">💾 SALVA NEL DB</button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -3062,7 +3110,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                        <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex flex-col items-center text-center gap-3 relative group">
                          <button onClick={async () => {
                             if(confirm("Eliminare immagine dal catalogo globale?")) {
-                              await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
+                              const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
+                              if (error) { alert("Errore DB: " + error.message); return; }
                               setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
                             }
                          }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">&times;</button>
@@ -3097,10 +3146,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             <MazzoIntegratori 
               categoria={mazzoAttivo} 
               onClose={() => setMazzoAttivo(null)}
-              onSave={(item) => {
-                // Salva direttamente nella dispensa globale
-                setDispensa(prev => [{
-                  id: item.id,
+              onSave={async (item) => {
+                // Salva direttamente nella dispensa globale (Supabase, così resta dopo il refresh)
+                const nuovoItemDispensa = {
                   // Sempre il nome completo (marchio + prodotto): usare solo il marchio
                   // "perdeva" la parola cercata più spesso (es. "Whey" nel nome del
                   // prodotto), rendendo introvabile l'elemento nella ricerca.
@@ -3109,9 +3157,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   cho: item.cho, 
                   pro: item.pro, 
                   fat: item.fat,
-                  tipo: 'integratore',
+                  tipo: 'integratore' as const,
                   immagine: item.immagine
-                }, ...prev]);
+                };
+                const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
+                if (error) {
+                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\nControlla le policy RLS della tabella dispensa_utente su Supabase.");
+                  return;
+                }
+                setDispensa(prev => [(data && data[0]) || { ...nuovoItemDispensa, id: item.id }, ...prev]);
                 
                 // Chiudiamo il mazzo e diamo feedback visivo
                 setMazzoAttivo(null);
