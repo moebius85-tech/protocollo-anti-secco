@@ -792,7 +792,7 @@ const renderDescrizioneConHUD = (testo: string) => {
   // Indice del componente da sostituire quando si apre la Dispensa; null = si sta aggiungendo un nuovo elemento
   const [indiceSostituzione, setIndiceSostituzione] = useState<number | null>(null);
   const [modalAlimento, setModalAlimento] = useState(false);
-  const [dispensa, setDispensa] = useState<Array<{id: string, nome: string, cho: string, pro: string, fat: string, tipo: 'alimento' | 'integratore'}>>([]);
+  const [dispensa, setDispensa] = useState<Array<{id: string, nome: string, cho: string, pro: string, fat: string, tipo: 'alimento' | 'integratore', immagine?: string}>>([]);
   const [modalDispensa, setModalDispensa] = useState(false);
   const [modalScegliDispensa, setModalScegliDispensa] = useState<string | null>(null);
   const [filtroDispensa, setFiltroDispensa] = useState<'alimento' | 'integratore'>('alimento');
