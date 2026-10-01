@@ -2207,7 +2207,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       <div className="flex gap-3">
                         {!isCustom ? (
                           <>
-                            <button onClick={() => toggleCustomMeal(cat, { nome: itemScelto.nome, cho: String(finalCho), pro: String(finalPro), fat: String(finalFat) })} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Custom</button>
+                            <button onClick={() => toggleCustomMeal(cat, { nome: itemScelto.dettaglioGrammi(finalCho, finalPro, finalFat) || itemScelto.nome, cho: String(finalCho), pro: String(finalPro), fat: String(finalFat) })} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-orange-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Custom</button>
                             <button onClick={() => apriSwapAlimento(cat)} className="bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-orange-500 hover:text-rose-500 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] border-none cursor-pointer">Swap</button>
                           </>
                         ) : (
@@ -2779,19 +2779,27 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           <button 
             onClick={async () => {
               if (!formAInuovo.nome && !fileCustomPasto['ScannerAI']) return alert("Inserisci un nome o allega una foto!");
+              // Il promemoria del pasto Custom (se presente) riporta la grammatura reale
+              // consigliata dall'IA per-ingrediente (es. "187g Crema Riso • 72g Isolate") —
+              // è un'ancora molto più affidabile della vecchia lista di pasti alternativi,
+              // e permette di tarare correttamente anche quando l'utente non scrive i grammi.
+              const contestoConsiglio = modalScegliDispensa ? (pastiCustom[modalScegliDispensa as string]?.promemoria?.nome || "Nessun consiglio") : "Nessun consiglio";
+              const haGrammiNelTesto = /\d/.test(formAInuovo.nome);
+              if (!haGrammiNelTesto && !fileCustomPasto['ScannerAI'] && contestoConsiglio === "Nessun consiglio") {
+                const confermaSenzaGrammi = confirm("Non hai indicato i grammi, non c'è una foto, e non c'è un promemoria a cui agganciarsi: l'IA potrebbe stimare una porzione standard poco accurata.\n\nVuoi continuare comunque? (Consigliato: scrivi es. \"30g Mandorle\")");
+                if (!confermaSenzaGrammi) return;
+              }
               setIsCalculatingAI(true);
               try {
-                const baseMeal = modalScegliDispensa ? dbAlimenti[modalScegliDispensa as keyof typeof dbAlimenti]?.[pastiSelezionati[modalScegliDispensa]] : null;
-                const contestoConsiglio = baseMeal ? baseMeal.nome : "Nessun consiglio";
-
                 const payload: any = { message: `
                   Analizza: "${formAInuovo.nome || 'Foto allegata'}".
-                  Pasto consigliato: "${contestoConsiglio}".
+                  Pasto/ingrediente consigliato con grammatura di riferimento: "${contestoConsiglio}".
 
                   REGOLE MATEMATICHE:
-                  1. Se ci sono grammi nel nome (es. "35g"), calcola le proporzioni.
-                  2. Se c'è una Foto ma NESSUN grammo: leggi i valori 100g, poi moltiplicali per i grammi del "Pasto consigliato" (es. se consigliati 250g, moltiplica per 2.5). 
-                  3. USA SOLO NUMERI per i macro (es. 4.5). Niente lettere come "g" o "cho:".
+                  1. Se ci sono grammi nel nome (es. "35g"), calcola le proporzioni su quei grammi.
+                  2. Altrimenti, se il "Pasto/ingrediente consigliato" indica una grammatura per un ingrediente compatibile con "${formAInuovo.nome}", usa quella grammatura come riferimento (sia che tu stia leggendo una Foto sia che tu stia leggendo solo il nome).
+                  3. Se non hai né grammi nel nome né un riferimento compatibile né una Foto, usa una porzione standard ragionevole e scrivila chiaramente nei "Grammi usati" del formato finale, così l'utente può correggerla.
+                  4. USA SOLO NUMERI per i macro (es. 4.5). Niente lettere come "g" o "cho:".
 
                   FORMATO TASSATIVO (non aggiungere alcun testo prima o dopo):
                   [MAGIC_MACRO | ScannerAI | 4.5 | 10 | 0 | Nome Prodotto (Grammi usati)]
@@ -3121,4 +3129,5 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
     </main>
   );
 }
+
 
