@@ -774,7 +774,7 @@ const renderDescrizioneConHUD = (testo: string) => {
   const [formAInuovo, setFormAInuovo] = useState({ nome: '', cho: '', pro: '', fat: '' });
   const [isCalculatingAI, setIsCalculatingAI] = useState(false);
   type ComponenteCustom = { id: string, nome: string, cho: number, pro: number, fat: number };
-  type PastoCustom = { attivo: boolean, cho: string, pro: string, fat: string, nome: string, componenti: ComponenteCustom[] };
+  type PastoCustom = { attivo: boolean, cho: string, pro: string, fat: string, nome: string, componenti: ComponenteCustom[], promemoria?: {nome: string, cho: string, pro: string, fat: string} };
   const pastoCustomVuoto = (): PastoCustom => ({ attivo: false, cho: '', pro: '', fat: '', nome: '', componenti: [] });
   const [pastiCustom, setPastiCustom] = useState<Record<string, PastoCustom>>({ Pasto1: pastoCustomVuoto(), Pasto2: pastoCustomVuoto(), Pasto3: pastoCustomVuoto(), PostWorkout: pastoCustomVuoto(), Integrazione: pastoCustomVuoto() });
   // Indice del componente da sostituire quando si apre la Dispensa; null = si sta aggiungendo un nuovo elemento
@@ -1099,9 +1099,11 @@ const renderDescrizioneConHUD = (testo: string) => {
   });
   // Passando "seed" si porta dentro la modalità Custom il consiglio dell'IA già presente
   // (nome + macro), invece di ripartire da un campo vuoto che lo fa sparire dalla vista.
+  // "seed" non diventa più un componente: resta come promemoria fisso, sempre visibile,
+  // così anche sostituendo o rimuovendo pezzi non si perde il riferimento a cosa
+  // consigliava originariamente l'IA (es. "Crema di Riso + Whey").
   const toggleCustomMeal = (cat: string, seed?: {nome: string, cho: string, pro: string, fat: string}) => {
-    const componenti: ComponenteCustom[] = seed ? [{ id: 'base', nome: seed.nome, cho: Number(seed.cho) || 0, pro: Number(seed.pro) || 0, fat: Number(seed.fat) || 0 }] : [];
-    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true, componenti, ...ricalcolaTotaliCustom(componenti) } }));
+    setPastiCustom(prev => ({ ...prev, [cat]: { ...prev[cat], attivo: true, componenti: [], ...ricalcolaTotaliCustom([]), promemoria: seed } }));
   };
   const resetCustomMeal = (cat: string) => setPastiCustom(prev => ({ ...prev, [cat]: pastoCustomVuoto() }));
   // Svuota solo nome/macro/componenti per scegliere da capo, restando in modalità Custom
@@ -1132,11 +1134,29 @@ const renderDescrizioneConHUD = (testo: string) => {
 
   // Elenco componenti del pasto Custom: una riga per elemento (mai più testo troncato
   // o pulsanti sovrapposti al nome), con un tasto "sostituisci" dedicato per ciascuno.
+  // Promemoria fisso del consiglio originale dell'IA: non è un componente, non si tocca
+  // mai sostituendo/rimuovendo elementi, resta lì finché non si esce da Custom (Reset).
+  const renderPromemoriaCustom = (cat: string) => {
+    const promemoria = pastiCustom[cat]?.promemoria;
+    if (!promemoria) return null;
+    return (
+      <div className="w-full mb-3 px-3 py-2.5 rounded-xl bg-[var(--velo-30)] border border-dashed border-[var(--velo-60)] flex items-start gap-2.5 text-left">
+        <span className="text-[13px] leading-none mt-0.5 shrink-0">📌</span>
+        <div className="flex-1 min-w-0">
+          <span className="block text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">Consigliato dall'IA (promemoria)</span>
+          <span className="block text-[11px] font-bold text-slate-600 leading-snug break-words">{promemoria.nome}</span>
+          <span className="block text-[9px] font-black text-slate-500 tracking-wide mt-1"><span className="text-orange-500">{promemoria.cho}</span>C · {promemoria.pro}P · {promemoria.fat}F</span>
+        </div>
+      </div>
+    );
+  };
+
   const renderElencoComponenti = (cat: string) => {
     const componenti = pastiCustom[cat]?.componenti || [];
     if (componenti.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center p-2 ml-2">
+          {renderPromemoriaCustom(cat)}
           <button onClick={() => { setIndiceSostituzione(null); setModalScegliDispensa(cat); }} className="w-full bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest text-[12px] py-4 rounded-2xl shadow-[0_4px_15px_rgba(249,115,22,0.3)] hover:shadow-[0_6px_20px_rgba(249,115,22,0.4)] transition-all border-none cursor-pointer hover:-translate-y-0.5 flex items-center justify-center gap-2">
             📦 Scegli dalla Dispensa
           </button>
@@ -1148,6 +1168,7 @@ const renderDescrizioneConHUD = (testo: string) => {
     }
     return (
       <div className="ml-2 space-y-2">
+        {renderPromemoriaCustom(cat)}
         {componenti.map((comp, i) => (
           <div key={comp.id} className="bg-[var(--velo-50)] rounded-xl p-3 border border-[var(--velo-60)]">
             <div className="flex items-start justify-between gap-2 mb-1.5">
