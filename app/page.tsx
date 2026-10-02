@@ -3138,12 +3138,55 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   )}
                 </div>
 
-                {/* GRUPPO INTEGRATORI CON SOTTOCATEGORIE A.I. */}
+                <div className="space-y-4 pt-6 border-t border-slate-300/50">
+                   <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Database Immagini Esistenti</h3>
+                   
+                   {/* GRUPPO ALIMENTI */}
+                   <div className="mb-4">
+                      <button 
+                        onClick={() => setCatalogoAperto(catalogoAperto === 'alimento' ? null : 'alimento')}
+                        className="w-full flex justify-between items-center bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] p-4 rounded-2xl border-none cursor-pointer transition-all"
+                      >
+                        <span className="text-[11px] font-black text-slate-600 tracking-widest flex items-center gap-2">🍎 Alimenti</span>
+                        <div className="flex items-center gap-3">
+                           <span className="text-[9px] bg-indigo-100 shadow-inner text-indigo-500 px-2.5 py-1 rounded-lg font-black tracking-widest">
+                             {catalogoImmagini.filter(c => c.tipo === 'alimento').length} Elementi
+                           </span>
+                           <span className={`text-indigo-400 font-bold transition-transform duration-300 ${catalogoAperto === 'alimento' ? 'rotate-180' : ''}`}>▼</span>
+                        </div>
+                      </button>
+                      
+                      {catalogoAperto === 'alimento' && (
+                        <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-4 anim-drop-down pl-2 border-l-2 border-indigo-200/50 ml-2">
+                           {catalogoImmagini.filter(c => c.tipo === 'alimento').map((cat, idx) => (
+                             <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-3 rounded-2xl flex flex-col items-center text-center gap-2 relative group h-full">
+                               <button onClick={async () => {
+                                  if(confirm("Eliminare immagine dal catalogo globale?")) {
+                                    const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
+                                    if (error) { alert("Errore DB: " + error.message); return; }
+                                    setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
+                                  }
+                               }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">&times;</button>
+                               <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)] shrink-0">
+                                  <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
+                               </div>
+                               <div className="w-full flex-1 flex items-start justify-center mt-1 overflow-hidden">
+                                 {/* TESTO FIXATO: Va a capo in automatico e usa tutto lo spazio disponibile */}
+                                 <span className="block text-[8px] font-black uppercase tracking-wider text-slate-600 break-words whitespace-normal leading-[1.3] w-full">{cat.nome}</span>
+                               </div>
+                             </div>
+                           ))}
+                           {catalogoImmagini.filter(c => c.tipo === 'alimento').length === 0 && <p className="col-span-full text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-4 bg-[var(--velo-30)] rounded-2xl border border-dashed border-[var(--velo-60)]">Nessun alimento archiviato.</p>}
+                        </div>
+                      )}
+                   </div>
+
+                   {/* GRUPPO INTEGRATORI CON SOTTOCATEGORIE A.I. */}
                    <div>
                       <button 
                         onClick={() => {
                           setCatalogoAperto(catalogoAperto === 'integratore' ? null : 'integratore');
-                          setSottocategoriaAperta(null); // Chiude le sottocartelle se chiudi la principale
+                          setSottocategoriaAperta(null);
                         }}
                         className="w-full flex justify-between items-center bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] p-4 rounded-2xl border-none cursor-pointer transition-all"
                       >
@@ -3224,12 +3267,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 </div>
               </div>
             )}
-            </div>
+
+          </div>
         </div>
       )}
 
       <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      
       {/* === MODALE MAZZO 3D INTEGRATORI CON OPEN FOOD FACTS === */}
       {mazzoAttivo && (
         <div 
