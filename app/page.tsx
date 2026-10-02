@@ -3283,8 +3283,24 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
             <MazzoIntegratori 
               categoria={mazzoAttivo} 
+              // MOTORE SEMANTICO: Ignora gli errori di battitura o le differenze ITA/ENG
               cataloghiLocali={catalogoImmagini
-                .filter(c => c.tipo === 'integratore' && mazzoAttivo && (c.nome.toLowerCase().includes(mazzoAttivo.toLowerCase()) || mazzoAttivo.toLowerCase().includes(c.nome.toLowerCase())))
+                .filter(c => {
+                   if (c.tipo !== 'integratore' || !mazzoAttivo) return false;
+                   const n = c.nome.toLowerCase();
+                   const cat = mazzoAttivo.toLowerCase();
+                   
+                   let keywords = [cat];
+                   if (cat.includes('citrullina') || cat.includes('pump')) keywords = ['citrullin', 'pump', 'pre', 'arginin'];
+                   else if (cat.includes('eaa') || cat.includes('amino')) keywords = ['eaa', 'bcaa', 'amino'];
+                   else if (cat.includes('creatina')) keywords = ['creatin'];
+                   else if (cat.includes('whey') || cat.includes('proteine') || cat.includes('isolate')) keywords = ['whey', 'protein', 'iso'];
+                   else if (cat.includes('ciclodestrin')) keywords = ['ciclodestrin', 'dextrin', 'carb'];
+                   else if (cat.includes('omega')) keywords = ['omega', 'fish oil'];
+                   else if (cat.includes('vitamin') || cat.includes('d3') || cat.includes('ashwagandha')) keywords = ['vitamin', 'd3', 'k2', 'multi', 'ashwagandha'];
+                   
+                   return keywords.some(kw => n.includes(kw));
+                })
                 .map(c => ({ id: `locale-${c.id}`, nome: c.nome, immagine: c.immagineData }))
               }
               onClose={() => setMazzoAttivo(null)}
