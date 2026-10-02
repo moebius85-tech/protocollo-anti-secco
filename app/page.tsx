@@ -682,7 +682,7 @@ export default function Home() {
   // --- NUOVI STATI CATALOGO IMMAGINI ---
   const [adminView, setAdminView] = useState<'UTENTI' | 'CATALOGO'>('UTENTI');
   const [catalogoImmagini, setCatalogoImmagini] = useState<any[]>([]);
-  const [nuovoItemCatalogo, setNuovoItemCatalogo] = useState({ nome: '', tipo: 'alimento', immagineData: '' });
+  const [nuovoItemCatalogo, setNuovoItemCatalogo] = useState({ nome: '', tipo: 'alimento', immagineData: '', cho: '', pro: '', fat: '' });
   const [analisiCatalogoInCorso, setAnalisiCatalogoInCorso] = useState(false);
   const [catalogoAperto, setCatalogoAperto] = useState<'alimento' | 'integratore' | null>(null);
   const [sottocategoriaAperta, setSottocategoriaAperta] = useState<string | null>(null);
@@ -803,7 +803,7 @@ const renderDescrizioneConHUD = (testo: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
-  const [formAInuovo, setFormAInuovo] = useState({ nome: '', cho: '', pro: '', fat: '' });
+  const [formAInuovo, setFormAInuovo] = useState({ nome: '', cho: '', pro: '', fat: '', tipo: 'alimento', immagineData: '' });
   const [isCalculatingAI, setIsCalculatingAI] = useState(false);
   type ComponenteCustom = { id: string, nome: string, cho: number, pro: number, fat: number };
   type PastoCustom = { attivo: boolean, cho: string, pro: string, fat: string, nome: string, componenti: ComponenteCustom[], promemoria?: {nome: string, cho: string, pro: string, fat: string} };
@@ -2876,60 +2876,53 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             <span className="text-[16px] leading-none">📸</span>
           </label>
           
-          {/* INPUT ISOLATO (Non tocca più il pasto principale finché non salvi) */}
           <input type="text" placeholder="Es. 30g Mandorle..." value={formAInuovo.nome} onChange={e => setFormAInuovo({...formAInuovo, nome: e.target.value})} className={"w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 py-3 rounded-xl text-[13px] text-slate-600 outline-none transition-all font-semibold border-none"} />
           
           <button 
             onClick={async () => {
               if (!formAInuovo.nome && !fileCustomPasto['ScannerAI']) return alert("Inserisci un nome o allega una foto!");
-              // Il promemoria del pasto Custom (se presente) riporta la grammatura reale
-              // consigliata dall'IA per-ingrediente (es. "187g Crema Riso • 72g Isolate") —
-              // è un'ancora molto più affidabile della vecchia lista di pasti alternativi,
-              // e permette di tarare correttamente anche quando l'utente non scrive i grammi.
               const contestoConsiglio = modalScegliDispensa ? (pastiCustom[modalScegliDispensa as string]?.promemoria?.nome || "Nessun consiglio") : "Nessun consiglio";
-              const haGrammiNelTesto = /\d/.test(formAInuovo.nome);
-              if (!haGrammiNelTesto && !fileCustomPasto['ScannerAI'] && contestoConsiglio === "Nessun consiglio") {
-                const confermaSenzaGrammi = confirm("Non hai indicato i grammi, non c'è una foto, e non c'è un promemoria a cui agganciarsi: l'IA potrebbe stimare una porzione standard poco accurata.\n\nVuoi continuare comunque? (Consigliato: scrivi es. \"30g Mandorle\")");
-                if (!confermaSenzaGrammi) return;
-              }
               setIsCalculatingAI(true);
               try {
                 const payload: any = { message: `
                   Analizza: "${formAInuovo.nome || 'Foto allegata'}".
-                  Pasto/ingrediente consigliato con grammatura di riferimento: "${contestoConsiglio}".
+                  Pasto consigliato: "${contestoConsiglio}".
 
-                  REGOLE MATEMATICHE:
-                  1. Se ci sono grammi nel nome (es. "35g"), calcola le proporzioni su quei grammi.
-                  2. Altrimenti, se il "Pasto/ingrediente consigliato" indica una grammatura per un ingrediente compatibile con "${formAInuovo.nome}", usa quella grammatura come riferimento (sia che tu stia leggendo una Foto sia che tu stia leggendo solo il nome).
-                  3. Se non hai né grammi nel nome né un riferimento compatibile né una Foto, usa una porzione standard ragionevole e scrivila chiaramente nei "Grammi usati" del formato finale, così l'utente può correggerla.
-                  4. USA SOLO NUMERI per i macro (es. 4.5). Niente lettere come "g" o "cho:".
+                  REGOLE MATEMATICHE E CATALOGAZIONE:
+                  1. Ricalcola i macro in base ai grammi indicati, o usa una porzione logica se assenti.
+                  2. CAPIRE LA CATEGORIA: Se è un cibo normale (frutta, carne, pane, snack) scrivi "alimento". Se è in polvere, pillole, omega3, vitamine, whey, scrivi "integratore".
 
-                  FORMATO TASSATIVO (non aggiungere alcun testo prima o dopo):
-                  [MAGIC_MACRO | ScannerAI | 4.5 | 10 | 0 | Nome Prodotto (Grammi usati)]
+                  FORMATO TASSATIVO (non aggiungere testo):
+                  [MAGIC_MACRO | alimento oppure integratore | Carb | Pro | Fat | Nome Prodotto (Grammi)]
                 ` };
                 
+                let base64Image = '';
                 if (fileCustomPasto['ScannerAI']) {
+                  base64Image = `data:${fileCustomPasto['ScannerAI'].mimeType};base64,${fileCustomPasto['ScannerAI'].data}`;
                   payload.file = { data: fileCustomPasto['ScannerAI'].data, mimeType: fileCustomPasto['ScannerAI'].mimeType };
                 }
                 const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
                 
-                // REGEX CORAZZATA: Trova i numeri anche se c'è "g" o testo sporco in mezzo
-                const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*([^|]+)\s*\|\s*[^\d]*([\d.,]+)[^|]*\|\s*[^\d]*([\d.,]+)[^|]*\|\s*[^\d]*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
+                // Cerca la categoria (alimento/integratore) e i macro
+                const match = data.reply.match(/\[MAGIC_MACRO\s*\Vert{}\s*(alimento\vert{}integratore)\s*\Vert{}\s*[^\d]*([\d.,]+)[^\vert{}]*\Vert{}\s*[^\d]*([\d.,]+)[^\vert{}]*\Vert{}\s*[^\d]*([\d.,]+)[^\vert{}]*\Vert{}\s*([^\]]+)\]/i);
                 
                 if(match) {
+                  const tipoRilevato = match[1].trim().toLowerCase();
                   setFormAInuovo({
                     nome: match[5].trim(), 
                     cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(),
                     pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(),
-                    fat: Math.round(parseFloat(match[4].replace(',','.'))).toString()
+                    fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(),
+                    tipo: tipoRilevato,
+                    immagineData: base64Image // Salva l'immagine!
                   });
+                  setFiltroDispensa(tipoRilevato as 'alimento'|'integratore'); // Cambia tab automaticamente
                   setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}));
                 } else { 
-                  // RAGGI X ATTIVATI: Mostriamo cosa ha detto l'A.I. per capire l'errore
                   alert("L'A.I. ha risposto in modo anomalo:\n" + data.reply); 
                 }
-              } catch(e) { console.log(e); alert("Errore di connessione A.I."); }
+              } catch(e) { alert("Errore di connessione A.I."); }
               setIsCalculatingAI(false);
             }} 
             disabled={isCalculatingAI} 
@@ -2937,7 +2930,6 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           >
             {isCalculatingAI ? '...' : '/ AI'}
           </button> 
-            
         </div>
 
         {fileCustomPasto['ScannerAI'] && (
@@ -2950,6 +2942,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         {/* --- RISULTATO A.I. E SALVATAGGIO --- */}
         {formAInuovo.nome && (formAInuovo.cho !== "" || formAInuovo.pro !== "" || formAInuovo.fat !== "") && (
           <div className="bg-[var(--velo-40)] p-3 rounded-xl border border-[var(--velo-60)] shadow-sm mt-2">
+            <p className="text-[10px] text-center font-bold text-slate-500 mb-2 uppercase tracking-widest">
+              L'IA lo ha classificato come: <span className="text-indigo-500">{formAInuovo.tipo}</span>
+            </p>
             <div className="flex gap-2 mb-3">
               <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Carbo</span><input type="number" value={formAInuovo.cho} onChange={e => setFormAInuovo({...formAInuovo, cho: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
               <div className="flex-1"><span className={"text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-2 px-1 text-center !mb-1"}>Pro</span><input type="number" value={formAInuovo.pro} onChange={e => setFormAInuovo({...formAInuovo, pro: e.target.value})} className={"w-full shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-4 text-[13px] text-slate-600 outline-none transition-all font-semibold border-none text-center bg-[var(--velo-50)] !py-2 !rounded-lg"} /></div>
@@ -2957,38 +2952,25 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             </div>
             <button 
               onClick={async () => {
-                // 1. Salva in dispensa (Supabase, così sopravvive al refresh)
                 const nuovoItemDispensa = {
-                  nome: formAInuovo.nome.trim(), 
-                  cho: formAInuovo.cho || "0", 
-                  pro: formAInuovo.pro || "0", 
-                  fat: formAInuovo.fat || "0",
-                  tipo: filtroDispensa
+                  nome: formAInuovo.nome.trim(), cho: formAInuovo.cho || "0", pro: formAInuovo.pro || "0", fat: formAInuovo.fat || "0",
+                  tipo: formAInuovo.tipo as 'alimento' | 'integratore',
+                  immagine: formAInuovo.immagineData || undefined // Passa l'immagine salvata
                 };
                 const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
-                if (error) {
-                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\n" + suggerimentoErroreSupabase(error));
-                  return;
-                }
+                if (error) { alert("Errore nel salvataggio in Dispensa."); return; }
                 setDispensa(prev => [(data && data[0]) || { ...nuovoItemDispensa, id: Date.now().toString() }, ...prev]);
                 
-                // 2. Aggiunge (o sostituisce) il componente nel pasto principale
                 const nuovoComponente = { nome: formAInuovo.nome.trim(), cho: Number(formAInuovo.cho) || 0, pro: Number(formAInuovo.pro) || 0, fat: Number(formAInuovo.fat) || 0 };
-                if (indiceSostituzione !== null) {
-                  sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
-                } else {
-                  aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
-                }
+                if (indiceSostituzione !== null) sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
+                else aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
 
-                // 3. Reset form isolato e chiusura
-                setFormAInuovo({ nome: '', cho: '', pro: '', fat: '' });
-                setIndiceSostituzione(null);
-                setModalScegliDispensa(null);
-                setRicercaDispensa("");
+                setFormAInuovo({ nome: '', cho: '', pro: '', fat: '', tipo: 'alimento', immagineData: '' });
+                setIndiceSostituzione(null); setModalScegliDispensa(null); setRicercaDispensa("");
               }}
               className="w-full bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad text-white font-black uppercase tracking-widest text-[10px] py-3 rounded-xl shadow-[0_4px_10px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_15px_rgba(16,185,129,0.4)] transition-all border-none cursor-pointer"
             >
-              + Salva in {filtroDispensa === 'alimento' ? 'Alimenti' : 'Integratori'} e Usa
+              + Salva e Usa
             </button>
           </div>
         )}
@@ -3142,14 +3124,23 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     </div>
                   </div>
 
-                  {/* ANTEPRIMA RESPONSIVE CON TASTO A.I. */}
+                  {/* ANTEPRIMA RESPONSIVE CON TASTO A.I E MACRO */}
                   {nuovoItemCatalogo.immagineData && (
-                    <div className="mt-6 flex flex-col sm:flex-row items-center gap-4 p-5 bg-[var(--superficie)] shadow-[inset_2px_2px_5px_var(--ombra-scura)] rounded-3xl border border-[var(--velo-40)] anim-pop relative overflow-hidden">
-                      <img src={nuovoItemCatalogo.immagineData} alt="Preview" className="w-24 h-24 sm:w-16 sm:h-16 object-cover rounded-2xl shadow-[0_4px_10px_rgba(0,0,0,0.2)] border-2 border-indigo-500 shrink-0 z-10" />
-                      
-                      <div className="flex-1 w-full text-center sm:text-left min-w-0 z-10">
-                         <span className="block text-[9px] uppercase font-black tracking-widest text-slate-400 mb-1">Dati Prodotto</span>
-                         <span className="block text-[14px] sm:text-[13px] font-bold text-slate-600 truncate">{nuovoItemCatalogo.nome || 'Nessun nome inserito'}</span>
+                    <div className="mt-6 p-5 bg-[var(--superficie)] shadow-[inset_2px_2px_5px_var(--ombra-scura)] rounded-3xl border border-[var(--velo-40)] anim-pop relative overflow-hidden">
+                      <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
+                        <img src={nuovoItemCatalogo.immagineData} alt="Preview" className="w-24 h-24 sm:w-16 sm:h-16 object-cover rounded-2xl shadow-[0_4px_10px_rgba(0,0,0,0.2)] border-2 border-indigo-500 shrink-0 z-10" />
+                        
+                        <div className="flex-1 w-full text-center sm:text-left min-w-0 z-10">
+                           <span className="block text-[9px] uppercase font-black tracking-widest text-slate-400 mb-1">Dati Prodotto Globale</span>
+                           <span className="block text-[14px] sm:text-[13px] font-bold text-slate-600 truncate">{nuovoItemCatalogo.nome || 'Nessun nome inserito'}</span>
+                        </div>
+                      </div>
+
+                      {/* Input Macro Generati o Manuali */}
+                      <div className="flex gap-2 mb-4 z-10 relative">
+                        <div className="flex-1"><span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 text-center">Carbo</span><input type="number" value={nuovoItemCatalogo.cho} onChange={e => setNuovoItemCatalogo({...nuovoItemCatalogo, cho: e.target.value})} className="w-full bg-[var(--velo-50)] text-center text-xs py-2 rounded-lg border-none outline-none text-slate-600 font-bold" /></div>
+                        <div className="flex-1"><span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 text-center">Pro</span><input type="number" value={nuovoItemCatalogo.pro} onChange={e => setNuovoItemCatalogo({...nuovoItemCatalogo, pro: e.target.value})} className="w-full bg-[var(--velo-50)] text-center text-xs py-2 rounded-lg border-none outline-none text-slate-600 font-bold" /></div>
+                        <div className="flex-1"><span className="text-[9px] text-slate-400 uppercase font-black tracking-widest block mb-1 text-center">Fat</span><input type="number" value={nuovoItemCatalogo.fat} onChange={e => setNuovoItemCatalogo({...nuovoItemCatalogo, fat: e.target.value})} className="w-full bg-[var(--velo-50)] text-center text-xs py-2 rounded-lg border-none outline-none text-slate-600 font-bold" /></div>
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto z-10 mt-2 sm:mt-0">
@@ -3161,32 +3152,35 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                               const base64 = nuovoItemCatalogo.immagineData.split(',')[1];
                               const mime = nuovoItemCatalogo.immagineData.substring(5, nuovoItemCatalogo.immagineData.indexOf(';'));
                               const payload = {
-                                message: "Analizza questa etichetta o confezione. Restituisci SOLO ED ESCLUSIVAMENTE la Marca e il Nome del prodotto (es: 'Yamamoto Iso-Fuji'). Niente preamboli.",
+                                message: "Analizza etichetta. Estrai Marca e Nome, stabilisci se è 'alimento' o 'integratore', e stima i macronutrienti per 100g. Formato:\n[CATALOGO_AI | Nome | alimento/integratore | CHO | PRO | FAT]",
                                 file: { data: base64, mimeType: mime }
                               };
                               const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                               const data = await response.json();
-                              setNuovoItemCatalogo(prev => ({ ...prev, nome: data.reply.trim() }));
+                              const match = (data.reply || '').match(/\[CATALOGO_AI\s*\|\s*([^|]+)\|\s*(alimento|integratore)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\]/i);
+                              if (match) {
+                                setNuovoItemCatalogo(prev => ({ ...prev, nome: match[1].trim(), tipo: match[2].trim().toLowerCase(), cho: Math.round(parseFloat(match[3].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[4].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[5].replace(',','.'))).toString() }));
+                              } else { alert("Analisi parziale, riempi i campi a mano."); }
                             } catch (e) { alert("Errore connessione A.I."); }
                             setAnalisiCatalogoInCorso(false);
                           }}
                           disabled={analisiCatalogoInCorso}
-                          className="w-full sm:w-auto bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura)] text-indigo-500 font-black uppercase tracking-widest text-[10px] px-5 py-3.5 rounded-xl transition-all border-none cursor-pointer disabled:opacity-50"
+                          className="w-full sm:w-auto bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] text-indigo-500 font-black uppercase tracking-widest text-[10px] px-5 py-3.5 rounded-xl transition-all border-none cursor-pointer"
                         >
                           {analisiCatalogoInCorso ? '⏳ LETTURA...' : '🤖 AUTO-COMPILA'}
                         </button>
 
                         <button onClick={async () => {
                            if (!nuovoItemCatalogo.nome) return alert("Inserisci un nome o usa l'auto-compilazione!");
-                           const payload = { nome: nuovoItemCatalogo.nome, tipo: nuovoItemCatalogo.tipo, immagineData: nuovoItemCatalogo.immagineData };
+                           const payload = { nome: nuovoItemCatalogo.nome, tipo: nuovoItemCatalogo.tipo, immagineData: nuovoItemCatalogo.immagineData, cho: nuovoItemCatalogo.cho || '0', pro: nuovoItemCatalogo.pro || '0', fat: nuovoItemCatalogo.fat || '0' };
                            const { error } = await supabase.from('catalogo_immagini').insert([payload]);
-                           if (error) alert("Controlla le RLS su Supabase! Errore: " + error.message);
+                           if (error) alert("Controlla Supabase! Errore: " + error.message);
                            else {
                              setCatalogoImmagini(prev => [...prev, { ...payload, id: Date.now().toString() }]);
-                             setNuovoItemCatalogo({ nome: '', tipo: 'alimento', immagineData: '' });
+                             setNuovoItemCatalogo({ nome: '', tipo: 'alimento', immagineData: '', cho: '', pro: '', fat: '' });
                              alert("Archiviato nel database globale!");
                            }
-                        }} className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] px-6 py-3.5 rounded-xl shadow-[0_4px_10px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer">
+                        }} className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] px-6 py-3.5 rounded-xl shadow-md border-none cursor-pointer">
                           💾 SALVA NEL DB
                         </button>
                       </div>
