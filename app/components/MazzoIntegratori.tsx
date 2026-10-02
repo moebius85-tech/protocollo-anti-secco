@@ -64,7 +64,7 @@ function Carta({
   useEffect(() => {
     if (!isFront && !isExiting) {
       x.set(0);
-      setIsZoomed(false); // Resetta lo zoom se la carta non 癡 pi羅 frontale
+      setIsZoomed(false); // Resetta lo zoom se la carta non è più frontale
     }
   }, [isFront, isExiting, x]);
 
@@ -89,7 +89,7 @@ function Carta({
   // LOGICA ANIMAZIONE ZOOM
   if (isZoomed) {
     yPos = -50;       // Sale in alto
-    scaleCard = 1.35; // Diventa pi羅 grande del 35%
+    scaleCard = 1.35; // Diventa più grande del 35%
     zIndexCard = 200; // Si mette sopra tutto
   } else if (isFront) {
     yPos = 0;
@@ -210,7 +210,7 @@ function Carta({
              <img src={card.immagine} alt={card.nome} className="max-h-full max-w-full object-contain mix-blend-multiply drop-shadow-sm" />
            </div>
         ) : (
-           <span>{card.icon || '���'}</span>
+           <span>{card.icon || '💊'}</span>
         )}
       </div>
 
@@ -232,9 +232,12 @@ type Props = {
   onClose: () => void;
   onSave: (item: OffProduct) => void;
   onCustom: () => void;
+  // Prodotti già caricati a mano in Control Room e giudicati compatibili con questa
+  // categoria: prima venivano ignorati, il mazzo mostrava solo il database online.
+  cataloghiLocali?: { id: string; nome: string; immagine?: string }[];
 };
 
-export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props) => {
+export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, cataloghiLocali = [] }: Props) => {
   const [cards, setCards] = useState<OffProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
@@ -275,30 +278,45 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
             tag: 'DATABASE ONLINE'
           }));
       } catch (err) {
-        console.error("Errore fetch OFF (il sistema user� il fallback):", err);
+        console.error("Errore fetch OFF (il sistema userà il fallback):", err);
       }
 
-      if (annullato) return; // la categoria 癡 cambiata o il componente si 癡 chiuso nel frattempo
+      if (annullato) return; // la categoria è cambiata o il componente si è chiuso nel frattempo
 
-      if (risultatiFormattati.length === 0) {
-        risultatiFormattati.push({
+      // I prodotti caricati a mano in Control Room vengono PRIMA: sono curati, hanno
+      // già un'immagine garantita, e l'utente li riconosce più facilmente.
+      const risultatiLocali: OffProduct[] = cataloghiLocali.map(c => ({
+        id: c.id,
+        tipologia: categoria,
+        marchio: 'Dal tuo catalogo',
+        nome: c.nome,
+        immagine: c.immagine,
+        cho: '0', pro: '0', fat: '0',
+        tag: 'CATALOGO ADMIN'
+      }));
+
+      const risultatiCombinati = [...risultatiLocali, ...risultatiFormattati];
+
+      // La scheda generica ha senso solo se NON c'è nessuna fonte reale, né locale né online.
+      if (risultatiCombinati.length === 0) {
+        risultatiCombinati.push({
           id: `generic-${Date.now()}`,
           tipologia: categoria,
           marchio: 'Generico',
           nome: categoria.toUpperCase(),
           tag: 'SCHEDA GENERICA',
-          icon: '���',
+          icon: '💊',
           cho: '0', pro: '0', fat: '0'
         });
       }
 
       const customCard: OffProduct = { 
         id: 'custom', tipologia: categoria, marchio: 'Custom', 
-        nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '���', 
+        nome: 'SCANSIONA ETICHETTA', tag: 'A.I. SCANNER', icon: '📸', 
         cho: '0', pro: '0', fat: '0' 
       };
 
-      setCards([...risultatiFormattati, customCard]);
+      setCards([...risultatiCombinati, customCard]);
       setLoading(false);
     }
 
