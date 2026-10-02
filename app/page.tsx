@@ -2742,28 +2742,96 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* --- LISTA CIBI SALVATI E CATALOGO GLOBALE --- */}
       <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4 mb-4">
         {(() => {
-          // 1. Filtra la dispensa personale dell'utente
-          const dispensaFiltrata = dispensa
-            .filter(d => d.tipo === filtroDispensa)
-            .filter(d => d.nome.toLowerCase().includes(ricercaDispensa.toLowerCase()));
-          
-          // 2. Filtra il catalogo globale (Admin) escludendo i cibi che l'utente ha già salvato in dispensa
-          const catalogoConsigliato = catalogoImmagini
-            .filter(c => c.tipo === filtroDispensa)
-            .filter(c => c.nome.toLowerCase().includes(ricercaDispensa.toLowerCase()))
-            .filter(c => !dispensa.some(d => d.nome.toLowerCase() === c.nome.toLowerCase()));
+          const dispensaFiltrata = dispensa.filter(d => d.tipo === filtroDispensa).filter(d => d.nome.toLowerCase().includes(ricercaDispensa.toLowerCase()));
+          const catalogoConsigliato = catalogoImmagini.filter(c => c.tipo === filtroDispensa).filter(c => c.nome.toLowerCase().includes(ricercaDispensa.toLowerCase())).filter(c => !dispensa.some(d => d.nome.toLowerCase() === c.nome.toLowerCase()));
 
-          // Funzione universale per inserire il componente nel pasto e chiudere i modali
           const inserisciComponenteDb = (nuovoComponente: {nome: string, cho: number, pro: number, fat: number}) => {
-             if (indiceSostituzione !== null) {
-                sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
-             } else {
-                aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
-             }
-             setIndiceSostituzione(null);
-             setModalScegliDispensa(null);
-             setRicercaDispensa("");
-             setDispensaItemEspanso(null);
+             if (indiceSostituzione !== null) { sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente); } 
+             else { aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente); }
+             setIndiceSostituzione(null); setModalScegliDispensa(null); setRicercaDispensa(""); setDispensaItemEspanso(null);
+          };
+
+          // MOTORE MATEMATICO: Trova il macro dominante e calcola i grammi esatti per coprire il target dell'IA
+          const calcolaAdattamentoAI = (itemCho: number, itemPro: number, itemFat: number) => {
+             const target = pastiCustom[modalScegliDispensa as string]?.promemoria;
+             if (!target) return { coeff: 1, grammi: 100 };
+             const max = Math.max(itemCho, itemPro, itemFat);
+             let coeff = 1;
+             if (max === itemCho && Number(target.cho) > 0) coeff = Number(target.cho) / itemCho;
+             else if (max === itemPro && Number(target.pro) > 0) coeff = Number(target.pro) / itemPro;
+             else if (max === itemFat && Number(target.fat) > 0) coeff = Number(target.fat) / itemFat;
+             return { coeff, grammi: Math.round(coeff * 100) };
+          };
+
+          const renderEspanso = (item: any, isGlobal: boolean) => {
+             return (
+               <div className="bg-[var(--velo-30)] p-4 border-t border-slate-200/50 flex flex-col gap-3 anim-drop-down">
+                  <p className="text-[9px] uppercase font-black text-slate-500 tracking-widest text-center mb-1">Seleziona Metodo di Inserimento</p>
+                  
+                  <div className="flex flex-col gap-2">
+                     {/* OPZIONE 1: AUTO-ADATTA */}
+                     <button 
+                       onClick={async () => {
+                          const iCho = Number(item.cho) || 0; const iPro = Number(item.pro) || 0; const iFat = Number(item.fat) || 0;
+                          const { coeff, grammi } = calcolaAdattamentoAI(iCho, iPro, iFat);
+                          
+                          let dbItem = item;
+                          // Se lo stiamo pescando dal DB Globale, prima lo salviamo nella dispensa personale
+                          if (isGlobal) {
+                             const { data, error } = await supabase.from('dispensa_utente').insert([{ nome: item.nome, tipologia: 'Semplice', cho: item.cho || "0", pro: item.pro || "0", fat: item.fat || "0", tipo: filtroDispensa as 'alimento' | 'integratore', immagine: item.immagineData }]).select();
+                             if (!error && data) { dbItem = data[0]; setDispensa(prev => [dbItem, ...prev]); }
+                          }
+                          
+                          inserisciComponenteDb({ 
+                             nome: coeff !== 1 ? `${dbItem.nome} (~${grammi}g)` : dbItem.nome, 
+                             cho: Math.round(iCho * coeff), 
+                             pro: Math.round(iPro * coeff), 
+                             fat: Math.round(iFat * coeff) 
+                          });
+                       }}
+                       className="w-full bg-gradient-to-r from-lime-400 to-emerald-500 text-white font-black uppercase tracking-widest text-[10px] py-3.5 rounded-xl shadow-[0_4px_10px_rgba(16,185,129,0.3)] transition-all border-none cursor-pointer hover:scale-[1.02]"
+                     >
+                       ✨ Auto-Adatta al Target A.I.
+                     </button>
+
+                     {/* OPZIONI MANUALI (100g o Calcolatrice) */}
+                     <div className="flex gap-2">
+                        <button 
+                          onClick={async () => {
+                             let dbItem = item;
+                             if (isGlobal) {
+                                const { data, error } = await supabase.from('dispensa_utente').insert([{ nome: item.nome, tipologia: 'Semplice', cho: item.cho || "0", pro: item.pro || "0", fat: item.fat || "0", tipo: filtroDispensa as 'alimento' | 'integratore', immagine: item.immagineData }]).select();
+                                if (!error && data) { dbItem = data[0]; setDispensa(prev => [dbItem, ...prev]); }
+                             }
+                             inserisciComponenteDb({ nome: `${dbItem.nome} (100g)`, cho: Number(dbItem.cho) || 0, pro: Number(dbItem.pro) || 0, fat: Number(dbItem.fat) || 0 });
+                          }}
+                          className="flex-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] text-slate-600 hover:text-orange-500 font-black uppercase tracking-widest text-[9px] py-3.5 rounded-xl transition-all border-none cursor-pointer"
+                        >
+                          Inserisci 100g
+                        </button>
+
+                        <div className="flex flex-[1.5] gap-2">
+                           <input type="number" placeholder="Gr." value={grammiManuali} onChange={e => setGrammiManuali(e.target.value)} className="w-[60px] bg-[var(--superficie)] px-2 text-[12px] font-bold text-slate-700 rounded-xl outline-none shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] text-center border-none" />
+                           <button 
+                             onClick={async () => {
+                                const g = Number(grammiManuali);
+                                if (!g || g <= 0) return alert("Inserisci i grammi validi.");
+                                let dbItem = item;
+                                if (isGlobal) {
+                                   const { data, error } = await supabase.from('dispensa_utente').insert([{ nome: item.nome, tipologia: 'Semplice', cho: item.cho || "0", pro: item.pro || "0", fat: item.fat || "0", tipo: filtroDispensa as 'alimento' | 'integratore', immagine: item.immagineData }]).select();
+                                   if (!error && data) { dbItem = data[0]; setDispensa(prev => [dbItem, ...prev]); }
+                                }
+                                inserisciComponenteDb({ nome: `${dbItem.nome} (${g}g)`, cho: Math.round(((Number(dbItem.cho) || 0) / 100) * g), pro: Math.round(((Number(dbItem.pro) || 0) / 100) * g), fat: Math.round(((Number(dbItem.fat) || 0) / 100) * g) });
+                             }}
+                             className="flex-1 bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest text-[9px] py-3.5 rounded-xl shadow-md transition-all border-none cursor-pointer hover:scale-[1.02]"
+                           >
+                             🧮 Calcola
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+             );
           };
 
           return (
@@ -2809,24 +2877,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                               >&times;</button>
                             </div>
                           </div>
-
-                          {isExpanded && (
-                            <div className="bg-[var(--velo-30)] p-4 border-t border-slate-200/50 flex flex-col gap-3 anim-drop-down">
-                               <p className="text-[9px] uppercase font-black text-slate-500 tracking-widest text-center mb-1">Seleziona Metodo di Inserimento</p>
-                               <div className="flex flex-col sm:flex-row gap-3">
-                                  <button onClick={() => inserisciComponenteDb({ nome: item.nome, cho: Number(item.cho) || 0, pro: Number(item.pro) || 0, fat: Number(item.fat) || 0 })} className="flex-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] text-slate-600 hover:text-orange-500 font-black uppercase tracking-widest text-[10px] py-3.5 rounded-xl transition-all border-none cursor-pointer active:shadow-[inset_2px_2px_4px_var(--ombra-scura)]">⚡ Aggiungi Diretto</button>
-                                  <div className="flex flex-1 gap-2">
-                                     <input type="number" placeholder="Grammi" value={grammiManuali} onChange={e => setGrammiManuali(e.target.value)} className="w-[80px] bg-[var(--superficie)] px-3 text-[13px] font-bold text-slate-700 rounded-xl outline-none shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] text-center border-none" />
-                                     <button onClick={() => {
-                                          const g = Number(grammiManuali);
-                                          if (!g || g <= 0) return alert("Inserisci i grammi validi.");
-                                          const nuovoComponente = { nome: `${item.nome} (${g}g)`, cho: Math.round(((Number(item.cho) || 0) / 100) * g), pro: Math.round(((Number(item.pro) || 0) / 100) * g), fat: Math.round(((Number(item.fat) || 0) / 100) * g) };
-                                          inserisciComponenteDb(nuovoComponente);
-                                       }} className="flex-1 bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest text-[10px] py-3.5 rounded-xl shadow-[0_4px_10px_rgba(249,115,22,0.3)] hover:-translate-y-0.5 transition-all border-none cursor-pointer">🧮 Ricalcola</button>
-                                  </div>
-                               </div>
-                            </div>
-                          )}
+                          {isExpanded && renderEspanso(item, false)}
                         </div>
                       );
                     })
@@ -2859,45 +2910,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                               <span className="text-[9px] font-black text-slate-500 tracking-wide whitespace-nowrap bg-[var(--superficie)] px-2 py-1 rounded-md shadow-sm border border-[var(--velo-40)]"><span className="text-indigo-500">{catItem.cho || 0}</span>C · {catItem.pro || 0}P · {catItem.fat || 0}F</span>
                             </div>
                           </div>
-
-                          {isExpanded && (
-                            <div className="bg-[var(--superficie)] p-4 border-t border-[var(--velo-50)] flex flex-col gap-3 anim-drop-down">
-                               <p className="text-[9px] uppercase font-black text-indigo-500 tracking-widest text-center mb-1 flex justify-center items-center gap-1">💾 Copia in Dispensa e Usa</p>
-                               <div className="flex flex-col sm:flex-row gap-3">
-                                  <button 
-                                    onClick={async () => {
-                                      const nuovoItemDispensa = { nome: catItem.nome, tipologia: 'Semplice', cho: catItem.cho || "0", pro: catItem.pro || "0", fat: catItem.fat || "0", tipo: filtroDispensa as 'alimento' | 'integratore', immagine: catItem.immagineData };
-                                      const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
-                                      if (error) { alert("Errore DB."); return; }
-                                      const dbItem = data ? data[0] : { ...nuovoItemDispensa, id: Date.now().toString() };
-                                      setDispensa(prev => [dbItem, ...prev]);
-                                      inserisciComponenteDb({ nome: dbItem.nome, cho: Number(dbItem.cho), pro: Number(dbItem.pro), fat: Number(dbItem.fat) });
-                                    }} 
-                                    className="flex-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] text-slate-600 hover:text-indigo-500 font-black uppercase tracking-widest text-[10px] py-3.5 rounded-xl transition-all border-none cursor-pointer active:shadow-[inset_2px_2px_4px_var(--ombra-scura)]"
-                                  >⚡ Aggiungi Diretto</button>
-                                  
-                                  <div className="flex flex-1 gap-2">
-                                     <input type="number" placeholder="Grammi" value={grammiManuali} onChange={e => setGrammiManuali(e.target.value)} className="w-[80px] bg-[var(--velo-50)] px-3 text-[13px] font-bold text-slate-700 rounded-xl outline-none shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] text-center border-none" />
-                                     <button 
-                                       onClick={async () => {
-                                          const g = Number(grammiManuali);
-                                          if (!g || g <= 0) return alert("Inserisci i grammi validi.");
-                                          // Salva l'originale su 100g nella dispensa
-                                          const nuovoItemDispensa = { nome: catItem.nome, tipologia: 'Semplice', cho: catItem.cho || "0", pro: catItem.pro || "0", fat: catItem.fat || "0", tipo: filtroDispensa as 'alimento' | 'integratore', immagine: catItem.immagineData };
-                                          const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
-                                          if (error) { alert("Errore DB."); return; }
-                                          const dbItem = data ? data[0] : { ...nuovoItemDispensa, id: Date.now().toString() };
-                                          setDispensa(prev => [dbItem, ...prev]);
-                                          // Usa il ricalcolato per il pasto
-                                          const ricalcolato = { nome: `${dbItem.nome} (${g}g)`, cho: Math.round(((Number(dbItem.cho) || 0) / 100) * g), pro: Math.round(((Number(dbItem.pro) || 0) / 100) * g), fat: Math.round(((Number(dbItem.fat) || 0) / 100) * g) };
-                                          inserisciComponenteDb(ricalcolato);
-                                       }} 
-                                       className="flex-1 bg-gradient-to-r from-indigo-400 to-blue-500 text-white font-black uppercase tracking-widest text-[10px] py-3.5 rounded-xl shadow-[0_4px_10px_rgba(99,102,241,0.3)] hover:-translate-y-0.5 transition-all border-none cursor-pointer"
-                                     >🧮 Ricalcola</button>
-                                  </div>
-                               </div>
-                            </div>
-                          )}
+                          {isExpanded && renderEspanso(catItem, true)}
                         </div>
                       );
                     })}
