@@ -3250,5 +3250,57 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 </div>
               </div>
             )}
+            </div>
+        </div>
+      )}
+
+      <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
+      
+      {/* === MODALE MAZZO 3D INTEGRATORI CON OPEN FOOD FACTS === */}
+      {mazzoAttivo && (
+        <div 
+          onClick={() => setMazzoAttivo(null)}
+          className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center z-[9990] p-4 cursor-pointer"
+        >
+          {/* Prevent click bubbling inside the modal */}
+          <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
+            <MazzoIntegratori 
+              categoria={mazzoAttivo} 
+              cataloghiLocali={catalogoImmagini
+                .filter(c => c.tipo === 'integratore' && mazzoAttivo && (c.nome.toLowerCase().includes(mazzoAttivo.toLowerCase()) || mazzoAttivo.toLowerCase().includes(c.nome.toLowerCase())))
+                .map(c => ({ id: `locale-${c.id}`, nome: c.nome, immagine: c.immagineData }))
+              }
+              onClose={() => setMazzoAttivo(null)}
+              onSave={async (item) => {
+                const nuovoItemDispensa = {
+                  nome: item.nome,
+                  tipologia: item.tipologia,
+                  cho: item.cho, 
+                  pro: item.pro, 
+                  fat: item.fat,
+                  tipo: 'integratore' as const,
+                  immagine: item.immagine
+                };
+                const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
+                if (error) {
+                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\n" + suggerimentoErroreSupabase(error));
+                  return;
+                }
+                setDispensa(prev => [(data && data[0]) || { ...nuovoItemDispensa, id: item.id }, ...prev]);
+                
+                setMazzoAttivo(null);
+                alert(`${item.nome} aggiunto alla tua Dispensa!`);
+              }}
+              onCustom={() => {
+                 setMazzoAttivo(null);
+                 setModalScegliDispensa('Integrazione'); 
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
 
 
