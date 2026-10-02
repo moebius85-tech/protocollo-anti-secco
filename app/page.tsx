@@ -685,6 +685,7 @@ export default function Home() {
   const [nuovoItemCatalogo, setNuovoItemCatalogo] = useState({ nome: '', tipo: 'alimento', immagineData: '' });
   const [analisiCatalogoInCorso, setAnalisiCatalogoInCorso] = useState(false);
   const [catalogoAperto, setCatalogoAperto] = useState<'alimento' | 'integratore' | null>(null);
+  const [sottocategoriaAperta, setSottocategoriaAperta] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchCatalogo() {
@@ -3137,53 +3138,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   )}
                 </div>
 
-                <div className="space-y-4 pt-6 border-t border-slate-300/50">
-                   <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Database Immagini Esistenti</h3>
-                   
-                   {/* GRUPPO ALIMENTI */}
-                   <div className="mb-4">
-                      <button 
-                        onClick={() => setCatalogoAperto(catalogoAperto === 'alimento' ? null : 'alimento')}
-                        className="w-full flex justify-between items-center bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] p-4 rounded-2xl border-none cursor-pointer transition-all"
-                      >
-                        <span className="text-[11px] font-black text-slate-600 tracking-widest flex items-center gap-2">🍎 Alimenti</span>
-                        <div className="flex items-center gap-3">
-                           <span className="text-[9px] bg-indigo-100 shadow-inner text-indigo-500 px-2.5 py-1 rounded-lg font-black tracking-widest">
-                             {catalogoImmagini.filter(c => c.tipo === 'alimento').length} Elementi
-                           </span>
-                           <span className={`text-indigo-400 font-bold transition-transform duration-300 ${catalogoAperto === 'alimento' ? 'rotate-180' : ''}`}>▼</span>
-                        </div>
-                      </button>
-                      
-                      {catalogoAperto === 'alimento' && (
-                        <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-4 anim-drop-down pl-2 border-l-2 border-indigo-200/50 ml-2">
-                           {catalogoImmagini.filter(c => c.tipo === 'alimento').map((cat, idx) => (
-                             <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-3 rounded-2xl flex flex-col items-center text-center gap-2 relative group h-full">
-                               <button onClick={async () => {
-                                  if(confirm("Eliminare immagine dal catalogo globale?")) {
-                                    const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
-                                    if (error) { alert("Errore DB: " + error.message); return; }
-                                    setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
-                                  }
-                               }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">&times;</button>
-                               <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)] shrink-0">
-                                  <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
-                               </div>
-                               <div className="w-full flex-1 flex items-start justify-center mt-1 overflow-hidden">
-                                 {/* TESTO FIXATO: Va a capo in automatico e usa tutto lo spazio disponibile */}
-                                 <span className="block text-[8px] font-black uppercase tracking-wider text-slate-600 break-words whitespace-normal leading-[1.3] w-full">{cat.nome}</span>
-                               </div>
-                             </div>
-                           ))}
-                           {catalogoImmagini.filter(c => c.tipo === 'alimento').length === 0 && <p className="col-span-full text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-4 bg-[var(--velo-30)] rounded-2xl border border-dashed border-[var(--velo-60)]">Nessun alimento archiviato.</p>}
-                        </div>
-                      )}
-                   </div>
-
-                   {/* GRUPPO INTEGRATORI CON SOTTOCATEGORIE A.I. */}
+                {/* GRUPPO INTEGRATORI CON SOTTOCATEGORIE A.I. */}
                    <div>
                       <button 
-                        onClick={() => setCatalogoAperto(catalogoAperto === 'integratore' ? null : 'integratore')}
+                        onClick={() => {
+                          setCatalogoAperto(catalogoAperto === 'integratore' ? null : 'integratore');
+                          setSottocategoriaAperta(null); // Chiude le sottocartelle se chiudi la principale
+                        }}
                         className="w-full flex justify-between items-center bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] p-4 rounded-2xl border-none cursor-pointer transition-all"
                       >
                         <span className="text-[11px] font-black text-slate-600 tracking-widest flex items-center gap-2">💊 Integratori</span>
@@ -3217,30 +3178,43 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                          });
 
                          return (
-                           <div className="mt-4 space-y-5 anim-drop-down pl-2 border-l-2 border-cyan-200/50 ml-2">
+                           <div className="mt-4 space-y-4 anim-drop-down pl-2 border-l-2 border-cyan-200/50 ml-2">
                               {Object.entries(gruppi).sort(([a], [b]) => a.localeCompare(b)).map(([nomeGruppo, items]) => (
-                                 <div key={nomeGruppo} className="bg-[var(--velo-30)] p-3 rounded-2xl border border-[var(--velo-50)]">
-                                   <h4 className="text-[9px] font-black uppercase tracking-widest text-cyan-600 mb-3 bg-cyan-500/10 w-fit px-3 py-1.5 rounded-lg shadow-inner border border-cyan-500/20">{nomeGruppo}</h4>
-                                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                                     {items.map((cat, idx) => (
-                                       <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-3 rounded-2xl flex flex-col items-center text-center gap-2 relative group h-full">
-                                         <button onClick={async () => {
-                                            if(confirm("Eliminare immagine dal catalogo globale?")) {
-                                              const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
-                                              if (error) { alert("Errore DB: " + error.message); return; }
-                                              setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
-                                            }
-                                         }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">&times;</button>
-                                         <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)] shrink-0">
-                                            <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
+                                 <div key={nomeGruppo} className="bg-[var(--velo-30)] p-3 rounded-2xl border border-[var(--velo-50)] transition-all overflow-hidden">
+                                   
+                                   {/* BOTTONE A FISARMONICA SOTTOCATEGORIA */}
+                                   <button 
+                                     onClick={() => setSottocategoriaAperta(sottocategoriaAperta === nomeGruppo ? null : nomeGruppo)}
+                                     className="w-full flex justify-between items-center bg-cyan-500/10 px-4 py-3 rounded-xl shadow-[inset_2px_2px_4px_rgba(6,182,212,0.1)] border border-cyan-500/20 cursor-pointer transition-all hover:bg-cyan-500/20"
+                                   >
+                                     <span className="text-[10px] font-black uppercase tracking-widest text-cyan-700">
+                                       {nomeGruppo} <span className="text-cyan-600/60 ml-1">({items.length})</span>
+                                     </span>
+                                     <span className={`text-cyan-500 text-[10px] font-bold transition-transform duration-300 ${sottocategoriaAperta === nomeGruppo ? 'rotate-180' : ''}`}>▼</span>
+                                   </button>
+                                   
+                                   {/* GRIGLIA PRODOTTI (visibile solo se aperta) */}
+                                   {sottocategoriaAperta === nomeGruppo && (
+                                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4 anim-drop-down">
+                                       {items.map((cat, idx) => (
+                                         <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-3 rounded-2xl flex flex-col items-center text-center gap-2 relative group h-full">
+                                           <button onClick={async () => {
+                                              if(confirm("Eliminare immagine dal catalogo globale?")) {
+                                                const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
+                                                if (error) { alert("Errore DB: " + error.message); return; }
+                                                setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
+                                              }
+                                           }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">&times;</button>
+                                           <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)] shrink-0">
+                                              <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
+                                           </div>
+                                           <div className="w-full flex-1 flex items-start justify-center mt-1 overflow-hidden">
+                                             <span className="block text-[8px] font-black uppercase tracking-wider text-slate-600 break-words whitespace-normal leading-[1.3] w-full">{cat.nome}</span>
+                                           </div>
                                          </div>
-                                         <div className="w-full flex-1 flex items-start justify-center mt-1 overflow-hidden">
-                                           {/* TESTO FIXATO: Va a capo in automatico e usa tutto lo spazio disponibile */}
-                                           <span className="block text-[8px] font-black uppercase tracking-wider text-slate-600 break-words whitespace-normal leading-[1.3] w-full">{cat.nome}</span>
-                                         </div>
-                                       </div>
-                                     ))}
-                                   </div>
+                                       ))}
+                                     </div>
+                                   )}
                                  </div>
                               ))}
                            </div>
