@@ -2756,8 +2756,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               const immagineFinale = item.immagine || imgCatalogo;
 
               return (
-                <button 
+                // Era un <button>: per aggiungere la X di eliminazione serve un pulsante
+                // separato, e due <button> annidati non sono validi HTML (il click sulla X
+                // avrebbe anche attivato la riga sotto). Diventa un div cliccabile.
+                <div 
                   key={item.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => {
                     const nuovoComponente = { nome: item.nome, cho: Number(item.cho) || 0, pro: Number(item.pro) || 0, fat: Number(item.fat) || 0 };
                     if (indiceSostituzione !== null) {
@@ -2769,8 +2774,19 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     setModalScegliDispensa(null);
                     setRicercaDispensa(""); 
                   }}
-                  className="w-full text-left px-4 py-3 bg-[var(--superficie-alt)] shadow-[3px_3px_6px_var(--ombra-scura-alt),-3px_-3px_6px_var(--ombra-chiara)] rounded-xl hover:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] active:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] group transition-all duration-200 border-none cursor-pointer flex items-center justify-between gap-3"
+                  className="relative w-full text-left px-4 py-3 bg-[var(--superficie-alt)] shadow-[3px_3px_6px_var(--ombra-scura-alt),-3px_-3px_6px_var(--ombra-chiara)] rounded-xl hover:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] active:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] group transition-all duration-200 cursor-pointer flex items-center justify-between gap-3"
                 >
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!confirm(`Eliminare "${item.nome}" dalla dispensa?`)) return;
+                      const { error } = await supabase.from('dispensa_utente').delete().eq('id', item.id);
+                      if (error) { alert("Errore DB: " + error.message + "\n\n" + suggerimentoErroreSupabase(error)); return; }
+                      setDispensa(prev => prev.filter(d => d.id !== item.id));
+                    }}
+                    title="Elimina dalla dispensa"
+                    className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10"
+                  >&times;</button>
                   <div className="flex items-center gap-3 min-w-0">
                     {/* MOSTRIAMO L'IMMAGINE SE TROVATA, ALTRIMENTI ICONA PLACEHOLDER */}
                     {immagineFinale ? (
@@ -2787,7 +2803,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   <span className="shrink-0 text-[9px] font-black text-slate-500 tracking-wide whitespace-nowrap bg-[var(--velo-40)] px-2 py-1 rounded-md shadow-inner">
                     <span className="text-orange-500">{item.cho}</span>C · {item.pro}P · {item.fat}F
                   </span>
-                </button>
+                </div>
               );
             })
         )}
@@ -3120,7 +3136,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   )}
                 </div>
 
-                <div className="space-y-4 max-h-[40vh] overflow-y-auto custom-scrollbar pr-2 pt-2 border-t border-slate-300/50">
+                {/* Niente più scroll interno con altezza fissa (max-h-[40vh]): creava una seconda
+                    area di scroll dentro al modale già scorrevole, e la terza card finiva
+                    "tagliata fuori" dalla cornice perché il contenitore non seguiva più la
+                    crescita reale del contenuto. Ora scorre tutto insieme col modale. */}
+                <div className="space-y-4 pt-2 border-t border-slate-300/50">
                    <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Database Immagini Esistenti</h3>
                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                      {catalogoImmagini.map((cat, idx) => (
@@ -3162,6 +3182,14 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
             <MazzoIntegratori 
               categoria={mazzoAttivo} 
+              // Prodotti già catalogati in Control Room che sembrano compatibili con questa
+              // categoria (stesso criterio di "match per nome" già usato nella Dispensa):
+              // così il mazzo mostra SIA il database online SIA quello caricato a mano,
+              // invece di far sparire quest'ultimo ogni volta che si cerca un integratore.
+              cataloghiLocali={catalogoImmagini
+                .filter(c => c.tipo === 'integratore' && mazzoAttivo && (c.nome.toLowerCase().includes(mazzoAttivo.toLowerCase()) || mazzoAttivo.toLowerCase().includes(c.nome.toLowerCase())))
+                .map(c => ({ id: `locale-${c.id}`, nome: c.nome, immagine: c.immagineData }))
+              }
               onClose={() => setMazzoAttivo(null)}
               onSave={async (item) => {
                 // Salva direttamente nella dispensa globale (Supabase, così resta dopo il refresh)
