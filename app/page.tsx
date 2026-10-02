@@ -3158,19 +3158,20 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       {catalogoAperto === 'alimento' && (
                         <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-4 anim-drop-down pl-2 border-l-2 border-indigo-200/50 ml-2">
                            {catalogoImmagini.filter(c => c.tipo === 'alimento').map((cat, idx) => (
-                             <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex flex-col items-center text-center gap-3 relative group">
+                             <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-3 rounded-2xl flex flex-col items-center text-center gap-2 relative group h-full">
                                <button onClick={async () => {
                                   if(confirm("Eliminare immagine dal catalogo globale?")) {
                                     const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
                                     if (error) { alert("Errore DB: " + error.message); return; }
                                     setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
                                   }
-                               }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">&times;</button>
-                               <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)]">
+                               }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">&times;</button>
+                               <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)] shrink-0">
                                   <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
                                </div>
-                               <div className="w-full">
-                                 <span className="block text-[9px] font-black uppercase tracking-widest text-slate-600 truncate">{cat.nome}</span>
+                               <div className="w-full flex-1 flex items-start justify-center mt-1 overflow-hidden">
+                                 {/* TESTO FIXATO: Va a capo in automatico e usa tutto lo spazio disponibile */}
+                                 <span className="block text-[8px] font-black uppercase tracking-wider text-slate-600 break-words whitespace-normal leading-[1.3] w-full">{cat.nome}</span>
                                </div>
                              </div>
                            ))}
@@ -3179,7 +3180,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       )}
                    </div>
 
-                   {/* GRUPPO INTEGRATORI */}
+                   {/* GRUPPO INTEGRATORI CON SOTTOCATEGORIE A.I. */}
                    <div>
                       <button 
                         onClick={() => setCatalogoAperto(catalogoAperto === 'integratore' ? null : 'integratore')}
@@ -3194,90 +3195,60 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                         </div>
                       </button>
                       
-                      {catalogoAperto === 'integratore' && (
-                        <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-4 anim-drop-down pl-2 border-l-2 border-cyan-200/50 ml-2">
-                           {catalogoImmagini.filter(c => c.tipo === 'integratore').map((cat, idx) => (
-                             <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex flex-col items-center text-center gap-3 relative group">
-                               <button onClick={async () => {
-                                  if(confirm("Eliminare immagine dal catalogo globale?")) {
-                                    const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
-                                    if (error) { alert("Errore DB: " + error.message); return; }
-                                    setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
-                                  }
-                               }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">&times;</button>
-                               <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)]">
-                                  <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
-                               </div>
-                               <div className="w-full">
-                                 <span className="block text-[9px] font-black uppercase tracking-widest text-slate-600 truncate">{cat.nome}</span>
-                               </div>
-                             </div>
-                           ))}
-                           {catalogoImmagini.filter(c => c.tipo === 'integratore').length === 0 && <p className="col-span-full text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-4 bg-[var(--velo-30)] rounded-2xl border border-dashed border-[var(--velo-60)]">Nessun integratore archiviato.</p>}
-                        </div>
-                      )}
+                      {catalogoAperto === 'integratore' && (() => {
+                         const integratori = catalogoImmagini.filter(c => c.tipo === 'integratore');
+                         if (integratori.length === 0) return <p className="mt-4 text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-4 bg-[var(--velo-30)] rounded-2xl border border-dashed border-[var(--velo-60)]">Nessun integratore archiviato.</p>;
+
+                         // Motore di categorizzazione smart basato sulle parole chiave
+                         const gruppi: Record<string, any[]> = {};
+                         integratori.forEach(cat => {
+                            const n = cat.nome.toLowerCase();
+                            let subCat = 'Altre Formule';
+                            if (n.includes('omega') || n.includes('fish oil')) subCat = 'Omega-3 & Grassi';
+                            else if (n.includes('vitamin') || n.includes('d3') || n.includes('k2') || n.includes('multi')) subCat = 'Vitamine & Salute';
+                            else if (n.includes('ciclodestrin') || n.includes('dextrin') || n.includes('carb')) subCat = 'Carboidrati (Intra-W)';
+                            else if (n.includes('creatin')) subCat = 'Creatina';
+                            else if (n.includes('whey') || n.includes('protein') || n.includes('iso')) subCat = 'Proteine (Whey)';
+                            else if (n.includes('eaa') || n.includes('bcaa') || n.includes('amino')) subCat = 'Aminoacidi (EAA)';
+                            else if (n.includes('citrullin') || n.includes('pump') || n.includes('pre') || n.includes('arginin')) subCat = 'Pre-Workout & Pump';
+                            
+                            if (!gruppi[subCat]) gruppi[subCat] = [];
+                            gruppi[subCat].push(cat);
+                         });
+
+                         return (
+                           <div className="mt-4 space-y-5 anim-drop-down pl-2 border-l-2 border-cyan-200/50 ml-2">
+                              {Object.entries(gruppi).sort(([a], [b]) => a.localeCompare(b)).map(([nomeGruppo, items]) => (
+                                 <div key={nomeGruppo} className="bg-[var(--velo-30)] p-3 rounded-2xl border border-[var(--velo-50)]">
+                                   <h4 className="text-[9px] font-black uppercase tracking-widest text-cyan-600 mb-3 bg-cyan-500/10 w-fit px-3 py-1.5 rounded-lg shadow-inner border border-cyan-500/20">{nomeGruppo}</h4>
+                                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                                     {items.map((cat, idx) => (
+                                       <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-3 rounded-2xl flex flex-col items-center text-center gap-2 relative group h-full">
+                                         <button onClick={async () => {
+                                            if(confirm("Eliminare immagine dal catalogo globale?")) {
+                                              const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
+                                              if (error) { alert("Errore DB: " + error.message); return; }
+                                              setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
+                                            }
+                                         }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">&times;</button>
+                                         <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)] shrink-0">
+                                            <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
+                                         </div>
+                                         <div className="w-full flex-1 flex items-start justify-center mt-1 overflow-hidden">
+                                           {/* TESTO FIXATO: Va a capo in automatico e usa tutto lo spazio disponibile */}
+                                           <span className="block text-[8px] font-black uppercase tracking-wider text-slate-600 break-words whitespace-normal leading-[1.3] w-full">{cat.nome}</span>
+                                         </div>
+                                       </div>
+                                     ))}
+                                   </div>
+                                 </div>
+                              ))}
+                           </div>
+                         );
+                      })()}
                    </div>
                 </div>
               </div>
             )}
-
-          </div>
-        </div>
-      )}
-
-      <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
-      {/* === MODALE MAZZO 3D INTEGRATORI CON OPEN FOOD FACTS === */}
-      {mazzoAttivo && (
-        <div 
-          onClick={() => setMazzoAttivo(null)}
-          className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center z-[9990] p-4 cursor-pointer"
-        >
-          {/* Prevent click bubbling inside the modal */}
-          <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
-            <MazzoIntegratori 
-              categoria={mazzoAttivo} 
-              // Prodotti già catalogati in Control Room che sembrano compatibili con questa
-              // categoria (stesso criterio di "match per nome" già usato nella Dispensa):
-              // così il mazzo mostra SIA il database online SIA quello caricato a mano,
-              // invece di far sparire quest'ultimo ogni volta che si cerca un integratore.
-              cataloghiLocali={catalogoImmagini
-                .filter(c => c.tipo === 'integratore' && mazzoAttivo && (c.nome.toLowerCase().includes(mazzoAttivo.toLowerCase()) || mazzoAttivo.toLowerCase().includes(c.nome.toLowerCase())))
-                .map(c => ({ id: `locale-${c.id}`, nome: c.nome, immagine: c.immagineData }))
-              }
-              onClose={() => setMazzoAttivo(null)}
-              onSave={async (item) => {
-                // Salva direttamente nella dispensa globale (Supabase, così resta dopo il refresh)
-                const nuovoItemDispensa = {
-                  nome: item.nome,
-                  tipologia: item.tipologia,
-                  cho: item.cho, 
-                  pro: item.pro, 
-                  fat: item.fat,
-                  tipo: 'integratore' as const,
-                  immagine: item.immagine
-                };
-                const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
-                if (error) {
-                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\n" + suggerimentoErroreSupabase(error));
-                  return;
-                }
-                setDispensa(prev => [(data && data[0]) || { ...nuovoItemDispensa, id: item.id }, ...prev]);
-                
-                // Chiudiamo il mazzo e diamo feedback visivo
-                setMazzoAttivo(null);
-                alert(`${item.nome} aggiunto alla tua Dispensa!`);
-              }}
-              onCustom={() => {
-                 // Chiude il mazzo e apre la ricerca AI testuale/fotografica
-                 setMazzoAttivo(null);
-                 setModalScegliDispensa('Integrazione'); 
-              }}
-            />
-          </div>
-        </div>
-      )}
-    </main>
-  );
-}
 
 
