@@ -3062,7 +3062,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
                     <div className="sm:col-span-2">
                       <label className={UI.label}>Nome Prodotto o Marchio (Es. 'Yamamoto' o 'Riso')</label>
-                      <input type="text" value={nuovoItemCatalogo.nome} onChange={e=>setNuovoItemCatalogo({...nuovoItemCatalogo, nome: e.target.value})} className={UI.input + " bg-[var(--velo-60)] focus:ring-indigo-400/40"} placeholder="Parola chiave per il collegamento automatico" />
+                      <input type="text" value={nuovoItemCatalogo.nome} onChange={e=>setNuovoItemCatalogo({...nuovoItemCatalogo, nome: e.target.value})} className={UI.input + " bg-[var(--velo-60)] focus:ring-indigo-400/40"} placeholder="Nome rilevato dall'IA o manuale" />
                     </div>
                     <div>
                       <label className={UI.label}>Tipologia</label>
@@ -3084,63 +3084,59 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       </label>
                     </div>
                   </div>
+
+                  {/* ANTEPRIMA RESPONSIVE CON TASTO A.I. */}
                   {nuovoItemCatalogo.immagineData && (
-                    <div className="mt-5 p-4 bg-[var(--superficie)] shadow-[inset_2px_2px_5px_var(--ombra-scura)] rounded-2xl border border-[var(--velo-40)] anim-pop">
-                      {/* Riga 1: immagine + testo. Riga 2: pulsanti a piena larghezza —
-                          separati così non si sovrappongono più su schermi stretti. */}
-                      <div className="flex items-center gap-4 mb-4">
-                        <img src={nuovoItemCatalogo.immagineData} alt="Preview" className="w-16 h-16 object-cover rounded-xl shadow-md border-2 border-indigo-500 shrink-0" />
-                        <div className="flex-1 min-w-0">
-                           <span className="block text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Anteprima Salvataggio</span>
-                           <span className="block text-[13px] font-bold text-slate-600 truncate">{nuovoItemCatalogo.nome || 'Nessun nome inserito'}</span>
-                        </div>
+                    <div className="mt-6 flex flex-col sm:flex-row items-center gap-4 p-5 bg-[var(--superficie)] shadow-[inset_2px_2px_5px_var(--ombra-scura)] rounded-3xl border border-[var(--velo-40)] anim-pop relative overflow-hidden">
+                      <img src={nuovoItemCatalogo.immagineData} alt="Preview" className="w-24 h-24 sm:w-16 sm:h-16 object-cover rounded-2xl shadow-[0_4px_10px_rgba(0,0,0,0.2)] border-2 border-indigo-500 shrink-0 z-10" />
+                      
+                      <div className="flex-1 w-full text-center sm:text-left min-w-0 z-10">
+                         <span className="block text-[9px] uppercase font-black tracking-widest text-slate-400 mb-1">Dati Prodotto</span>
+                         <span className="block text-[14px] sm:text-[13px] font-bold text-slate-600 truncate">{nuovoItemCatalogo.nome || 'Nessun nome inserito'}</span>
                       </div>
-                      <div className="flex flex-col sm:flex-row gap-2.5">
-                        <button disabled={analisiCatalogoInCorso} onClick={async () => {
-                           setAnalisiCatalogoInCorso(true);
-                           try {
-                             const base64 = nuovoItemCatalogo.immagineData.split(',')[1];
-                             const mime = nuovoItemCatalogo.immagineData.substring(5, nuovoItemCatalogo.immagineData.indexOf(';'));
-                             const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({
-                               message: `Guarda la foto di questo prodotto. Rispondi SOLO con questo formato esatto, senza altro testo:\n[CATALOGO_AI | Nome Marchio/Prodotto breve | alimento oppure integratore]`,
-                               context: "Catalogazione admin",
-                               file: { data: base64, mimeType: mime }
-                             })});
-                             const data = await res.json();
-                             const match = (data.reply || '').match(/\[CATALOGO_AI\s*\|\s*([^|]+)\|\s*(alimento|integratore)\s*\]/i);
-                             if (match) {
-                               setNuovoItemCatalogo(prev => ({ ...prev, nome: match[1].trim(), tipo: match[2].trim().toLowerCase() }));
-                             } else {
-                               alert("Non sono riuscito a leggere chiaramente il prodotto. Inserisci il nome a mano.");
-                             }
-                           } catch (err) {
-                             alert("Errore durante l'analisi AI.");
-                           } finally {
-                             setAnalisiCatalogoInCorso(false);
-                           }
-                        }} className="flex-1 bg-[var(--velo-60)] text-indigo-500 font-black uppercase tracking-widest text-[10px] px-6 h-[40px] rounded-xl shadow-sm hover:-translate-y-0.5 transition-all border border-indigo-400/30 cursor-pointer disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2">
-                          {analisiCatalogoInCorso ? '⏳ Analisi in corso...' : '✨ Analizza con IA'}
+
+                      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto z-10 mt-2 sm:mt-0">
+                        <button 
+                          onClick={async () => {
+                            if (!nuovoItemCatalogo.immagineData) return;
+                            setAnalisiCatalogoInCorso(true);
+                            try {
+                              const base64 = nuovoItemCatalogo.immagineData.split(',')[1];
+                              const mime = nuovoItemCatalogo.immagineData.substring(5, nuovoItemCatalogo.immagineData.indexOf(';'));
+                              const payload = {
+                                message: "Analizza questa etichetta o confezione. Restituisci SOLO ED ESCLUSIVAMENTE la Marca e il Nome del prodotto (es: 'Yamamoto Iso-Fuji'). Niente preamboli.",
+                                file: { data: base64, mimeType: mime }
+                              };
+                              const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                              const data = await response.json();
+                              setNuovoItemCatalogo(prev => ({ ...prev, nome: data.reply.trim() }));
+                            } catch (e) { alert("Errore connessione A.I."); }
+                            setAnalisiCatalogoInCorso(false);
+                          }}
+                          disabled={analisiCatalogoInCorso}
+                          className="w-full sm:w-auto bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura)] text-indigo-500 font-black uppercase tracking-widest text-[10px] px-5 py-3.5 rounded-xl transition-all border-none cursor-pointer disabled:opacity-50"
+                        >
+                          {analisiCatalogoInCorso ? '⏳ LETTURA...' : '🤖 AUTO-COMPILA'}
                         </button>
+
                         <button onClick={async () => {
-                           if (!nuovoItemCatalogo.nome) return alert("Inserisci un nome o marchio!");
+                           if (!nuovoItemCatalogo.nome) return alert("Inserisci un nome o usa l'auto-compilazione!");
                            const payload = { nome: nuovoItemCatalogo.nome, tipo: nuovoItemCatalogo.tipo, immagineData: nuovoItemCatalogo.immagineData };
-                           const { data, error } = await supabase.from('catalogo_immagini').insert([payload]).select();
-                           if (error) alert("Errore DB: " + error.message + "\n\n" + suggerimentoErroreSupabase(error));
+                           const { error } = await supabase.from('catalogo_immagini').insert([payload]);
+                           if (error) alert("Controlla le RLS su Supabase! Errore: " + error.message);
                            else {
-                             setCatalogoImmagini(prev => [...prev, (data && data[0]) || { ...payload, id: Date.now().toString() }]);
+                             setCatalogoImmagini(prev => [...prev, { ...payload, id: Date.now().toString() }]);
                              setNuovoItemCatalogo({ nome: '', tipo: 'alimento', immagineData: '' });
-                             alert("Immagine archiviata! Ora la Dispensa la collegherà automaticamente.");
+                             alert("Archiviato nel database globale!");
                            }
-                        }} className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] px-6 h-[40px] rounded-xl shadow-[0_4px_10px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer">💾 SALVA NEL DB</button>
+                        }} className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] px-6 py-3.5 rounded-xl shadow-[0_4px_10px_rgba(99,102,241,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer">
+                          💾 SALVA NEL DB
+                        </button>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Niente più scroll interno con altezza fissa (max-h-[40vh]): creava una seconda
-                    area di scroll dentro al modale già scorrevole, e la terza card finiva
-                    "tagliata fuori" dalla cornice perché il contenitore non seguiva più la
-                    crescita reale del contenuto. Ora scorre tutto insieme col modale. */}
                 <div className="space-y-4 pt-6 border-t border-slate-300/50">
                    <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Database Immagini Esistenti</h3>
                    
@@ -3225,6 +3221,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               </div>
             )}
 
+          </div>
+        </div>
+      )}
+
       <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
       {/* === MODALE MAZZO 3D INTEGRATORI CON OPEN FOOD FACTS === */}
       {mazzoAttivo && (
@@ -3248,9 +3248,6 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               onSave={async (item) => {
                 // Salva direttamente nella dispensa globale (Supabase, così resta dopo il refresh)
                 const nuovoItemDispensa = {
-                  // Sempre il nome completo (marchio + prodotto): usare solo il marchio
-                  // "perdeva" la parola cercata più spesso (es. "Whey" nel nome del
-                  // prodotto), rendendo introvabile l'elemento nella ricerca.
                   nome: item.nome,
                   tipologia: item.tipologia,
                   cho: item.cho, 
