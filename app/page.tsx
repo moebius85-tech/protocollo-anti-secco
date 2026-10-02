@@ -8,6 +8,23 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://gqawxoocwtx
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "chiave-temporanea-per-il-build";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Traduce gli errori Supabase più comuni in un suggerimento concreto, invece di
+// mandare sempre a controllare le RLS anche quando il problema è un altro
+// (es. tabella mai creata, colonna con nome diverso da quello mandato dal codice).
+function suggerimentoErroreSupabase(error: { message?: string; code?: string } | null): string {
+  const msg = (error?.message || "").toLowerCase();
+  if (msg.includes("could not find the table") || error?.code === "PGRST205") {
+    return "La tabella non esiste in questo progetto Supabase (o è stata creata da poco e la cache dello schema non si è ancora aggiornata). Crea la tabella con l'SQL fornito, oppure attendi un minuto e riprova.";
+  }
+  if (msg.includes("could not find") && msg.includes("column")) {
+    return "Il nome di una colonna nel database non corrisponde a quello usato dal codice. Controlla che i nomi delle colonne nella tabella coincidano esattamente (maiuscole comprese).";
+  }
+  if (msg.includes("row-level security") || msg.includes("permission denied") || error?.code === "42501") {
+    return "Mancano i permessi: controlla le policy RLS di questa tabella su Supabase (serve una policy che permetta l'operazione al ruolo anon).";
+  }
+  return "Controlla su Supabase che la tabella esista con i nomi di colonna corretti e che le policy RLS permettano questa operazione.";
+}
+
 // Tema principale Verde Mela
 const gradPrimary = "bg-gradient-to-r from-lime-400 to-emerald-500 accento-grad"; 
 const colorBg = "bg-[var(--superficie)]";
@@ -1086,7 +1103,7 @@ const renderDescrizioneConHUD = (testo: string) => {
     if (peso && eta && altezza) {
       const payload = { nome_utente: utenteCorrente, eta: Number(eta), altezza: Number(altezza), peso: Number(peso), circonferenze: { ...biometria, profilo: { stileVita, obiettivo: protocolloAttivo, dieta: tipoDieta, autore: protocolloAutore, metabolismoBloccato } }, data: new Date().toISOString() };
       const { error } = await supabase.from("check_utente").insert([payload]);
-      if (error) alert("Errore DB: " + error.message);
+      if (error) alert("Errore DB: " + error.message + "\n\n" + suggerimentoErroreSupabase(error));
       else { alert(`Sistema Aggiornato.`); caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta); } 
     } else { alert("Peso, Età e Altezza sono obbligatori per il calcolo base."); }
   };
@@ -2876,7 +2893,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 };
                 const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
                 if (error) {
-                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\nControlla le policy RLS della tabella dispensa_utente su Supabase.");
+                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\n" + suggerimentoErroreSupabase(error));
                   return;
                 }
                 setDispensa(prev => [(data && data[0]) || { ...nuovoItemDispensa, id: Date.now().toString() }, ...prev]);
@@ -3091,7 +3108,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                            if (!nuovoItemCatalogo.nome) return alert("Inserisci un nome o marchio!");
                            const payload = { nome: nuovoItemCatalogo.nome, tipo: nuovoItemCatalogo.tipo, immagineData: nuovoItemCatalogo.immagineData };
                            const { data, error } = await supabase.from('catalogo_immagini').insert([payload]).select();
-                           if (error) alert("Errore DB: " + error.message + "\n\nControlla le policy RLS della tabella catalogo_immagini su Supabase.");
+                           if (error) alert("Errore DB: " + error.message + "\n\n" + suggerimentoErroreSupabase(error));
                            else {
                              setCatalogoImmagini(prev => [...prev, (data && data[0]) || { ...payload, id: Date.now().toString() }]);
                              setNuovoItemCatalogo({ nome: '', tipo: 'alimento', immagineData: '' });
@@ -3162,7 +3179,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 };
                 const { data, error } = await supabase.from('dispensa_utente').insert([nuovoItemDispensa]).select();
                 if (error) {
-                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\nControlla le policy RLS della tabella dispensa_utente su Supabase.");
+                  alert("Errore nel salvataggio in Dispensa: " + error.message + "\n\n" + suggerimentoErroreSupabase(error));
                   return;
                 }
                 setDispensa(prev => [(data && data[0]) || { ...nuovoItemDispensa, id: item.id }, ...prev]);
