@@ -684,6 +684,7 @@ export default function Home() {
   const [catalogoImmagini, setCatalogoImmagini] = useState<any[]>([]);
   const [nuovoItemCatalogo, setNuovoItemCatalogo] = useState({ nome: '', tipo: 'alimento', immagineData: '' });
   const [analisiCatalogoInCorso, setAnalisiCatalogoInCorso] = useState(false);
+  const [catalogoAperto, setCatalogoAperto] = useState<'alimento' | 'integratore' | null>(null);
 
   useEffect(() => {
     async function fetchCatalogo() {
@@ -2941,7 +2942,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* === ADMIN CONTROL ROOM (MODALE) === */}
       {showAdmin && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[9999] p-4 sm:p-8 overflow-y-auto custom-scrollbar flex flex-col items-center">
-          <div className="livello-2 w-full max-w-5xl bg-[var(--superficie)] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-10 mb-10 min-h-[60vh]">
+          <div className="livello-2 w-full max-w-5xl bg-[var(--superficie)] rounded-[2rem] shadow-2xl p-6 sm:p-8 relative mt-auto sm:mt-10 mb-auto sm:mb-10 shrink-0">
             <button onClick={() => setShowAdmin(false)} className="absolute top-6 right-6 text-slate-400 hover:text-red-500 text-3xl font-black transition-colors border-none bg-transparent cursor-pointer">&times;</button>
             <h2 className="text-2xl font-black uppercase tracking-widest text-slate-700 mb-6 text-center">Admin <span className="text-red-500">Control Room</span></h2>
 
@@ -3140,36 +3141,89 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     area di scroll dentro al modale già scorrevole, e la terza card finiva
                     "tagliata fuori" dalla cornice perché il contenitore non seguiva più la
                     crescita reale del contenuto. Ora scorre tutto insieme col modale. */}
-                <div className="space-y-4 pt-2 border-t border-slate-300/50">
+                <div className="space-y-4 pt-6 border-t border-slate-300/50">
                    <h3 className="text-xs uppercase font-bold text-slate-400 tracking-widest mb-4">Database Immagini Esistenti</h3>
-                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-                     {catalogoImmagini.map((cat, idx) => (
-                       <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex flex-col items-center text-center gap-3 relative group">
-                         <button onClick={async () => {
-                            if(confirm("Eliminare immagine dal catalogo globale?")) {
-                              const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
-                              if (error) { alert("Errore DB: " + error.message); return; }
-                              setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
-                            }
-                         }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">&times;</button>
-                         <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)]">
-                            <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
-                         </div>
-                         <div className="w-full">
-                           <span className="block text-[9px] font-black uppercase tracking-widest text-slate-600 truncate">{cat.nome}</span>
-                           <span className="block text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-1">{cat.tipo}</span>
-                         </div>
-                       </div>
-                     ))}
-                     {catalogoImmagini.length === 0 && <p className="col-span-full text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-8 bg-[var(--velo-30)] rounded-2xl border border-dashed border-[var(--velo-60)]">Il catalogo immagini è attualmente vuoto.</p>}
+                   
+                   {/* GRUPPO ALIMENTI */}
+                   <div className="mb-4">
+                      <button 
+                        onClick={() => setCatalogoAperto(catalogoAperto === 'alimento' ? null : 'alimento')}
+                        className="w-full flex justify-between items-center bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] p-4 rounded-2xl border-none cursor-pointer transition-all"
+                      >
+                        <span className="text-[11px] font-black text-slate-600 tracking-widest flex items-center gap-2">🍎 Alimenti</span>
+                        <div className="flex items-center gap-3">
+                           <span className="text-[9px] bg-indigo-100 shadow-inner text-indigo-500 px-2.5 py-1 rounded-lg font-black tracking-widest">
+                             {catalogoImmagini.filter(c => c.tipo === 'alimento').length} Elementi
+                           </span>
+                           <span className={`text-indigo-400 font-bold transition-transform duration-300 ${catalogoAperto === 'alimento' ? 'rotate-180' : ''}`}>▼</span>
+                        </div>
+                      </button>
+                      
+                      {catalogoAperto === 'alimento' && (
+                        <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-4 anim-drop-down pl-2 border-l-2 border-indigo-200/50 ml-2">
+                           {catalogoImmagini.filter(c => c.tipo === 'alimento').map((cat, idx) => (
+                             <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex flex-col items-center text-center gap-3 relative group">
+                               <button onClick={async () => {
+                                  if(confirm("Eliminare immagine dal catalogo globale?")) {
+                                    const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
+                                    if (error) { alert("Errore DB: " + error.message); return; }
+                                    setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
+                                  }
+                               }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">&times;</button>
+                               <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)]">
+                                  <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
+                               </div>
+                               <div className="w-full">
+                                 <span className="block text-[9px] font-black uppercase tracking-widest text-slate-600 truncate">{cat.nome}</span>
+                               </div>
+                             </div>
+                           ))}
+                           {catalogoImmagini.filter(c => c.tipo === 'alimento').length === 0 && <p className="col-span-full text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-4 bg-[var(--velo-30)] rounded-2xl border border-dashed border-[var(--velo-60)]">Nessun alimento archiviato.</p>}
+                        </div>
+                      )}
+                   </div>
+
+                   {/* GRUPPO INTEGRATORI */}
+                   <div>
+                      <button 
+                        onClick={() => setCatalogoAperto(catalogoAperto === 'integratore' ? null : 'integratore')}
+                        className="w-full flex justify-between items-center bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_2px_2px_4px_var(--ombra-scura),inset_-2px_-2px_4px_var(--ombra-chiara)] p-4 rounded-2xl border-none cursor-pointer transition-all"
+                      >
+                        <span className="text-[11px] font-black text-slate-600 tracking-widest flex items-center gap-2">💊 Integratori</span>
+                        <div className="flex items-center gap-3">
+                           <span className="text-[9px] bg-cyan-100 shadow-inner text-cyan-600 px-2.5 py-1 rounded-lg font-black tracking-widest">
+                             {catalogoImmagini.filter(c => c.tipo === 'integratore').length} Elementi
+                           </span>
+                           <span className={`text-cyan-500 font-bold transition-transform duration-300 ${catalogoAperto === 'integratore' ? 'rotate-180' : ''}`}>▼</span>
+                        </div>
+                      </button>
+                      
+                      {catalogoAperto === 'integratore' && (
+                        <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-4 anim-drop-down pl-2 border-l-2 border-cyan-200/50 ml-2">
+                           {catalogoImmagini.filter(c => c.tipo === 'integratore').map((cat, idx) => (
+                             <div key={idx} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex flex-col items-center text-center gap-3 relative group">
+                               <button onClick={async () => {
+                                  if(confirm("Eliminare immagine dal catalogo globale?")) {
+                                    const { error } = await supabase.from('catalogo_immagini').delete().eq('id', cat.id);
+                                    if (error) { alert("Errore DB: " + error.message); return; }
+                                    setCatalogoImmagini(prev => prev.filter(c => c.id !== cat.id));
+                                  }
+                               }} className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">&times;</button>
+                               <div className="w-16 h-16 rounded-xl bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] flex items-center justify-center p-1 border border-[var(--velo-40)]">
+                                  <img src={cat.immagineData} alt={cat.nome} className="w-full h-full object-contain rounded-lg drop-shadow-sm" />
+                               </div>
+                               <div className="w-full">
+                                 <span className="block text-[9px] font-black uppercase tracking-widest text-slate-600 truncate">{cat.nome}</span>
+                               </div>
+                             </div>
+                           ))}
+                           {catalogoImmagini.filter(c => c.tipo === 'integratore').length === 0 && <p className="col-span-full text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-4 bg-[var(--velo-30)] rounded-2xl border border-dashed border-[var(--velo-60)]">Nessun integratore archiviato.</p>}
+                        </div>
+                      )}
                    </div>
                 </div>
               </div>
             )}
-
-          </div>
-        </div>
-      )}
 
       <style dangerouslySetInnerHTML={{__html: ".custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,198,255,0.5); } .pb-safe { padding-bottom: env(safe-area-inset-bottom); }"}} />
       {/* === MODALE MAZZO 3D INTEGRATORI CON OPEN FOOD FACTS === */}
