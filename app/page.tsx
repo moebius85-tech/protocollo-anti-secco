@@ -828,6 +828,8 @@ const renderDescrizioneConHUD = (testo: string) => {
   const [modalScegliDispensa, setModalScegliDispensa] = useState<string | null>(null);
   const [filtroDispensa, setFiltroDispensa] = useState<'alimento' | 'integratore'>('alimento');
   const [ricercaDispensa, setRicercaDispensa] = useState("");
+  const [dispensaItemEspanso, setDispensaItemEspanso] = useState<string | null>(null);
+  const [grammiManuali, setGrammiManuali] = useState<string>("");
   const [categoriaDaCambiare, setCategoriaDaCambiare] = useState<keyof typeof dbAlimenti>('Pasto1');
   const [isCalculatingMacro, setIsCalculatingMacro] = useState<Record<string, boolean>>({});
   const [chatLog, setChatLog] = useState<{role: 'user' | 'ai', text: string}[]>([{ role: 'ai', text: 'Ciao! Sono il tuo Coach IA. Scrivimi cosa hai mangiato per stimare i macro!' }]);
@@ -2752,59 +2754,113 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             .filter(d => d.tipo === filtroDispensa)
             .filter(d => d.nome.toLowerCase().includes(ricercaDispensa.toLowerCase()))
             .map((item) => {
-              // LA MAGIA: Cerca se nel catalogo Admin c'è una foto che contiene il nome dell'item
-              // (Es. Se il catalogo ha "Yamamoto", e l'item si chiama "Yamamoto Whey", pesca la foto)
               const imgCatalogo = catalogoImmagini.find(c => item.nome.toLowerCase().includes(c.nome.toLowerCase()))?.immagineData;
               const immagineFinale = item.immagine || imgCatalogo;
 
+              const inserisciComponenteDb = (nuovoComponente: {nome: string, cho: number, pro: number, fat: number}) => {
+                 if (indiceSostituzione !== null) {
+                    sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
+                 } else {
+                    aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
+                 }
+                 setIndiceSostituzione(null);
+                 setModalScegliDispensa(null);
+                 setRicercaDispensa("");
+                 setDispensaItemEspanso(null);
+              };
+
+              const isExpanded = dispensaItemEspanso === item.id;
+
               return (
-                // Era un <button>: per aggiungere la X di eliminazione serve un pulsante
-                // separato, e due <button> annidati non sono validi HTML (il click sulla X
-                // avrebbe anche attivato la riga sotto). Diventa un div cliccabile.
                 <div 
-                  key={item.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => {
-                    const nuovoComponente = { nome: item.nome, cho: Number(item.cho) || 0, pro: Number(item.pro) || 0, fat: Number(item.fat) || 0 };
-                    if (indiceSostituzione !== null) {
-                      sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente);
-                    } else {
-                      aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente);
-                    }
-                    setIndiceSostituzione(null);
-                    setModalScegliDispensa(null);
-                    setRicercaDispensa(""); 
-                  }}
-                  className="relative w-full text-left px-4 py-3 bg-[var(--superficie-alt)] shadow-[3px_3px_6px_var(--ombra-scura-alt),-3px_-3px_6px_var(--ombra-chiara)] rounded-xl hover:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] active:shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] group transition-all duration-200 cursor-pointer flex items-center justify-between gap-3"
+                  key={item.id} 
+                  className="w-full bg-[var(--superficie-alt)] shadow-[3px_3px_6px_var(--ombra-scura-alt),-3px_-3px_6px_var(--ombra-chiara)] rounded-xl mb-3 overflow-hidden transition-all duration-300"
                 >
-                  <button
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      if (!confirm(`Eliminare "${item.nome}" dalla dispensa?`)) return;
-                      const { error } = await supabase.from('dispensa_utente').delete().eq('id', item.id);
-                      if (error) { alert("Errore DB: " + error.message + "\n\n" + suggerimentoErroreSupabase(error)); return; }
-                      setDispensa(prev => prev.filter(d => d.id !== item.id));
+                  {/* INTESTAZIONE CLICCABILE */}
+                  <div 
+                    onClick={() => {
+                      if (isExpanded) setDispensaItemEspanso(null);
+                      else { setDispensaItemEspanso(item.id); setGrammiManuali(""); }
                     }}
-                    title="Elimina dalla dispensa"
-                    className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full shadow-md font-bold text-sm border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10"
-                  >&times;</button>
-                  <div className="flex items-center gap-3 min-w-0">
-                    {/* MOSTRIAMO L'IMMAGINE SE TROVATA, ALTRIMENTI ICONA PLACEHOLDER */}
-                    {immagineFinale ? (
-                      <div className="w-10 h-10 rounded-lg bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura)] flex items-center justify-center p-1 shrink-0">
-                         <img src={immagineFinale} alt="" className="w-full h-full object-contain rounded-md drop-shadow-sm" />
-                      </div>
-                    ) : (
-                      <div className="w-10 h-10 rounded-lg bg-[var(--velo-40)] flex items-center justify-center shrink-0 border border-dashed border-[var(--velo-60)]">
-                         <span className="text-[14px] opacity-40">{filtroDispensa === 'alimento' ? '🍽️' : '💊'}</span>
-                      </div>
-                    )}
-                    <span className="font-bold text-[13px] text-slate-700 group-hover:text-orange-500 transition-colors truncate block">{item.nome}</span>
+                    className="w-full text-left px-4 py-3 hover:bg-[var(--velo-30)] transition-all duration-200 cursor-pointer flex items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {immagineFinale ? (
+                        <div className="w-10 h-10 rounded-lg bg-[var(--superficie)] shadow-[inset_2px_2px_4px_var(--ombra-scura)] flex items-center justify-center p-1 shrink-0">
+                           <img src={immagineFinale} alt="" className="w-full h-full object-contain rounded-md drop-shadow-sm" />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-[var(--velo-40)] flex items-center justify-center shrink-0 border border-dashed border-[var(--velo-60)]">
+                           <span className="text-[14px] opacity-40">{filtroDispensa === 'alimento' ? '🍽️' : '💊'}</span>
+                        </div>
+                      )}
+                      <span className={`font-bold text-[13px] transition-colors truncate block ${isExpanded ? 'text-orange-500' : 'text-slate-700'}`}>{item.nome}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[9px] font-black text-slate-500 tracking-wide whitespace-nowrap bg-[var(--velo-40)] px-2 py-1 rounded-md shadow-inner">
+                        <span className="text-orange-500">{item.cho}</span>C · {item.pro}P · {item.fat}F
+                      </span>
+                      {/* TASTO ELIMINA CORRETTO (Non più tagliato, ora è in linea) */}
+                      <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (!confirm(`Eliminare "${item.nome}" dalla dispensa?`)) return;
+                          const { error } = await supabase.from('dispensa_utente').delete().eq('id', item.id);
+                          if (error) { alert("Errore DB: " + error.message); return; }
+                          setDispensa(prev => prev.filter(d => d.id !== item.id));
+                        }}
+                        title="Elimina dalla dispensa"
+                        className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white w-7 h-7 rounded-lg flex items-center justify-center transition-colors border-none cursor-pointer"
+                      >
+                        &times;
+                      </button>
+                    </div>
                   </div>
-                  <span className="shrink-0 text-[9px] font-black text-slate-500 tracking-wide whitespace-nowrap bg-[var(--velo-40)] px-2 py-1 rounded-md shadow-inner">
-                    <span className="text-orange-500">{item.cho}</span>C · {item.pro}P · {item.fat}F
-                  </span>
+
+                  {/* ZONA ESPANSA (DOPPIA OPZIONE DI INSERIMENTO) */}
+                  {isExpanded && (
+                    <div className="bg-[var(--velo-30)] p-4 border-t border-slate-200/50 flex flex-col gap-3 anim-drop-down">
+                       <p className="text-[9px] uppercase font-black text-slate-500 tracking-widest text-center mb-1">Seleziona Metodo di Inserimento</p>
+                       
+                       <div className="flex flex-col sm:flex-row gap-3">
+                          <button 
+                            onClick={() => inserisciComponenteDb({ nome: item.nome, cho: Number(item.cho) || 0, pro: Number(item.pro) || 0, fat: Number(item.fat) || 0 })}
+                            className="flex-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] text-slate-600 hover:text-orange-500 font-black uppercase tracking-widest text-[10px] py-3.5 rounded-xl transition-all border-none cursor-pointer active:shadow-[inset_2px_2px_4px_var(--ombra-scura)]"
+                          >
+                            ⚡ Aggiungi Diretto
+                          </button>
+
+                          <div className="flex flex-1 gap-2">
+                             <input 
+                               type="number" 
+                               placeholder="Grammi" 
+                               value={grammiManuali} 
+                               onChange={e => setGrammiManuali(e.target.value)} 
+                               className="w-[80px] bg-[var(--superficie)] px-3 text-[13px] font-bold text-slate-700 rounded-xl outline-none shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] text-center border-none"
+                             />
+                             <button 
+                               onClick={() => {
+                                  const g = Number(grammiManuali);
+                                  if (!g || g <= 0) return alert("Inserisci i grammi validi.");
+                                  
+                                  const nuovoComponente = { 
+                                     nome: `${item.nome} (${g}g)`, 
+                                     cho: Math.round(((Number(item.cho) || 0) / 100) * g), 
+                                     pro: Math.round(((Number(item.pro) || 0) / 100) * g), 
+                                     fat: Math.round(((Number(item.fat) || 0) / 100) * g) 
+                                  };
+                                  inserisciComponenteDb(nuovoComponente);
+                               }}
+                               className="flex-1 bg-gradient-to-r from-orange-400 to-rose-400 text-white font-black uppercase tracking-widest text-[10px] py-3.5 rounded-xl shadow-[0_4px_10px_rgba(249,115,22,0.3)] hover:-translate-y-0.5 transition-all border-none cursor-pointer"
+                             >
+                               🧮 Ricalcola
+                             </button>
+                          </div>
+                       </div>
+                       <p className="text-[8px] text-slate-400 text-center font-bold mt-1">Il calcolo manuale presuppone che i valori salvati in dispensa siano calcolati su 100g.</p>
+                    </div>
+                  )}
                 </div>
               );
             })
