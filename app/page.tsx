@@ -2527,19 +2527,21 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                                  </div>
                                </div>
 
-                               <div className="mt-6 flex flex-col gap-3 bg-[var(--velo-30)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl border border-[var(--velo-50)]">
-                                  <div className="flex items-center justify-between">
-                                    <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] text-slate-600 tracking-widest">{repMostrate}</p>
+                               {/* BOX INFO REP E TARGET (Risolto Responsive Mobile) */}
+                               <div className="mt-6 flex flex-col gap-3 bg-[var(--velo-30)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-3 sm:p-4 rounded-2xl border border-[var(--velo-50)]">
+                                  <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
+                                    <p className="text-[11px] font-black px-4 py-3 rounded-xl bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] text-slate-600 tracking-widest text-center xl:text-left">{repMostrate}</p>
+                                    
                                     {ultimoCarico !== '0' && (
-                                      <div className="flex items-center gap-2 bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] rounded-xl px-3 py-2">
-                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Ultima: <span className="ml-1 text-[13px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>
-                                        <div className="w-[1px] h-4 bg-slate-300 mx-1"></div>
-                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">🎯 Target: <span className="text-[13px] font-black text-emerald-500 drop-shadow-sm">{targetCarico}kg</span></span>
+                                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] rounded-xl px-3 py-3 sm:py-2">
+                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest text-center">Ultima: <span className="ml-1 text-[13px] font-black break-all" style={{color: phaseColor}}>{ultimoCarico}</span></span>
+                                        <div className="hidden sm:block w-[1px] h-4 bg-slate-300 mx-1"></div>
+                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1 mt-1 sm:mt-0">🎯 Target: <span className="text-[13px] font-black text-emerald-500 drop-shadow-sm">{targetCarico}kg</span></span>
                                       </div>
                                     )}
                                   </div>
                                   {esSaltato && (
-                                    <div className="bg-rose-500/10 border border-rose-500/30 text-rose-600 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg flex items-center justify-center gap-2">
+                                    <div className="bg-rose-500/10 border border-rose-500/30 text-rose-600 text-[9px] font-bold uppercase tracking-widest px-3 py-2 rounded-lg flex items-center justify-center gap-2 text-center">
                                       <span>⚠️</span> Saltato l'ultima volta. Consigliato il recupero!
                                     </div>
                                   )}
@@ -2548,11 +2550,11 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                                <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-[var(--velo-50)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-[var(--velo-60)] cursor-pointer transition-all hover:-translate-y-0.5" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
 
                                <div className="mt-5 pt-5 border-t border-slate-400/20">
-                                 <div className="flex gap-4">
+                                 <div className="flex gap-2 sm:gap-4 overflow-x-auto custom-scrollbar pb-2">
                                    {Array.from({ length: numeroSetTarget }).map((_, i) => (
-                                     <div key={i} className="flex-1 relative">
+                                     <div key={i} className="flex-1 min-w-[60px] relative shrink-0">
                                        <label className="text-[9px] text-slate-500 uppercase font-bold tracking-widest block text-center mb-2.5">Set {i+1}</label>
-                                       <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
+                                       <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3 px-1 sm:px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80 placeholder:text-slate-400/40 placeholder:font-medium" style={{color: phaseColor}} placeholder="kg" />
                                      </div>
                                    ))}
                                  </div>
