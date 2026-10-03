@@ -941,7 +941,7 @@ const renderDescrizioneConHUD = (testo: string) => {
      const plan = JSON.parse(JSON.stringify(baseDbAllenamento)); 
      const isOver40 = Number(eta) > 40; const isShred = protocolloAttivo === 'Shred'; const isHeavyJob = stileVita.includes("Attivo") || stileVita.includes("Fisico");
      const fatNum = Number(biometria.bodyFat) || 0; const pesoNum = Number(biometria.peso) || 0; const highFat = fatNum > 15;
-     const activeDieta = (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) ? 'Equilibrata' : tipoDieta;
+     const activeDieta = (protocolloAutore.includes('Metabolico') || protocolloAutore.includes('Ormonale')) ? 'Equilibrata' : tipoDieta;
      const isKetoOrLowCarb = activeDieta === 'Keto' || activeDieta === 'LowCarb'; const isOverweightMechanically = fatNum > 20 || pesoNum > 95; const needsLumbarProtection = isOver40 && stileVita.includes("Fisico");
 
      const swapToAlternative = (ex: any, partialName: string) => {
@@ -954,12 +954,12 @@ const renderDescrizioneConHUD = (testo: string) => {
         let methodCycleGerardo = 0; 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plan[sch].esercizi.forEach((ex: any) => {
-           if (protocolloAutore === 'Gerardo Calvo (Reset Ormonale)') {
+           if (protocolloAutore === 'Reset Ormonale') {
                if (methodCycleGerardo === 0) ex.rep = "7x10 | Rec: 30 sec (15RM)";
                else if (methodCycleGerardo === 1) ex.rep = "5x5 | Rec: 90 sec (Neurale)";
                else ex.rep = "3x10 (5 N + 5 Ecc) | Rec: 60s";
                methodCycleGerardo = (methodCycleGerardo + 1) % 3;
-           } else if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)') {
+           } else if (protocolloAutore === 'Reset Metabolico') {
                ex.rep = "3x8-10 | Rec: 90s (NO Cedimento)";
                if (!eserciziModificati[ex.id]) {
                    if (ex.id === "e11") swapToAlternative(ex, "Hack Squat Macchina");
@@ -1025,7 +1025,7 @@ const renderDescrizioneConHUD = (testo: string) => {
   };
 
   const salvaProfiloWizard = async () => {
-    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo, dieta: (datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo')) ? 'Equilibrata' : datiWizard.dieta, autore: datiWizard.autore, metabolismoBloccato: datiWizard.metabolismoBloccato } }, data: new Date().toISOString() };
+    const payload = { nome_utente: datiWizard.nome, eta: Number(datiWizard.eta), altezza: Number(datiWizard.altezza), peso: Number(datiWizard.peso), circonferenze: { profilo: { stileVita: datiWizard.stileVita, obiettivo: datiWizard.obiettivo, dieta: (datiWizard.autore.includes('Metabolico') || datiWizard.autore.includes('Ormonale')) ? 'Equilibrata' : datiWizard.dieta, autore: datiWizard.autore, metabolismoBloccato: datiWizard.metabolismoBloccato } }, data: new Date().toISOString() };
     await supabase.from("check_utente").insert([payload]);
     setListaAtleti(prev => [...prev, datiWizard.nome]); setModalWizard(false); setStepWizard(1);
     caricaProfilo(datiWizard.nome, datiWizard.obiettivo, datiWizard.dieta);
@@ -1260,7 +1260,7 @@ const renderDescrizioneConHUD = (testo: string) => {
       settimaneDiReverse = Math.floor((oggi.getTime() - primaMisura.getTime()) / (1000 * 60 * 60 * 24 * 7));
   }
   const grassoStimato = Number(biometria.bodyFat) || 0;
-  if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)' || metabolismoBloccato) { baseTdee = baseTdee + (settimaneDiReverse * 100); } 
+  if (protocolloAutore === 'Reset Metabolico' || metabolismoBloccato) { baseTdee = baseTdee + (settimaneDiReverse * 100); } 
   else if (protocolloAttivo === 'Shred') { baseTdee = Math.round(baseTdee * 0.80); } 
   else if (protocolloAttivo === 'Massa') { if (grassoStimato > 15 || pesoNum > 85) { baseTdee = Math.round(baseTdee * 1.05); } else { baseTdee = Math.round(baseTdee * 1.15); } }
 
@@ -1269,7 +1269,7 @@ const renderDescrizioneConHUD = (testo: string) => {
   if (protocolloAttivo === 'Shred') targetPro = pesoNum * 2.5;
 
   let targetCho = 0; let targetFat = 0;
-  const activeDieta = (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) ? 'Equilibrata' : tipoDieta;
+  const activeDieta = (protocolloAutore.includes('Metabolico') || protocolloAutore.includes('Ormonale')) ? 'Equilibrata' : tipoDieta;
 
   switch (activeDieta) {
       case 'Keto': targetCho = 30; targetPro = pesoNum * 2.5; targetFat = (tdee - (targetCho * 4) - (targetPro * 4)) / 9; break;
@@ -1279,13 +1279,13 @@ const renderDescrizioneConHUD = (testo: string) => {
       case 'Equilibrata': default: targetFat = pesoNum * 1.0; targetCho = (tdee - (targetFat * 9) - (targetPro * 4)) / 4; break;
   }
 
-  if (protocolloAutore === 'Gerardo Calvo (Reset Ormonale)') {
+  if (protocolloAutore === 'Reset Ormonale') {
       const hpo = Math.max((Number(altezza) || 175) - 100, 60);
       targetPro = hpo * 2.2; targetFat = 65; 
       const dayIndex = giorniSettimana.indexOf(giornoCalendario);
       const autoCarb = [150, 250, 350][dayIndex % 3] || 150;
       targetCho = gerardoCarbOverride !== null ? gerardoCarbOverride : autoCarb;
-  } else if (protocolloAutore === 'Aldo Masolo (Reset Metabolico)' || metabolismoBloccato) {
+  } else if (protocolloAutore === 'Reset Metabolico' || metabolismoBloccato) {
       targetFat = 70; targetPro = pesoNum * 1.8; targetCho = Math.max(0, (tdee - (targetFat * 9) - (targetPro * 4)) / 4);
   }
 
@@ -1587,8 +1587,8 @@ if (!usaIntegratori) {
               <div>
                  <label className={UI.label}>3. Strategia Nutrizionale</label>
                  <select 
-                    value={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo') ? 'Equilibrata' : tipoDieta} 
-                    disabled={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')}
+                    value={protocolloAutore.includes('Metabolico') || protocolloAutore.includes('Ormonale') ? 'Equilibrata' : tipoDieta} 
+                    disabled={protocolloAutore.includes('Metabolico') || protocolloAutore.includes('Ormonale')}
                     onChange={async (e) => {
                       const nuovaDieta = e.target.value;
                       setTipoDieta(nuovaDieta);
@@ -1597,7 +1597,7 @@ if (!usaIntegratori) {
                         await supabase.from("check_utente").insert([payload]);
                       }
                     }} 
-                    className={`${UI.input} ${protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`${UI.input} ${protocolloAutore.includes('Metabolico') || protocolloAutore.includes('Ormonale') ? 'opacity-50 cursor-not-allowed' : ''}`}
                  >
                     <option value="Equilibrata">⚖️ Equilibrata (Classica)</option>
                     <option value="Keto">🥩 Chetogenica (Keto - Cho Max 30g)</option>
@@ -1608,7 +1608,7 @@ if (!usaIntegratori) {
               </div>
 
               <div>
-                 <label className={UI.label}>4. Protocollo Master / Coach</label>
+                 <label className={UI.label}>4. Protocollo Strategico</label>
                  <select value={protocolloAutore} onChange={async (e) => {
                     const nuovoAutore = e.target.value;
                     setProtocolloAutore(nuovoAutore);
@@ -1617,10 +1617,10 @@ if (!usaIntegratori) {
                       await supabase.from("check_utente").insert([payload]);
                     }
                  }} className={UI.input}>
-                    <option value="Nessuno">🤖 Nessuno (A.I. Base)</option>
-                    <option value="Aldo Masolo (Reset Metabolico)">🟢 Aldo Masolo (Reset Metabolico)</option>
-                    <option value="Gerardo Calvo (Reset Ormonale)">🔴 Gerardo Calvo (Reset Ormonale)</option>
-                    <option value="Lorenzo Lari (Flessibile)">🟡 Lorenzo Lari (Flessibile 80/20)</option>
+                    <option value="Nessuno">🤖 A.I. Standard (Dinamico su Misura)</option>
+                    <option value="Reset Metabolico">🟢 Reset Metabolico (Focus Volume / No Cedimento)</option>
+                    <option value="Reset Ormonale">🔴 Reset Ormonale (Carb Cycling 150/250/350)</option>
+                    <option value="Flessibile 80/20">🟡 Flessibile 80/20 (Budget Sgarro Consentito)</option>
                  </select>
               </div>
               
@@ -1695,7 +1695,7 @@ if (!usaIntegratori) {
                    </div>
                    <div>
                      <label className={UI.label}>Dieta Iniziale</label>
-                     <select value={datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo') ? 'Equilibrata' : datiWizard.dieta} disabled={datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo')} onChange={e=>setDatiWizard({...datiWizard, dieta: e.target.value})} className={`${UI.input} ${datiWizard.autore.includes('Masolo') || datiWizard.autore.includes('Calvo') ? 'opacity-50' : ''}`}>
+                     <select value={datiWizard.autore.includes('Metabolico') || datiWizard.autore.includes('Ormonale') ? 'Equilibrata' : datiWizard.dieta} disabled={datiWizard.autore.includes('Metabolico') || datiWizard.autore.includes('Ormonale')} onChange={e=>setDatiWizard({...datiWizard, dieta: e.target.value})} className={`${UI.input} ${datiWizard.autore.includes('Metabolico') || datiWizard.autore.includes('Ormonale') ? 'opacity-50' : ''}`}>
                        <option value="Equilibrata">Dieta: Equilibrata</option>
                        <option value="Keto">Dieta: Chetogenica</option>
                        <option value="LowCarb">Dieta: Low Carb</option>
@@ -1704,12 +1704,12 @@ if (!usaIntegratori) {
                      </select>
                    </div>
                    <div>
-                     <label className={UI.label}>Master Coach</label>
+                     <label className={UI.label}>Protocollo Strategico</label>
                      <select value={datiWizard.autore || 'Nessuno'} onChange={e=>setDatiWizard({...datiWizard, autore: e.target.value})} className={UI.input}>
-                       <option value="Nessuno">Intelligenza Artificiale Base</option>
-                       <option value="Aldo Masolo (Reset Metabolico)">Aldo Masolo</option>
-                       <option value="Gerardo Calvo (Reset Ormonale)">Gerardo Calvo</option>
-                       <option value="Lorenzo Lari (Flessibile)">Lorenzo Lari (80/20)</option>
+                       <option value="Nessuno">🤖 A.I. Standard (Dinamico su Misura)</option>
+                       <option value="Reset Metabolico">🟢 Reset Metabolico (Focus Volume)</option>
+                       <option value="Reset Ormonale">🔴 Reset Ormonale (Carb Cycling)</option>
+                       <option value="Flessibile 80/20">🟡 Flessibile 80/20 (Budget Sgarro)</option>
                      </select>
                    </div>
                    
@@ -1815,7 +1815,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                  <span className="text-sm font-bold text-slate-600 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] px-5 py-2.5 rounded-full tracking-wide">{utenteCorrente}</span>
                  <div className="flex gap-2 bg-[var(--superficie)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] px-3 py-1.5 rounded-full">
                     <span className="text-[9px] font-bold text-lime-500 uppercase tracking-widest">{tipoDieta}</span>
-                    {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore.split(' ')[0]}</span>}
+                    {protocolloAutore !== 'Nessuno' && <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-2 border-l border-slate-300">{protocolloAutore}</span>}
                  </div>
               </div>
             </div>
@@ -2069,7 +2069,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Piano Nutrizionale</h2>
                 <div className="flex gap-2 items-center">
-                  {protocolloAutore === 'Gerardo Calvo (Reset Ormonale)' && (
+                  {protocolloAutore === 'Reset Ormonale' && (
                      <button 
                        onClick={() => {
                           const current = gerardoCarbOverride !== null ? gerardoCarbOverride : [150, 250, 350][giorniSettimana.indexOf(giornoCalendario) % 3];
@@ -2082,8 +2082,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                      </button>
                   )}
                   <select 
-                    value={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo') ? 'Equilibrata' : tipoDieta} 
-                    disabled={protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')}
+                    value={protocolloAutore.includes('Metabolico') || protocolloAutore.includes('Ormonale') ? 'Equilibrata' : tipoDieta} 
+                    disabled={protocolloAutore.includes('Metabolico') || protocolloAutore.includes('Ormonale')}
                     onChange={async (e) => {
                       const nuovaDieta = e.target.value;
                       setTipoDieta(nuovaDieta);
@@ -2093,7 +2093,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                       }
                     }}
                     className={`text-[9px] font-bold px-5 py-3 rounded-full uppercase tracking-widest outline-none cursor-pointer text-center appearance-none transition-all shadow-[6px_6px_12px_var(--ombra-scura),-6px_-6px_12px_var(--ombra-chiara)] border-none ${
-                      (protocolloAutore.includes('Masolo') || protocolloAutore.includes('Calvo')) 
+                      (protocolloAutore.includes('Metabolico') || protocolloAutore.includes('Ormonale')) 
                         ? 'bg-[var(--superficie)] text-slate-400' 
                         : `bg-gradient-to-r from-orange-400 to-rose-400 shadow-[0_8px_15px_rgba(249,115,22,0.25)] text-white`
                     }`}
@@ -2140,7 +2140,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           </div>
             
             
-            {protocolloAutore === 'Lorenzo Lari (Flessibile)' && (
+            {protocolloAutore === 'Flessibile 80/20' && (
                <div className="livello-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-[1.5rem] mb-8 bg-[var(--velo-30)] anim-pop" style={{animationDelay: '0.6s'}}>
                   <div className="flex justify-between items-center mb-4">
                      <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">🟡 BUDGET SGARRO (80/20)</span>
