@@ -2872,9 +2872,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 {modalScegliDispensa && (
   <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[150] p-4">
     {/* --- ANIMAZIONE LATERALE (Cyber-Data Stream) --- */}
-          <div className="absolute left-0 top-0 w-12 sm:w-24 h-full pointer-events-none overflow-hidden border-r border-cyan-500/10 flex flex-col items-center py-10 z-0">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent"></div>
-            <div className="absolute left-1/2 -translate-x-1/2 h-[200%] flex flex-col justify-around text-center text-[9px] sm:text-[10px] font-black uppercase tracking-[0.5em] text-cyan-500/30 whitespace-nowrap" style={{ writingMode: 'vertical-rl', animation: 'scrollVerticalMobile 20s linear infinite' }}>
+          <div className="absolute left-0 sm:left-[calc(50%-20rem)] top-0 w-12 sm:w-16 h-full pointer-events-none overflow-hidden border-r border-cyan-500/20 flex flex-col items-center py-10 z-0 bg-gradient-to-r from-cyan-500/5 to-transparent">
+            <div className="absolute left-1/2 -translate-x-1/2 h-[200%] flex flex-col justify-around text-center text-[9px] sm:text-[10px] font-black uppercase tracking-[0.5em] text-cyan-500/40 whitespace-nowrap" style={{ writingMode: 'vertical-rl', animation: 'scrollVerticalMobile 20s linear infinite' }}>
               <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">A.I. NEURAL NETWORK</span>
               <span className="opacity-40">SYS_//_0x4F</span>
               <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">MACRO DATA LINK</span>
