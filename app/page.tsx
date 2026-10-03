@@ -3207,20 +3207,41 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                               const base64 = nuovoItemCatalogo.immagineData.split(',')[1];
                               const mime = nuovoItemCatalogo.immagineData.substring(5, nuovoItemCatalogo.immagineData.indexOf(';'));
                               const payload = {
-                                message: "Analizza etichetta. Estrai Marca e Nome, stabilisci se è 'alimento' o 'integratore', e stima i macronutrienti per 100g. Formato:\n[CATALOGO_AI | Nome | alimento/integratore | CHO | PRO | FAT]",
+                                message: "Analizza etichetta. Estrai Marca e Nome. Se è un integratore puro (es. pillole, creatina, citrullina) senza macro visibili, assumi 0 per CHO, PRO e FAT. REGOLE: Usa SOLO NUMERI per i macro. Formato TASSATIVO:\n[CATALOGO_AI | Nome Completo | alimento oppure integratore | CHO | PRO | FAT]",
                                 file: { data: base64, mimeType: mime }
                               };
                               const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                               const data = await response.json();
-                              const match = (data.reply || '').match(/\[CATALOGO_AI\s*\|\s*([^|]+)\|\s*(alimento|integratore)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\]/i);
+                              
+                              // Regex più tollerante: cattura tutto tra le barre verticali, puliremo i numeri dopo
+                              const match = (data.reply || '').match(/\[CATALOGO_AI\s*\|\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]/i);
+                              
                               if (match) {
-                                setNuovoItemCatalogo(prev => ({ ...prev, nome: match[1].trim(), tipo: match[2].trim().toLowerCase(), cho: Math.round(parseFloat(match[3].replace(',','.'))).toString(), pro: Math.round(parseFloat(match[4].replace(',','.'))).toString(), fat: Math.round(parseFloat(match[5].replace(',','.'))).toString() }));
-                              } else { alert("Analisi parziale, riempi i campi a mano."); }
+                                // Funzione per estrarre solo i numeri anche se l'IA aggiunge lettere (es "0g" o "N/A")
+                                const cleanNum = (str: string) => { 
+                                   const n = str.replace(/[^\d.,]/g, '').replace(',', '.'); 
+                                   return n === '' ? '0' : Math.round(parseFloat(n)).toString(); 
+                                };
+                                
+                                let tipoRilevato = match[2].trim().toLowerCase();
+                                if (!tipoRilevato.includes('alimento') && !tipoRilevato.includes('integratore')) tipoRilevato = 'integratore';
+
+                                setNuovoItemCatalogo(prev => ({ 
+                                  ...prev, 
+                                  nome: match[1].trim(), 
+                                  tipo: tipoRilevato as 'alimento' | 'integratore', 
+                                  cho: cleanNum(match[3]), 
+                                  pro: cleanNum(match[4]), 
+                                  fat: cleanNum(match[5]) 
+                                }));
+                              } else { 
+                                alert("Analisi complessa, compila a mano. L'A.I. ha detto:\n" + data.reply); 
+                              }
                             } catch (e) { alert("Errore connessione A.I."); }
                             setAnalisiCatalogoInCorso(false);
                           }}
                           disabled={analisiCatalogoInCorso}
-                          className="w-full sm:w-auto bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] text-indigo-500 font-black uppercase tracking-widest text-[10px] px-5 py-3.5 rounded-xl transition-all border-none cursor-pointer"
+                          className="w-full sm:w-auto bg-[var(--superficie-alt)] shadow-[4px_4px_8px_var(--ombra-scura-alt),-4px_-4px_8px_var(--ombra-chiara)] text-indigo-500 font-black uppercase tracking-widest text-[10px] px-5 py-3.5 rounded-xl transition-all border-none cursor-pointer disabled:opacity-50"
                         >
                           {analisiCatalogoInCorso ? '⏳ LETTURA...' : '🤖 AUTO-COMPILA'}
                         </button>
