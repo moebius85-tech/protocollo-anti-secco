@@ -2625,6 +2625,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
              );
           })()}
         </div>
+      </div>
 
       {/* --- BOTTOM NAVIGATION BAR (Solo su Mobile) --- */}
       <nav className="sm:hidden fixed bottom-0 left-0 w-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-[0_-10px_30px_var(--ombra-scura)] z-[90] pb-safe flex justify-between border-t border-[var(--velo-50)] px-2 pt-2">
