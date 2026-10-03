@@ -2871,27 +2871,26 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {/* === MODALE SCELTA DALLA DISPENSA === */}
 {modalScegliDispensa && (
   <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[150] p-4">
-    {/* --- INIZIO ANIMAZIONE CYBER-DATA LATERALE --- */}
-        <div className="absolute left-0 top-0 w-12 sm:w-24 h-full pointer-events-none overflow-hidden border-r border-cyan-500/10 flex flex-col items-center py-10 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent"></div>
-          <div className="absolute left-1/2 -translate-x-1/2 h-[200%] flex flex-col justify-around text-center text-[9px] sm:text-[10px] font-black uppercase tracking-[0.5em] text-cyan-500/20 whitespace-nowrap" style={{ writingMode: 'vertical-rl', animation: 'scrollVerticalMobile 20s linear infinite' }}>
-            <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]">A.I. Neural Network</span>
-            <span className="opacity-40">SYS_//_0x4F</span>
-            <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]">Macro Data Link</span>
-            <span className="opacity-40">Telemetry Actv</span>
-            <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]">A.I. Neural Network</span>
-            <span className="opacity-40">SYS_//_0x4F</span>
-            <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]">Macro Data Link</span>
-            <span className="opacity-40">Telemetry Actv</span>
+    {/* --- ANIMAZIONE LATERALE (Cyber-Data Stream) --- */}
+          <div className="absolute left-0 top-0 w-12 sm:w-24 h-full pointer-events-none overflow-hidden border-r border-cyan-500/10 flex flex-col items-center py-10 z-0">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent"></div>
+            <div className="absolute left-1/2 -translate-x-1/2 h-[200%] flex flex-col justify-around text-center text-[9px] sm:text-[10px] font-black uppercase tracking-[0.5em] text-cyan-500/30 whitespace-nowrap" style={{ writingMode: 'vertical-rl', animation: 'scrollVerticalMobile 20s linear infinite' }}>
+              <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">A.I. NEURAL NETWORK</span>
+              <span className="opacity-40">SYS_//_0x4F</span>
+              <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">MACRO DATA LINK</span>
+              <span className="opacity-40">TELEMETRY ACTV</span>
+              <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">A.I. NEURAL NETWORK</span>
+              <span className="opacity-40">SYS_//_0x4F</span>
+              <span className="drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">MACRO DATA LINK</span>
+              <span className="opacity-40">TELEMETRY ACTV</span>
+            </div>
+            <style dangerouslySetInnerHTML={{__html: `
+              @keyframes scrollVerticalMobile { 
+                0% { transform: translate(-50%, 0); } 
+                100% { transform: translate(-50%, -50%); } 
+              }
+            `}} />
           </div>
-          <style dangerouslySetInnerHTML={{__html: `
-            @keyframes scrollVerticalMobile { 
-              0% { transform: translate(-50%, 0); } 
-              100% { transform: translate(-50%, -50%); } 
-            }
-          `}} />
-        </div>
-        {/* --- FINE ANIMAZIONE --- */}
     <div className="livello-2 bg-[var(--superficie)] shadow-[12px_12px_24px_rgba(0,0,0,0.1)] rounded-[2rem] p-6 w-full max-w-md relative anim-pop max-h-[90vh] flex flex-col">
       <div className="flex justify-between items-center mb-4 border-b border-slate-300/50 pb-4 shrink-0">
         <h3 className="font-black text-lg uppercase tracking-widest text-slate-600 flex items-center gap-2">
