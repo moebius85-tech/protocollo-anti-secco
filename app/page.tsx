@@ -799,6 +799,7 @@ const renderDescrizioneConHUD = (testo: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [storicoSessioni, setStoricoSessioni] = useState<any[]>([]);
   const [vistaStorico, setVistaStorico] = useState(false);
+  const [sessioneEspansa, setSessioneEspansa] = useState<string | null>(null);
   const [modalEsercizio, setModalEsercizio] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
@@ -1852,7 +1853,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                      {misureBase.map((m) => (
                          <div key={m.id} className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-3.5 rounded-2xl">
                            <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-2">{m.label} <span className="text-slate-400/50">{m.unit}</span></label>
-                           <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-600 outline-none focus:text-indigo-500 transition-colors text-center appearance-none" placeholder="-" />
+                           <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-slate-600 outline-none focus:text-indigo-500 transition-colors text-center appearance-none" placeholder="kg" />
                          </div>
                      ))}
                    </div>
@@ -1864,7 +1865,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                      {misureBIA.map((m) => (
                          <div key={m.id} className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-3.5 rounded-2xl">
                            <label className="text-[9px] text-slate-500 uppercase font-bold flex justify-between tracking-wider mb-2">{m.label} <span className="text-slate-400/50">{m.unit}</span></label>
-                           <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-indigo-500 outline-none focus:text-indigo-600 transition-colors text-center appearance-none" placeholder="-" />
+                           <input type="number" value={biometria[m.id as keyof typeof biometria] || ''} onChange={(e) => setBiometria({...biometria, [m.id]: e.target.value})} className="w-full bg-transparent text-sm font-bold text-indigo-500 outline-none focus:text-indigo-600 transition-colors text-center appearance-none" placeholder="kg" />
                          </div>
                      ))}
                    </div>
@@ -2575,7 +2576,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                     </div>
                  </div>
                ) : (
-                 <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
+                 <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
                    {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] rounded-[2rem]">Nessuna sessione salvata.</p> : (
                      [...storicoSessioni].reverse().map((sess) => {
                        
@@ -2590,37 +2591,79 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                        if (pCompletamento < 50) { barColor = 'from-red-400 to-rose-500'; pText = 'CARENTE'; }
                        else if (pCompletamento < 80) { barColor = 'from-amber-400 to-orange-500'; pText = 'INCOMPLETO'; }
 
+                       const isExpanded = sessioneEspansa === sess.oraId.toString();
+
                        return (
-                       <div key={sess.oraId} className="livello-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
-                         <div className="flex justify-between items-center mb-1">
-                           <span className="font-black text-cyan-500 drop-shadow-sm block text-[15px] tracking-wide uppercase">{sess.giorno} - Scheda {sess.scheda}</span>
-                         </div>
-                         <span className="text-[10px] text-slate-400 font-bold mb-5 block tracking-widest">{sess.data}</span>
+                       <div key={sess.oraId} className="w-full bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] rounded-[1.5rem] overflow-hidden transition-all duration-300">
                          
-                         {/* Barra Completamento */}
-                         <div className="mb-6 bg-[var(--velo-30)] p-3 rounded-xl border border-[var(--velo-50)]">
-                           <div className="flex justify-between items-end mb-2">
-                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Completamento: <span className={pCompletamento === 100 ? 'text-emerald-500' : 'text-slate-600'}>{pText}</span></span>
-                             <span className="text-[11px] font-black text-slate-600">{pCompletamento}%</span>
+                         {/* INTESTAZIONE CLICCABILE (COMPATTA) */}
+                         <div 
+                           onClick={() => setSessioneEspansa(isExpanded ? null : sess.oraId.toString())}
+                           className="w-full text-left px-5 py-4 hover:bg-[var(--velo-30)] transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 border-none"
+                         >
+                           <div className="flex-1 min-w-0">
+                             <div className="flex items-center gap-2 mb-1">
+                               <span className="font-black text-cyan-500 drop-shadow-sm text-[13px] tracking-wide uppercase truncate">{sess.giorno} - {sess.scheda}</span>
+                               <span className={`text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest text-white shadow-sm bg-gradient-to-r ${barColor}`}>{pCompletamento}%</span>
+                             </div>
+                             <span className="text-[10px] text-slate-400 font-bold tracking-widest">{sess.data}</span>
                            </div>
-                           <div className="w-full bg-[var(--superficie)] h-2 rounded-full overflow-hidden shadow-inner">
-                              <div className={`bg-gradient-to-r ${barColor} h-full transition-all duration-1000`} style={{ width: `${pCompletamento}%` }}></div>
+
+                           <div className="flex items-center gap-3 shrink-0">
+                             {/* TASTO ELIMINA */}
+                             <button
+                               onClick={async (e) => {
+                                 e.stopPropagation();
+                                 if (!confirm(`Vuoi eliminare questa sessione di ${sess.scheda}?`)) return;
+                                 
+                                 // Ricerca intelligente dell'ID nel DB tramite timestamp
+                                 const { data: records } = await supabase.from('storico_allenamenti').select('id, data').eq('nome_utente', utenteCorrente);
+                                 if (records) {
+                                   const toDelete = records.find(r => new Date(r.data).getTime() === sess.oraId);
+                                   if (toDelete) {
+                                     const { error } = await supabase.from('storico_allenamenti').delete().eq('id', toDelete.id);
+                                     if (!error) {
+                                        caricaProfilo(utenteCorrente, protocolloAttivo, tipoDieta);
+                                     } else { alert("Errore durante l'eliminazione dal DB."); }
+                                   }
+                                 }
+                               }}
+                               title="Elimina Sessione"
+                               className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white w-8 h-8 rounded-xl flex items-center justify-center transition-colors border-none cursor-pointer shadow-sm"
+                             >
+                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                             </button>
+                             <span className={`text-cyan-500 font-bold transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
                            </div>
                          </div>
 
-                         <div className="space-y-4">
-                           {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
-                             <div key={idEs} className="bg-[var(--superficie-alt)] shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-2xl flex justify-between items-center gap-4">
-                               <span className="text-slate-500 text-[12px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                               <span className="font-bold text-white bg-gradient-to-r from-cyan-400 to-blue-500 px-3 py-1.5 rounded-xl shadow-md text-xs">{pesoStr as string} kg</span>
+                         {/* CONTENUTO ESPANSO (DETTAGLI ESERCIZI) */}
+                         {isExpanded && (
+                           <div className="bg-[var(--velo-30)] p-5 border-t border-[var(--velo-50)] anim-drop-down">
+                             {/* Barra Completamento Orizzontale */}
+                             <div className="mb-6 bg-[var(--superficie)] p-3 rounded-xl shadow-[inset_2px_2px_5px_var(--ombra-scura)] border border-[var(--velo-40)]">
+                               <div className="flex justify-between items-end mb-2">
+                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Completamento: <span className={pCompletamento === 100 ? 'text-emerald-500' : 'text-slate-600'}>{pText}</span></span>
+                               </div>
+                               <div className="w-full bg-[var(--velo-50)] h-2 rounded-full overflow-hidden shadow-inner">
+                                  <div className={`bg-gradient-to-r ${barColor} h-full transition-all duration-1000`} style={{ width: `${pCompletamento}%` }}></div>
+                               </div>
                              </div>
-                           ))}
-                         </div>
+
+                             <div className="space-y-3">
+                               {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
+                                 <div key={idEs} className="bg-[var(--superficie-alt)] shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-2xl flex justify-between items-center gap-4">
+                                   <span className="text-slate-500 text-[12px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
+                                   <span className="font-bold text-white bg-gradient-to-r from-cyan-400 to-blue-500 px-3 py-1.5 rounded-xl shadow-md text-xs">{pesoStr as string} kg</span>
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
+                         )}
                        </div>
                      )})
                    )}
                  </div>
-               )}
              </section>
              );
           })()}
