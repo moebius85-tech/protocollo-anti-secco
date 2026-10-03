@@ -2166,14 +2166,17 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 if (blocco.isIntra) {
                   if (blocco.titolo === "⏱️ DIGIUNO 16:8") {
                     return (
-                      <div key={`intra-${idx}`} className={`livello-2 livello-nobg bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] bg-gradient-to-br from-orange-50/50 to-white relative overflow-hidden p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
-                        <div className="absolute top-0 left-0 w-2 h-full bg-orange-400"></div>
+                      <div key={`intra-${idx}`} className={`livello-1 bg-[var(--superficie)] shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden p-6 rounded-3xl anim-pop ring-2 ring-orange-500/30`} style={{animationDelay: `${0.4 + idx * 0.1}s`}}>
+                        <div className="absolute top-0 left-0 w-2 h-full bg-orange-500"></div>
                         <div className="flex justify-between items-start mb-4">
-                          <span className="text-xs uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
+                          <span className="text-[12px] uppercase font-black text-orange-500 tracking-widest">{blocco.titolo}</span>
                         </div>
-                        <p className="font-semibold text-xs text-slate-500 whitespace-pre-wrap leading-relaxed">
-                         {blocco.descrizione}
-                       </p>
+                        <div className={`p-4 rounded-2xl bg-[var(--superficie-alt)] backdrop-blur-xl border border-[var(--velo-50)] shadow-[inset_2px_2px_6px_var(--ombra-scura-alt),inset_-2px_-2px_6px_rgba(249,115,22,0.05)] relative overflow-hidden`}>
+                           <div className="absolute top-0 left-0 w-1.5 h-full bg-orange-400"></div>
+                           <p className="text-[12px] text-slate-500 font-semibold leading-relaxed relative z-10 ml-2 whitespace-pre-wrap">
+                             {blocco.descrizione}
+                           </p>
+                        </div>
                       </div>
                     );
                   } else {
