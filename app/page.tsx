@@ -2373,153 +2373,258 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
 
         {/* COLONNA DESTRA: Allenamento Dinamico */}
         <div className={`flex-col gap-8 lg:col-span-5 ${mobileTab === 'ALLENAMENTO' ? 'flex' : 'hidden'} lg:flex`}>
-          <section className="livello-0 bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1 anim-pop" style={{animationDelay: '0.6s'}}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
+          {(() => {
+             // --- MOTORE A.I. DI SUPERVISIONE ALLENAMENTO ---
+             const dateUltimiAllenamenti = { Spinta: 0, Tirata: 0, Gambe: 0 };
+             storicoSessioni.forEach(sess => {
+                const time = new Date(sess.oraId || Date.now()).getTime();
+                if (time > dateUltimiAllenamenti[sess.scheda as keyof typeof dateUltimiAllenamenti]) {
+                   dateUltimiAllenamenti[sess.scheda as keyof typeof dateUltimiAllenamenti] = time;
+                }
+             });
 
-            <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 pt-2 shrink-0">
-              <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Programma {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
-              <div className="flex gap-3 bg-[var(--superficie)] p-1.5 rounded-full shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)]">
-                <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaStorico && !vistaGraficiCarichi ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-cyan-500'}`}>
-                  {vistaStorico && !vistaGraficiCarichi ? 'Oggi' : 'Storico'}
-                </button>
-                <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaGraficiCarichi ? 'bg-gradient-to-r from-purple-400 to-purple-500 text-white shadow-[0_4px_10px_rgba(168,85,247,0.4)]' : 'text-slate-500 hover:text-cyan-500'}`}>
-                  Grafici
-                </button>
-              </div>
-            </div>
+             const oggi = new Date().getTime();
+             let schedaSuggerita = 'Spinta';
+             let minTime = Infinity;
+             (['Spinta', 'Tirata', 'Gambe'] as const).forEach(sch => {
+                if (dateUltimiAllenamenti[sch] === 0) { minTime = -1; schedaSuggerita = sch; }
+                else if (dateUltimiAllenamenti[sch] < minTime) { minTime = dateUltimiAllenamenti[sch]; schedaSuggerita = sch; }
+             });
 
-            {!vistaStorico ? (
-              <>
-                <div className="livello-1 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] mb-6 flex justify-between items-center p-5 rounded-[1.5rem] shrink-0">
-                  <div className="px-2">
-                    <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest block mb-1.5">Durata Stimata</span>
-                    <p className="text-[16px] font-bold text-slate-600 flex items-center gap-2">⏱️ ~<AnimatedCounter value={calcolaTempoScheda()} /> min <span className="text-[10px] text-slate-400 font-bold ml-1">(Recuperi incl.)</span></p>
-                  </div>
-                  <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 border-none cursor-pointer shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] ${fastWorkout ? 'bg-gradient-to-br from-red-400 to-rose-500 text-white shadow-[0_8px_15px_rgba(244,63,94,0.3)]' : 'bg-[var(--superficie)] text-slate-500 hover:text-cyan-500 active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)]'}`}>
-                    {fastWorkout ? '⚡ Fast Mode' : 'Taglia Tempi'}
-                  </button>
-                </div>
+             // Avviso se sta rifacendo la stessa scheda a meno di 16h di distanza
+             const tempoTrascorso = oggi - dateUltimiAllenamenti[schedaAttiva as keyof typeof dateUltimiAllenamenti];
+             const isSovrallenamento = dateUltimiAllenamenti[schedaAttiva as keyof typeof dateUltimiAllenamenti] > 0 && tempoTrascorso < 57600000;
 
-                <div className="mb-6 shrink-0">
-                  <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-3 px-1">Giorno di Allenamento</p>
-                  <div className="grid grid-cols-3 gap-3">
-                    {giorniSettimana.map((gg: string) => (
-                      <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`py-3 text-[12px] rounded-[1rem] transition-all duration-300 border-none cursor-pointer shadow-sm ${giornoCalendario === gg ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] text-slate-500 font-bold hover:text-cyan-500'}`}>{gg}</button>
-                    ))}
-                  </div>
-                </div>
+             return (
+               <section className="livello-0 bg-[var(--superficie)] shadow-[8px_8px_16px_var(--ombra-scura),-8px_-8px_16px_var(--ombra-chiara)] p-5 sm:p-6 lg:p-8 rounded-3xl flex flex-col min-h-0 relative overflow-hidden flex-1 anim-pop" style={{animationDelay: '0.6s'}}>
+                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-80"></div>
 
-                <div className="shrink-0 anim-pop" style={{animationDelay: '0.7s'}}>
-                   <HumanHeatmap scheda={schedaAttiva} />
-                </div>
-                
-                <div className="mb-6 flex gap-4 bg-[var(--superficie)] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_var(--ombra-scura),inset_-5px_-5px_10px_var(--ombra-chiara)] shrink-0 anim-pop" style={{animationDelay: '0.7s'}}>
-                  {['Spinta', 'Tirata', 'Gambe'].map((sch: string) => (
-                    <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-5 py-4 text-[11px] font-black uppercase tracking-widest rounded-[1.5rem] flex-1 transition-all duration-300 border-none cursor-pointer ${schedaAttiva === sch ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-400 hover:text-slate-700'}`}>{sch}</button>
-                  ))}
-                </div>
-
-                {isDataLoading ? (
-                 <div className="flex-1 space-y-6 custom-scrollbar pr-2 overflow-y-auto min-h-0">
-                    <Skeleton className="h-48 w-full" />
-                    <Skeleton className="h-48 w-full" />
+                 <div className="flex justify-between items-center mb-6 border-b border-slate-200/50 pb-4 pt-2 shrink-0">
+                   <h2 className="text-lg font-black tracking-widest uppercase text-slate-700">Programma {utenteCorrente === "Leonardo" ? 'Master' : 'Dinamico'}</h2>
+                   <div className="flex gap-3 bg-[var(--superficie)] p-1.5 rounded-full shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)]">
+                     <button onClick={() => {setVistaStorico(!vistaStorico); setVistaGraficiCarichi(false);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaStorico && !vistaGraficiCarichi ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-500 hover:text-cyan-500'}`}>
+                       {vistaStorico && !vistaGraficiCarichi ? 'Oggi' : 'Storico'}
+                     </button>
+                     <button onClick={() => {setVistaGraficiCarichi(!vistaGraficiCarichi); setVistaStorico(true);}} className={`px-5 py-2.5 text-[9px] uppercase font-bold tracking-widest rounded-full transition-all duration-300 border-none cursor-pointer ${vistaGraficiCarichi ? 'bg-gradient-to-r from-purple-400 to-purple-500 text-white shadow-[0_4px_10px_rgba(168,85,247,0.4)]' : 'text-slate-500 hover:text-cyan-500'}`}>
+                       Grafici
+                     </button>
+                   </div>
                  </div>
-              ) : (
-                 <div className="flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar min-h-0">
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {dbDinamico[schedaAttiva].esercizi.map((es: any, idx: number) => {
-                    const nomeAttuale = eserciziModificati[es.id] || es.nome;
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const altEs = es.alternative.find((a: any) => a.nome === nomeAttuale);
-                    const currentEx = altEs || es;
-                    
-                    const ultimoCarico = getUltimoCarico(es.id);
-                    
-                    const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#0ea5e9' : '#ef4444'); 
-                    const phaseTint = es.fase.includes('Fase 1') ? 'bg-orange-400/15 border-orange-400/30' : (es.fase.includes('Fase 2') ? 'bg-cyan-400/15 border-cyan-400/30' : 'bg-red-400/15 border-red-400/30');
-                    
-                    const animType = currentEx.anim || "chest_barbell_flat"; 
-                    
-                    let repMostrate = es.rep;
-                    if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
 
-                    const numeroSetTarget = getNumeroSet(repMostrate);
-
-                    return (
-                      <div key={`${es.id}-${nomeAttuale}`} className={`livello-1 livello-nobg ${phaseTint} backdrop-blur-md shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
-                        <div className="pl-1">
-                          <div className="flex justify-between items-start mb-3">
-                            <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
-                            <button onClick={() => apriSwapEsercizio(es)} className="bg-[var(--velo-40)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura)] border-none cursor-pointer">Swap</button>
-                          </div>
-                          
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 mt-4">
-                            <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0 border border-[var(--velo-40)]"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
-                            <div className="flex-1 w-full min-w-0 text-center sm:text-left">
-                               <h3 className="font-bold text-[16px] text-slate-700 mb-2 truncate">{nomeAttuale}</h3>
-                               <p className="text-[12px] sm:text-[11px] text-slate-600 leading-relaxed font-semibold">{currentEx.dettaglio}</p>
-                            </div>
-                          </div>
-
-                          <div className="mt-6 flex items-center justify-between bg-[var(--velo-30)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl border border-[var(--velo-50)]">
-                             <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] text-slate-600 tracking-widest">{repMostrate}</p>
-                             {ultimoCarico !== '0' && <span className="text-[10px] font-bold text-slate-500 px-3 py-2 bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] rounded-xl uppercase tracking-widest">Ultima: <span className="ml-1 text-[14px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>}
-                          </div>
-                          
-                          <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-[var(--velo-50)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-[var(--velo-60)] cursor-pointer transition-all hover:-translate-y-0.5" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
-
-                          <div className="mt-5 pt-5 border-t border-slate-400/20">
-                            <div className="flex gap-4">
-                              {Array.from({ length: numeroSetTarget }).map((_, i) => (
-                                <div key={i} className="flex-1 relative">
-                                  <label className="text-[9px] text-slate-500 uppercase font-bold tracking-widest block text-center mb-2.5">Set {i+1}</label>
-                                  <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                 {!vistaStorico ? (
+                   <>
+                     {/* HUD A.I. COACH (Suggerimento e Allarmi) */}
+                     <div className="mb-6 shrink-0 flex flex-col gap-3">
+                        <div className="bg-[var(--superficie-alt)] shadow-[inset_4px_4px_8px_var(--ombra-scura-alt),inset_-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex items-center justify-between border border-cyan-500/20">
+                           <div className="flex items-center gap-3">
+                              <span className="text-2xl animate-pulse">💡</span>
+                              <div>
+                                 <span className="text-[9px] uppercase font-black text-slate-400 tracking-widest block">L'A.I. Consiglia</span>
+                                 <span className="text-sm font-bold text-cyan-500 tracking-wide">{schedaSuggerita}</span>
+                              </div>
+                           </div>
+                           {schedaAttiva !== schedaSuggerita && (
+                              <button onClick={() => setSchedaAttiva(schedaSuggerita as any)} className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-[9px] uppercase font-black tracking-widest px-4 py-2 rounded-xl shadow-[0_4px_10px_rgba(6,182,212,0.3)] hover:scale-105 transition-all border-none cursor-pointer">
+                                 Applica
+                              </button>
+                           )}
                         </div>
+
+                        {isSovrallenamento && (
+                           <div className="bg-orange-500/10 border border-orange-500/30 p-4 rounded-2xl flex items-center gap-3 anim-pop">
+                              <span className="text-xl shrink-0">⚠️</span>
+                              <p className="text-[10px] font-bold text-orange-600 leading-snug">
+                                Hai allenato <strong>{schedaAttiva}</strong> molto di recente. Sicuro di non voler far riposare questi muscoli?
+                              </p>
+                           </div>
+                        )}
+                     </div>
+
+                     <div className="livello-1 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] mb-6 flex justify-between items-center p-5 rounded-[1.5rem] shrink-0">
+                       <div className="px-2">
+                         <span className="text-[10px] uppercase font-black text-slate-400 tracking-widest block mb-1.5">Durata Stimata</span>
+                         <p className="text-[16px] font-bold text-slate-600 flex items-center gap-2">⏱️ ~<AnimatedCounter value={calcolaTempoScheda()} /> min <span className="text-[10px] text-slate-400 font-bold ml-1">(Recuperi incl.)</span></p>
+                       </div>
+                       <button onClick={() => setFastWorkout(!fastWorkout)} className={`px-6 py-3.5 text-[10px] font-black uppercase tracking-widest rounded-2xl transition-all duration-300 border-none cursor-pointer shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] ${fastWorkout ? 'bg-gradient-to-br from-red-400 to-rose-500 text-white shadow-[0_8px_15px_rgba(244,63,94,0.3)]' : 'bg-[var(--superficie)] text-slate-500 hover:text-cyan-500 active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)]'}`}>
+                         {fastWorkout ? '⚡ Fast Mode' : 'Taglia Tempi'}
+                       </button>
+                     </div>
+
+                     <div className="mb-6 shrink-0">
+                       <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-3 px-1">Giorno di Allenamento</p>
+                       <div className="grid grid-cols-3 gap-3">
+                         {giorniSettimana.map((gg: string) => (
+                           <button key={gg} onClick={() => setGiornoCalendario(gg)} className={`py-3 text-[12px] rounded-[1rem] transition-all duration-300 border-none cursor-pointer shadow-sm ${giornoCalendario === gg ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] text-slate-500 font-bold hover:text-cyan-500'}`}>{gg}</button>
+                         ))}
+                       </div>
+                     </div>
+
+                     <div className="shrink-0 anim-pop" style={{animationDelay: '0.7s'}}>
+                        <HumanHeatmap scheda={schedaAttiva} />
+                     </div>
+                     
+                     <div className="mb-6 flex gap-4 bg-[var(--superficie)] p-2.5 rounded-[2rem] shadow-[inset_5px_5px_10px_var(--ombra-scura),inset_-5px_-5px_10px_var(--ombra-chiara)] shrink-0 anim-pop" style={{animationDelay: '0.7s'}}>
+                       {['Spinta', 'Tirata', 'Gambe'].map((sch: string) => (
+                         <button key={sch} onClick={() => setSchedaAttiva(sch as any)} className={`px-5 py-4 text-[11px] font-black uppercase tracking-widest rounded-[1.5rem] flex-1 transition-all duration-300 border-none cursor-pointer ${schedaAttiva === sch ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-[0_4px_10px_rgba(6,182,212,0.3)]' : 'text-slate-400 hover:text-slate-700'}`}>{sch}</button>
+                       ))}
+                     </div>
+
+                     {isDataLoading ? (
+                      <div className="flex-1 space-y-6 custom-scrollbar pr-2 overflow-y-auto min-h-0">
+                         <Skeleton className="h-48 w-full" />
+                         <Skeleton className="h-48 w-full" />
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-              <button onClick={salvaSessione} className="w-full mt-6 py-5 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-black uppercase tracking-widest text-[16px] rounded-2xl shadow-[0_8px_20px_rgba(6,182,212,0.3)] shrink-0 hover:shadow-[0_12px_25px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer">SALVA SESSIONE</button>
-            </>
-          ) : vistaGraficiCarichi ? (
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
-               <div className="livello-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
-                 <label className="text-[10px] text-slate-400 font-bold uppercase block mb-3 px-1 tracking-widest">Seleziona Esercizio:</label>
-                 <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className="w-full bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] text-slate-700 text-[13px] font-bold p-4 rounded-2xl border-none outline-none mb-6 appearance-none">
-                   {Object.values(baseDbAllenamento).flatMap(g => g.esercizi).map(es => (<option key={es.id} value={es.id}>{eserciziModificati[es.id] || es.nome}</option>))}
-                 </select>
-                 <SvgLineChart data={getDataGraficoEsercizio()} label={Object.values(baseDbAllenamento).flatMap(g => g.esercizi).find(e => e.id === esercizioGraficoSelezionato)?.nome || "Esercizio"} />
-               </div>
-            </div>
-          ) : (
-            <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
-              {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] rounded-[2rem]">Nessuna sessione salvata.</p> : (
-                [...storicoSessioni].reverse().map((sess) => (
-                  <div key={sess.oraId} className="livello-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
-                    <span className="font-bold text-cyan-500 drop-shadow-sm block text-[14px] tracking-wide uppercase">{sess.giorno} - Scheda {sess.scheda}</span>
-                    <span className="text-[10px] text-slate-400 font-bold mb-5 block tracking-widest mt-1">{sess.data}</span>
-                    <div className="space-y-4">
-                      {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
-                        <div key={idEs} className="bg-[var(--superficie-alt)] shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-2xl flex justify-between items-center gap-4">
-                          <span className="text-slate-500 text-[12px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
-                          <span className="font-bold text-white bg-gradient-to-r from-cyan-400 to-blue-500 px-3 py-1.5 rounded-xl shadow-md text-xs">{pesoStr as string} kg</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-        </section>
-        </div>
+                   ) : (
+                      <div className="flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar min-h-0">
+                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                       {dbDinamico[schedaAttiva].esercizi.map((es: any, idx: number) => {
+                         const nomeAttuale = eserciziModificati[es.id] || es.nome;
+                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                         const altEs = es.alternative.find((a: any) => a.nome === nomeAttuale);
+                         const currentEx = altEs || es;
+                         
+                         const ultimoCarico = getUltimoCarico(es.id);
+                         
+                         const phaseColor = es.fase.includes('Fase 1') ? '#f97316' : (es.fase.includes('Fase 2') ? '#0ea5e9' : '#ef4444'); 
+                         const phaseTint = es.fase.includes('Fase 1') ? 'bg-orange-400/15 border-orange-400/30' : (es.fase.includes('Fase 2') ? 'bg-cyan-400/15 border-cyan-400/30' : 'bg-red-400/15 border-red-400/30');
+                         
+                         const animType = currentEx.anim || "chest_barbell_flat"; 
+                         
+                         let repMostrate = es.rep;
+                         if (fastWorkout) repMostrate = repMostrate.replace("4-5 serie", "3 serie").replace("3-4 serie", "2 serie").replace("Rec: 2 min", "Rec: 1.5 min").replace("Rec: 45 sec", "Rec: 1 min");
 
-      </div>
+                         const numeroSetTarget = getNumeroSet(repMostrate);
+
+                         // Logica Target Carico (+5%) e Flag Saltato
+                         let targetCarico = null;
+                         if (ultimoCarico !== '0') {
+                            const maxL = parseFloat(ultimoCarico);
+                            if (!isNaN(maxL)) {
+                               const incremento = maxL > 50 ? (maxL * 0.05) : 2.5; 
+                               targetCarico = (Math.ceil((maxL + incremento)*2)/2).toFixed(1).replace('.0', '');
+                            }
+                         }
+                         let esSaltato = false;
+                         if (ultimoCarico === '0') {
+                            const sessioniQuestaScheda = storicoSessioni.filter(s => s.scheda === schedaAttiva);
+                            if (sessioniQuestaScheda.length > 0) esSaltato = true;
+                         }
+
+                         return (
+                           <div key={`${es.id}-${nomeAttuale}`} className={`livello-1 livello-nobg ${phaseTint} backdrop-blur-md shadow-[6px_6px_14px_var(--ombra-scura),-6px_-6px_14px_var(--ombra-chiara)] relative overflow-hidden group p-6 rounded-3xl anim-pop`} style={{animationDelay: `${0.7 + idx * 0.1}s`}}>
+                             <div className="pl-1">
+                               <div className="flex justify-between items-start mb-3">
+                                 <span className="text-[10px] uppercase font-black tracking-widest drop-shadow-sm" style={{color: phaseColor}}>{es.fase}</span>
+                                 <button onClick={() => apriSwapEsercizio(es)} className="bg-[var(--velo-40)] shadow-[3px_3px_6px_var(--ombra-scura),-3px_-3px_6px_var(--ombra-chiara)] text-slate-500 hover:text-slate-800 px-4 py-2 rounded-xl font-bold uppercase tracking-wider text-[9px] transition-all active:shadow-[inset_2px_2px_4px_var(--ombra-scura)] border-none cursor-pointer">Swap</button>
+                               </div>
+                               
+                               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 mt-4">
+                                 <div className="bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-[1.2rem] w-full sm:w-28 flex justify-center shrink-0 border border-[var(--velo-40)]"><MediaVisualizer animKey={animType} color={phaseColor} /></div>
+                                 <div className="flex-1 w-full min-w-0 text-center sm:text-left">
+                                    <h3 className="font-bold text-[16px] text-slate-700 mb-2 truncate">{nomeAttuale}</h3>
+                                    <p className="text-[12px] sm:text-[11px] text-slate-600 leading-relaxed font-semibold">{currentEx.dettaglio}</p>
+                                 </div>
+                               </div>
+
+                               <div className="mt-6 flex flex-col gap-3 bg-[var(--velo-30)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl border border-[var(--velo-50)]">
+                                  <div className="flex items-center justify-between">
+                                    <p className="text-[11px] font-black px-4 py-2 rounded-xl bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] text-slate-600 tracking-widest">{repMostrate}</p>
+                                    {ultimoCarico !== '0' && (
+                                      <div className="flex items-center gap-2 bg-[var(--velo-50)] shadow-[2px_2px_4px_var(--ombra-scura)] rounded-xl px-3 py-2">
+                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Ultima: <span className="ml-1 text-[13px] font-black" style={{color: phaseColor}}>{ultimoCarico}kg</span></span>
+                                        <div className="w-[1px] h-4 bg-slate-300 mx-1"></div>
+                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">🎯 Target: <span className="text-[13px] font-black text-emerald-500 drop-shadow-sm">{targetCarico}kg</span></span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  {esSaltato && (
+                                    <div className="bg-rose-500/10 border border-rose-500/30 text-rose-600 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg flex items-center justify-center gap-2">
+                                      <span>⚠️</span> Saltato l'ultima volta. Consigliato il recupero!
+                                    </div>
+                                  )}
+                               </div>
+                               
+                               <button onClick={() => apriFocusAllenamento(es, repMostrate)} className="mt-5 w-full bg-[var(--velo-50)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] active:shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-[var(--velo-60)] cursor-pointer transition-all hover:-translate-y-0.5" style={{color: phaseColor}}>⏱️ AVVIA FOCUS TIMER</button>
+
+                               <div className="mt-5 pt-5 border-t border-slate-400/20">
+                                 <div className="flex gap-4">
+                                   {Array.from({ length: numeroSetTarget }).map((_, i) => (
+                                     <div key={i} className="flex-1 relative">
+                                       <label className="text-[9px] text-slate-500 uppercase font-bold tracking-widest block text-center mb-2.5">Set {i+1}</label>
+                                       <input type="number" value={carichiAttuali[es.id]?.[i] || ''} onChange={(e) => updateCaricoSet(es.id, i, e.target.value)} className="w-full bg-[var(--velo-50)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] py-3 px-2 text-center rounded-[1rem] text-[16px] font-black outline-none transition-all border-none appearance-none focus:ring-2 focus:ring-white/80" style={{color: phaseColor}} placeholder="-" />
+                                     </div>
+                                   ))}
+                                 </div>
+                               </div>
+                             </div>
+                           </div>
+                         );
+                       })}
+                     </div>
+                   )}
+                   <button onClick={salvaSessione} className="w-full mt-6 py-5 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-black uppercase tracking-widest text-[16px] rounded-2xl shadow-[0_8px_20px_rgba(6,182,212,0.3)] shrink-0 hover:shadow-[0_12px_25px_rgba(6,182,212,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer">SALVA SESSIONE</button>
+                 </>
+               ) : vistaGraficiCarichi ? (
+                 <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
+                    <div className="livello-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
+                      <label className="text-[10px] text-slate-400 font-bold uppercase block mb-3 px-1 tracking-widest">Seleziona Esercizio:</label>
+                      <select value={esercizioGraficoSelezionato} onChange={(e) => setEsercizioGraficoSelezionato(e.target.value)} className="w-full bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] text-slate-700 text-[13px] font-bold p-4 rounded-2xl border-none outline-none mb-6 appearance-none">
+                        {Object.values(baseDbAllenamento).flatMap(g => g.esercizi).map(es => (<option key={es.id} value={es.id}>{eserciziModificati[es.id] || es.nome}</option>))}
+                      </select>
+                      <SvgLineChart data={getDataGraficoEsercizio()} label={Object.values(baseDbAllenamento).flatMap(g => g.esercizi).find(e => e.id === esercizioGraficoSelezionato)?.nome || "Esercizio"} />
+                    </div>
+                 </div>
+               ) : (
+                 <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar min-h-0 anim-pop" style={{animationDelay: '0.7s'}}>
+                   {storicoSessioni.length === 0 ? <p className="text-[12px] text-slate-500 font-bold text-center p-8 bg-[var(--superficie)] shadow-[inset_6px_6px_12px_var(--ombra-scura),inset_-6px_-6px_12px_var(--ombra-chiara)] rounded-[2rem]">Nessuna sessione salvata.</p> : (
+                     [...storicoSessioni].reverse().map((sess) => {
+                       
+                       // Calcolo Indice di Completamento A.I.
+                       const numEserciziPrevisti = dbDinamico[sess.scheda]?.esercizi?.length || 6;
+                       const numEserciziFatti = Object.keys(sess.carichi).length;
+                       let pCompletamento = Math.round((numEserciziFatti / numEserciziPrevisti) * 100);
+                       if (pCompletamento > 100) pCompletamento = 100;
+                       
+                       let barColor = 'from-emerald-400 to-green-500';
+                       let pText = 'OTTIMO';
+                       if (pCompletamento < 50) { barColor = 'from-red-400 to-rose-500'; pText = 'CARENTE'; }
+                       else if (pCompletamento < 80) { barColor = 'from-amber-400 to-orange-500'; pText = 'INCOMPLETO'; }
+
+                       return (
+                       <div key={sess.oraId} className="livello-1 bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-6 rounded-[1.5rem]">
+                         <div className="flex justify-between items-center mb-1">
+                           <span className="font-black text-cyan-500 drop-shadow-sm block text-[15px] tracking-wide uppercase">{sess.giorno} - Scheda {sess.scheda}</span>
+                         </div>
+                         <span className="text-[10px] text-slate-400 font-bold mb-5 block tracking-widest">{sess.data}</span>
+                         
+                         {/* Barra Completamento */}
+                         <div className="mb-6 bg-[var(--velo-30)] p-3 rounded-xl border border-[var(--velo-50)]">
+                           <div className="flex justify-between items-end mb-2">
+                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Completamento: <span className={pCompletamento === 100 ? 'text-emerald-500' : 'text-slate-600'}>{pText}</span></span>
+                             <span className="text-[11px] font-black text-slate-600">{pCompletamento}%</span>
+                           </div>
+                           <div className="w-full bg-[var(--superficie)] h-2 rounded-full overflow-hidden shadow-inner">
+                              <div className={`bg-gradient-to-r ${barColor} h-full transition-all duration-1000`} style={{ width: `${pCompletamento}%` }}></div>
+                           </div>
+                         </div>
+
+                         <div className="space-y-4">
+                           {Object.entries(sess.carichi).map(([idEs, pesoStr]) => (
+                             <div key={idEs} className="bg-[var(--superficie-alt)] shadow-[inset_3px_3px_6px_var(--ombra-scura-alt),inset_-3px_-3px_6px_var(--ombra-chiara)] p-3 rounded-2xl flex justify-between items-center gap-4">
+                               <span className="text-slate-500 text-[12px] font-bold truncate flex-1">{eserciziModificati[idEs] || Object.values(baseDbAllenamento).flatMap(d=>d.esercizi).find(e=>e.id===idEs)?.nome}</span>
+                               <span className="font-bold text-white bg-gradient-to-r from-cyan-400 to-blue-500 px-3 py-1.5 rounded-xl shadow-md text-xs">{pesoStr as string} kg</span>
+                             </div>
+                           ))}
+                         </div>
+                       </div>
+                     )})
+                   )}
+                 </div>
+               )}
+             </section>
+             );
+          })()}
+        </div>
 
       {/* --- BOTTOM NAVIGATION BAR (Solo su Mobile) --- */}
       <nav className="sm:hidden fixed bottom-0 left-0 w-full bg-[var(--superficie)]/90 backdrop-blur-xl shadow-[0_-10px_30px_var(--ombra-scura)] z-[90] pb-safe flex justify-between border-t border-[var(--velo-50)] px-2 pt-2">
