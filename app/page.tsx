@@ -3580,32 +3580,28 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
       {mazzoAttivo && (
         <div 
           onClick={() => setMazzoAttivo(null)}
-          className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center z-[9990] p-4 cursor-pointer"
+          className="fixed inset-0 bg-slate-900/90 backdrop-blur-xl flex items-center justify-center z-[9990] p-4 cursor-pointer overflow-hidden"
         >
-          {/* Prevent click bubbling inside the modal */}
-          <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
-            
-            {/* --- ALA OLOGRAFICA LATERALE (FINALMENTE NEL MODALE GIUSTO!) --- */}
-            <div className="absolute right-full top-10 bottom-10 w-10 sm:w-14 overflow-hidden rounded-l-[1.5rem] border-y border-l border-cyan-500/40 bg-[var(--superficie-alt)] shadow-[-8px_0_20px_rgba(6,182,212,0.2)] flex flex-col items-center justify-start pointer-events-none">
-              <style dangerouslySetInnerHTML={{__html: `
-                @keyframes cyberScroll { 
-                  0% { transform: translateY(0); } 
-                  100% { transform: translateY(-50%); } 
-                }
-              `}} />
-              <div className="flex flex-col gap-12 items-center justify-start h-[200%] w-full py-4 text-cyan-400" style={{animation: 'cyberScroll 12s linear infinite'}}>
-                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,1)]" style={{ writingMode: 'vertical-rl' }}>A.I. NEURAL LINK</span>
-                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] opacity-40" style={{ writingMode: 'vertical-rl' }}>SYS_//_0x4F</span>
-                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,1)]" style={{ writingMode: 'vertical-rl' }}>TELEMETRY</span>
-                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] opacity-40" style={{ writingMode: 'vertical-rl' }}>MACRO DATA</span>
-                 {/* Duplicato per loop continuo senza interruzioni */}
-                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,1)]" style={{ writingMode: 'vertical-rl' }}>A.I. NEURAL LINK</span>
-                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] opacity-40" style={{ writingMode: 'vertical-rl' }}>SYS_//_0x4F</span>
-                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,1)]" style={{ writingMode: 'vertical-rl' }}>TELEMETRY</span>
-                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] opacity-40" style={{ writingMode: 'vertical-rl' }}>MACRO DATA</span>
+          {/* --- SFONDO MATRIX FULL SCREEN (Come l'header desktop) --- */}
+          <div className="absolute inset-[-20%] z-0 flex flex-col justify-around opacity-[0.20] pointer-events-none overflow-hidden" style={{ filter: 'drop-shadow(0 0 8px var(--accento-glow))' }}>
+            <style dangerouslySetInnerHTML={{__html: `
+              @keyframes scrollBgLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
+              @keyframes scrollBgRight { 0% { transform: translateX(-33.33%); } 100% { transform: translateX(0); } }
+            `}} />
+            {Array.from({length: 25}).map((_, i) => (
+              <div key={i} className="whitespace-nowrap font-black uppercase tracking-[0.4em] sm:tracking-[0.8em] text-[10px] sm:text-[14px] text-[var(--accento-1)]" style={{ 
+                animation: `${i % 2 === 0 ? 'scrollBgLeft' : 'scrollBgRight'} ${50 + (i%5)*15}s linear infinite`,
+                opacity: 0.15 + (i%4)*0.2
+              }}>
+                {Array.from({length: 20}).map((_, j) => (
+                  <span key={j} className="mx-4 sm:mx-8">{i % 3 === 0 ? 'OMNIFIT NEURAL CORE' : i % 3 === 1 ? 'SYS_//_0x4F TELEMETRY' : 'MACRO DATA LINK'}</span>
+                ))}
               </div>
-            </div>
+            ))}
+          </div>
 
+          {/* Prevent click bubbling inside the modal */}
+          <div className="relative flex flex-col items-center cursor-default z-10" onClick={(e) => e.stopPropagation()}>
             <MazzoIntegratori 
               categoria={mazzoAttivo} 
               // MOTORE SEMANTICO: Ignora gli errori di battitura o le differenze ITA/ENG
