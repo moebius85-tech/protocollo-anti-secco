@@ -3584,6 +3584,28 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
         >
           {/* Prevent click bubbling inside the modal */}
           <div className="relative flex flex-col items-center cursor-default" onClick={(e) => e.stopPropagation()}>
+            
+            {/* --- ALA OLOGRAFICA LATERALE (FINALMENTE NEL MODALE GIUSTO!) --- */}
+            <div className="absolute right-full top-10 bottom-10 w-10 sm:w-14 overflow-hidden rounded-l-[1.5rem] border-y border-l border-cyan-500/40 bg-[var(--superficie-alt)] shadow-[-8px_0_20px_rgba(6,182,212,0.2)] flex flex-col items-center justify-start pointer-events-none">
+              <style dangerouslySetInnerHTML={{__html: `
+                @keyframes cyberScroll { 
+                  0% { transform: translateY(0); } 
+                  100% { transform: translateY(-50%); } 
+                }
+              `}} />
+              <div className="flex flex-col gap-12 items-center justify-start h-[200%] w-full py-4 text-cyan-400" style={{animation: 'cyberScroll 12s linear infinite'}}>
+                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,1)]" style={{ writingMode: 'vertical-rl' }}>A.I. NEURAL LINK</span>
+                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] opacity-40" style={{ writingMode: 'vertical-rl' }}>SYS_//_0x4F</span>
+                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,1)]" style={{ writingMode: 'vertical-rl' }}>TELEMETRY</span>
+                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] opacity-40" style={{ writingMode: 'vertical-rl' }}>MACRO DATA</span>
+                 {/* Duplicato per loop continuo senza interruzioni */}
+                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,1)]" style={{ writingMode: 'vertical-rl' }}>A.I. NEURAL LINK</span>
+                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] opacity-40" style={{ writingMode: 'vertical-rl' }}>SYS_//_0x4F</span>
+                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(6,182,212,1)]" style={{ writingMode: 'vertical-rl' }}>TELEMETRY</span>
+                 <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.4em] opacity-40" style={{ writingMode: 'vertical-rl' }}>MACRO DATA</span>
+              </div>
+            </div>
+
             <MazzoIntegratori 
               categoria={mazzoAttivo} 
               // MOTORE SEMANTICO: Ignora gli errori di battitura o le differenze ITA/ENG
