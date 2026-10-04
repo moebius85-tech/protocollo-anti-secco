@@ -572,6 +572,162 @@ const MobileDeluxeTransition = ({ active, targetTab }: { active: boolean, target
     </div>
   );
 };
+const ModalMatrixBackground = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let time = 0;
+    let animationFrameId: number;
+    let currentScene = 0;
+
+    // Prende le dimensioni reali dello schermo
+    const W = window.innerWidth || 400;
+    const H = window.innerHeight || 800;
+    canvas.width = W;
+    canvas.height = H;
+
+    const NUM_PARTICLES = 3500; // Più particelle per riempire lo schermo
+    const chars = " .',-~:;!+=%@$#*";
+    const charsLen = chars.length - 1;
+
+    const particles = Array.from({ length: NUM_PARTICLES }, () => ({
+      x: (Math.random() - 0.5) * 10,
+      y: (Math.random() - 0.5) * 10,
+      z: (Math.random() - 0.5) * 10,
+    }));
+
+    const getTargetsForScene = (sceneIdx: number) => {
+      const targets = [];
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        let px = 0, py = 0, pz = 0;
+
+        // Geometrie espanse verticalmente per il mobile
+        if (sceneIdx === 0) {
+          const r = Math.random() * 60;
+          const a = Math.random() * Math.PI * 2;
+          const spiral = a + r * 0.1;
+          px = Math.cos(spiral) * r;
+          py = (Math.random() - 0.5) * 40; 
+          pz = Math.sin(spiral) * r;
+        } 
+        else if (sceneIdx === 1) {
+          const a = Math.random() * Math.PI * 2;
+          const len = (Math.random() - 0.5) * 40;
+          const isWeight = len < -12 || len > 12;
+          const radius = isWeight ? (Math.random() > 0.5 ? 15 : 10) : 3;
+          px = len;
+          py = Math.cos(a) * radius * 3;
+          pz = Math.sin(a) * radius * 3;
+        } 
+        else if (sceneIdx === 2) {
+          const depth = Math.random() * 100;
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 8 + depth * 0.3;
+          px = Math.cos(angle) * radius;
+          py = Math.sin(angle) * radius * 2.5;
+          pz = depth - 50; 
+        } 
+        else if (sceneIdx === 3) {
+          px = (Math.random() - 0.5) * 100;
+          pz = (Math.random() - 0.5) * 100;
+          py = Math.sin(px * 0.1) * 25 + Math.cos(pz * 0.1) * 25;
+        }
+
+        targets.push({ x: px, y: py, z: pz });
+      }
+      return targets;
+    };
+
+    let currentTargets = getTargetsForScene(currentScene);
+    const words = "OMNIFIT".split('');
+
+    const renderFrame = () => {
+      time += 1;
+      
+      if (time % 300 === 0) {
+        currentScene = (currentScene + 1) % 4;
+        currentTargets = getTargetsForScene(currentScene);
+      }
+
+      ctx.clearRect(0, 0, W, H);
+      const computedStyle = getComputedStyle(document.documentElement);
+      const accento = computedStyle.getPropertyValue('--accento-1').trim() || '#a3e635';
+      
+      ctx.fillStyle = accento;
+      ctx.font = '10px monospace'; 
+      ctx.textAlign = 'center';
+
+      const rotY = time * 0.005;
+      const cosY = Math.cos(rotY);
+      const sinY = Math.sin(rotY);
+      const renderList = [];
+
+      for (let i = 0; i < NUM_PARTICLES; i++) {
+        const p = particles[i];
+        const t = currentTargets[i];
+
+        p.x += (t.x - p.x) * 0.05;
+        p.y += (t.y - p.y) * 0.05;
+        p.z += (t.z - p.z) * 0.05;
+
+        const rx = p.x * cosY - p.z * sinY;
+        const ry = p.y;
+        const rz = p.x * sinY + p.z * cosY;
+
+        const focalLength = 60;
+        const zDepth = rz + focalLength;
+        
+        if (zDepth <= 0) continue; 
+
+        const scale = focalLength / zDepth;
+        const screenX = W / 2 + rx * scale * 10 * 2.0;
+        const screenY = H / 2 + ry * scale * 10;
+
+        let lum = Math.floor((1 / zDepth) * 1200);
+        lum = Math.max(0, Math.min(charsLen, lum));
+        const alpha = Math.min(1, Math.max(0.1, (1 / zDepth) * 60));
+
+        renderList.push({
+          x: screenX,
+          y: screenY,
+          z: zDepth,
+          char: (lum > 10) ? words[i % words.length] : chars[lum],
+          alpha: alpha * 0.7 // Leggermente abbassato per non rubare la scena alla card
+        });
+      }
+
+      renderList.sort((a, b) => b.z - a.z);
+
+      for (const pt of renderList) {
+        if (pt.x > 0 && pt.x < W && pt.y > 0 && pt.y < H) {
+          ctx.globalAlpha = pt.alpha;
+          ctx.fillText(pt.char, pt.x, pt.y);
+        }
+      }
+      animationFrameId = requestAnimationFrame(renderFrame);
+    };
+
+    renderFrame();
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 w-full h-full items-center justify-center pointer-events-none z-0 overflow-hidden">
+      <div className="absolute inset-0 bg-[var(--accento-1)] opacity-[0.03] blur-[40px] pointer-events-none"></div>
+      <canvas 
+        ref={canvasRef}
+        className="w-full h-full relative z-10"
+        style={{ filter: 'drop-shadow(0 0 8px var(--accento-glow))' }}
+      />
+    </div>
+  );
+};
 
 export default function Home() {
   const giorniSettimana = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
@@ -3582,23 +3738,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           onClick={() => setMazzoAttivo(null)}
           className="fixed inset-0 bg-slate-900/90 backdrop-blur-xl flex items-center justify-center z-[9990] p-4 cursor-pointer overflow-hidden"
         >
-          {/* --- SFONDO MATRIX FULL SCREEN (Come l'header desktop) --- */}
-          <div className="absolute inset-[-20%] z-0 flex flex-col justify-around opacity-[0.20] pointer-events-none overflow-hidden" style={{ filter: 'drop-shadow(0 0 8px var(--accento-glow))' }}>
-            <style dangerouslySetInnerHTML={{__html: `
-              @keyframes scrollBgLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
-              @keyframes scrollBgRight { 0% { transform: translateX(-33.33%); } 100% { transform: translateX(0); } }
-            `}} />
-            {Array.from({length: 25}).map((_, i) => (
-              <div key={i} className="whitespace-nowrap font-black uppercase tracking-[0.4em] sm:tracking-[0.8em] text-[10px] sm:text-[14px] text-[var(--accento-1)]" style={{ 
-                animation: `${i % 2 === 0 ? 'scrollBgLeft' : 'scrollBgRight'} ${50 + (i%5)*15}s linear infinite`,
-                opacity: 0.15 + (i%4)*0.2
-              }}>
-                {Array.from({length: 20}).map((_, j) => (
-                  <span key={j} className="mx-4 sm:mx-8">{i % 3 === 0 ? 'OMNIFIT NEURAL CORE' : i % 3 === 1 ? 'SYS_//_0x4F TELEMETRY' : 'MACRO DATA LINK'}</span>
-                ))}
-              </div>
-            ))}
-          </div>
+          {/* --- VERO SFONDO MATRIX 3D ANIMATO --- */}
+          <ModalMatrixBackground />
 
           {/* Prevent click bubbling inside the modal */}
           <div className="relative flex flex-col items-center cursor-default z-10" onClick={(e) => e.stopPropagation()}>
