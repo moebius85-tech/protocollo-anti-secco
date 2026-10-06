@@ -2552,6 +2552,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               </div>
             </div>
           )}
+                </div>
+              )}
               </>
             ) : (
               /* =========================================
@@ -2561,9 +2563,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                  <p className="text-slate-500 font-bold uppercase tracking-widest text-[11px]">Diario Reale in arrivo al prossimo step...</p>
               </div>
             )}
-        </div>
-      )}
-    </section>
+          </section>
       </div>
         
 
