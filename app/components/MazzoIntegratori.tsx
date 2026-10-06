@@ -26,7 +26,7 @@ function interpolaColore(hexA: string, hexB: string, progress: number) {
   const r = Math.round(rA + (rB - rA) * p);
   const g = Math.round(gA + (gB - gA) * p);
   const bl = Math.round(bA + (bB - bA) * p);
-  return `rgb(${r}, ${g}, ${bl})`;
+  return `rgb(${r}, ${g},${bl})`;
 }
 
 const SOGLIA_ARCHIVIAZIONE = 120;
@@ -219,14 +219,16 @@ function Carta({
   );
 }
 
+// IL TIPO CHE MANCAVA E CAUSAVA L'ERRORE SU VERCEL È STATO AGGIUNTO QUI:
 type Props = {
   categoria: string;
   onClose: () => void;
   onSave: (item: OffProduct) => void;
   onCustom: () => void;
+  cataloghiLocali?: { id: string; nome: string; immagine?: string }[];
 };
 
-export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props) => {
+export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, cataloghiLocali = [] }: Props) => {
   const [cards, setCards] = useState<OffProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
@@ -235,26 +237,28 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
   const [direzioneUscita, setDirezioneUscita] = useState<1 | -1>(1);
 
   useEffect(() => {
+    let annullato = false;
+
     async function fetchDaOpenFoodFacts() {
       setLoading(true);
       let risultatiFormattati: OffProduct[] = [];
 
       try {
-        const termineRicerca = categoria.toLowerCase().replace("l-", "").replace("d3", "d").trim(); 
-        const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${termineRicerca}&search_simple=1&action=process&json=1&page_size=10`);
+        const termineRicerca = categoria.toLowerCase().replace("l-", "").replace("d3", "d").trim();
+        const res = await fetch(`/api/off-search?q=${encodeURIComponent(termineRicerca)}`);
         const data = await res.json();
-        
+
         const prodottiTrovati = Array.isArray(data.products) ? data.products : [];
 
         risultatiFormattati = prodottiTrovati
-          .filter((p: any) => p.image_front_url && p.product_name) 
-          .slice(0, 8) 
+          .filter((p: any) => (p.image_front_url || p.image_url || p.image_small_url) && p.product_name)
+          .slice(0, 8)
           .map((p: any) => ({
-            id: p.code,
+            id: p.code || `${p.product_name}-${Math.random()}`,
             tipologia: categoria,
             marchio: p.brands ? p.brands.split(',')[0] : 'Sconosciuto',
-            nome: p.brands ? `${p.brands.split(',')[0]} - ${p.product_name}` : p.product_name,
-            immagine: p.image_front_url,
+            nome: p.brands ? `${p.brands.split(',')[0]} -${p.product_name}` : p.product_name,
+            immagine: p.image_front_url || p.image_url || p.image_small_url,
             cho: Math.round(p.nutriments?.carbohydrates_100g || 0).toString(),
             pro: Math.round(p.nutriments?.proteins_100g || 0).toString(),
             fat: Math.round(p.nutriments?.fat_100g || 0).toString(),
@@ -264,8 +268,22 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         console.error("Errore fetch OFF (il sistema userà il fallback):", err);
       }
 
-      if (risultatiFormattati.length === 0) {
-        risultatiFormattati.push({
+      if (annullato) return;
+
+      const risultatiLocali: OffProduct[] = cataloghiLocali.map(c => ({
+        id: c.id,
+        tipologia: categoria,
+        marchio: 'Dal tuo catalogo',
+        nome: c.nome,
+        immagine: c.immagine,
+        cho: '0', pro: '0', fat: '0',
+        tag: 'CATALOGO ADMIN'
+      }));
+
+      const risultatiCombinati = [...risultatiLocali, ...risultatiFormattati];
+
+      if (risultatiCombinati.length === 0) {
+        risultatiCombinati.push({
           id: `generic-${Date.now()}`,
           tipologia: categoria,
           marchio: 'Generico',
@@ -282,14 +300,16 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
         cho: '0', pro: '0', fat: '0' 
       };
 
-      setCards([...risultatiFormattati, customCard]);
+      setCards([...risultatiCombinati, customCard]);
       setLoading(false);
     }
 
     if (categoria) {
       fetchDaOpenFoodFacts();
     }
-  }, [categoria]);
+
+    return () => { annullato = true; };
+  }, [categoria, cataloghiLocali]);
 
   const visibleCards = exitingId ? cards.filter((c) => c.id !== exitingId) : cards;
 
@@ -337,7 +357,7 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props
   if (loading) {
     return (
       <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
-         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse border border-[var(--bordo-tenue)]">
+         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse">
             <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6">
                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
