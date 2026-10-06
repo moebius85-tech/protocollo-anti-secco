@@ -2556,11 +2556,89 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               )}
               </>
             ) : (
-              /* =========================================
-                 GRAFICA DEL DIARIO REALE (Segnaposto)
-              ========================================= */
-              <div className="text-center p-8 bg-[var(--velo-30)] rounded-3xl border border-dashed border-[var(--velo-50)] anim-pop mt-6">
-                 <p className="text-slate-500 font-bold uppercase tracking-widest text-[11px]">Diario Reale in arrivo al prossimo step...</p>
+              {/* =========================================
+                 GRAFICA DEL DIARIO REALE
+              ========================================= */}
+              <div className="mt-4 anim-pop">
+                {/* HUD MACRO RIMANENTI */}
+                <div className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-3xl mb-6">
+                  <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-4 text-center">Bilancio Giornaliero</h3>
+                  
+                  {(() => {
+                     const dCho = diarioReale.reduce((s, item) => s + item.cho, 0);
+                     const dPro = diarioReale.reduce((s, item) => s + item.pro, 0);
+                     const dFat = diarioReale.reduce((s, item) => s + item.fat, 0);
+                     const dKcal = Math.round((dCho * 4) + (dPro * 4) + (dFat * 9));
+                     
+                     return (
+                       <div className="space-y-4">
+                          {/* CALORIE */}
+                          <div className="flex justify-between items-end mb-1">
+                             <span className="text-xs font-bold text-slate-600">Calorie</span>
+                             <span className="text-sm font-black text-slate-700">{dKcal} <span className="text-[10px] text-slate-400 font-bold">/ {actualIntakeKcal}</span></span>
+                          </div>
+                          <div className="w-full bg-[var(--velo-50)] h-2.5 rounded-full overflow-hidden shadow-inner mb-4">
+                             <div className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full transition-all duration-500" style={{ width: `${Math.min(100, (dKcal / actualIntakeKcal) * 100)}%` }}></div>
+                          </div>
+
+                          {/* MACRO */}
+                          <div className="grid grid-cols-3 gap-4">
+                            {/* Carbo */}
+                            <div>
+                              <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1"><span>CHO</span><span>{dCho}/{targetCho}g</span></div>
+                              <div className="w-full bg-[var(--velo-50)] h-1.5 rounded-full overflow-hidden shadow-inner"><div className="bg-orange-400 h-full transition-all duration-500" style={{ width: `${Math.min(100, (dCho / targetCho) * 100)}%` }}></div></div>
+                            </div>
+                            {/* Pro */}
+                            <div>
+                              <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1"><span>PRO</span><span>{dPro}/{Math.round(targetPro)}g</span></div>
+                              <div className="w-full bg-[var(--velo-50)] h-1.5 rounded-full overflow-hidden shadow-inner"><div className="bg-blue-400 h-full transition-all duration-500" style={{ width: `${Math.min(100, (dPro / targetPro) * 100)}%` }}></div></div>
+                            </div>
+                            {/* Fat */}
+                            <div>
+                              <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1"><span>FAT</span><span>{dFat}/{Math.round(targetFat)}g</span></div>
+                              <div className="w-full bg-[var(--velo-50)] h-1.5 rounded-full overflow-hidden shadow-inner"><div className="bg-rose-400 h-full transition-all duration-500" style={{ width: `${Math.min(100, (dFat / targetFat) * 100)}%` }}></div></div>
+                            </div>
+                          </div>
+                       </div>
+                     );
+                  })()}
+                </div>
+
+                {/* TIMELINE PASTI */}
+                <div className="space-y-4 mb-6">
+                  {diarioReale.length === 0 ? (
+                    <p className="text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 py-8 bg-[var(--velo-30)] rounded-3xl border border-dashed border-[var(--velo-60)]">Nessun pasto registrato oggi.</p>
+                  ) : (
+                    diarioReale.map((entry, i) => (
+                      <div key={entry.id} className="bg-[var(--superficie)] shadow-[4px_4px_8px_var(--ombra-scura),-4px_-4px_8px_var(--ombra-chiara)] p-4 rounded-2xl flex items-center justify-between gap-3 anim-pop" style={{animationDelay: `${i * 0.1}s`}}>
+                         <div className="bg-[var(--velo-40)] px-3 py-2 rounded-xl border border-[var(--velo-50)] shrink-0 shadow-inner">
+                            <span className="text-[12px] font-black text-emerald-500">{entry.orario}</span>
+                         </div>
+                         <div className="flex-1 min-w-0">
+                           <p className="font-bold text-[13px] text-slate-700 truncate">{entry.nome}</p>
+                           <span className="text-[9px] font-black text-slate-500 tracking-wider">
+                             <span className="text-orange-500">{entry.cho}</span>C · {entry.pro}P · {entry.fat}F
+                           </span>
+                         </div>
+                         <div className="flex items-center gap-2 shrink-0">
+                            <div className="flex flex-col items-end mr-2">
+                               <span className="text-[13px] font-black text-slate-600 leading-none">{entry.kcal}</span>
+                               <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Kcal</span>
+                            </div>
+                            <button onClick={() => setDiarioReale(prev => prev.filter(e => e.id !== entry.id))} className="text-red-400 hover:text-red-500 w-6 h-6 flex items-center justify-center font-bold text-lg bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] rounded-md border-none cursor-pointer">&times;</button>
+                         </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* BOTTONE AGGIUNGI */}
+                <button 
+                  onClick={() => setModalScegliDispensa('Diario')} 
+                  className="w-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-black uppercase tracking-widest text-[12px] py-4 rounded-2xl shadow-[0_6px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_8px_20px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all border-none cursor-pointer flex justify-center items-center gap-2"
+                >
+                  <span className="text-lg leading-none">+</span> Aggiungi al Diario
+                </button>
               </div>
             )}
           </section>
@@ -3097,6 +3175,26 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
           const catalogoConsigliato = catalogoImmagini.filter(c => c.tipo === filtroDispensa).filter(c => c.nome.toLowerCase().includes(ricercaDispensa.toLowerCase())).filter(c => !dispensa.some(d => d.nome.toLowerCase() === c.nome.toLowerCase()));
 
           const inserisciComponenteDb = (nuovoComponente: {nome: string, cho: number, pro: number, fat: number}) => {
+             // SE SIAMO NEL DIARIO REALE:
+             if (modalScegliDispensa === 'Diario') {
+                const oraAttuale = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                const kcal = Math.round((nuovoComponente.cho * 4) + (nuovoComponente.pro * 4) + (nuovoComponente.fat * 9));
+                const nuovaEntry = {
+                   id: Date.now().toString(),
+                   orario: oraAttuale,
+                   nome: nuovoComponente.nome,
+                   cho: nuovoComponente.cho,
+                   pro: nuovoComponente.pro,
+                   fat: nuovoComponente.fat,
+                   kcal: kcal
+                };
+                // Aggiunge al diario e ordina per orario
+                setDiarioReale(prev => [...prev, nuovaEntry].sort((a,b) => a.orario.localeCompare(b.orario)));
+                setModalScegliDispensa(null); setRicercaDispensa(""); setDispensaItemEspanso(null);
+                return;
+             }
+
+             // ALTRIMENTI: LOGICA ORIGINALE DEL PIANO A.I.
              if (indiceSostituzione !== null) { sostituisciComponenteCustom(modalScegliDispensa as string, indiceSostituzione, nuovoComponente); } 
              else { aggiungiComponenteCustom(modalScegliDispensa as string, nuovoComponente); }
              setIndiceSostituzione(null); setModalScegliDispensa(null); setRicercaDispensa(""); setDispensaItemEspanso(null);
