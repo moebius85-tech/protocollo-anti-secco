@@ -960,6 +960,23 @@ const renderDescrizioneConHUD = (testo: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
+  // Cambia automaticamente i pasti selezionati togliendo le Whey se gli integratori sono disattivati
+  useEffect(() => {
+    if (!usaIntegratori) {
+      setPastiSelezionati(prev => ({
+        ...prev,
+        Pasto1: 2, // Cambia in: Uova intere + Segale + Avocado
+        PostWorkout: 2 // Cambia in: Gallette + Bresaola
+      }));
+    } else {
+      // Se riattiva gli integratori, torna alle opzioni con le Whey
+      setPastiSelezionati(prev => ({
+        ...prev,
+        Pasto1: 0, // Avena + Whey + Burro
+        PostWorkout: 0 // Crema di Riso + Whey
+      }));
+    }
+  }, [usaIntegratori]);
   const [formAInuovo, setFormAInuovo] = useState({ nome: '', cho: '', pro: '', fat: '', tipo: 'alimento', immagineData: '' });
   const [isCalculatingAI, setIsCalculatingAI] = useState(false);
   type ComponenteCustom = { id: string, nome: string, cho: number, pro: number, fat: number };
