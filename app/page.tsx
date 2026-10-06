@@ -964,6 +964,35 @@ const renderDescrizioneConHUD = (testo: string) => {
   const [vistaNutrizione, setVistaNutrizione] = useState<'PIANO' | 'DIARIO'>('PIANO');
   type DiarioEntry = { id: string; orario: string; nome: string; cho: number; pro: number; fat: number; kcal: number; immagine?: string };
   const [diarioReale, setDiarioReale] = useState<DiarioEntry[]>([]);
+
+  // Carica il diario di OGGI per l'utente corrente
+  useEffect(() => {
+    async function fetchDiario() {
+      const oggiStr = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+      const { data, error } = await supabase
+        .from('diario_alimentare_storico')
+        .select('*')
+        .eq('nome_utente', utenteCorrente)
+        .eq('data', oggiStr)
+        .order('orario', { ascending: true });
+      
+      if (data && !error) {
+        setDiarioReale(data.map(d => ({
+          id: d.id,
+          orario: d.orario,
+          nome: d.nome_prodotto,
+          cho: Number(d.cho),
+          pro: Number(d.pro),
+          fat: Number(d.fat),
+          kcal: Number(d.kcal),
+          immagine: d.immagine
+        })));
+      } else {
+        setDiarioReale([]); // Nessun dato o errore, svuota il diario
+      }
+    }
+    if (utenteCorrente) fetchDiario();
+  }, [utenteCorrente]);
   // Cambia automaticamente i pasti selezionati togliendo le Whey se gli integratori sono disattivati
   useEffect(() => {
     if (!usaIntegratori) {
@@ -2625,7 +2654,12 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                                <span className="text-[13px] font-black text-slate-600 leading-none">{entry.kcal}</span>
                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Kcal</span>
                             </div>
-                            <button onClick={() => setDiarioReale(prev => prev.filter(e => e.id !== entry.id))} className="text-red-400 hover:text-red-500 w-6 h-6 flex items-center justify-center font-bold text-lg bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] rounded-md border-none cursor-pointer">&times;</button>
+                            <button onClick={async () => {
+   if (confirm(`Rimuovere "${entry.nome}" dal diario di oggi?`)) {
+      await supabase.from('diario_alimentare_storico').delete().eq('id', entry.id);
+      setDiarioReale(prev => prev.filter(e => e.id !== entry.id));
+   }
+}} className="text-red-400 hover:text-red-500 w-6 h-6 flex items-center justify-center font-bold text-lg bg-[var(--superficie-alt)] shadow-[inset_2px_2px_4px_var(--ombra-scura-alt)] rounded-md border-none cursor-pointer">&times;</button>
                          </div>
                       </div>
                     ))
@@ -3179,17 +3213,30 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
              if (modalScegliDispensa === 'Diario') {
                 const oraAttuale = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
                 const kcal = Math.round((nuovoComponente.cho * 4) + (nuovoComponente.pro * 4) + (nuovoComponente.fat * 9));
-                const nuovaEntry = {
-                   id: Date.now().toString(),
+                const dataOggi = new Date().toISOString().split('T')[0];
+                
+                const dbPayload = {
+                   nome_utente: utenteCorrente,
+                   data: dataOggi,
                    orario: oraAttuale,
-                   nome: nuovoComponente.nome,
+                   nome_prodotto: nuovoComponente.nome,
                    cho: nuovoComponente.cho,
                    pro: nuovoComponente.pro,
                    fat: nuovoComponente.fat,
                    kcal: kcal
                 };
-                // Aggiunge al diario e ordina per orario
-                setDiarioReale(prev => [...prev, nuovaEntry].sort((a,b) => a.orario.localeCompare(b.orario)));
+
+                // Salva nel DB e aggiorna la UI
+                (async () => {
+                   const { data, error } = await supabase.from('diario_alimentare_storico').insert([dbPayload]).select();
+                   if (!error && data) {
+                      const nuovaEntry = { id: data[0].id, orario: oraAttuale, nome: nuovoComponente.nome, cho: nuovoComponente.cho, pro: nuovoComponente.pro, fat: nuovoComponente.fat, kcal: kcal };
+                      setDiarioReale(prev => [...prev, nuovaEntry].sort((a,b) => a.orario.localeCompare(b.orario)));
+                   } else {
+                      alert("Errore salvataggio Diario: " + error?.message);
+                   }
+                })();
+
                 setModalScegliDispensa(null); setRicercaDispensa(""); setDispensaItemEspanso(null);
                 return;
              }
