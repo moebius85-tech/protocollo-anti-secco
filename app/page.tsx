@@ -3435,6 +3435,7 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               const contestoConsiglio = modalScegliDispensa ? (pastiCustom[modalScegliDispensa as string]?.promemoria?.nome || "Nessun consiglio") : "Nessun consiglio";
               setIsCalculatingAI(true);
               try {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const payload: any = { message: `
                   Analizza: "${formAInuovo.nome || 'Foto allegata'}".
                   Pasto consigliato: "${contestoConsiglio}".
@@ -3455,20 +3456,28 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
                 
-                // Cerca la categoria (alimento/integratore) e i macro
-                const match = data.reply.match(/\[MAGIC_MACRO\s*\Vert{}\s*(alimento\vert{}integratore)\s*\Vert{}\s*[^\d]*([\d.,]+)[^\vert{}]*\Vert{}\s*[^\d]*([\d.,]+)[^\vert{}]*\Vert{}\s*[^\d]*([\d.,]+)[^\vert{}]*\Vert{}\s*([^\]]+)\]/i);
+                // VERSIONE INFALLIBILE: Cattura qualsiasi cosa tra le barre verticali, ignorando spazi extra
+                const match = data.reply.match(/\[MAGIC_MACRO\s*\Vert{}\s*([^\vert{}]+)\s*\Vert{}\s*([^\vert{}]+)\s*\Vert{}\s*([^\vert{}]+)\s*\Vert{}\s*([^\vert{}]+)\s*\Vert{}\s*([^\]]+)\]/i);
                 
                 if(match) {
-                  const tipoRilevato = match[1].trim().toLowerCase();
+                  // Pulisce i numeri estraendo solo le cifre, ignorando lettere (es. "1.5g" diventa "1.5")
+                  const cleanNum = (str: string) => { 
+                     const n = str.replace(/[^\d.,]/g, '').replace(',', '.'); 
+                     return n === '' ? '0' : Math.round(parseFloat(n)).toString(); 
+                  };
+
+                  let tipoRilevato = match[1].trim().toLowerCase();
+                  if (!tipoRilevato.includes('integratore')) tipoRilevato = 'alimento'; // Fallback sicuro
+
                   setFormAInuovo({
                     nome: match[5].trim(), 
-                    cho: Math.round(parseFloat(match[2].replace(',','.'))).toString(),
-                    pro: Math.round(parseFloat(match[3].replace(',','.'))).toString(),
-                    fat: Math.round(parseFloat(match[4].replace(',','.'))).toString(),
-                    tipo: tipoRilevato,
-                    immagineData: base64Image // Salva l'immagine!
+                    cho: cleanNum(match[2]),
+                    pro: cleanNum(match[3]),
+                    fat: cleanNum(match[4]),
+                    tipo: tipoRilevato as 'alimento' | 'integratore',
+                    immagineData: base64Image
                   });
-                  setFiltroDispensa(tipoRilevato as 'alimento'|'integratore'); // Cambia tab automaticamente
+                  setFiltroDispensa(tipoRilevato as 'alimento'|'integratore'); 
                   setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}));
                 } else { 
                   alert("L'A.I. ha risposto in modo anomalo:\n" + data.reply); 
