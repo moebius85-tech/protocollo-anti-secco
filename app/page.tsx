@@ -2556,10 +2556,10 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               )}
               </>
             ) : (
-              {/* =========================================
-                 GRAFICA DEL DIARIO REALE
-              ========================================= */}
               <div className="mt-4 anim-pop">
+                {/* =========================================
+                   GRAFICA DEL DIARIO REALE
+                ========================================= */}
                 {/* HUD MACRO RIMANENTI */}
                 <div className="bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] p-5 rounded-3xl mb-6">
                   <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-4 text-center">Bilancio Giornaliero</h3>
