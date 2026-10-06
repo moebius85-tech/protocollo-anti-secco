@@ -1290,7 +1290,7 @@ const renderDescrizioneConHUD = (testo: string) => {
     const data = await response.json();
     
     // REGEX CORRETTA: Ora usa la "barra" (|) per non mangiarsi le lettere del nome!
-    const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*([^|]+)\s*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([\d.,]+)[^|]*\|\s*([^\]]+)\]/i);
+    const match = data.reply.match(/\[MAGIC_MACRO\s*\|\s*(alimento|integratore)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([\d.,]+)\s*\|\s*([^\]]+)\]/i);
     
     if(match) {
       updateCustomMeal(cat, 'cho', Math.round(parseFloat(match[2].replace(',','.'))).toString());
