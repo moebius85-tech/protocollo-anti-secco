@@ -960,6 +960,10 @@ const renderDescrizioneConHUD = (testo: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [esercizioDaCambiare, setEsercizioDaCambiare] = useState({ id: '', nomeAttuale: '', alternative: [] as any[] });
   const [pastiSelezionati, setPastiSelezionati] = useState<Record<string, number>>({ Pasto1: 0, Pasto2: 0, Pasto3: 0, PostWorkout: 0 });
+  // --- STATI PER IL DIARIO REALE ---
+  const [vistaNutrizione, setVistaNutrizione] = useState<'PIANO' | 'DIARIO'>('PIANO');
+  type DiarioEntry = { id: string; orario: string; nome: string; cho: number; pro: number; fat: number; kcal: number; immagine?: string };
+  const [diarioReale, setDiarioReale] = useState<DiarioEntry[]>([]);
   // Cambia automaticamente i pasti selezionati togliendo le Whey se gli integratori sono disattivati
   useEffect(() => {
     if (!usaIntegratori) {
@@ -2240,8 +2244,8 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-rose-400 opacity-80"></div>
             
             <div className="flex flex-col mb-8 pt-2">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Piano Nutrizionale</h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-bold tracking-wide text-slate-700 uppercase">Nutrizione</h2>
                 <div className="flex gap-2 items-center">
                   {protocolloAutore === 'Reset Ormonale' && (
                      <button 
@@ -2280,6 +2284,13 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 </select>
                 </div>
               </div>
+              
+              {/* NUOVO SELETTORE PIANO / DIARIO */}
+              <div className="flex bg-[var(--velo-40)] p-1.5 rounded-2xl shadow-inner w-full mb-4 border border-[var(--velo-50)]">
+                 <button onClick={() => setVistaNutrizione('PIANO')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer ${vistaNutrizione === 'PIANO' ? 'bg-gradient-to-r from-orange-400 to-rose-400 text-white shadow-[0_4px_10px_rgba(249,115,22,0.3)]' : 'bg-transparent text-slate-500 hover:text-orange-500'}`}>🤖 Piano A.I.</button>
+                 <button onClick={() => setVistaNutrizione('DIARIO')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-none cursor-pointer ${vistaNutrizione === 'DIARIO' ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-white shadow-[0_4px_10px_rgba(16,185,129,0.3)]' : 'bg-transparent text-slate-500 hover:text-emerald-500'}`}>📝 Diario Reale</button>
+              </div>
+
               <div className="flex gap-4 mt-2">
                 <div className="livello-1 bg-[var(--superficie)] shadow-[inset_4px_4px_8px_var(--ombra-scura),inset_-4px_-4px_8px_var(--ombra-chiara)] flex-1 text-center p-4 rounded-[1.5rem]">
                    <span className="text-[9px] text-slate-400 uppercase tracking-widest block mb-1.5 font-bold">BMR</span>
@@ -2328,7 +2339,9 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                </div>
             )}
 
-            {isDataLoading ? (
+            {vistaNutrizione === 'PIANO' ? (
+              <>
+                {isDataLoading ? (
                <div className="space-y-6">
                  <Skeleton className="h-32 w-full" />
                  <Skeleton className="h-40 w-full" />
@@ -2539,6 +2552,15 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
               </div>
             </div>
           )}
+              </>
+            ) : (
+              /* =========================================
+                 GRAFICA DEL DIARIO REALE (Segnaposto)
+              ========================================= */
+              <div className="text-center p-8 bg-[var(--velo-30)] rounded-3xl border border-dashed border-[var(--velo-50)] anim-pop mt-6">
+                 <p className="text-slate-500 font-bold uppercase tracking-widest text-[11px]">Diario Reale in arrivo al prossimo step...</p>
+              </div>
+            )}
         </div>
       )}
     </section>
