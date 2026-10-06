@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, animate as animateValore } from 'framer-motion';
 
-// --- TIPI AGGIORNATI PER SUPPORTARE OPEN FOOD FACTS ---
 export type OffProduct = {
   id: string;
   tipologia: string;
@@ -54,7 +53,7 @@ function Carta({
   onUscitaCompletata?: () => void;
 }) {
   const x = useMotionValue(0);
-  const [isZoomed, setIsZoomed] = useState(false); // NUOVO STATO ZOOM
+  const [isZoomed, setIsZoomed] = useState(false);
   
   const isFront = ruolo === 'front';
   const isFuture = ruolo === 'future';
@@ -64,7 +63,7 @@ function Carta({
   useEffect(() => {
     if (!isFront && !isExiting) {
       x.set(0);
-      setIsZoomed(false); // Resetta lo zoom se la carta non è più frontale
+      setIsZoomed(false);
     }
   }, [isFront, isExiting, x]);
 
@@ -86,11 +85,10 @@ function Carta({
   let opacityCard = 1;
   let zIndexCard = 50;
 
-  // LOGICA ANIMAZIONE ZOOM
   if (isZoomed) {
-    yPos = -50;       // Sale in alto
-    scaleCard = 1.35; // Diventa più grande del 35%
-    zIndexCard = 200; // Si mette sopra tutto
+    yPos = -45;
+    scaleCard = 1.35;
+    zIndexCard = 200;
   } else if (isFront) {
     yPos = 0;
     zIndexCard = 50;
@@ -140,7 +138,7 @@ function Carta({
 
   return (
     <motion.div
-      className={`absolute w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] flex flex-col items-center justify-between p-5 touch-none ${
+      className={`absolute w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] flex flex-col items-center p-5 touch-none ${
         isFront ? 'cursor-grab active:cursor-grabbing' : ''
       }`}
       style={{
@@ -154,7 +152,7 @@ function Carta({
         boxShadow: isPast
           ? '6px 6px 14px var(--ombra-scura), -6px -6px 14px var(--ombra-chiara)'
           : isZoomed 
-            ? '0px 20px 40px rgba(0,0,0,0.5)' // Ombra profonda durante lo zoom
+            ? '0 20px 40px rgba(0,0,0,0.4)'
             : '5px 5px 12px var(--ombra-scura), -5px -5px 12px var(--ombra-chiara)',
       }}
       initial={false}
@@ -174,7 +172,6 @@ function Carta({
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       dragElastic={0.8}
       onDragStart={() => {
-         // Se inizia a trascinare, toglie lo zoom per rendere fluido lo swipe
          if (isZoomed) setIsZoomed(false);
       }}
       onDrag={
@@ -188,33 +185,28 @@ function Carta({
       onDragEnd={isFront ? handleDragEnd : undefined}
       onPanEnd={!isFront ? handlePanEnd : undefined}
     >
-      {/* IMMAGINE ENORME E CLICCABILE */}
       <div 
-        className={`w-full h-40 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-3 text-6xl overflow-hidden relative shrink-0 transition-all duration-300 ${isFront ? 'cursor-pointer' : ''} ${isZoomed ? 'ring-2 ring-orange-500' : ''}`}
+        className={`w-full h-44 rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-3 text-6xl overflow-hidden relative shrink-0 transition-all duration-300 ${isFront ? 'cursor-pointer' : ''} ${isZoomed ? 'ring-2 ring-orange-500 shadow-none' : ''} ${card.immagine ? 'bg-white' : 'bg-[var(--superficie)]'}`}
         onClick={(e) => {
            if (isFront) {
-              e.stopPropagation(); // Evita di chiudere la modale intera
-              setIsZoomed(!isZoomed); // Attiva/Disattiva Zoom
+              e.stopPropagation();
+              setIsZoomed(!isZoomed);
            }
         }}
       >
-        {/* Icona Lente Ingrandimento (Visibile solo sulla prima carta) */}
-        {isFront && !isZoomed && (
-           <div className="absolute top-2 right-2 bg-black/10 backdrop-blur-sm p-1.5 rounded-lg z-10 text-slate-500">
+        {isFront && !isZoomed && card.immagine && (
+           <div className="absolute top-2 right-2 bg-black/10 backdrop-blur-sm p-1.5 rounded-lg z-10 text-slate-500 shadow-sm">
              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
            </div>
         )}
-
+        
         {card.immagine ? (
-           <div className="w-full h-full bg-white flex items-center justify-center p-3">
-             <img src={card.immagine} alt={card.nome} className="max-h-full max-w-full object-contain mix-blend-multiply drop-shadow-sm" />
-           </div>
+           <img src={card.immagine} alt={card.nome} className="w-full h-full object-contain p-2 mix-blend-multiply drop-shadow-sm pointer-events-none" />
         ) : (
-           <span>{card.icon || '💊'}</span>
+           <span className="pointer-events-none">{card.icon || '💊'}</span>
         )}
       </div>
 
-      {/* TITOLO E TAG COMPATTI SOTTO */}
       <div className="w-full flex-1 flex flex-col justify-end items-center pointer-events-none">
          <h3 className="text-slate-800 font-black tracking-widest text-[14px] text-center uppercase leading-tight line-clamp-2 w-full px-1">
            {card.nome}
@@ -232,12 +224,9 @@ type Props = {
   onClose: () => void;
   onSave: (item: OffProduct) => void;
   onCustom: () => void;
-  // Prodotti già caricati a mano in Control Room e giudicati compatibili con questa
-  // categoria: prima venivano ignorati, il mazzo mostrava solo il database online.
-  cataloghiLocali?: { id: string; nome: string; immagine?: string }[];
 };
 
-export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, cataloghiLocali = [] }: Props) => {
+export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom }: Props) => {
   const [cards, setCards] = useState<OffProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [indiceAttuale, setIndiceAttuale] = useState(0);
@@ -245,33 +234,27 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, catalog
   const [exitingId, setExitingId] = useState<string | null>(null);
   const [direzioneUscita, setDirezioneUscita] = useState<1 | -1>(1);
 
-  // FETCH LIVE (via proxy server-side /api/off-search) CON RETE DI SICUREZZA (ANTI-CRASH)
   useEffect(() => {
-    let annullato = false;
-
     async function fetchDaOpenFoodFacts() {
       setLoading(true);
       let risultatiFormattati: OffProduct[] = [];
 
       try {
-        const termineRicerca = categoria.toLowerCase().replace("l-", "").replace("d3", "d").trim();
-        const res = await fetch(`/api/off-search?q=${encodeURIComponent(termineRicerca)}`);
+        const termineRicerca = categoria.toLowerCase().replace("l-", "").replace("d3", "d").trim(); 
+        const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${termineRicerca}&search_simple=1&action=process&json=1&page_size=10`);
         const data = await res.json();
-
+        
         const prodottiTrovati = Array.isArray(data.products) ? data.products : [];
 
         risultatiFormattati = prodottiTrovati
-          // Accetta qualunque campo immagine disponibile, non solo "front":
-          // scartare tutto quando manca solo quella specifica era la causa
-          // principale della scheda generica che compariva a intermittenza.
-          .filter((p: any) => (p.image_front_url || p.image_url || p.image_small_url) && p.product_name)
-          .slice(0, 8)
+          .filter((p: any) => p.image_front_url && p.product_name) 
+          .slice(0, 8) 
           .map((p: any) => ({
-            id: p.code || `${p.product_name}-${Math.random()}`,
+            id: p.code,
             tipologia: categoria,
             marchio: p.brands ? p.brands.split(',')[0] : 'Sconosciuto',
             nome: p.brands ? `${p.brands.split(',')[0]} - ${p.product_name}` : p.product_name,
-            immagine: p.image_front_url || p.image_url || p.image_small_url,
+            immagine: p.image_front_url,
             cho: Math.round(p.nutriments?.carbohydrates_100g || 0).toString(),
             pro: Math.round(p.nutriments?.proteins_100g || 0).toString(),
             fat: Math.round(p.nutriments?.fat_100g || 0).toString(),
@@ -281,25 +264,8 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, catalog
         console.error("Errore fetch OFF (il sistema userà il fallback):", err);
       }
 
-      if (annullato) return; // la categoria è cambiata o il componente si è chiuso nel frattempo
-
-      // I prodotti caricati a mano in Control Room vengono PRIMA: sono curati, hanno
-      // già un'immagine garantita, e l'utente li riconosce più facilmente.
-      const risultatiLocali: OffProduct[] = cataloghiLocali.map(c => ({
-        id: c.id,
-        tipologia: categoria,
-        marchio: 'Dal tuo catalogo',
-        nome: c.nome,
-        immagine: c.immagine,
-        cho: '0', pro: '0', fat: '0',
-        tag: 'CATALOGO ADMIN'
-      }));
-
-      const risultatiCombinati = [...risultatiLocali, ...risultatiFormattati];
-
-      // La scheda generica ha senso solo se NON c'è nessuna fonte reale, né locale né online.
-      if (risultatiCombinati.length === 0) {
-        risultatiCombinati.push({
+      if (risultatiFormattati.length === 0) {
+        risultatiFormattati.push({
           id: `generic-${Date.now()}`,
           tipologia: categoria,
           marchio: 'Generico',
@@ -316,15 +282,13 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, catalog
         cho: '0', pro: '0', fat: '0' 
       };
 
-      setCards([...risultatiCombinati, customCard]);
+      setCards([...risultatiFormattati, customCard]);
       setLoading(false);
     }
 
     if (categoria) {
       fetchDaOpenFoodFacts();
     }
-
-    return () => { annullato = true; };
   }, [categoria]);
 
   const visibleCards = exitingId ? cards.filter((c) => c.id !== exitingId) : cards;
@@ -373,7 +337,7 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, catalog
   if (loading) {
     return (
       <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
-         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse">
+         <div className="w-[240px] h-[310px] bg-[var(--superficie)] rounded-[2rem] shadow-[5px_5px_12px_var(--ombra-scura),-5px_-5px_12px_var(--ombra-chiara)] flex flex-col items-center justify-center p-6 animate-pulse border border-[var(--bordo-tenue)]">
             <div className="w-20 h-20 bg-[var(--superficie)] rounded-[1.5rem] shadow-[inset_3px_3px_6px_var(--ombra-scura),inset_-3px_-3px_6px_var(--ombra-chiara)] flex items-center justify-center mb-6">
                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
@@ -386,7 +350,6 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, catalog
   return (
     <div className="relative w-full h-[480px] flex justify-center items-center bg-transparent mb-6" onClick={(e) => e.stopPropagation()}>
       
-      {/* LINGUETTA LATERALE DISPENSA ARANCIONE */}
       <div
         className="absolute top-[-1000px] bottom-[-1000px] z-[999] pointer-events-none flex items-center justify-start pl-3 sm:pl-4 rounded-l-[2rem]"
         style={{
@@ -411,7 +374,6 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, catalog
         &times;
       </button>
 
-      {/* RENDER CARTE CON LOGICA SCORRIMENTO */}
       {cards.map((card) => {
         if (card.id === exitingId) {
           return (
@@ -447,4 +409,3 @@ export const MazzoIntegratori = ({ categoria, onClose, onSave, onCustom, catalog
     </div>
   );
 };
-
