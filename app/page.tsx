@@ -3455,32 +3455,41 @@ const renderNavicon = (tab: string, iconSvg: React.ReactNode, label: string) => 
                 }
                 const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
+                const rawReply = data.reply || "";
                 
-                // VERSIONE INFALLIBILE: Cattura qualsiasi cosa tra le barre verticali, ignorando spazi extra
-                const match = data.reply.match(/\[MAGIC_MACRO\s*\Vert{}\s*([^\vert{}]+)\s*\Vert{}\s*([^\vert{}]+)\s*\Vert{}\s*([^\vert{}]+)\s*\Vert{}\s*([^\vert{}]+)\s*\Vert{}\s*([^\]]+)\]/i);
+                // SISTEMA DI ESTRAZIONE INFALLIBILE (Senza Regex)
+                const startIdx = rawReply.toUpperCase().indexOf("[MAGIC_MACRO");
+                const endIdx = rawReply.indexOf("]", startIdx);
                 
-                if(match) {
-                  // Pulisce i numeri estraendo solo le cifre, ignorando lettere (es. "1.5g" diventa "1.5")
-                  const cleanNum = (str: string) => { 
-                     const n = str.replace(/[^\d.,]/g, '').replace(',', '.'); 
-                     return n === '' ? '0' : Math.round(parseFloat(n)).toString(); 
-                  };
+                if (startIdx !== -1 && endIdx !== -1) {
+                  const content = rawReply.substring(startIdx + 1, endIdx); // Prende il contenuto dentro le parentesi
+                  const parts = content.split("|").map((p: string) => p.trim());
+                  
+                  // Verifica che ci siano tutti i pezzi: MAGIC_MACRO(0) | Tipo(1) | CHO(2) | PRO(3) | FAT(4) | Nome(5)
+                  if (parts.length >= 6) {
+                    const cleanNum = (str: string) => { 
+                       const n = str.replace(/[^\d.,]/g, '').replace(',', '.'); 
+                       return n === '' ? '0' : Math.round(parseFloat(n)).toString(); 
+                    };
 
-                  let tipoRilevato = match[1].trim().toLowerCase();
-                  if (!tipoRilevato.includes('integratore')) tipoRilevato = 'alimento'; // Fallback sicuro
+                    let tipoRilevato = parts[1].toLowerCase();
+                    if (!tipoRilevato.includes('integratore')) tipoRilevato = 'alimento'; // Fallback sicuro
 
-                  setFormAInuovo({
-                    nome: match[5].trim(), 
-                    cho: cleanNum(match[2]),
-                    pro: cleanNum(match[3]),
-                    fat: cleanNum(match[4]),
-                    tipo: tipoRilevato as 'alimento' | 'integratore',
-                    immagineData: base64Image
-                  });
-                  setFiltroDispensa(tipoRilevato as 'alimento'|'integratore'); 
-                  setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}));
+                    setFormAInuovo({
+                      nome: parts[5], 
+                      cho: cleanNum(parts[2]),
+                      pro: cleanNum(parts[3]),
+                      fat: cleanNum(parts[4]),
+                      tipo: tipoRilevato as 'alimento' | 'integratore',
+                      immagineData: base64Image
+                    });
+                    setFiltroDispensa(tipoRilevato as 'alimento'|'integratore'); 
+                    setFileCustomPasto(prev => ({...prev, 'ScannerAI': null}));
+                  } else {
+                    alert("L'A.I. non ha fornito tutti i dati:\n" + rawReply);
+                  }
                 } else { 
-                  alert("L'A.I. ha risposto in modo anomalo:\n" + data.reply); 
+                  alert("L'A.I. ha risposto in modo anomalo:\n" + rawReply); 
                 }
               } catch(e) { alert("Errore di connessione A.I."); }
               setIsCalculatingAI(false);
