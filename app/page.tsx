@@ -118,8 +118,18 @@ const dbAlimenti = {
     // --- SOLIDI DOLCI (Comfort Food Post-Allenamento) ---
     {nome:"🥣 Corn Flakes + Whey", baseCarbo:25, pro:35, fat:1, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.15)}g Corn Flakes o Riso Soffiato • ${Math.round(p*1.15)}g Whey Isolate`},
     {nome:"🍯 Pane Bianco + Marmellata + Yogurt Greco", baseCarbo:30, pro:25, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Pane Bianco Tostato • ${Math.round(c*0.6)}g Marmellata/Miele • ${Math.round(p*10)}g Yogurt Greco 0%`},
-    {nome:"🥞 Pancakes Riso e Albume + Miele", baseCarbo:25, pro:25, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1
+    {nome:"🥞 Pancakes Riso e Albume + Miele", baseCarbo:25, pro:25, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.2)}g Farina di Riso • ${Math.round(p*10)}g Albume • Miele a piacere (nei carbo)`},
+    {nome:"🍫 Gallette + Crema Spalmabile Proteica", baseCarbo:20, pro:20, fat:8, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*4.5)}g Crema Spalmabile Proteica (tipo Nocciolata Fit)`},
+    // --- SOLIDI SALATI (Old School Bodybuilding e Cibo Vero) ---
+    {nome:"🍘 Gallette di Riso + Bresaola", baseCarbo:20, pro:30, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c/8)} Gallette Riso/Mais • ${Math.round(p*3)}g Bresaola Punta d'Anca`},
+    {nome:"🍚 Riso Basmati + Pollo (Pasto Solido Rapido)", baseCarbo:30, pro:35, fat:3, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati ben cotto • ${Math.round(p*4.3)}g Petto di Pollo`},
+    {nome:"🥔 Patate Lesse Schiacciate + Fesa", baseCarbo:25, pro:25, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*6.6)}g Patate Lesse/Purè senz'olio • ${Math.round(p*4)}g Fesa di Tacchino`},
+    {nome:"🥪 Pane al Latte + Cotto Sgrassato", baseCarbo:25, pro:20, fat:5, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.8)}g Pane al Latte/Morbido • ${Math.round(p*5)}g Prosciutto Cotto Sgrassato Alta Qualità`},
+    {nome:"🍳 Gallette + Albume Strapazzato", baseCarbo:20, pro:25, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c/8)} Gallette • ${Math.round(p*10)}g Albume Liquido cotto in padella`}
+  ]
+};
 const misureBase = [{ id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" }, { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" }, { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }];
+                                                                                                                                
 const misureBIA = [{ id: 'vita', label: "Circ. Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa", unit: "%" }, { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Musc.", unit: "%" }];
 
 const AnimatedCounter = ({ value, suffix = "" }: { value: number, suffix?: string }) => {
