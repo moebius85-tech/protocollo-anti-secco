@@ -50,84 +50,75 @@ const baseDbAllenamento={Spinta:{focus:"SPINTA (Petto, Spalle, Tricipiti)",eserc
 const dbAlimenti = {
   Pasto1: [
     // --- COLAZIONI DOLCI CLASSICHE ---
-    {nome:"🥣 Porridge Classico (Avena+Whey+Burro)", baseCarbo:12, pro:35, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro Arachidi`},
-    {nome:"🥞 Pancakes Fit (Avena+Albume)", baseCarbo:14, pro:30, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Farina d'Avena • ${Math.round(p*10)}g Albume liquido • ${f}g Crema 100% Cacao`},
-    {nome:"🥐 Colazione Italiana (Fette+Yogurt)", baseCarbo:14, pro:30, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.3)}g Fette Biscottate • ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*2)}g Mandorle/Noci`},
-    {nome:"🥛 Latte & Cereali (Corn Flakes+Whey)", baseCarbo:15, pro:25, fat:8, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.2)}g Corn Flakes • 200ml Latte • ${Math.max(0, Math.round((p-6)*1.2))}g Whey • ${Math.round(f*2)}g Cioccolato Fondente`},
-    {nome:"🍪 Biscotti Fit e Latte (Avena+Cacao)", baseCarbo:15, pro:20, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Farina Avena (per biscotti) • ${Math.round(p*1.2)}g Whey (nell'impasto) • ${f}g Burro Ghee`},
-    {nome:"🍮 Chia Pudding Proteico", baseCarbo:10, pro:25, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*7)}g Frutto a cubetti • ${Math.round(p*10)}g Yogurt/Kefir • ${Math.round(f*3.3)}g Semi di Chia`},
-    {nome:"🥣 Smoothie Bowl (Banana+Whey+Cocco)", baseCarbo:20, pro:30, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*4.5)}g Banana surgelata • ${Math.round(p*1.2)}g Whey Isolate • ${Math.round(f*1.5)}g Scaglie di Cocco`},
-    {nome:"🍯 Pane, Ricotta e Miele", baseCarbo:20, pro:15, fat:8, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Pane Tostato • ${Math.round(p*8)}g Ricotta Magra • ${f}g Noci (Il miele nei macro dei carbo)`},
+    {nome:"🥣 Porridge Classico (Avena+Whey+Burro)", baseCarbo:12, pro:35, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Avena • ${Math.round(p*1.2)}g Whey • ${f}g Burro Arachidi`},
+    {nome:"🥞 Pancakes Fit (Avena+Albume)", baseCarbo:14, pro:30, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina d'Avena • ${Math.round(p*10)}g Albume liquido • ${f}g Crema 100% Cacao`},
+    {nome:"🥐 Colazione Italiana (Fette+Yogurt)", baseCarbo:14, pro:30, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.3)}g Fette Biscottate • ${Math.round(p*10)}g Yogurt Greco 0\% •${Math.round(f*2)}g Mandorle/Noci`},
+    {nome:"🥛 Latte & Cereali (Corn Flakes+Whey)", baseCarbo:15, pro:25, fat:8, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.2)}g Corn Flakes • 200ml Latte • ${Math.max(0, Math.round((p-6)*1.2))}g Whey • ${Math.round(f*2)}g Cioccolato Fondente`},
+    {nome:"🍪 Biscotti Fit e Latte (Avena+Cacao)", baseCarbo:15, pro:20, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina Avena (per biscotti) • ${Math.round(p*1.2)}g Whey (nell'impasto) •${f}g Burro Ghee`},
+    {nome:"🍮 Chia Pudding Proteico", baseCarbo:10, pro:25, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*7)}g Frutto a cubetti • ${Math.round(p*10)}g Yogurt/Kefir • ${Math.round(f*3.3)}g Semi di Chia`},
+    {nome:"🥣 Smoothie Bowl (Banana+Whey+Cocco)", baseCarbo:20, pro:30, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*4.5)}g Banana surgelata • ${Math.round(p*1.2)}g Whey Isolate • ${Math.round(f*1.5)}g Scaglie di Cocco`},
+    {nome:"🍯 Pane, Ricotta e Miele", baseCarbo:20, pro:15, fat:8, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Pane Tostato • ${Math.round(p*8)}g Ricotta Magra • ${f}g Noci (Il miele nei macro dei carbo)`},
     // --- COLAZIONI SALATE ---
-    {nome:"🍳 Toast Salato (Uova+Avocado)", baseCarbo:10, pro:25, fat:22, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Pane Integrale • ${Math.max(1, Math.round(p/6))} Uova intere • ${Math.round(f*6.6)}g Avocado`},
-    {nome:"🥪 Bagel Salmone e Philadelphia", baseCarbo:25, pro:25, fat:12, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.8)}g Bagel/Panino • ${Math.round(p*4.5)}g Salmone Affumicato • ${Math.round(f*3.5)}g Philadelphia Light`},
-    {nome:"🥓 Colazione Inglese Fit", baseCarbo:15, pro:30, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Pane Tostato • ${Math.round(p*4)}g Fesa di Tacchino piastrata • ${Math.round(f*10)}g Tuorlo/Olio`},
-    {nome:"🌯 Wrap Salato Mattutino", baseCarbo:20, pro:25, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.8)}g Piadina/Wrap • ${Math.round(p*10)}g Albume strapazzato • ${Math.round(f*3)}g Formaggio Light`},
-    {nome:"🥪 Toast Prosciutto e Formaggio", baseCarbo:20, pro:20, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Pane in cassetta • ${Math.round(p*4.5)}g Prosciutto Cotto • ${Math.round(f*4)}g Sottilette Light`},
-    {nome:"🍘 Gallette, Fesa e Mandorle", baseCarbo:15, pro:25, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c/8)} Gallette Riso/Mais • ${Math.round(p*4)}g Fesa Tacchino/Pollo • ${Math.round(f*2)}g Mandorle sgusciate`},
-    {nome:"🥗 Crepes Salata (Albume+Farina)", baseCarbo:15, pro:30, fat:8, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Farina per Crepe • ${Math.round(p*10)}g Albume • ${f}g Olio EVO o Maionese Light`}
+    {nome:"🍳 Toast Salato (Uova+Avocado)", baseCarbo:10, pro:25, fat:22, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Pane Integrale • ${Math.max(1, Math.round(p/6))} Uova intere • ${Math.round(f*6.6)}g Avocado`},
+    {nome:"🥪 Bagel Salmone e Philadelphia", baseCarbo:25, pro:25, fat:12, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.8)}g Bagel/Panino • ${Math.round(p*4.5)}g Salmone Affumicato • ${Math.round(f*3.5)}g Philadelphia Light`},
+    {nome:"🥓 Colazione Inglese Fit", baseCarbo:15, pro:30, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Pane Tostato • ${Math.round(p*4)}g Fesa di Tacchino piastrata • ${Math.round(f*10)}g Tuorlo/Olio`},
+    {nome:"🌯 Wrap Salato Mattutino", baseCarbo:20, pro:25, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.8)}g Piadina/Wrap • ${Math.round(p*10)}g Albume strapazzato • ${Math.round(f*3)}g Formaggio Light`},
+    {nome:"🥪 Toast Prosciutto e Formaggio", baseCarbo:20, pro:20, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Pane in cassetta • ${Math.round(p*4.5)}g Prosciutto Cotto • ${Math.round(f*4)}g Sottilette Light`},
+    {nome:"🍘 Gallette, Fesa e Mandorle", baseCarbo:15, pro:25, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c/8)} Gallette Riso/Mais • ${Math.round(p*4)}g Fesa Tacchino/Pollo • ${Math.round(f*2)}g Mandorle sgusciate`},
+    {nome:"🥗 Crepes Salata (Albume+Farina)", baseCarbo:15, pro:30, fat:8, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina per Crepe • ${Math.round(p*10)}g Albume • ${f}g Olio EVO o Maionese Light`}
   ],
   Pasto2: [
     // --- CLASSICI BODYBUILDING & FIT ---
-    {nome:"🍚 Bodybuilder (Riso+Pollo+Olio)", baseCarbo:20, pro:40, fat:12, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4.3)}g Petto di Pollo • ${f}g Olio EVO`},
-    {nome:"🍠 Patate al Forno + Salmone", baseCarbo:16, pro:40, fat:20, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*6.6)}g Patate crude • ${Math.round(p*5)}g Salmone fresco • ${Math.max(0, Math.round(f - (p*0.13)))}g Olio EVO (Il salmone ha già grassi)`},
-    {nome:"🍲 Gnocchi + Ragù Magro + Grana", baseCarbo:22, pro:35, fat:12, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*3.3)}g Gnocchi di Patate • ${Math.round(p*5)}g Macinato Magro (Manzo 5%) • ${Math.round(f*3)}g Grana Padano`},
+    {nome:"🍚 Bodybuilder (Riso+Pollo+Olio)", baseCarbo:20, pro:40, fat:12, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati • ${Math.round(p*4.3)}g Petto di Pollo • ${f}g Olio EVO`},
+    {nome:"🍠 Patate al Forno + Salmone", baseCarbo:16, pro:40, fat:20, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*6.6)}g Patate crude • ${Math.round(p*5)}g Salmone fresco • ${Math.max(0, Math.round(f - (p*0.13)))}g Olio EVO (Il salmone ha già grassi)`},
+    {nome:"🍲 Gnocchi + Ragù Magro + Grana", baseCarbo:22, pro:35, fat:12, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*3.3)}g Gnocchi di Patate • ${Math.round(p*5)}g Macinato Magro (Manzo 5\%) •${Math.round(f*3)}g Grana Padano`},
     // --- PRIMI PIATTI MEDITERRANEI ---
-    {nome:"🍝 Pasta di Semola + Pesce Bianco", baseCarbo:20, pro:45, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.4)}g Pasta di Semola/Linguine • ${Math.round(p*5.5)}g Merluzzo/Orata/Spigola • ${f}g Olio EVO`},
-    {nome:"🍝 Pennette Integrali + Ricotta + Noci", baseCarbo:20, pro:25, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.4)}g Pennette Integrali • ${Math.round(p*8)}g Ricotta Magra Vaccina • ${Math.round(f*1.5)}g Noci sbriciolate`},
-    {nome:"🥘 Risotto Gamberetti e Zucchine", baseCarbo:25, pro:30, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.25)}g Riso Arborio/Carnaroli • ${Math.round(p*5)}g Gamberetti sgusciati • ${f}g Olio EVO (Zucchine libere)`},
-    {nome:"🥗 Insalata di Farro + Tonno + Pomodorini", baseCarbo:20, pro:30, fat:12, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.4)}g Farro perlato • ${Math.round(p*4)}g Tonno al Naturale sgocciolato • ${f}g Olio EVO`},
-    {nome:"🍝 Orecchiette + Acciughe/Pollo", baseCarbo:25, pro:35, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.4)}g Orecchiette • Cime di Rapa libere • ${Math.round(p*4.3)}g Fonte Proteica magra • ${f}g Olio EVO`},
+    {nome:"🍝 Pasta di Semola + Pesce Bianco", baseCarbo:20, pro:45, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.4)}g Pasta di Semola/Linguine • ${Math.round(p*5.5)}g Merluzzo/Orata/Spigola • ${f}g Olio EVO`},
+    {nome:"🍝 Pennette Integrali + Ricotta + Noci", baseCarbo:20, pro:25, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.4)}g Pennette Integrali • ${Math.round(p*8)}g Ricotta Magra Vaccina • ${Math.round(f*1.5)}g Noci sbriciolate`},
+    {nome:"🥘 Risotto Gamberetti e Zucchine", baseCarbo:25, pro:30, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.25)}g Riso Arborio/Carnaroli • ${Math.round(p*5)}g Gamberetti sgusciati • ${f}g Olio EVO (Zucchine libere)`},
+    {nome:"🥗 Insalata di Farro + Tonno + Pomodorini", baseCarbo:20, pro:30, fat:12, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.4)}g Farro perlato • ${Math.round(p*4)}g Tonno al Naturale sgocciolato • ${f}g Olio EVO`},
+    {nome:"🍝 Orecchiette + Acciughe/Pollo", baseCarbo:25, pro:35, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.4)}g Orecchiette • Cime di Rapa libere • ${Math.round(p*4.3)}g Fonte Proteica magra • ${f}g Olio EVO`},
     // --- SECONDI PIATTI & PIATTI UNICI ---
-    {nome:"🐙 Polpo e Patate Lesse", baseCarbo:15, pro:35, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*6.6)}g Patate • ${Math.round(p*6)}g Polpo fresco • ${f}g Olio EVO + Prezzemolo`},
-    {nome:"🥩 Bistecca Magra + Pane + Verdure", baseCarbo:20, pro:40, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Pane/Focaccia • ${Math.round(p*4.5)}g Carne Rossa Magra (es. Filetto/Scamone) • ${f}g Olio EVO`},
-    {nome:"🍔 Burger di Manzo + Pane + Salse Light", baseCarbo:25, pro:35, fat:12, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Panino da Burger • ${Math.round(p*5)}g Hamburger (max 5% fat) • ${f}g Maionese Light o Olio`},
-    {nome:"🍕 Pizza Fit (Base Yogurt+Farina)", baseCarbo:30, pro:35, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Farina + Acqua/Yogurt per impasto • ${Math.round(p*5)}g Mozzarella Light/Proteica • ${f}g Olio EVO`},
-    {nome:"🍳 Frittata al Forno + Purè", baseCarbo:15, pro:25, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*6.6)}g Patate per Purè • ${Math.round(p*10)}g Albume + 1 Uovo intero • ${Math.round(f*3)}g Parmigiano`},
+    {nome:"🐙 Polpo e Patate Lesse", baseCarbo:15, pro:35, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*6.6)}g Patate • ${Math.round(p*6)}g Polpo fresco • ${f}g Olio EVO + Prezzemolo`},
+    {nome:"🥩 Bistecca Magra + Pane + Verdure", baseCarbo:20, pro:40, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Pane/Focaccia • ${Math.round(p*4.5)}g Carne Rossa Magra (es. Filetto/Scamone) • ${f}g Olio EVO`},
+    {nome:"🍔 Burger di Manzo + Pane + Salse Light", baseCarbo:25, pro:35, fat:12, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Panino da Burger • ${Math.round(p*5)}g Hamburger (max 5\% fat) •${f}g Maionese Light o Olio`},
+    {nome:"🍕 Pizza Fit (Base Yogurt+Farina)", baseCarbo:30, pro:35, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina + Acqua/Yogurt per impasto • ${Math.round(p*5)}g Mozzarella Light/Proteica • ${f}g Olio EVO`},
+    {nome:"🍳 Frittata al Forno + Purè", baseCarbo:15, pro:25, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*6.6)}g Patate per Purè • ${Math.round(p*10)}g Albume + 1 Uovo intero • ${Math.round(f*3)}g Parmigiano`},
     // --- PASTI VELOCI / UFFICIO / DA ASPORTO ---
-    {nome:"🌯 Piadina + Crudo + Stracchino", baseCarbo:25, pro:35, fat:18, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.8)}g Piadina • ${Math.round(p*3.8)}g Prosciutto Crudo sgrassato • ${Math.round(f*3.5)}g Stracchino/Squacquerone`},
-    {nome:"🥪 Panino Bresaola e Grana", baseCarbo:25, pro:35, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Pane/Tartaruga • ${Math.round(p*3)}g Bresaola Punta d'Anca • ${Math.round(f*3.5)}g Scaglie di Grana`},
-    {nome:"🥗 Insalatona Mozzarella e Mais", baseCarbo:15, pro:25, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ Insalata Verde • ${Math.round(c*5)}g Mais dolce sgocciolato • ${Math.round(p*5)}g Mozzarella Light • ${f}g Olio EVO`},
-    {nome:"🥙 Cous Cous Rápido + Tofu", baseCarbo:20, pro:20, fat:12, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.4)}g Cous Cous • ${Math.round(p*6.6)}g Tofu al Naturale piastrato • ${f}g Olio EVO o Salsa Soia`},
-    {nome:"🍣 Poke Bowl (Riso+Salmone+Avocado)", baseCarbo:25, pro:30, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.3)}g Riso Sushi • ${Math.round(p*4.5)}g Salmone Crudo Abbattuto • ${Math.round(f*6.6)}g Avocado`},
-    {nome:"🍱 Bento Box (Uova Sode+Riso+Verdure)", baseCarbo:20, pro:20, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati freddo • ${Math.max(1, Math.round(p/6))} Uova Sode • ${f}g Olio/Sesamo`}
+    {nome:"🌯 Piadina + Crudo + Stracchino", baseCarbo:25, pro:35, fat:18, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.8)}g Piadina • ${Math.round(p*3.8)}g Prosciutto Crudo sgrassato • ${Math.round(f*3.5)}g Stracchino/Squacquerone`},
+    {nome:"🥪 Panino Bresaola e Grana", baseCarbo:25, pro:35, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Pane/Tartaruga • ${Math.round(p*3)}g Bresaola Punta d'Anca • ${Math.round(f*3.5)}g Scaglie di Grana`},
+    {nome:"🥗 Insalatona Mozzarella e Mais", baseCarbo:15, pro:25, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ Insalata Verde • ${Math.round(c*5)}g Mais dolce sgocciolato • ${Math.round(p*5)}g Mozzarella Light • ${f}g Olio EVO`},
+    {nome:"🥙 Cous Cous Rápido + Tofu", baseCarbo:20, pro:20, fat:12, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.4)}g Cous Cous • ${Math.round(p*6.6)}g Tofu al Naturale piastrato • ${f}g Olio EVO o Salsa Soia`},
+    {nome:"🍣 Poke Bowl (Riso+Salmone+Avocado)", baseCarbo:25, pro:30, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.3)}g Riso Sushi • ${Math.round(p*4.5)}g Salmone Crudo Abbattuto • ${Math.round(f*6.6)}g Avocado`},
+    {nome:"🍱 Bento Box (Uova Sode+Riso+Verdure)", baseCarbo:20, pro:20, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati freddo • ${Math.max(1, Math.round(p/6))} Uova Sode • ${f}g Olio/Sesamo`}
   ],
   Pasto3: [
     // --- SPUNTINI DOLCI ---
-    {nome:"🥣 Yogurt Greco + Noci", baseCarbo:5, pro:20, fat:15, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(p*10)}g Yogurt Greco 0% • ${Math.round(f*1.5)}g Noci sgusciate`},
-    {nome:"🍫 Barretta Proteica + Frutto", baseCarbo:15, pro:20, fat:8, dettaglioGrammi:(c,p,f)=>`⚖️ 1 Barretta Proteica (da ~20g Pro) • ${Math.round(c*7)}g Frutto (Mela, Pera, Arancia) • ${Math.round(f*2)}g Mandorle`},
-    {nome:"🥤 Shaker Whey + Cioccolato Fondente", baseCarbo:2, pro:25, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(p*1.15)}g Whey Protein • ${Math.round(f*2.5)}g Cioccolato Fondente >85%`},
-    {nome:"🍮 Budino Proteico + Gallette", baseCarbo:10, pro:20, fat:5, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c/8)} Gallette Riso/Mais • 1 Budino Proteico GDO (es. Milk Pro) • ${Math.round(f*2)}g Frutta Secca`},
-    {nome:"🥞 Pancake Veloce al Microonde", baseCarbo:15, pro:20, fat:5, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro Arachidi (sopra)`},
-    {nome:"🍨 Kefir + Granola", baseCarbo:15, pro:10, fat:5, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(p*30)}g Kefir di Latte • ${Math.round(c*1.5)}g Granola / Cereali croccanti`},
+    {nome:"🥣 Yogurt Greco + Noci", baseCarbo:5, pro:20, fat:15, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(p*10)}g Yogurt Greco 0\% •${Math.round(f*1.5)}g Noci sgusciate • Dolcificante a piacere`},
+    {nome:"🍫 Barretta Proteica + Frutto", baseCarbo:15, pro:20, fat:8, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ 1 Barretta Proteica (da ~20g Pro) • ${Math.round(c*7)}g Frutto (Mela, Pera, Arancia) •${Math.round(f*2)}g Mandorle`},
+    {nome:"🥤 Shaker Whey + Cioccolato Fondente", baseCarbo:2, pro:25, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(p*1.15)}g Whey Protein • ${Math.round(f*2.5)}g Cioccolato Fondente >85%`},
+    {nome:"🍮 Budino Proteico + Gallette", baseCarbo:10, pro:20, fat:5, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c/8)} Gallette Riso/Mais • 1 Budino Proteico GDO (es. Milk Pro) • ${Math.round(f*2)}g Frutta Secca`},
+    {nome:"🥞 Pancake Veloce al Microonde", baseCarbo:15, pro:20, fat:5, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Farina Avena • ${Math.round(p*10)}g Albume • ${f}g Burro Arachidi (sopra)`},
+    {nome:"🍨 Kefir + Granola", baseCarbo:15, pro:10, fat:5, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(p*30)}g Kefir di Latte • ${Math.round(c*1.5)}g Granola / Cereali croccanti`},
     // --- SPUNTINI SALATI ---
-    {nome:"🧀 Fiocchi di Latte + Avocado", baseCarbo:4, pro:25, fat:18, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(p*8)}g Fiocchi di Latte magri • ${Math.round(f*6.6)}g Avocado a cubetti`},
-    {nome:"🍘 Wasa + Parmigiano", baseCarbo:8, pro:16, fat:14, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Fette Wasa/Crackers secchi • ${Math.round(p*3)}g Parmigiano/Grana`},
-    {nome:"🥪 Mini-Toast Fesa e Noci", baseCarbo:12, pro:20, fat:8, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Pane in cassetta • ${Math.round(p*4)}g Fesa Tacchino/Pollo • ${Math.round(f*1.5)}g Noci`},
-    {nome:"🍖 Crudo sgrassato + Grissini Integrali", baseCarbo:15, pro:15, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Grissini/Taralli Integrali • ${Math.round(p*3.8)}g Prosciutto Crudo • ${f}g Olio/Grassi`},
-    {nome:"🥜 Edamame + Wasa", baseCarbo:10, pro:15, fat:5, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(p*9)}g Edamame (Fagioli di Soia) cotti • ${Math.round(c*1.5)}g Wasa`},
-    {nome:"🧀 Affettato di Pollo + Olive", baseCarbo:2, pro:20, fat:10, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(p*4)}g Affettato di Pollo • ${Math.round(f*6.5)}g Olive Verdi/Nere`},
-    {nome:"🥖 Lupini + Pane Integrale", baseCarbo:15, pro:10, fat:4, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Pane Integrale • ${Math.round(p*6.5)}g Lupini sgocciolati`}
+    {nome:"🧀 Fiocchi di Latte + Avocado", baseCarbo:4, pro:25, fat:18, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(p*8)}g Fiocchi di Latte magri • ${Math.round(f*6.6)}g Avocado a cubetti`},
+    {nome:"🍘 Wasa + Parmigiano", baseCarbo:8, pro:16, fat:14, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Fette Wasa/Crackers secchi • ${Math.round(p*3)}g Parmigiano/Grana`},
+    {nome:"🥪 Mini-Toast Fesa e Noci", baseCarbo:12, pro:20, fat:8, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Pane in cassetta • ${Math.round(p*4)}g Fesa Tacchino/Pollo • ${Math.round(f*1.5)}g Noci`},
+    {nome:"🍖 Crudo sgrassato + Grissini Integrali", baseCarbo:15, pro:15, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Grissini/Taralli Integrali • ${Math.round(p*3.8)}g Prosciutto Crudo • ${f}g Olio/Grassi`},
+    {nome:"🥜 Edamame + Wasa", baseCarbo:10, pro:15, fat:5, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(p*9)}g Edamame (Fagioli di Soia) cotti • ${Math.round(c*1.5)}g Wasa`},
+    {nome:"🧀 Affettato di Pollo + Olive", baseCarbo:2, pro:20, fat:10, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(p*4)}g Affettato di Pollo • ${Math.round(f*6.5)}g Olive Verdi/Nere`},
+    {nome:"🥖 Lupini + Pane Integrale", baseCarbo:15, pro:10, fat:4, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Pane Integrale • ${Math.round(p*6.5)}g Lupini sgocciolati`}
   ],
   PostWorkout: [
     // --- LIQUIDI E RAPIDO ASSORBIMENTO (Per finestra anabolica stretta) ---
-    {nome:"🥣 Crema di Riso + Whey", baseCarbo:20, pro:35, fat:1, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.2)}g Crema di Riso Istantanea • ${Math.round(p*1.15)}g Whey Isolate`},
-    {nome:"🥤 Succo di Frutta + EAA/Whey", baseCarbo:25, pro:20, fat:0, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*10)}ml Succo di Frutta (es. Mela/Uva) • ${Math.round(p*1.15)}g Proteine/Aminoacidi`},
-    {nome:"🥛 Latte + Cioccolato in polvere + Whey", baseCarbo:20, pro:30, fat:4, dettaglioGrammi:(c,p,f)=>`⚖️ 250ml Latte Scremato • ${Math.round(c*1.2)}g Nesquik/Cacao zuccherato • ${Math.round((p-8)*1.15)}g Whey`},
-    {nome:"🍌 Frullatone (Banana+Whey+Avena)", baseCarbo:30, pro:30, fat:2, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*2)}g Banana • ${Math.round(c*0.7)}g Avena Istantanea • ${Math.round(p*1.15)}g Whey`},
+    {nome:"🥣 Crema di Riso + Whey", baseCarbo:20, pro:35, fat:1, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.2)}g Crema di Riso Istantanea • ${Math.round(p*1.15)}g Whey Isolate`},
+    {nome:"🥤 Succo di Frutta + EAA/Whey", baseCarbo:25, pro:20, fat:0, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*10)}ml Succo di Frutta (es. Mela/Uva) • ${Math.round(p*1.15)}g Proteine/Aminoacidi`},
+    {nome:"🥛 Latte + Cioccolato in polvere + Whey", baseCarbo:20, pro:30, fat:4, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ 250ml Latte Scremato • ${Math.round(c*1.2)}g Nesquik/Cacao zuccherato • ${Math.round((p-8)*1.15)}g Whey`},
+    {nome:"🍌 Frullatone (Banana+Whey+Avena)", baseCarbo:30, pro:30, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*2)}g Banana • ${Math.round(c*0.7)}g Avena Istantanea • ${Math.round(p*1.15)}g Whey`},
     // --- SOLIDI DOLCI (Comfort Food Post-Allenamento) ---
-    {nome:"🥣 Corn Flakes + Whey", baseCarbo:25, pro:35, fat:1, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.15)}g Corn Flakes o Riso Soffiato • ${Math.round(p*1.15)}g Whey Isolate`},
-    {nome:"🍯 Pane Bianco + Marmellata + Yogurt Greco", baseCarbo:30, pro:25, fat:2, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.5)}g Pane Bianco Tostato • ${Math.round(c*0.6)}g Marmellata/Miele • ${Math.round(p*10)}g Yogurt Greco 0%`},
-    {nome:"🥞 Pancakes Riso e Albume + Miele", baseCarbo:25, pro:25, fat:2, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.2)}g Farina di Riso • ${Math.round(p*10)}g Albume • Miele a piacere (nei carbo)`},
-    {nome:"🍫 Gallette + Crema Spalmabile Proteica", baseCarbo:20, pro:20, fat:8, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c/8)} Gallette Riso • ${Math.round(p*4.5)}g Crema Spalmabile Proteica (tipo Nocciolata Fit)`},
-    // --- SOLIDI SALATI (Old School Bodybuilding e Cibo Vero) ---
-    {nome:"🍘 Gallette di Riso + Bresaola", baseCarbo:20, pro:30, fat:2, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c/8)} Gallette Riso/Mais • ${Math.round(p*3)}g Bresaola Punta d'Anca`},
-    {nome:"🍚 Riso Basmati + Pollo (Pasto Solido Rapido)", baseCarbo:30, pro:35, fat:3, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.25)}g Riso Basmati ben cotto • ${Math.round(p*4.3)}g Petto di Pollo`},
-    {nome:"🥔 Patate Lesse Schiacciate + Fesa", baseCarbo:25, pro:25, fat:2, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*6.6)}g Patate Lesse/Purè senz'olio • ${Math.round(p*4)}g Fesa di Tacchino`},
-    {nome:"🥪 Pane al Latte + Cotto Sgrassato", baseCarbo:25, pro:20, fat:5, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c*1.8)}g Pane al Latte/Morbido • ${Math.round(p*5)}g Prosciutto Cotto Sgrassato Alta Qualità`},
-    {nome:"🍳 Gallette + Albume Strapazzato", baseCarbo:20, pro:25, fat:2, dettaglioGrammi:(c,p,f)=>`⚖️ ${Math.round(c/8)} Gallette • ${Math.round(p*10)}g Albume Liquido cotto in padella`}
-  ]
-};
+    {nome:"🥣 Corn Flakes + Whey", baseCarbo:25, pro:35, fat:1, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.15)}g Corn Flakes o Riso Soffiato • ${Math.round(p*1.15)}g Whey Isolate`},
+    {nome:"🍯 Pane Bianco + Marmellata + Yogurt Greco", baseCarbo:30, pro:25, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1.5)}g Pane Bianco Tostato • ${Math.round(c*0.6)}g Marmellata/Miele • ${Math.round(p*10)}g Yogurt Greco 0%`},
+    {nome:"🥞 Pancakes Riso e Albume + Miele", baseCarbo:25, pro:25, fat:2, dettaglioGrammi:(c:number, p:number, f:number)=>`⚖️ ${Math.round(c*1
 const misureBase = [{ id: 'peso', label: "Peso", unit: "kg" }, { id: 'petto', label: "Petto", unit: "cm" }, { id: 'spalle', label: "Spalle", unit: "cm" }, { id: 'braccia', label: "Braccia", unit: "cm" }, { id: 'gambe', label: "Gambe", unit: "cm" }, { id: 'glutei', label: "Glutei", unit: "cm" }];
 const misureBIA = [{ id: 'vita', label: "Circ. Vita", unit: "cm" }, { id: 'bodyFat', label: "Massa Grassa", unit: "%" }, { id: 'bodyWater', label: "Acqua Corporea", unit: "%" }, { id: 'muscleMass', label: "Massa Musc.", unit: "%" }];
 
